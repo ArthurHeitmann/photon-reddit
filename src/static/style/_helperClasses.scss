@@ -1,0 +1,30 @@
+.flex { display: flex; }
+.f-direction-row { flex-direction: row; }
+.f-direction-column { flex-direction: column; }
+.f-justify-center { justify-content: center; }
+.f-align-center { align-items: center; }
+
+.w100 { width: 100%; }
+.h100 { height: 100%; }
+.wh100 { width: 100%; height: 100%; }
+
+.mta { margin-top: auto; }
+.mra { margin-right: auto; }
+.mba { margin-top: auto; }
+.mla { margin-left: auto; }
+.mlra { margin-left: auto; margin-right: auto; }
+.mrla { margin-left: auto; margin-right: auto; }
+.mtba { margin-top: auto; margin-bottom: auto; }
+.mbta { margin-top: auto; margin-bottom: auto; }
+.ma { margin: auto; }
+
+.relative {
+	position: relative;
+}
+
+.sticky {
+	position: sticky;
+}
+
+.hidden { display: none; }
+.hide { display: none; }

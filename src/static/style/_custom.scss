@@ -1,0 +1,40 @@
+@use 'vars';
+
+body {
+	background-color: vars.$background;
+}
+
+#mainWrapper {
+	position: relative;
+	width: 60%;
+}
+
+header {
+	top: 0;
+	width: 100%;
+	height: calc(5rem * #{vars.$scale});
+	margin-bottom: calc(1rem * #{vars.$scale});
+	position: relative;
+
+	.actions {
+		height: 100%;
+		// position: fixed;
+
+		& > * {
+			margin: 0 calc(1.5rem * #{vars.$scale});
+		}
+	}
+
+}
+
+main {
+	#feed {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+}
+
+.dropdown {
+	display: none;;
+}

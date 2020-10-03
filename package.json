@@ -1,0 +1,26 @@
+{
+  "name": "reddit-photon",
+  "version": "0.0.1",
+  "description": "",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "tsc && sass src/static && node src/app.js",
+    "build": "tsc && sass src/static",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/express": "^4.16.1",
+    "copyfiles": "^2.3.0",
+    "ts-loader": "^8.0.4",
+    "tslint": "^5.12.1",
+    "typescript": "^3.9.7",
+    "sass": "^1.26.11"
+  },
+  "dependencies": {
+    "express": "^4.16.4",
+    "node-fetch": "^2.6.1"
+  }
+}

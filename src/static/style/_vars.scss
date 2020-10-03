@@ -1,0 +1,9 @@
+:root {
+	--bg-color: #121212;
+	--text-color: #e4e4e4;
+	--scale: 1.0;
+}
+
+$background: var(--bg-color);
+$text: var(--text-color);
+$scale: var(--scale);
