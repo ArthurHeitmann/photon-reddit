@@ -14,7 +14,11 @@
 <body>
 	<script>
 		const tmpParams = new URLSearchParams(location.search);
-		localStorage.accessToken = tmpParams.get("token");
+		localStorage.accessToken = tmpParams.get("accessToken");
+		if (tmpParams.has("refreshToken"))
+			localStorage.refreshToken = tmpParams.get("refreshToken");
+		// set expiry to be 59 minutes from now
+		localStorage.expiration = (Date.now() + (59 * 60 * 1000)).toString();
 		location.replace("/");
 	</script>
 </body>

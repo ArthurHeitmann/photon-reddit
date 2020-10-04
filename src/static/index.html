@@ -9,7 +9,7 @@
 	<link rel="shortcut icon" href="/favicon.ico">
 </head>
 <body>
-	<div class="mainWrapper flex f-direction-column f-align-center">
+	<div class="flex f-direction-column f-align-center" id="mainWrapper">
 		<header>
 			<div class="actions flex f-justify-center f-align-center">
 				<a href="/"><div class="home">Photon</div></a>
@@ -28,52 +28,17 @@
 					<input type="text">
 					<button></button>
 				</div>
+				<a href="#" id="loginButton" class="fixed" hidden>Login with Reddit</a>
 				<button class="miscActions">...</button>
 			</div>
 		</header>
 
 		<main class="flex">
 			<div id="feed">
-				<div class="post">
-					<div class="flex">
-						<div class="actions flex f-direction-column f-align-center">
-							<button class="vote">+</button>
-							<button class="vote">-</button>
-							<button class="additionalActions mta">^</button>
-							<button class="comments"></button>
-						</div>
-						<div>
-							<div class="header">
-								<div class="top flex">
-									<a href="/r/ProgrammingHorror" class="/r/ProgrammingHorror">
-										<img src="#" alt="" class="subredditIcon"></img>
-										<span class="subredditTitle">r/ProgrammingHorror</span>
-									</a>
-									<a href="/u/spez" class="/r/ProgrammingHorror">
-										<span class="subredditTitle">u/spez</span>
-									</a>
-									<div class="dropdown">20:10:05 - 01.10.2020</div>
-									<div class="time">30 days ago</div>
-								</div>
-								<div class="bottom flex">
-									<div class="title">This is how my java teacher formats code.</div>
-									<div class="mla flex">
-										<div class="flair" data-color="darkgrey">Java</div>
-										<div class="flair" data-color="lightcoral">Test</div>
-									</div>
-								</div>
-							</div>
-							<div class="content">
-								<img class="postImage" alt="" src="https://preview.redd.it/5iwrerzc2pq51.png?width=640&crop=smart&auto=webp&s=dac8ebff953e0f90dea413b854d82022e3ddc498">
-							</div>
-						</div>
-					</div>
-				</div>
 			</div>
 		</main>
 	</div>
 
-	<!-- <button id="loginButton" hidden>Login with Reddit</button> -->
 	
 	<script src='/scripts/main.js' type="module"></script>
 </body>

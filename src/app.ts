@@ -1,5 +1,5 @@
 import express from "express";
-import { retrieveAccessToken } from "./static/scripts/login/loginRedirect.js"
+import { initialAccessToken, refreshAccessToken } from "./static/scripts/login/loginRedirect.js"
 const app = express();
 app.use(express.static('src/static'));
 const port = 8080;
@@ -11,8 +11,9 @@ const __dirname = process.cwd();
 app.get("/redirect", (req, res) => {
 	if (req.query["state"] && req.query["state"] === "initialLogin") {
 		try {
-			retrieveAccessToken(req.query["code"].toString()).then(
-				(token: string) => res.redirect(`/setAccessToken?token=${ encodeURIComponent(token) }`)
+			initialAccessToken(req.query["code"].toString()).then(
+				(data: Object) => res.redirect(
+					`/setAccessToken?accessToken=${encodeURIComponent(data["access_token"])}&refreshToken=${encodeURIComponent(data["refresh_token"])}`)
 			);
 		} catch (error) {
 			console.error(`Error getting access token ${error}`);
@@ -21,7 +22,28 @@ app.get("/redirect", (req, res) => {
 		}
 	}
 	else {
-		res.send(`¯\\_(ツ)_/¯`);
+		res.setHeader('Content-Type', 'application/json');
+		res.send('{ "error": "¯\\_(ツ)_/¯"}');
+	}
+});
+
+
+app.get("/refreshToken", (req, res) => {
+	res.setHeader('Content-Type', 'application/json');
+	if (req.query["refreshToken"]) {
+		try {
+			refreshAccessToken(req.query["refreshToken"].toString()).then(
+				(data: Object) => 
+					res.send(`{ "accessToken": "${encodeURIComponent(data["access_token"])}" }`)
+			);
+		} catch (error) {
+			console.error(`Error getting access token ${error}`);
+			res.send(`error getting access token ${error}`);
+			return;
+		}
+	}
+	else {
+		res.send('{ "error": "¯\\_(ツ)_/¯"}');
 	}
 });
 

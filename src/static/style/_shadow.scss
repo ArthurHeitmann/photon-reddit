@@ -1,0 +1,70 @@
+@use 'vars';
+
+.shadow-4 {
+  box-shadow: 0 1px 1px var(--shadow-color), 
+              0 2px 2px var(--shadow-color), 
+              0 4px 4px var(--shadow-color), 
+              0 8px 8px var(--shadow-color);
+}
+
+.shadow-5 {
+  box-shadow: 0 1px 1px var(--shadow-color), 
+              0 2px 2px var(--shadow-color), 
+              0 4px 4px var(--shadow-color), 
+              0 8px 8px var(--shadow-color),
+              0 16px 16px var(--shadow-color);
+}
+
+.shadow-6 {
+  box-shadow: 0 1px 1px var(--shadow-color), 
+              0 2px 2px var(--shadow-color), 
+              0 4px 4px var(--shadow-color), 
+              0 8px 8px var(--shadow-color), 
+              0 16px 16px var(--shadow-color), 
+              0 32px 32px var(--shadow-color);
+}
+
+// 锐利
+.shadow-sharp {
+  box-shadow: 0 1px 1px var(--shadow-color), 
+              0 2px 2px var(--shadow-color), 
+              0 4px 4px var(--shadow-color), 
+              0 8px 8px var(--shadow-color),
+              0 16px 16px var(--shadow-color);
+}
+
+// 扩散
+.shadow-diffuse {
+    box-shadow: 0 1px 1px var(--shadow-color), 
+                0 2px 2px var(--shadow-color), 
+                0 4px 4px var(--shadow-color), 
+                0 8px 8px var(--shadow-color);
+}
+
+// 柔和
+.shadow-dreamy {
+  box-shadow: 0 1px 2px var(--shadow-color), 
+              0 2px 4px var(--shadow-color), 
+              0 4px 8px var(--shadow-color), 
+              0 8px 16px var(--shadow-color),
+              0 16px 32px var(--shadow-color), 
+              0 32px 64px var(--shadow-color);
+}
+
+// 更短
+.shadow-shorter {
+  box-shadow: 0 1px 1px var(--shadow-color), 
+              0 2px 2px var(--shadow-color), 
+              0 4px 4px var(--shadow-color), 
+              0 6px 8px var(--shadow-color),
+              0 8px 16px var(--shadow-color);
+}
+
+// 更长
+.shadow-longer {
+  box-shadow: 0 2px 1px var(--shadow-color), 
+              0 4px 2px var(--shadow-color), 
+              0 8px 4px var(--shadow-color), 
+              0 16px 8px var(--shadow-color),
+              0 32px 16px var(--shadow-color);
+}

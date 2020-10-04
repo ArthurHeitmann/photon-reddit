@@ -2,8 +2,10 @@
 	--bg-color: #121212;
 	--text-color: #e4e4e4;
 	--scale: 1.0;
+	--shadow-color: #00000050;
 }
 
 $background: var(--bg-color);
+$background-el1: #1f1f1f;
 $text: var(--text-color);
 $scale: var(--scale);

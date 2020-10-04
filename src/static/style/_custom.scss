@@ -6,7 +6,7 @@ body {
 
 #mainWrapper {
 	position: relative;
-	width: 60%;
+	margin: auto;
 }
 
 header {
@@ -28,13 +28,45 @@ header {
 }
 
 main {
+	width: 50%;
+
 	#feed {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
+		width: 100%;
+
+		& > * {
+			margin: calc(1rem * #{vars.$scale}) 0;
+		}
 	}
 }
 
 .dropdown {
 	display: none;;
+}
+
+.post {
+	background: vars.$background-el1;
+	padding: 1.5rem 1rem;
+	position: relative;
+
+
+	.postImage {
+		width: 100%;
+		height: auto;
+	}
+
+	.actions {
+		margin-right: 1rem;
+	}
+
+	.header {
+		margin-bottom: 1rem;
+
+		.top {
+			margin-bottom: .5rem;
+	
+			& > * {
+				margin-right: 0.25rem;
+			}
+		}
+	}
 }

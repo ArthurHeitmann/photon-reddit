@@ -1,5 +1,8 @@
-async function oath2Request(path, params: string[][] = []): Promise<Object> {
+import { checkTokenExpiry } from "../login/login.js";
+
+async function oath2Request(path, params: string[][] = [], attempt = 0): Promise<Object> {
 	const parameters = new URLSearchParams(params);
+	parameters.append("raw_json", "1");
 	const fetchOptions = { 
 		headers: {
 			Authorization: `Bearer ${ localStorage["accessToken"] }`
@@ -9,7 +12,11 @@ async function oath2Request(path, params: string[][] = []): Promise<Object> {
 		const response = await fetch(`https://oauth.reddit.com/${ path }?${ parameters.toString() }`, fetchOptions);
 		return await response.json();
 	} catch (e) {
-		return { error: e }
+		// maybe the token has expired, try to refresh it; try again up to 3 times
+		if (attempt < 3 && await checkTokenExpiry())
+			return await oath2Request(path, params, attempt + 1);
+		else
+			return { error: e }
 	}
 }
 
@@ -49,15 +56,15 @@ export async function mySubreddits() {
 
 export async function subredditPosts(
 	subreddit: string, 
+	options: string[][] = [],
 	sort: sortPosts = sortPosts.default, 
-	time: sortPostsTime = sortPostsTime.default
+	time: sortPostsTime = sortPostsTime.default,
 ) {
 	return await oath2Request(`${ subreddit }/${ sort }`, 
 		sort && sort == sortPosts.top 
 		? 
-		[["t", time]]
+		[...options, ["t", time]]
 		: 
-		[]
+		options
 	);
 }
-
