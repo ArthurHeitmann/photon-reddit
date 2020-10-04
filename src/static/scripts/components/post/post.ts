@@ -4,17 +4,16 @@ export default class Post extends HTMLElement {
 	constructor(postData, isPreview: boolean) {
 		super();
 		
-		this.className = "post flex"
+		this.className = "post flex shadow-diffuse"
 		
 		const actionBar = document.createElement("div");
+		actionBar.className = "actions flex f-direction-column f-align-center";
 		actionBar.innerHTML = `
-			<div class="actions flex f-direction-column f-align-center">
-				<button class="vote">+</button>
-				<div class="upvotes">${postData.ups}</div>
-				<button class="vote">-</button>
-				<button class="additionalActions mta">^</button>
-				<button class="comments"></button>
-			</div>
+			<button class="vote">+</button>
+			<div class="upvotes">${postData.ups}</div>
+			<button class="vote">-</button>
+			<button class="additionalActions mta">^</button>
+			<button class="comments"></button>
 		`;
 		this.appendChild(actionBar);
 		
@@ -38,8 +37,6 @@ export default class Post extends HTMLElement {
 				<div class="bottom flex">
 					<div class="title">${postData["title"]}</div>
 					<div class="mla flex">
-						<!--<div class="flair" data-color="darkgrey">Java</div>
-						<div class="flair" data-color="lightcoral">Test</div>-->
 					</div>
 				</div>
 			</div>

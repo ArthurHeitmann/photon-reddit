@@ -12,19 +12,20 @@ body {
 header {
 	top: 0;
 	width: 100%;
-	height: calc(5rem * #{vars.$scale});
+	height: vars.$headerHeight;
 	margin-bottom: calc(1rem * #{vars.$scale});
 	position: sticky;
     top: 0;
     z-index: 1;
-	background: vars.$background;
 	transform: translateY(-100%);
     transition: transform .25s linear;
 	
 	.actions {
 		height: 100%;
+		margin-top: calc(#{vars.$headerHeight} * .2);
 		box-sizing: content-box;
-		border-bottom: 5px solid #eee;
+		position: relative;
+		z-index: 55;
 		
 		& > * {
 			margin: 0 calc(1.5rem * #{vars.$scale});
@@ -32,13 +33,13 @@ header {
 	}
 	
 	.expander {
-		position: absolute;
-		left: 50%;
-		transform: translateX(-50%) translateY(-5px);
-		
+		z-index: 50;
+		top: 0;
+
 		svg {
-			transform: scaleX(1);
-			transition: transform .25s linear;
+			width: 100%;
+			height: calc(#{vars.$headerHeight} * 2);
+			filter: drop-shadow(0 0 1rem var(--shadow-color));
 		}
 	}
 	
@@ -53,12 +54,6 @@ header {
 		
 		.accessibilitySpacer {
 			height: 160%;
-		}
-
-		.expander {
-			svg {
-				transform: scaleX(5);
-			}
 		}
 	}
 }
