@@ -14,17 +14,53 @@ header {
 	width: 100%;
 	height: calc(5rem * #{vars.$scale});
 	margin-bottom: calc(1rem * #{vars.$scale});
-	position: relative;
-
+	position: sticky;
+    top: 0;
+    z-index: 1;
+	background: vars.$background;
+	transform: translateY(-100%);
+    transition: transform .25s linear;
+	
 	.actions {
 		height: 100%;
-		// position: fixed;
-
+		box-sizing: content-box;
+		border-bottom: 5px solid #eee;
+		
 		& > * {
 			margin: 0 calc(1.5rem * #{vars.$scale});
 		}
 	}
+	
+	.expander {
+		position: absolute;
+		left: 50%;
+		transform: translateX(-50%) translateY(-5px);
+		
+		svg {
+			transform: scaleX(1);
+			transition: transform .25s linear;
+		}
+	}
+	
+	.accessibilitySpacer {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+	}
+	
+	&.hover{
+		transform: translateY(0);
+		
+		.accessibilitySpacer {
+			height: 160%;
+		}
 
+		.expander {
+			svg {
+				transform: scaleX(5);
+			}
+		}
+	}
 }
 
 main {

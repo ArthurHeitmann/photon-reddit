@@ -1,11 +1,15 @@
-import { $id } from "./utils/getElements.js";
+import { $id, $tag } from "./utils/getElements.js";
 import { checkTokenExpiry, initiateLogin, isAccessTokenValid } from "./login/login.js";
 import { mySubreddits, sortPosts, sortPostsTime, subredditPosts } from "./api/api.js";
 import Post from "./components/post/post.js";
 
+const header: HTMLElement = $tag("header")[0]; 
 function init(): void {
 	const loginBtn = $id("loginButton");
 	loginBtn.addEventListener("click", initiateLogin);
+
+	header.addEventListener("mouseenter", headerMouseEnter);
+	header.addEventListener("mouseleave", headerMouseLeave);
 
 	if (isAccessTokenValid()) {
 		loadPosts();
@@ -38,6 +42,42 @@ function loadPosts() {
 		}
 		
 	});
+}
+
+const headerHideVisualizer = $id("headerHideVisualizer");
+const headerShowVisualizer = $id("headerShowVisualizer");
+let hideTimeout = null;
+function clearHideTimeout() {
+	if (hideTimeout === null) 
+		return;
+	
+	clearTimeout(hideTimeout);
+	hideTimeout = null;
+}
+
+function headerMouseEnter(e: MouseEvent) {
+	if (hideTimeout !== null) {
+		clearHideTimeout();
+		return;
+	}
+
+	headerShowVisualizer.beginElement();
+	header.classList.add("hover");
+	clearHideTimeout()
+}
+
+function headerMouseLeave(e: MouseEvent) {
+	if (e.y < 1) {
+		hideTimeout = setTimeout(() => {
+			headerHideVisualizer.beginElement()
+			header.classList.remove("hover");
+		}, 10000);
+	}
+	else {
+		headerHideVisualizer.beginElement();
+		header.classList.remove("hover");
+		clearHideTimeout()
+	}
 }
 
 init();

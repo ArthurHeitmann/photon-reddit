@@ -18,13 +18,15 @@
 .mbta { margin-top: auto; margin-bottom: auto; }
 .ma { margin: auto; }
 
-.relative {
-	position: relative;
-}
-
-.sticky {
-	position: sticky;
-}
+.relative { position: relative; }
+.sticky { position: sticky; }
 
 .hidden { display: none; }
 .hide { display: none; }
+
+.overflow-hide { overflow: hidden; }
+.overflow-x-hide { overflow-x: hidden; }
+.overflow-y-hide { overflow-y: hidden; }
+.overflow-auto { overflow: auto; }
+.overflow-x-auto { overflow-x: auto; }
+.overflow-y-auto { overflow-y: auto; }
