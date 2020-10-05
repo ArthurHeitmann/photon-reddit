@@ -8,14 +8,19 @@
 	color: vars.$text;
 	box-sizing: border-box;
 	font-size: 1rem;
-	font-family: sans-serif;
+	font-family: "Montserrat", "Open Sans", sans-serif;
 	// border: .5px dotted lightcoral;
 }
 
 a {
 	text-decoration: none;
+	color: #7da3f9;
 }
 
 :focus {
 	outline: none;
+}
+
+div, span, p, a {
+	font-size: 1.2rem;
 }

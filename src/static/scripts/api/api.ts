@@ -1,6 +1,6 @@
 import { checkTokenExpiry } from "../login/login.js";
 
-async function oath2Request(path, params: string[][] = [], attempt = 0): Promise<Object> {
+export async function oath2Request(path, params: string[][] = [], attempt = 0) {
 	const parameters = new URLSearchParams(params);
 	parameters.append("raw_json", "1");
 	const fetchOptions = { 

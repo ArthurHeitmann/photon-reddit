@@ -23,6 +23,11 @@
 .fixed { position: fixed; }
 .sticky { position: sticky; }
 
+.top0 { top: 0; }
+.right0 { right: 0; }
+.left0 { left: 0; }
+.bottom0 { bottom: 0; }
+
 .hidden { display: none; }
 .hide { display: none; }
 
@@ -32,3 +37,8 @@
 .overflow-auto { overflow: auto; }
 .overflow-x-auto { overflow-x: auto; }
 .overflow-y-auto { overflow-y: auto; }
+
+
+.debug1 { border: 1px dotted lightcoral }
+.debug2 { border: 1px dotted lightblue }
+.debug3 { border: 1px dotted lightgreen }

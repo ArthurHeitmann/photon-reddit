@@ -1,19 +1,30 @@
+import { RedditApiData, RedditApiType } from "../../utils/types.js";
 
-export default class PostBody extends HTMLElement {
-	constructor(postData) {
+export default class Ph_PostBody extends HTMLElement {
+	constructor(postData: RedditApiType) {
 		super();
 
 		this.className = "content";
 
-		switch (this.getPostType(postData)) {
+		switch (this.getPostType(postData.data)) {
 			case PostType.Image:
-				this.innerHTML = `<img alt="${postData.title}" src="${postData.url}" class="postImage">`;
+				this.innerHTML = `<img alt="${postData.data["title"]}" src="${postData.data["url"]}" class="postImage">`;
 				break;
 			case PostType.Text:
-				this.innerHTML = `<div class="postText">${postData.selftext}</div>`;
+				this.innerHTML = `<div class="postText">${postData.data["selftext_html"]}</div>`;
 				break;
 			case PostType.YtVideo:
-				this.innerHTML = postData["media_embed"]["content"];
+				this.innerHTML = postData.data["media_embed"]["content"];
+				break;
+			case PostType.Link:
+				this.innerHTML = `<a href="${postData.data["url"]}" target="_blank">${postData.data["url"]}</a>`
+				break;
+			case PostType.Video:
+				this.innerHTML = `
+					<video>
+						<source src="${postData.data["secure_media"]["reddit_video"]["hls_url"]}" type="application/vnd.apple.mpegURL">
+					</video>
+				`;
 				break;
 			default:
 				this.innerText = "Unknown post type";
@@ -21,7 +32,7 @@ export default class PostBody extends HTMLElement {
 		}
 	}
 
-	private getPostType(postData: Object): PostType {
+	private getPostType(postData: RedditApiData): PostType {
 		if (postData["is_self"])
 			return PostType.Text;
 		else if (postData["post_hint"] == "link")
@@ -30,14 +41,14 @@ export default class PostBody extends HTMLElement {
 			return PostType.Image;
 		else if (postData["post_hint"] == "hosted:video")
 			return PostType.Video;
-			else if (postData["post_hint"] == "rich:video")
+		else if (postData["post_hint"] == "rich:video")
 			return PostType.YtVideo;
 		else
-			throw new Error("What is this post type?");
-	}
+			return PostType.Link;
+		}
 }
 
-customElements.define("ph-post-body", PostBody);
+customElements.define("ph-post-body", Ph_PostBody);
 
 enum PostType {
 	Link,

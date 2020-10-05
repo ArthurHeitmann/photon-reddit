@@ -44,16 +44,15 @@ header {
 	}
 	
 	.accessibilitySpacer {
-		position: absolute;
-		width: 100%;
-		height: 100%;
+		top: 0;
 	}
 	
 	&.hover{
 		transform: translateY(0);
 		
 		.accessibilitySpacer {
-			height: 160%;
+			height: 150%;
+			top: vars.$headerHeight;
 		}
 	}
 }
@@ -78,7 +77,8 @@ main {
 	background: vars.$background-el1;
 	padding: 1.5rem 1rem;
 	position: relative;
-
+	border-radius: 10px;
+	cursor: pointer;
 
 	.postImage {
 		width: 100%;
@@ -87,6 +87,14 @@ main {
 
 	.actions {
 		margin-right: 1rem;
+		width: vars.$postActionsWidth;
+		max-width: vars.$postActionsWidth;
+	}
+
+	.comments {
+		img {
+			width: vars.$postActionsWidth * .69;
+		}
 	}
 
 	.header {
@@ -100,4 +108,8 @@ main {
 			}
 		}
 	}
+}
+
+.comment {
+	
 }

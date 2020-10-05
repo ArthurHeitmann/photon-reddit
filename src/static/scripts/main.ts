@@ -1,7 +1,6 @@
 import { $class, $id, $tag } from "./utils/getElements.js";
 import { checkTokenExpiry, initiateLogin, isAccessTokenValid } from "./login/login.js";
-import { mySubreddits, sortPosts, sortPostsTime, subredditPosts } from "./api/api.js";
-import Post from "./components/post/post.js";
+import { pushLinkToHistorySep } from "./state/stateManager.js";
 
 const header: HTMLElement = $tag("header")[0]; 
 function init(): void {
@@ -27,21 +26,7 @@ function init(): void {
 }
 
 function loadPosts() {
-	const target = location.pathname;
-	let matches;
-	let subreddit = "r/popular";
-	if (matches = target.match(/^\/(r\/[a-zA-Z0-9]+)$/)) {
-		subreddit = matches[1];
-	}
-	const feed = $id("feed");
-	subredditPosts(subreddit, [["limit", "15"]]).then(posts => {
-		console.log(posts);
-		for (const post of posts["data"]["children"]) {
-			let postElement = new Post(post["data"], true);
-			feed.appendChild(postElement);
-		}
-		
-	});
+	pushLinkToHistorySep(location.pathname, location.search || "?");
 }
 
 const headerHideVisualizer = $class("headerHideVisualizer");
@@ -67,7 +52,7 @@ function headerMouseEnter(e: MouseEvent) {
 }
 
 function headerMouseLeave(e: MouseEvent) {
-	if (e.y < 1) {
+	if (e.relatedTarget === null) {
 		hideTimeout = setTimeout(() => {
 			for (const anim of headerHideVisualizer) anim.beginElement()
 			header.classList.remove("hover");
@@ -79,5 +64,7 @@ function headerMouseLeave(e: MouseEvent) {
 		clearHideTimeout()
 	}
 }
+
+
 
 init();
