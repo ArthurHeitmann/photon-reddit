@@ -2,7 +2,7 @@ import { timePassedSince, timePassedSinceStr, voteShortStr } from "../../utils/c
 import { RedditApiType } from "../../utils/types.js";
 
 export default class Ph_Comment extends HTMLElement {
-	constructor(commentData: RedditApiType) {
+	constructor(commentData: RedditApiType, isChild: boolean) {
 		super();
 
 		if (commentData.kind === "more") {
@@ -22,8 +22,13 @@ export default class Ph_Comment extends HTMLElement {
 			<button class="vote">+</button>
 			<div class="upvotes">${voteShortStr(commentData.data["ups"])}</div>
 			<button class="vote">-</button>
-			<button class="additionalActions mta">^</button>
+			<button class="additionalActions">^</button>
 		`;
+		const commentCollapser = document.createElement("div");
+		commentCollapser.className = "commentCollapser ma flex f-justify-center";
+		commentCollapser.innerHTML = `<div></div>`;
+		commentCollapser.addEventListener("click", () => this.collapse());
+		actionBar.appendChild(commentCollapser);
 		this.appendChild(actionBar);
 
 		const mainPart = document.createElement("div");
@@ -42,12 +47,17 @@ export default class Ph_Comment extends HTMLElement {
 		`;
 		if (commentData.data["replies"] && commentData.data["replies"]["data"]["children"]) {
 			const childComments = document.createElement("div");
+			childComments.className = "replies";
 			for (const comment of commentData.data["replies"]["data"]["children"])
-				childComments.appendChild(new Ph_Comment(comment));
+				childComments.appendChild(new Ph_Comment(comment, true));
 			mainPart.appendChild(childComments);
 		}
 
 		this.appendChild(mainPart);
+	}
+	
+	collapse(e: MouseEvent) {
+		this.classList.toggle("isCollapsed");
 	}
 }
 

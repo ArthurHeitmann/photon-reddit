@@ -73,22 +73,32 @@ main {
 	display: none;;
 }
 
-.post {
+.post, .comment {
 	background: vars.$background-el1;
 	padding: 1.5rem 1rem;
-	position: relative;
-	border-radius: 10px;
-	cursor: pointer;
 
-	.postImage {
-		width: 100%;
-		height: auto;
+	ol, ul {
+		list-style-position: inside;
 	}
 
 	.actions {
 		margin-right: 1rem;
 		width: vars.$postActionsWidth;
 		max-width: vars.$postActionsWidth;
+	}
+}
+
+.post {
+	position: relative;
+	border-radius: 10px;
+
+	.isInFeed {
+		cursor: pointer;
+	}
+
+	.postImage {
+		width: 100%;
+		height: auto;
 	}
 
 	.comments {
@@ -111,5 +121,31 @@ main {
 }
 
 .comment {
-	
+	margin: .75rem 0;
+
+	&.isCollapsed {
+		.replies, .content {
+			display: none;
+		}
+	}
+
+	.commentCollapser {
+		width: 1rem;
+		height: calc(100% - 1rem);
+		min-height: 1rem;
+		cursor: pointer;
+		
+		> div {
+			width: .2rem;
+			background-color: rgba(4, 4, 4, 0.411);
+			height: 100%;
+			transition: all .25s ease;
+		}
+		
+		&:hover > div {
+			width: .3rem;
+			background-color: rgba(0, 0, 0, 0.6);
+
+		}
+	}
 }

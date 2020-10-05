@@ -13,7 +13,7 @@ export default class Ph_Post extends HTMLElement {
 		
 		this.importantData["link"] = postData.data["permalink"];
 
-		this.className = "post flex shadow-diffuse";
+		this.className = "post flex shadow-diffuse" + (isInFeed ? " isInFeed" : "");
 
 		const actionBar = document.createElement("div");
 		actionBar.className = "actions flex f-direction-column f-align-center";
@@ -21,11 +21,13 @@ export default class Ph_Post extends HTMLElement {
 			<button class="vote">+</button>
 			<div class="upvotes">${voteShortStr(postData.data["ups"])}</div>
 			<button class="vote">-</button>
-			<button class="additionalActions mta">^</button>
-			<button class="comments">
+			<button class="additionalActions">^</button>` +
+			(isInFeed ?
+			`<button class="comments">
 				<img alt="comments" src="/img/comments.svg">
-			</button>
-		`;
+			</button> `
+			: "");
+		;
 		this.appendChild(actionBar);
 		
 		const mainPart = document.createElement("div");

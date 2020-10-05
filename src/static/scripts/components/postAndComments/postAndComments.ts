@@ -10,7 +10,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 
 		this.appendChild(new Ph_Post(data[0].data.children[0], false));
 		for (const commentData of data[1].data.children) {
-			this.appendChild(new Ph_Comment(commentData));
+			this.appendChild(new Ph_Comment(commentData, false));
 		}
 	}
 }
