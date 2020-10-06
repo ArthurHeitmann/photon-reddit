@@ -1,6 +1,7 @@
 import { $class, $id, $tag } from "./utils/getElements.js";
 import { checkTokenExpiry, initiateLogin, isAccessTokenValid } from "./login/login.js";
 import { pushLinkToHistorySep } from "./state/stateManager.js";
+import { SVGAnimateElement } from "./utils/types.js"
 
 const header: HTMLElement = $tag("header")[0]; 
 function init(): void {
@@ -46,7 +47,7 @@ function headerMouseEnter(e: MouseEvent) {
 		return;
 	}
 
-	for (const anim of headerShowVisualizer) anim.beginElement();
+	for (const anim of headerShowVisualizer) (anim as SVGAnimateElement).beginElement();
 	header.classList.add("hover");
 	clearHideTimeout()
 }
@@ -54,12 +55,12 @@ function headerMouseEnter(e: MouseEvent) {
 function headerMouseLeave(e: MouseEvent) {
 	if (e.relatedTarget === null) {
 		hideTimeout = setTimeout(() => {
-			for (const anim of headerHideVisualizer) anim.beginElement()
+			for (const anim of headerHideVisualizer) (anim as SVGAnimateElement).beginElement()
 			header.classList.remove("hover");
 		}, 10000);
 	}
 	else {
-		for (const anim of headerHideVisualizer) anim.beginElement();
+		for (const anim of headerHideVisualizer) (anim as SVGAnimateElement).beginElement();
 		header.classList.remove("hover");
 		clearHideTimeout()
 	}

@@ -2,10 +2,12 @@ import { oath2Request } from "../api/api.js";
 import Ph_Comment from "../components/comment/comment.js";
 import Ph_Post from "../components/post/post.js";
 import Ph_PostAndComments from "../components/postAndComments/postAndComments.js";
+import Ph_PostsFeed from "../components/postsFeed/postsFeed.js";
 import { $id } from "../utils/getElements.js";
 import { RedditApiData, RedditApiType } from "../utils/types.js";
+import ViewsStack from "./viewsStack.js";
 
-export let currentFeed = $id("feed");
+export const viewsStack: ViewsStack = new ViewsStack();
 
 export function pushLinkToHistoryComb(pathAndQuery: string): void {
 	const querySeparation = pathAndQuery.match(/([\w\/]+)?(\?[\w&=]*)/);
@@ -25,21 +27,25 @@ export async function pushLinkToHistorySep(path: string, query: string = "?"): P
 		throw new Error("Error making request to reddit");
 
 	if (requestData instanceof Array) {		// --> [0]: post [1]: comments
-		currentFeed.appendChild(new Ph_PostAndComments(requestData));
+		const newView = new Ph_PostAndComments(requestData);
+		$id("feed").appendChild(newView);
+		viewsStack.push(newView).next();
 	}
 	else {
-		addPosts(requestData);
+		const newView = new Ph_PostsFeed(requestData);
+		$id("feed").appendChild(newView);
+		viewsStack.push(newView).next();
 	}
 }
 
-function addPosts(posts: RedditApiType) {
-	for (const postData of posts.data.children) {
-		currentFeed.appendChild(new Ph_Post(postData, true));
-	}
-}
+// function addPosts(posts: RedditApiType) {
+// 	for (const postData of posts.data.children) {
+// 		currentFeed.appendChild(new Ph_Post(postData, true));
+// 	}
+// }
 
-function addComments(comments: RedditApiType) {
-	for (const commentData of comments.data.children) {
-		currentFeed.appendChild(new Ph_Comment(commentData));
-	}
-}
+// function addComments(comments: RedditApiType) {
+// 	for (const commentData of comments.data.children) {
+// 		currentFeed.appendChild(new Ph_Comment(commentData, false));
+// 	}
+// }

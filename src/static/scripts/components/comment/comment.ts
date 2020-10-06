@@ -27,7 +27,7 @@ export default class Ph_Comment extends HTMLElement {
 		const commentCollapser = document.createElement("div");
 		commentCollapser.className = "commentCollapser ma flex f-justify-center";
 		commentCollapser.innerHTML = `<div></div>`;
-		commentCollapser.addEventListener("click", () => this.collapse());
+		commentCollapser.addEventListener("click", e => this.collapse(e));
 		actionBar.appendChild(commentCollapser);
 		this.appendChild(actionBar);
 
@@ -45,6 +45,12 @@ export default class Ph_Comment extends HTMLElement {
 				${commentData.data["body_html"]}
 			</div>
 		`;
+
+		
+			
+		for (const a of mainPart.getElementsByTagName("a"))
+			a.target = "_blank";
+
 		if (commentData.data["replies"] && commentData.data["replies"]["data"]["children"]) {
 			const childComments = document.createElement("div");
 			childComments.className = "replies";
@@ -55,7 +61,7 @@ export default class Ph_Comment extends HTMLElement {
 
 		this.appendChild(mainPart);
 	}
-	
+
 	collapse(e: MouseEvent) {
 		this.classList.toggle("isCollapsed");
 	}

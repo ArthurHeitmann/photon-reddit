@@ -12,3 +12,11 @@ export interface RedditApiData {
 	before: string,
 	after: string
 }
+
+export interface SVGAnimationElement extends SVGElement {
+	beginElement(): void;
+}
+
+export interface SVGAnimateElement extends SVGAnimationElement {
+
+}

@@ -29,7 +29,10 @@ export default class Ph_PostBody extends HTMLElement {
 			default:
 				this.innerText = "Unknown post type";
 				break;
-		}
+			
+			}
+		for (const a of this.getElementsByTagName("a"))
+			a.target = "_blank";
 	}
 
 	private getPostType(postData: RedditApiData): PostType {
