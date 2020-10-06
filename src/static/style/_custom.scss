@@ -65,7 +65,7 @@ main {
 	}
 }
 
-.postsFeed {
+.postsFeed, .commentsFeed {
 	> * {
 		margin: calc(1rem * #{vars.$scale}) 0;
 	}
@@ -78,6 +78,7 @@ main {
 .post, .comment {
 	background: vars.$background-el1;
 	padding: 1.5rem 1rem;
+	border-radius: 10px;
 
 	ol, ul {
 		list-style-position: inside;
@@ -92,7 +93,6 @@ main {
 
 .post {
 	position: relative;
-	border-radius: 10px;
 
 	&.isInFeed {
 		cursor: pointer;
@@ -123,8 +123,6 @@ main {
 }
 
 .comment {
-	margin: .75rem 0;
-
 	&.isCollapsed {
 		.replies, .content {
 			display: none;

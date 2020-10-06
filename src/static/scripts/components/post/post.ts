@@ -1,9 +1,12 @@
+import { pushLinkToHistoryComb } from "../../state/stateManager.js";
 import { timePassedSince, timePassedSinceStr, voteShortStr } from "../../utils/conv.js";
 import { RedditApiType } from "../../utils/types.js";
+import Ph_PostAndComments from "../postAndComments/postAndComments.js";
 import Ph_PostBody from "../postBody/postBody.js";
 
 export default class Ph_Post extends HTMLElement {
-	importantData: Object = {};
+	link: string;
+	isInFeed: boolean;
 
 	constructor(postData: RedditApiType, isInFeed: boolean) {
 		super();
@@ -11,7 +14,7 @@ export default class Ph_Post extends HTMLElement {
 		if (postData.kind !== "t3")
 			throw new Error("Invalid comment data type");
 		
-		this.importantData["link"] = postData.data["permalink"];
+		this.link = postData.data["permalink"];
 
 		this.className = "post flex shadow-diffuse" + (isInFeed ? " isInFeed" : "");
 
@@ -58,6 +61,7 @@ export default class Ph_Post extends HTMLElement {
 		this.appendChild(mainPart);
 
 		if (isInFeed) {
+			this.isInFeed = isInFeed;
 			this.addEventListener("mousedown", this.onPostMouseDown);
 			this.addEventListener("click", this.onPostClick);
 		}
@@ -65,15 +69,16 @@ export default class Ph_Post extends HTMLElement {
 
 	onPostMouseDown(e: MouseEvent) {
 		if (e.button === 1 || e.button === 0 && e.ctrlKey) { // mdl mouse btn or ctrl + click
-			window.open(this.importantData["link"]);
+			window.open(this.link);
 			e.preventDefault();
 		}
 	}
 	
 	onPostClick(e: MouseEvent) {
-		if (e.button === 0) {
-			location.href = this.importantData["link"];
-		}
+		if (e.button !== 0 && !this.isInFeed)
+			return;
+		
+		pushLinkToHistoryComb(this.link);
 	}
 
 

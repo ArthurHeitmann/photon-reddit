@@ -9,8 +9,17 @@ import ViewsStack from "./viewsStack.js";
 
 export const viewsStack: ViewsStack = new ViewsStack();
 
+window.onpopstate = (e: PopStateEvent) => {
+	if (e.state > viewsStack.position())
+		viewsStack.next();
+	else
+		viewsStack.prev();
+	console.log(`hID ${e.state}`)
+};
+
+
 export function pushLinkToHistoryComb(pathAndQuery: string): void {
-	const querySeparation = pathAndQuery.match(/([\w\/]+)?(\?[\w&=]*)/);
+	const querySeparation = pathAndQuery.match(/([\w\/]+)(\?[\w&=]*)?/);
 	let path = querySeparation[1] || "/";
 	let query = querySeparation[2] || "?";
 	pushLinkToHistorySep(path, query);
@@ -27,12 +36,12 @@ export async function pushLinkToHistorySep(path: string, query: string = "?"): P
 		throw new Error("Error making request to reddit");
 
 	if (requestData instanceof Array) {		// --> [0]: post [1]: comments
-		const newView = new Ph_PostAndComments(requestData);
+		const newView = new Ph_PostAndComments(requestData, path + query);
 		$id("feed").appendChild(newView);
 		viewsStack.push(newView).next();
 	}
 	else {
-		const newView = new Ph_PostsFeed(requestData);
+		const newView = new Ph_PostsFeed(requestData, path + query);
 		$id("feed").appendChild(newView);
 		viewsStack.push(newView).next();
 	}
