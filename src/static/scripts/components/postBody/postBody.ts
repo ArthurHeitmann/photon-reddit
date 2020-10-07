@@ -1,3 +1,5 @@
+import { replaceRedditLinks } from "../../utils/conv.js";
+import { linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiData, RedditApiType } from "../../utils/types.js";
 
 export default class Ph_PostBody extends HTMLElement {
@@ -8,18 +10,23 @@ export default class Ph_PostBody extends HTMLElement {
 
 		switch (this.getPostType(postData.data)) {
 			case PostType.Image:
+				this.classList.add("fullScale");
 				this.innerHTML = `<img alt="${postData.data["title"]}" src="${postData.data["url"]}" class="postImage">`;
 				break;
 			case PostType.Text:
-				this.innerHTML = `<div class="postText">${postData.data["selftext_html"]}</div>`;
+				this.classList.add("padded");
+				this.innerHTML = `<div class="postText">${postData.data["selftext_html"] || ""}</div>`;
 				break;
 			case PostType.YtVideo:
+				this.classList.add("padded");
 				this.innerHTML = postData.data["media_embed"]["content"];
 				break;
 			case PostType.Link:
+				this.classList.add("padded");
 				this.innerHTML = `<a href="${postData.data["url"]}" target="_blank">${postData.data["url"]}</a>`
 				break;
 			case PostType.Video:
+				this.classList.add("padded");
 				this.innerHTML = `
 					<video>
 						<source src="${postData.data["secure_media"]["reddit_video"]["hls_url"]}" type="application/vnd.apple.mpegURL">
@@ -27,12 +34,16 @@ export default class Ph_PostBody extends HTMLElement {
 				`;
 				break;
 			default:
+				this.classList.add("padded");
 				this.innerText = "Unknown post type";
 				break;
 			
 			}
 		for (const a of this.getElementsByTagName("a"))
 			a.target = "_blank";
+
+		replaceRedditLinks(this);
+		linksToSpa(this);
 	}
 
 	private getPostType(postData: RedditApiData): PostType {

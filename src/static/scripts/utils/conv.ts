@@ -1,3 +1,5 @@
+import { mainURL } from "./consts.js";
+
 export function votesShort(upvotes: number): string {
 	switch (upvotes.toString().length) {
 		case 0:
@@ -50,4 +52,10 @@ export function timePassedSince(time: number): string {
 
 export function timePassedSinceStr(time: string): string {
 	return timePassedSince(parseInt(time));
+}
+
+export function replaceRedditLinks(el: HTMLElement) {
+	for (const a of el.getElementsByTagName("a")) {
+		a.href = a.href.replaceAll("reddit.com", mainURL);
+	}
 }

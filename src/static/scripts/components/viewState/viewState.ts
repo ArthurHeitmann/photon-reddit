@@ -1,14 +1,21 @@
-export class Ph_ViewState extends HTMLElement {
-	historyIndex: number;
-	state: Object;
-	title: string;
-	url: string
+import { HistoryState } from "../../utils/types";
 
-	constructor(state: Object, title: string, url: string) {
+export class Ph_ViewState extends HTMLElement {
+	state: HistoryState;
+	contentElement: HTMLElement;
+
+	constructor(state: HistoryState) {
 		super();
-		
+
+		this.className = "viewState";
+
 		this.state = state;
-		this.title = title;
-		this.url = url;
+
+		this.contentElement = document.createElement("div");
+		this.contentElement.className =  "contentElement"
+		this.contentElement.innerText = "loading...";
+		this.appendChild(this.contentElement);
 	}
 }
+
+customElements.define("ph-view-state", Ph_ViewState);

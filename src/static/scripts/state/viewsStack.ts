@@ -1,104 +1,85 @@
 import { Ph_ViewState } from "../components/viewState/viewState.js";
+import { $tag } from "../utils/htmlStuff.js";
+import { HistoryState } from "../utils/types.js";
+import { pushLinkToHistoryComb, PushType } from "./stateManager.js";
+
+interface ViewsType {
+	[index: number]: Ph_ViewState,
+}
 
 export default class ViewsStack {
-	private views: Ph_ViewState[] = [];
-	private pos = -1;
+	private views: ViewsType = {};
+	private pos: number = null;
+	private attachmentPoint: HTMLElement = $tag("main")[0];
 
-	push(el: Ph_ViewState): ViewsStack {
-		this.views.splice(this.pos + 1).forEach(el => el.remove());
-
-		this.views.push(el);
-		el.historyIndex = this.views.length - 1;
-
-		if (this.pos !== -1)
-			this.peek().classList.add("hide");
-
-		return this;
-	}
-
-	pop(): HTMLElement {
-		if (this.views.length <= 0) 
-			throw new Error("Cannot pop empty stack");
-		
-		if (this.pos + 1 === this.views.length) {
-			this.views[this.pos].remove();
-			--this.pos;
+	pushAfter(state: Ph_ViewState, isInitialPush = false): void {
+		for (let i = this.pos + 1; this.views[i] !== undefined; ++i) {
+			this.views[i].remove();
 		}
+
+		this.attachmentPoint.appendChild(state);
 		
-		return this.views.pop();
-	}
-
-	clear() {
-		this.views = [];
-	}
-
-	peek(offset = 0): HTMLElement {
-		if (this.views.length === offset) 
-			return null;
-		else if (this.views.length < offset)
-			throw new Error(`Not enough elements in view stack stack.length = ${this.views.length}; offset = ${offset}`);
-
-		return this.views[this.views.length - 1 - offset];
-	}
-
-	current(): HTMLElement {
-		return this.views[this.pos];
-	}
-
-	first(): HTMLElement {
-		if (this.views.length === 0)
-			return null;
-		
-		return this.views[0]
-	}
-
-	last(): HTMLElement {
-		if (this.views.length === 0)
-			return null;
-		
-		return this.peek();
-	}
-
-	next(): HTMLElement {
-		if (this.pos + 1 >= this.views.length && this.pos !== -1)
-			throw new Error("Cannot next(): no next elements in stack");
-		
-		if (this.pos !== -1)
+		if (this.pos !== null)
 			this.views[this.pos].classList.add("hide");
+		else
+			this.pos = -1;
 		++this.pos;
-		this.views[this.pos].classList.remove("hide");
-		history.pushState(
-			this.views[this.pos].historyIndex, 
-			this.views[this.pos].title, 
-			this.views[this.pos].url
-		);
-		history.forward();
-		
-		return this.views[this.pos];
+		this.views[this.pos] = state;
+
+		// document.title = state.state.title;
+		if (isInitialPush)
+			history.replaceState(state.state, state.state.title, state.state.url);
+		else
+			history.pushState(state.state, state.state.title, state.state.url);
 	}
-	
-	prev(): HTMLElement {
-		if (this.pos <= 0)
-		throw new Error("Cannot prev(): no previous elements in stack");
-		
+
+	pushBefore(state: Ph_ViewState) {
+		if (this.pos == null)
+			throw new Error("First cannot be inserted using insertBefore");
+		if (this.views[this.pos - 1] !== undefined)
+			throw new Error("inserting before element! An element already exists at that position");
+
+		this.views[this.pos].insertAdjacentElement("beforebegin", state);
 		this.views[this.pos].classList.add("hide");
 		--this.pos;
-		this.views[this.pos].classList.remove("hide");
-		// history.pushState(
-		// 	this.views[this.pos].historyIndex, 
-		// 	this.views[this.pos].title, 
-		// 	this.views[this.pos].url
-		// );
-		// history.forward();
-
-		return this.views[this.pos];
+		this.views[this.pos] = state;
 	}
 
-	size(): number {
-		return this.views.length;
+	forward() {
+		if (this.views[this.pos + 1] == undefined) {			// probably a page reload,
+			pushLinkToHistoryComb(history.state.url);			// need to create to html elements
+			return;
+		}
+
+		this.views[this.pos++].classList.add("hide");
+		this.views[this.pos].classList.remove("hide");
+	}
+
+	back() {
+		if (this.views[this.pos - 1] == undefined) {			// probably a page reload,
+			pushLinkToHistoryComb(history.state.url, PushType.PushBefore);		// need to create to html elements
+			return;
+		}
+
+		this.views[this.pos--].classList.add("hide");
+		this.views[this.pos].classList.remove("hide");
+	}
+
+	setCurrentStateTitle(title: string) {
+		document.title = title;
+		history.state.title = title;
 	}
 
 	position(): number {
 		return this.pos;
 	}
+
+	makeHistoryState(title: string, url: string, posOffset: number): HistoryState {
+		return {
+			index: (this.pos ?? -1) + posOffset,
+			title: title,
+			url: url,
+		};
+	}
+
 }

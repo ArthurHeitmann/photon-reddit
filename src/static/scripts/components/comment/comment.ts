@@ -1,4 +1,5 @@
-import { timePassedSince, timePassedSinceStr, voteShortStr } from "../../utils/conv.js";
+import { replaceRedditLinks, timePassedSince, timePassedSinceStr, voteShortStr } from "../../utils/conv.js";
+import { linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
 
 export default class Ph_Comment extends HTMLElement {
@@ -14,10 +15,12 @@ export default class Ph_Comment extends HTMLElement {
 		else if (commentData.kind !== "t1")
 			throw new Error("Invalid comment data type");
 
-		this.className = "comment flex";
+		this.className = "comment";
+		if (!isChild)
+			this.classList.add("rootComment");
 
 		const actionBar = document.createElement("div");
-		actionBar.className = "actions flex f-direction-column f-align-center";
+		actionBar.className = "actions";
 		actionBar.innerHTML = `
 			<button class="vote">+</button>
 			<div class="upvotes">${voteShortStr(commentData.data["ups"])}</div>
@@ -25,7 +28,7 @@ export default class Ph_Comment extends HTMLElement {
 			<button class="additionalActions">^</button>
 		`;
 		const commentCollapser = document.createElement("div");
-		commentCollapser.className = "commentCollapser ma flex f-justify-center";
+		commentCollapser.className = "commentCollapser";
 		commentCollapser.innerHTML = `<div></div>`;
 		commentCollapser.addEventListener("click", e => this.collapse(e));
 		actionBar.appendChild(commentCollapser);
@@ -34,8 +37,8 @@ export default class Ph_Comment extends HTMLElement {
 		const mainPart = document.createElement("div");
 		mainPart.innerHTML = `
 			<div class="header flex">
-				<a href="/u/${commentData.data["author"]}" class="subredditTitle">
-					<span class="subredditTitle">u/${commentData.data["author"]}</span>
+				<a href="/u/${commentData.data["author"]}" class="user">
+					<span>u/${commentData.data["author"]}</span>
 				</a>
 				<div class="dropdown">${ new Date(parseInt(commentData.data["created_utc"])).toTimeString() }</div>
 				<div class="time">${timePassedSinceStr(commentData.data["created_utc"])}</div>
@@ -60,6 +63,9 @@ export default class Ph_Comment extends HTMLElement {
 		}
 
 		this.appendChild(mainPart);
+
+		replaceRedditLinks(this);
+		linksToSpa(this);
 	}
 
 	collapse(e: MouseEvent) {

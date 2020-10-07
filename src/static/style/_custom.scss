@@ -1,4 +1,5 @@
 @use 'vars';
+@use 'shadow';
 
 body {
 	background-color: vars.$background;
@@ -57,28 +58,52 @@ header {
 	}
 }
 
-main {
-	width: 50%;
+.viewState {
+	position: fixed;
+	width: 100%;
+	max-height: 100%;
+	overflow-y: auto;
+	top: 0;
+	left: 0;
+	padding: vars.$headerHeight 0;
+	display: flex;
+	justify-content: center;
 
-	#feed {
+	.backClickArea {
+		position: fixed;
 		width: 100%;
+		height: 100%;
+		z-index: -1;
 	}
 }
 
 .postsFeed, .commentsFeed {
-	> * {
-		margin: calc(1rem * #{vars.$scale}) 0;
+	 > * {
+		margin: calc(1.5rem * #{vars.$scale}) 0;
 	}
 }
 
 .dropdown {
-	display: none;;
+	display: none;
+}
+
+.postAndComments {
+	display: flex;
+	flex-direction: column;
+	padding-right: 3.5rem;
+	height: fit-content;
+	background: vars.$background-el1;
+	border-radius: vars.$b-r;
+	@extend %shadow-diffuse;
+}
+
+.postAndComments, .postsFeed {
+	width: 50%;
+	margin: 0 auto;
 }
 
 .post, .comment {
-	background: vars.$background-el1;
-	padding: 1.5rem 1rem;
-	border-radius: 10px;
+	display: flex;
 
 	ol, ul {
 		list-style-position: inside;
@@ -88,19 +113,68 @@ main {
 		margin-right: 1rem;
 		width: vars.$postActionsWidth;
 		max-width: vars.$postActionsWidth;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.content {
+		word-break: break-all;
+		word-break: break-word;
+		overflow-wrap: anywhere;
 	}
 }
 
 .post {
 	position: relative;
 
-	&.isInFeed {
-		cursor: pointer;
+	.header {
+		margin: vars.$post-padding;
+		.top {
+			margin-bottom: vars.$post-padding / 4;
+
+			& > * {
+				margin-right: 0.25rem;
+			}
+		}
+
+		.title {
+			font-size: 1.75rem;
+		}
 	}
 
-	.postImage {
-		width: 100%;
-		height: auto;
+	&.isInFeed {
+		background: vars.$background-el1;
+		border-radius: vars.$b-r;
+		cursor: pointer;
+		@extend %shadow-diffuse;
+
+		.actions {
+			position: absolute;
+			transform: translateX(calc(-100% - 1.5rem));
+			margin-top: vars.$post-padding;
+		}
+	}
+
+	&:not(.isInFeed) {
+		.actions {
+			margin: 1.5rem 1rem;
+		}
+	}
+
+	.content {
+		display: flex;
+
+			&.padded {
+				margin: vars.$post-padding;
+			}
+
+		.postImage {
+			width: 100%;
+			height: auto;
+			border-bottom-left-radius: vars.$b-r;
+			border-bottom-right-radius: vars.$b-r;
+		}
 	}
 
 	.comments {
@@ -108,44 +182,68 @@ main {
 			width: vars.$postActionsWidth * .69;
 		}
 	}
+}
 
-	.header {
-		margin-bottom: 1rem;
-
-		.top {
-			margin-bottom: .5rem;
-	
-			& > * {
-				margin-right: 0.25rem;
-			}
-		}
-	}
+.commentsFeed {
+	overflow-x: auto;		// TODO fix to uch nested comments causing an overflow
 }
 
 .comment {
+	padding: 1rem 0 1rem 1rem;
+
 	&.isCollapsed {
+		.actions > :not(.commentCollapser) {
+			display: none;
+		}
+
 		.replies, .content {
 			display: none;
 		}
 	}
 
+	.header {
+		margin-bottom: .6rem;
+
+		 > * {
+			margin: 0 .25rem;
+		}
+	}
+
 	.commentCollapser {
-		width: 1rem;
+		width: 2rem;
 		height: calc(100% - 1rem);
-		min-height: 1rem;
+		min-height: 2rem;
 		cursor: pointer;
+		margin: auto;
+		display: flex;
+		justify-content: center;
 		
 		> div {
 			width: .2rem;
-			background-color: rgba(4, 4, 4, 0.411);
+			background-color: rgba(4, 4, 4, 0.6);
 			height: 100%;
 			transition: all .25s ease;
 		}
 		
 		&:hover > div {
 			width: .3rem;
-			background-color: rgba(0, 0, 0, 0.6);
+			background-color: rgba(0, 0, 0, 0.8);
 
 		}
 	}
+
 }
+
+a {
+	transition: filter .25s ease;
+	filter: brightness(1);
+
+	&:hover {
+		filter: brightness(1.25);
+	}
+
+	&.subreddit *, &.user * {
+		color: lightcoral;
+	}
+}
+

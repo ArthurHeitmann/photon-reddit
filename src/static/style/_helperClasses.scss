@@ -28,8 +28,8 @@
 .left0 { left: 0; }
 .bottom0 { bottom: 0; }
 
-.hidden { display: none; }
-.hide { display: none; }
+.hidden { display: none !important; }
+.hide { display: none !important; }
 
 .overflow-hide { overflow: hidden; }
 .overflow-x-hide { overflow-x: hidden; }

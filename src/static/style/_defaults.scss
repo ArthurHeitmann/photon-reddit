@@ -24,3 +24,9 @@ a {
 div, span, p, a {
 	font-size: 1.2rem;
 }
+
+hr {
+	height: 1px;
+	background-color: vars.$text;
+	margin: 1rem auto;
+}

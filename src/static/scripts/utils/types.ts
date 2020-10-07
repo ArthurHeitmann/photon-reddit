@@ -20,3 +20,9 @@ export interface SVGAnimationElement extends SVGElement {
 export interface SVGAnimateElement extends SVGAnimationElement {
 
 }
+
+export interface HistoryState {
+	title: string,
+	index: number,
+	url: string,
+}

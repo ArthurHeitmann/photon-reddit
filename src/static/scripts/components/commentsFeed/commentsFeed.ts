@@ -5,7 +5,7 @@ export default class Ph_CommentsFeed extends HTMLElement {
 	constructor(comments: RedditApiType) {
 		super();
 
-		this.className = "commentsFeed";
+		this.classList.add("commentsFeed");
 		
 		for (const commentData of comments.data.children) {
 			this.appendChild(new Ph_Comment(commentData, false));

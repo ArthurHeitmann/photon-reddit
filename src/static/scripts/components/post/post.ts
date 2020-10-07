@@ -1,5 +1,6 @@
-import { pushLinkToHistoryComb } from "../../state/stateManager.js";
+import { pushLinkToHistoryComb, PushType } from "../../state/stateManager.js";
 import { timePassedSince, timePassedSinceStr, voteShortStr } from "../../utils/conv.js";
+import { linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
 import Ph_PostAndComments from "../postAndComments/postAndComments.js";
 import Ph_PostBody from "../postBody/postBody.js";
@@ -16,10 +17,10 @@ export default class Ph_Post extends HTMLElement {
 		
 		this.link = postData.data["permalink"];
 
-		this.className = "post flex shadow-diffuse" + (isInFeed ? " isInFeed" : "");
+		this.className = "post" + (isInFeed ? " isInFeed" : "");
 
 		const actionBar = document.createElement("div");
-		actionBar.className = "actions flex f-direction-column f-align-center";
+		actionBar.className = "actions";
 		actionBar.innerHTML = `
 			<button class="vote">+</button>
 			<div class="upvotes">${voteShortStr(postData.data["ups"])}</div>
@@ -34,17 +35,18 @@ export default class Ph_Post extends HTMLElement {
 		this.appendChild(actionBar);
 		
 		const mainPart = document.createElement("div");
+		mainPart.className = "w100";
 		mainPart.innerHTML = `
 			<div class="header">
 				<div class="top flex">
 					<span>Posted in</span>
-					<a href="/${postData.data["subreddit_name_prefixed"]}" class="${postData.data["subreddit_name_prefixed"]}">
+					<a href="/${postData.data["subreddit_name_prefixed"]}" class="subreddit">
 						<img src="#" alt="" class="subredditIcon"></img>
-						<span class="subredditTitle">${postData.data["subreddit_name_prefixed"]}</span>
+						<span>${postData.data["subreddit_name_prefixed"]}</span>
 					</a>
 					<span>by</span>
-					<a href="/u/${postData.data["author"]}" class="subredditTitle">
-						<span class="subredditTitle">u/${postData.data["author"]}</span>
+					<a href="/u/${postData.data["author"]}" class="user">
+						<span>u/${postData.data["author"]}</span>
 					</a>
 					<div class="dropdown">${ new Date(parseInt(postData.data["created_utc"])).toTimeString() }</div>
 					<div class="time">${timePassedSinceStr(postData.data["created_utc"])}</div>
@@ -63,8 +65,9 @@ export default class Ph_Post extends HTMLElement {
 		if (isInFeed) {
 			this.isInFeed = isInFeed;
 			this.addEventListener("mousedown", this.onPostMouseDown);
-			this.addEventListener("click", this.onPostClick);
+			this.onclick = this.onPostClick;
 		}
+		linksToSpa(this);
 	}
 
 	onPostMouseDown(e: MouseEvent) {
@@ -77,8 +80,8 @@ export default class Ph_Post extends HTMLElement {
 	onPostClick(e: MouseEvent) {
 		if (e.button !== 0 && !this.isInFeed)
 			return;
-		
-		pushLinkToHistoryComb(this.link);
+		e.stopPropagation();
+		pushLinkToHistoryComb(this.link, PushType.PushAfter);
 	}
 
 

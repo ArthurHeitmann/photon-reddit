@@ -1,10 +1,11 @@
-import { $class, $id, $tag } from "./utils/getElements.js";
+import { $class, $id, $tag, linksToSpa } from "./utils/htmlStuff.js";
 import { checkTokenExpiry, initiateLogin, isAccessTokenValid } from "./login/login.js";
 import { pushLinkToHistorySep } from "./state/stateManager.js";
 import { SVGAnimateElement } from "./utils/types.js"
 
 const header: HTMLElement = $tag("header")[0]; 
 function init(): void {
+	linksToSpa(document.body);
 	const loginBtn = $id("loginButton");
 	loginBtn.addEventListener("click", initiateLogin);
 
@@ -68,4 +69,4 @@ function headerMouseLeave(e: MouseEvent) {
 
 
 
-init();
+window.addEventListener("load", init);
