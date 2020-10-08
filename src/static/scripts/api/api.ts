@@ -9,9 +9,7 @@ export async function oath2Request(path, params: string[][] = [], attempt = 0) {
 		},
 	};
 	try {
-		console.log("started request");
 		const response = await fetch(`https://oauth.reddit.com/${ path }?${ parameters.toString() }`, fetchOptions);
-		console.log("completed request");
 		return await response.json();
 	} catch (e) {
 		// maybe the token has expired, try to refresh it; try again up to 3 times

@@ -36,6 +36,7 @@ header {
 	.expander {
 		z-index: 50;
 		top: 0;
+		pointer-events: none;
 
 		svg {
 			width: 100%;
@@ -45,7 +46,7 @@ header {
 	}
 	
 	.accessibilitySpacer {
-		top: 0;
+		width: 25%;
 	}
 	
 	&.hover{
@@ -53,6 +54,7 @@ header {
 		
 		.accessibilitySpacer {
 			height: 150%;
+			width: 100%;
 			top: vars.$headerHeight;
 		}
 	}
@@ -154,6 +156,13 @@ header {
 			transform: translateX(calc(-100% - 1.5rem));
 			margin-top: vars.$post-padding;
 		}
+
+		.content {
+			.postImage {
+				border-bottom-left-radius: vars.$b-r;
+				border-bottom-right-radius: vars.$b-r;
+			}
+		}
 	}
 
 	&:not(.isInFeed) {
@@ -172,8 +181,6 @@ header {
 		.postImage {
 			width: 100%;
 			height: auto;
-			border-bottom-left-radius: vars.$b-r;
-			border-bottom-right-radius: vars.$b-r;
 		}
 	}
 

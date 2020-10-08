@@ -25,4 +25,5 @@ export interface HistoryState {
 	title: string,
 	index: number,
 	url: string,
+	optionalData: any
 }

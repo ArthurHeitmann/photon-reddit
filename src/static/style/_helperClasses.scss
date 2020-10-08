@@ -23,6 +23,8 @@
 .fixed { position: fixed; }
 .sticky { position: sticky; }
 
+.centerAlt { margin-left: 50%; transform: translateX(-50%); }
+
 .top0 { top: 0; }
 .right0 { right: 0; }
 .left0 { left: 0; }

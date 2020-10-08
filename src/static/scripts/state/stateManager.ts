@@ -6,7 +6,7 @@ import Ph_ViewStateLoader from "../components/viewStateLoader/viewStateLoader.js
 import ViewsStack from "./viewsStack.js";
 
 export const viewsStack: ViewsStack = new ViewsStack();
-
+viewsStack.setNextIsReplace();
 
 window.onpopstate = (e: PopStateEvent) => {
 	// if (e.state && e.state.title)
@@ -14,7 +14,7 @@ window.onpopstate = (e: PopStateEvent) => {
 
 	if (e.state.index > viewsStack.position()) {
 		for(let i = e.state.index - viewsStack.position(); i > 0; --i) 
-			viewsStack.forward();
+			viewsStack.forward(true);
 	}
 	else if (e.state.index < viewsStack.position()) {
 		for(let i = viewsStack.position() - e.state.index; i > 0; --i) 
@@ -35,18 +35,22 @@ export function pushLinkToHistoryComb(pathAndQuery: string, pushType: PushType =
 	pushLinkToHistorySep(path, query, pushType);
 }
 
-let isInitialPush = true;
 export async function pushLinkToHistorySep(path: string, query: string = "?", pushType: PushType = PushType.PushAfter): Promise<void> {
 	const stateLoader: Ph_ViewStateLoader = new Ph_ViewStateLoader(viewsStack.makeHistoryState(
 		path, path + query, 1
 	));
 
+	const nextState = viewsStack.nextState();
+	if (nextState && nextState.state.url == (path + query)) {
+		history.forward();
+		return;
+	}
+
 	if (pushType === PushType.PushAfter)
-		viewsStack.pushAfter(stateLoader, isInitialPush);
+		viewsStack.pushAfter(stateLoader);
 	else if (pushType === PushType.PushBefore)
 		viewsStack.pushBefore(stateLoader);
 
-	if (isInitialPush) isInitialPush = false;
 
 	const urlParams = new URLSearchParams(query);
 	const params: string[][] = [];

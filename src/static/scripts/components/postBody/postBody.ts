@@ -25,17 +25,17 @@ export default class Ph_PostBody extends HTMLElement {
 				this.classList.add("padded");
 				this.innerHTML = `<a href="${postData.data["url"]}" target="_blank">${postData.data["url"]}</a>`
 				break;
-			case PostType.Video:
-				this.classList.add("padded");
-				this.innerHTML = `
-					<video>
-						<source src="${postData.data["secure_media"]["reddit_video"]["hls_url"]}" type="application/vnd.apple.mpegURL">
-					</video>
-				`;
-				break;
+			// case PostType.Video:
+			// 	this.classList.add("padded");
+			// 	this.innerHTML = `
+			// 		<video>
+			// 			<source src="${postData.data["secure_media"]["reddit_video"]["hls_url"]}" type="application/vnd.apple.mpegURL">
+			// 		</video>
+			// 	`;
+			// 	break;
 			default:
 				this.classList.add("padded");
-				this.innerText = "Unknown post type";
+				this.innerText = `Unknown post type ${this.getPostType(postData.data)}`;
 				break;
 			
 			}

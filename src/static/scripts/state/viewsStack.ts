@@ -11,8 +11,9 @@ export default class ViewsStack {
 	private views: ViewsType = {};
 	private pos: number = null;
 	private attachmentPoint: HTMLElement = $tag("main")[0];
-
-	pushAfter(state: Ph_ViewState, isInitialPush = false): void {
+	private isNextReplace: boolean;
+	
+	pushAfter(state: Ph_ViewState): void {
 		for (let i = this.pos + 1; this.views[i] !== undefined; ++i) {
 			this.views[i].remove();
 		}
@@ -22,13 +23,17 @@ export default class ViewsStack {
 		if (this.pos !== null)
 			this.views[this.pos].classList.add("hide");
 		else
-			this.pos = -1;
+			// if page is reload or similar, retrieve the previous state
+			this.pos =  (history.state && history.state.index ? history.state.index - 1 : -1);
 		++this.pos;
+		state.state.index = this.pos;
 		this.views[this.pos] = state;
 
 		// document.title = state.state.title;
-		if (isInitialPush)
+		if (this.isNextReplace) {
 			history.replaceState(state.state, state.state.title, state.state.url);
+			this.isNextReplace = false;
+		}
 		else
 			history.pushState(state.state, state.state.title, state.state.url);
 	}
@@ -45,9 +50,11 @@ export default class ViewsStack {
 		this.views[this.pos] = state;
 	}
 
-	forward() {
+	forward(isFromPopStateEvent = false) {
 		if (this.views[this.pos + 1] == undefined) {			// probably a page reload,
-			pushLinkToHistoryComb(history.state.url);			// need to create to html elements
+			if (isFromPopStateEvent)							// need to create to html elements
+				this.setNextIsReplace();
+			pushLinkToHistoryComb(history.state.url);
 			return;
 		}
 
@@ -56,13 +63,17 @@ export default class ViewsStack {
 	}
 
 	back() {
-		if (this.views[this.pos - 1] == undefined) {			// probably a page reload,
-			pushLinkToHistoryComb(history.state.url, PushType.PushBefore);		// need to create to html elements
+		if (this.views[this.pos - 1] == undefined) {						// probably a page reload,
+			pushLinkToHistoryComb(history.state.url, PushType.PushBefore);	// need to create to html elements
 			return;
 		}
 
 		this.views[this.pos--].classList.add("hide");
 		this.views[this.pos].classList.remove("hide");
+	}
+
+	setNextIsReplace() {
+		this.isNextReplace = true;
 	}
 
 	setCurrentStateTitle(title: string) {
@@ -74,11 +85,16 @@ export default class ViewsStack {
 		return this.pos;
 	}
 
+	nextState(): Ph_ViewState {
+		return this.views[this.pos + 1] || null;
+	}
+
 	makeHistoryState(title: string, url: string, posOffset: number): HistoryState {
 		return {
 			index: (this.pos ?? -1) + posOffset,
 			title: title,
 			url: url,
+			optionalData: null
 		};
 	}
 

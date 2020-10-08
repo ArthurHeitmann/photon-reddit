@@ -24,7 +24,6 @@ function init(): void {
 			
 		})
 	}
-	
 }
 
 function loadPosts() {
