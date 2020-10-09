@@ -7,17 +7,21 @@ import Ph_PostBody from "../postBody/postBody.js";
 
 export default class Ph_Post extends HTMLElement {
 	link: string;
-	isInFeed: boolean;
 
 	constructor(postData: RedditApiType, isInFeed: boolean) {
 		super();
 
 		if (postData.kind !== "t3")
 			throw new Error("Invalid comment data type");
-		
+
 		this.link = postData.data["permalink"];
 
 		this.className = "post" + (isInFeed ? " isInFeed" : "");
+
+		const backgroundLink = document.createElement("a");
+		backgroundLink.className = "backgroundLink";
+		backgroundLink.href = this.link;
+		this.appendChild(backgroundLink);
 
 		const actionBar = document.createElement("div");
 		actionBar.className = "actions";
@@ -27,13 +31,13 @@ export default class Ph_Post extends HTMLElement {
 			<button class="vote">-</button>
 			<button class="additionalActions">^</button>` +
 			(isInFeed ?
-			`<button class="comments">
-				<img alt="comments" src="/img/comments.svg">
-			</button> `
-			: "");
+				`<button class="comments">
+					<img alt="comments" src="/img/comments.svg">
+				</button> `
+				: "");
 		;
 		this.appendChild(actionBar);
-		
+
 		const mainPart = document.createElement("div");
 		mainPart.className = "w100";
 		mainPart.innerHTML = `
@@ -48,7 +52,7 @@ export default class Ph_Post extends HTMLElement {
 					<a href="/u/${postData.data["author"]}" class="user">
 						<span>u/${postData.data["author"]}</span>
 					</a>
-					<div class="dropdown">${ new Date(parseInt(postData.data["created_utc"])).toTimeString() }</div>
+					<div class="dropdown">${new Date(parseInt(postData.data["created_utc"])).toTimeString()}</div>
 					<div class="time">${timePassedSinceStr(postData.data["created_utc"])}</div>
 					<span>ago</span>
 				</div>
@@ -62,26 +66,7 @@ export default class Ph_Post extends HTMLElement {
 		mainPart.appendChild(new Ph_PostBody(postData));
 		this.appendChild(mainPart);
 
-		if (isInFeed) {
-			this.isInFeed = isInFeed;
-			this.addEventListener("mousedown", this.onPostMouseDown);
-			this.onclick = this.onPostClick;
-		}
 		linksToSpa(this);
-	}
-
-	onPostMouseDown(e: MouseEvent) {
-		if (e.button === 1 || e.button === 0 && e.ctrlKey) { // mdl mouse btn or ctrl + click
-			window.open(this.link);
-			e.preventDefault();
-		}
-	}
-	
-	onPostClick(e: MouseEvent) {
-		if (e.button !== 0 && !this.isInFeed)
-			return;
-		e.stopPropagation();
-		pushLinkToHistoryComb(this.link, PushType.PushAfter);
 	}
 
 

@@ -7,6 +7,10 @@ interface ViewsType {
 	[index: number]: Ph_ViewState,
 }
 
+// TODO eventually fix the following (rare occurrence): when reloading the page and going back/forward multiple page
+// at once (right click on the back/forwards arrows in the browser) all pages in between will not
+// load properly and all be the same
+
 export default class ViewsStack {
 	private views: ViewsType = {};
 	private pos: number = null;

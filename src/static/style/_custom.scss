@@ -100,8 +100,14 @@ header {
 }
 
 .postAndComments, .postsFeed {
-	width: 50%;
 	margin: 0 auto;
+	width: 50%;
+}
+
+@media (orientation: portrait) {
+	.postAndComments, .postsFeed {
+		width: calc(100% - 2rem);
+	}
 }
 
 .post, .comment {
@@ -124,6 +130,7 @@ header {
 		word-break: break-all;
 		word-break: break-word;
 		overflow-wrap: anywhere;
+		max-width: 100%;
 	}
 }
 
@@ -134,6 +141,7 @@ header {
 		margin: vars.$post-padding;
 		.top {
 			margin-bottom: vars.$post-padding / 4;
+			flex-wrap: wrap;
 
 			& > * {
 				margin-right: 0.25rem;
@@ -148,8 +156,13 @@ header {
 	&.isInFeed {
 		background: vars.$background-el1;
 		border-radius: vars.$b-r;
-		cursor: pointer;
 		@extend %shadow-diffuse;
+
+		.backgroundLink {
+			position: absolute;
+			width: 100%;
+			height: 100%;
+		}
 
 		.actions {
 			position: absolute;
@@ -168,6 +181,10 @@ header {
 	&:not(.isInFeed) {
 		.actions {
 			margin: 1.5rem 1rem;
+		}
+
+		.backgroundLink {
+			display: none;
 		}
 	}
 
@@ -209,6 +226,7 @@ header {
 	}
 
 	.header {
+		flex-wrap: wrap;
 		margin-bottom: .6rem;
 
 		 > * {
