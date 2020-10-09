@@ -1,7 +1,13 @@
 import { checkTokenExpiry } from "../login/login.js";
 
-export async function oath2Request(path, params: string[][] = [], attempt = 0) {
-	const parameters = new URLSearchParams(params);
+export async function oath2Request(pathAndQuery, params: string[][] = [], attempt = 0) {
+	const querySeparation = pathAndQuery.match(/([\w\/]+)(\?[\w&=]*)?/);
+	let path = querySeparation[1] || "/";
+	let query = querySeparation[2] || "?";
+
+	const parameters = new URLSearchParams(query);
+	for (const param of params)
+		parameters.append(param[0], param[1]);
 	parameters.append("raw_json", "1");
 	const fetchOptions = { 
 		headers: {
@@ -9,7 +15,7 @@ export async function oath2Request(path, params: string[][] = [], attempt = 0) {
 		},
 	};
 	try {
-		const response = await fetch(`https://oauth.reddit.com/${ path }?${ parameters.toString() }`, fetchOptions);
+		const response = await fetch(`https://oauth.reddit.com${ path }?${ parameters.toString() }`, fetchOptions);
 		return await response.json();
 	} catch (e) {
 		// maybe the token has expired, try to refresh it; try again up to 3 times

@@ -7,7 +7,7 @@ export class Ph_ViewState extends HTMLElement {
 	constructor(state: HistoryState) {
 		super();
 
-		this.className = "viewState";
+		this.className = "viewState overflow-y-auto";
 
 		this.state = state;
 

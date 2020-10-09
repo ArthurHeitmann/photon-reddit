@@ -1,11 +1,11 @@
-import { pushLinkToHistoryComb, PushType } from "../../state/stateManager.js";
-import { timePassedSince, timePassedSinceStr, voteShortStr } from "../../utils/conv.js";
+import { timePassedSinceStr, voteShortStr } from "../../utils/conv.js";
 import { linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
-import Ph_PostAndComments from "../postAndComments/postAndComments.js";
+import { FeedItem } from "../feed/feed.js";
 import Ph_PostBody from "../postBody/postBody.js";
 
-export default class Ph_Post extends HTMLElement {
+export default class Ph_Post extends HTMLElement implements FeedItem {
+	itemId: string;
 	link: string;
 
 	constructor(postData: RedditApiType, isInFeed: boolean) {
@@ -15,6 +15,7 @@ export default class Ph_Post extends HTMLElement {
 			throw new Error("Invalid comment data type");
 
 		this.link = postData.data["permalink"];
+		this.itemId = postData.data["name"];
 
 		this.className = "post" + (isInFeed ? " isInFeed" : "");
 

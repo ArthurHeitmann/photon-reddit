@@ -66,7 +66,7 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 		viewsStack.setCurrentStateTitle(`Photon: ${requestData[0]["data"]["children"][0]["data"]["title"]}`);
 	}
 	else {
-		stateLoader.finishWith(new Ph_PostsFeed(requestData));
+		stateLoader.finishWith(new Ph_PostsFeed(requestData, path + query));
 		viewsStack.setCurrentStateTitle(`Photon:  ${(path.length > 3) ? path.slice(1) : "Home"}`);
 	}
 }
