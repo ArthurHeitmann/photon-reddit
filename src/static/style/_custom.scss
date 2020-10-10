@@ -99,13 +99,13 @@ header {
 }
 
 .postAndComments, .postsFeed {
-	margin: 0 auto;
-	width: 50%;
+	width: calc(100% - 2rem);
 }
 
-@media (orientation: portrait) {
+@media (orientation: landscape) {
 	.postAndComments, .postsFeed {
-		width: calc(100% - 2rem);
+		margin: 0 auto;
+		width: calc(50% - 2rem);
 	}
 }
 
@@ -136,8 +136,55 @@ header {
 .post {
 	position: relative;
 
+	&.isInFeed {
+		background: vars.$background-el1;
+		border-radius: vars.$b-r;
+		@extend %shadow-diffuse;
+
+		.backgroundLink {
+			position: absolute;
+			z-index: 0;
+			width: 100%;
+			height: 100%;
+		}
+
+		a:not(.backgroundLink), .content > * {
+			position: relative;
+			z-index: 1;
+		}
+
+		.actions {
+			position: absolute;
+			transform: translateX(calc(-100% - 1.5rem));
+			margin-top: vars.$post-padding;
+		}
+
+		@media (orientation: portrait) {
+			.actions {
+				transform: translateX(calc(100%));
+			}
+		}
+		
+		.header {
+			margin: vars.$post-padding;
+		}
+
+		@media (orientation: portrait) {
+			.header {
+				margin-left: 6.5rem
+			}
+		}
+
+		.content {
+			.postImage {
+				border-bottom-left-radius: vars.$b-r;
+				border-bottom-right-radius: vars.$b-r;
+			}
+		}
+	}
+
 	.header {
-		margin: vars.$post-padding;
+		margin: vars.$post-padding 0;
 		.top {
 			margin-bottom: vars.$post-padding / 4;
 			flex-wrap: wrap;
@@ -149,31 +196,6 @@ header {
 
 		.title {
 			font-size: 1.75rem;
-		}
-	}
-
-	&.isInFeed {
-		background: vars.$background-el1;
-		border-radius: vars.$b-r;
-		@extend %shadow-diffuse;
-
-		.backgroundLink {
-			position: absolute;
-			width: 100%;
-			height: 100%;
-		}
-
-		.actions {
-			position: absolute;
-			transform: translateX(calc(-100% - 1.5rem));
-			margin-top: vars.$post-padding;
-		}
-
-		.content {
-			.postImage {
-				border-bottom-left-radius: vars.$b-r;
-				border-bottom-right-radius: vars.$b-r;
-			}
 		}
 	}
 

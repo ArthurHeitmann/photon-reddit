@@ -20,7 +20,7 @@ export default class Ph_Comment extends HTMLElement {
 			this.classList.add("rootComment");
 
 		const actionBar = document.createElement("div");
-		actionBar.className = "actions";
+		actionBar.className = "actions no-select";
 		actionBar.innerHTML = `
 			<button class="vote">+</button>
 			<div class="upvotes">${voteShortStr(commentData.data["ups"])}</div>

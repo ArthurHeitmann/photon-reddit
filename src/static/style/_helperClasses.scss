@@ -1,45 +1,46 @@
-.flex { display: flex; }
-.f-direction-row { flex-direction: row; }
-.f-direction-column { flex-direction: column; }
-.f-justify-center { justify-content: center; }
-.f-align-center { align-items: center; }
+.flex { display: flex }
+.f-direction-row { flex-direction: row }
+.f-direction-column { flex-direction: column }
+.f-justify-center { justify-content: center }
+.f-align-center { align-items: center }
 
-.w100 { width: 100%; }
-.h100 { height: 100%; }
-.wh100 { width: 100%; height: 100%; }
+.w100 { width: 100% }
+.h100 { height: 100% }
+.wh100 { width: 100%; height: 100% }
 
-.mta { margin-top: auto; }
-.mra { margin-right: auto; }
-.mba { margin-top: auto; }
-.mla { margin-left: auto; }
-.mlra { margin-left: auto; margin-right: auto; }
-.mrla { margin-left: auto; margin-right: auto; }
-.mtba { margin-top: auto; margin-bottom: auto; }
-.mbta { margin-top: auto; margin-bottom: auto; }
-.ma { margin: auto; }
+.mta { margin-top: auto }
+.mra { margin-right: auto }
+.mba { margin-top: auto }
+.mla { margin-left: auto }
+.mlra { margin-left: auto; margin-right: auto }
+.mrla { margin-left: auto; margin-right: auto }
+.mtba { margin-top: auto; margin-bottom: auto }
+.mbta { margin-top: auto; margin-bottom: auto }
+.ma { margin: auto }
 
-.relative { position: relative; }
-.absolute { position: absolute; }
-.fixed { position: fixed; }
-.sticky { position: sticky; }
+.relative { position: relative }
+.absolute { position: absolute }
+.fixed { position: fixed }
+.sticky { position: sticky }
 
-.centerAlt { margin-left: 50%; transform: translateX(-50%); }
+.centerAlt { margin-left: 50%; transform: translateX(-50%) }
 
-.top0 { top: 0; }
-.right0 { right: 0; }
-.left0 { left: 0; }
-.bottom0 { bottom: 0; }
+.top0 { top: 0 }
+.right0 { right: 0 }
+.left0 { left: 0 }
+.bottom0 { bottom: 0 }
 
-.hidden { display: none !important; }
-.hide { display: none !important; }
+.hidden { display: none !important }
+.hide { display: none !important }
 
-.overflow-hide { overflow: hidden; }
-.overflow-x-hide { overflow-x: hidden; }
-.overflow-y-hide { overflow-y: hidden; }
-.overflow-auto { overflow: auto; }
-.overflow-x-auto { overflow-x: auto; }
-.overflow-y-auto { overflow-y: auto; }
+.overflow-hide { overflow: hidden }
+.overflow-x-hide { overflow-x: hidden }
+.overflow-y-hide { overflow-y: hidden }
+.overflow-auto { overflow: auto }
+.overflow-x-auto { overflow-x: auto }
+.overflow-y-auto { overflow-y: auto }
 
+.no-select { user-select: none }
 
 .debug1 { border: 1px dotted lightcoral }
 .debug2 { border: 1px dotted lightblue }

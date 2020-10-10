@@ -8,8 +8,13 @@
 	color: vars.$text;
 	box-sizing: border-box;
 	font-size: 1rem;
-	font-family: "Montserrat", "Open Sans", sans-serif;
-	// border: .5px dotted lightcoral;
+	font-family: "Nunito", sans-serif;
+	font-weight: 600;
+}
+
+strong {
+	font-weight: 800;
+	font-size: inherit;
 }
 
 a {
