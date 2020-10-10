@@ -150,7 +150,6 @@ header {
 
 		a:not(.backgroundLink), .content > * {
 			position: relative;
-			z-index: 1;
 		}
 
 		.actions {
@@ -219,6 +218,25 @@ header {
 		.postImage {
 			width: 100%;
 			height: auto;
+			display: block;
+		}
+
+		.imageMax {
+			position: fixed;
+			z-index: 10;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+
+			.bigImage {
+				width: 100%;
+				height: 100%;
+				background-image: var(--max-img);
+				background-position: center;
+				background-repeat: no-repeat;
+				background-size: contain;
+			}
 		}
 	}
 
@@ -293,3 +311,12 @@ a {
 	}
 }
 
+.closeButton {
+	position: fixed;
+	background-color: lightcoral;
+	z-index: 999;
+	top: 2rem;
+	right: 2rem;
+	width: 2rem;
+	height: 2rem;
+}

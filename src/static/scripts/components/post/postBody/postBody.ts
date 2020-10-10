@@ -1,6 +1,7 @@
 import { replaceRedditLinks } from "../../../utils/conv.js";
 import { linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiData, RedditApiType } from "../../../utils/types.js";
+import Ph_PostImage from "./postImage/postImage.js";
 
 export default class Ph_PostBody extends HTMLElement {
 	constructor(postData: RedditApiType) {
@@ -11,7 +12,7 @@ export default class Ph_PostBody extends HTMLElement {
 		switch (this.getPostType(postData.data)) {
 			case PostType.Image:
 				this.classList.add("fullScale");
-				this.innerHTML = `<img alt="${postData.data["title"]}" src="${postData.data["url"]}" class="postImage">`;
+				this.appendChild(new Ph_PostImage(postData));
 				break;
 			case PostType.Text:
 				this.classList.add("padded");
