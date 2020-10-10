@@ -1,5 +1,5 @@
-import { RedditApiType } from "../../utils/types.js";
-import Ph_Comment from "../comment/comment.js";
+import { RedditApiType } from "../../../utils/types.js";
+import Ph_Comment from "../../comment/comment.js";
 
 export default class Ph_CommentsFeed extends HTMLElement {
 	constructor(comments: RedditApiType) {

@@ -2,7 +2,7 @@ import { timePassedSinceStr, voteShortStr } from "../../utils/conv.js";
 import { linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
 import { FeedItem } from "../feed/feed.js";
-import Ph_PostBody from "../postBody/postBody.js";
+import Ph_PostBody from "./postBody/postBody.js";
 
 export default class Ph_Post extends HTMLElement implements FeedItem {
 	itemId: string;

@@ -1,8 +1,8 @@
 import { oath2Request } from "../api/api.js";
 import Ph_PostAndComments from "../components/postAndComments/postAndComments.js";
-import Ph_PostsFeed from "../components/postsFeed/postsFeed.js";
+import Ph_PostsFeed from "../components/feed/postsFeed/postsFeed.js";
 import { Ph_ViewState } from "../components/viewState/viewState.js";
-import Ph_ViewStateLoader from "../components/viewStateLoader/viewStateLoader.js";
+import Ph_ViewStateLoader from "../components/viewState/viewStateLoader/viewStateLoader.js";
 import ViewsStack from "./viewsStack.js";
 
 export const viewsStack: ViewsStack = new ViewsStack();

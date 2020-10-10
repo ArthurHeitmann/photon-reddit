@@ -1,6 +1,6 @@
-import { replaceRedditLinks } from "../../utils/conv.js";
-import { linksToSpa } from "../../utils/htmlStuff.js";
-import { RedditApiData, RedditApiType } from "../../utils/types.js";
+import { replaceRedditLinks } from "../../../utils/conv.js";
+import { linksToSpa } from "../../../utils/htmlStuff.js";
+import { RedditApiData, RedditApiType } from "../../../utils/types.js";
 
 export default class Ph_PostBody extends HTMLElement {
 	constructor(postData: RedditApiType) {

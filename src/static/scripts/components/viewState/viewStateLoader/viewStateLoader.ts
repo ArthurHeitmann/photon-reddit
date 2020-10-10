@@ -1,5 +1,5 @@
-import { HistoryState } from "../../utils/types.js";
-import { Ph_ViewState } from "../viewState/viewState.js";
+import { HistoryState } from "../../../utils/types.js";
+import { Ph_ViewState } from "../viewState.js";
 
 export default class Ph_ViewStateLoader extends Ph_ViewState {
 	constructor(state: HistoryState) {

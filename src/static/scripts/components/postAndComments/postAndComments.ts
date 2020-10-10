@@ -1,8 +1,6 @@
-import { HistoryState, RedditApiType } from "../../utils/types.js";
-import Ph_Comment from "../comment/comment.js";
-import Ph_CommentsFeed from "../commentsFeed/commentsFeed.js";
+import { RedditApiType } from "../../utils/types.js";
+import Ph_CommentsFeed from "../feed/commentsFeed/commentsFeed.js";
 import Ph_Post from "../post/post.js";
-import { Ph_ViewState } from "../viewState/viewState.js";
 
 export default class Ph_PostAndComments extends HTMLElement {
 	constructor(data: RedditApiType[]) {

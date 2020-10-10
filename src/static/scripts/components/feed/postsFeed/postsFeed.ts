@@ -1,7 +1,7 @@
-import { oath2Request } from "../../api/api.js";
-import { HistoryState, RedditApiType } from "../../utils/types.js";
-import { LoadPosition, Ph_Feed } from "../feed/feed.js";
-import Ph_Post from "../post/post.js";
+import { oath2Request } from "../../../api/api.js";
+import { HistoryState, RedditApiType } from "../../../utils/types.js";
+import { LoadPosition, Ph_Feed } from "../../feed/feed.js";
+import Ph_Post from "../../post/post.js";
 
 export default class Ph_PostsFeed extends Ph_Feed {
 	constructor(posts: RedditApiType, requestUrl: string) {
