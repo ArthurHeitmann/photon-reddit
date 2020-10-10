@@ -25,7 +25,7 @@ export abstract class Ph_Feed extends HTMLElement {
 			while (!scrollElement.classList.contains("overflow-y-auto"))
 				scrollElement = this.parentElement;
 
-			scrollElement.addEventListener("scroll", e => this.onScroll(e));
+			scrollElement.addEventListener("scroll", e => this.onScroll(e), { passive: true });
 		}, 0);
 
 		// find first FeedItem, once it has been added

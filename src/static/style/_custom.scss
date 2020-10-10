@@ -42,6 +42,20 @@ header {
 			width: 100%;
 			height: calc(#{vars.$headerHeight} * 2);
 			filter: drop-shadow(0 0 1rem var(--shadow-color));
+
+			path {
+				transition: all .5s ease;
+			}
+
+			.filled {
+				fill: var(--bg-color);
+				stroke: none;
+			}
+
+			.stroked {
+				fill: none;
+				stroke: #eeeeee;
+			}
 		}
 	}
 	
@@ -56,6 +70,12 @@ header {
 			height: 150%;
 			width: 100%;
 			top: vars.$headerHeight;
+		}
+	}
+
+	&.contentIsLoading {
+		.stroked {
+			stroke: lightskyblue !important;
 		}
 	}
 }
@@ -228,14 +248,15 @@ header {
 			left: 0;
 			width: 100%;
 			height: 100%;
+			background-color: vars.$background;
+			user-select: none;
 
-			.bigImage {
+			img {
+				position: absolute;
 				width: 100%;
 				height: 100%;
-				background-image: var(--max-img);
-				background-position: center;
-				background-repeat: no-repeat;
-				background-size: contain;
+				object-fit: contain;
+				transform: scale(var(--img-zoom)) translateX(var(--img-move-x)) translateY(var(--img-move-y));
 			}
 		}
 	}
