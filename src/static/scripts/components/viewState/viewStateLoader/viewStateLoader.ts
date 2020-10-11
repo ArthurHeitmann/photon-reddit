@@ -1,3 +1,4 @@
+import { viewsStack } from "../../../state/stateManager.js";
 import { HistoryState } from "../../../utils/types.js";
 import { Ph_ViewState } from "../viewState.js";
 
@@ -14,7 +15,7 @@ export default class Ph_ViewStateLoader extends Ph_ViewState {
 	}
 
 	onBackAreaClick(e: MouseEvent) {
-		if (e.currentTarget !== e.target)
+		if (e.currentTarget !== e.target || !viewsStack.hasPreviousLoaded())
 			return;
 		
 		history.back();

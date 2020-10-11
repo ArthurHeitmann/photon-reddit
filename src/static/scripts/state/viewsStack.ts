@@ -102,4 +102,8 @@ export default class ViewsStack {
 		};
 	}
 
+	hasPreviousLoaded(): boolean {
+		return this.pos !== null && this.views[this.pos - 1] !== undefined;
+	}
+
 }

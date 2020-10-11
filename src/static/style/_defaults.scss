@@ -19,7 +19,10 @@ strong {
 
 a {
 	text-decoration: none;
-	color: #7da3f9;
+
+	&, * {
+		color: #7da3f9;
+	}
 }
 
 :focus {

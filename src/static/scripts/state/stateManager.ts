@@ -9,9 +9,6 @@ export const viewsStack: ViewsStack = new ViewsStack();
 viewsStack.setNextIsReplace();
 
 window.onpopstate = (e: PopStateEvent) => {
-	// if (e.state && e.state.title)
-		// document.title = e.state.title;
-
 	if (e.state.index > viewsStack.position()) {
 		for(let i = e.state.index - viewsStack.position(); i > 0; --i) 
 			viewsStack.forward(true);
