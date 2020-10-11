@@ -27,7 +27,7 @@ function init(): void {
 }
 
 function loadPosts() {
-	pushLinkToHistorySep(location.pathname, location.search || "?");
+	pushLinkToHistorySep(location.pathname, location.search || "");
 }
 
 const headerHideVisualizer = $class("headerHideVisualizer");

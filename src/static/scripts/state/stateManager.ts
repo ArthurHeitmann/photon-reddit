@@ -28,7 +28,7 @@ export enum PushType {
 export function pushLinkToHistoryComb(pathAndQuery: string, pushType: PushType = PushType.PushAfter): void {
 	const querySeparation = pathAndQuery.match(/([\w\/]+)(\?[\w&=]*)?/);
 	let path = querySeparation[1] || "/";
-	let query = querySeparation[2] || "?";
+	let query = querySeparation[2] || "";
 	pushLinkToHistorySep(path, query, pushType);
 }
 
