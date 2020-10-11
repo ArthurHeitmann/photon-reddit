@@ -105,6 +105,48 @@ header {
 	display: none;
 }
 
+.feedHeader {
+	display: flex;
+
+	> :first-child {
+		margin-left: auto;
+	}
+}
+
+.dropDown {
+	position: relative;
+
+	&.expanded {
+		.dropDownArea {
+			display: initial;
+		}
+	}
+
+	.dropDownButton {
+		border: 1px solid vars.$text;
+		width: fit-content;
+		padding: .5rem;
+	}
+
+	.dropDownArea {
+		position: absolute;
+		z-index: 1;
+		top: 0;
+		left: 0;
+		background-color: vars.$background-el1;
+		display: none;
+	}
+
+	.dropDownEntry {
+		display: flex;
+		gap: 1rem;
+		justify-content: space-between;
+		border: 1px solid vars.$text;
+		padding: .5rem;
+		cursor: pointer;
+	}
+}
+
 .postAndComments {
 	display: flex;
 	flex-direction: column;
