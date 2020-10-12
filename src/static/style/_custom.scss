@@ -241,6 +241,20 @@ header {
 		}
 	}
 
+	.actions {
+		@media (orientation: landscape) {
+			min-height: 100%;
+		}
+
+		> .wrapper {
+			position: sticky;
+			top: -4rem;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+	}
+
 	.header {
 		margin: vars.$post-padding 0;
 		.top {

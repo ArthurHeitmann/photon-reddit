@@ -27,15 +27,17 @@ export default class Ph_Post extends HTMLElement implements FeedItem {
 		const actionBar = document.createElement("div");
 		actionBar.className = "actions";
 		actionBar.innerHTML = `
-			<button class="vote">+</button>
-			<div class="upvotes">${voteShortStr(postData.data["ups"])}</div>
-			<button class="vote">-</button>
-			<button class="additionalActions">^</button>` +
-			(isInFeed ?
-				`<button class="comments">
-					<img alt="comments" src="/img/comments.svg">
-				</button> `
-				: "");
+			<div class="wrapper">
+				<button class="vote">+</button>
+				<div class="upvotes">${voteShortStr(postData.data["ups"])}</div>
+				<button class="vote">-</button>
+				<button class="additionalActions">^</button>
+				${isInFeed ?
+					`<button class="comments">
+						<img alt="comments" src="/img/comments.svg">
+					</button> `
+					: ""}
+			</div>`;
 		;
 		this.appendChild(actionBar);
 
