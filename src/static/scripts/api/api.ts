@@ -1,9 +1,8 @@
 import { checkTokenExpiry } from "../login/login.js";
+import { splitPathQuery } from "../utils/conv.js";
 
 export async function oath2Request(pathAndQuery, params: string[][] = [], attempt = 0) {
-	const querySeparation = pathAndQuery.match(/([\w\/]+)(\?[\w&=]*)?/);
-	let path = querySeparation[1] || "/";
-	let query = querySeparation[2] || "?";
+	const [path, query] = splitPathQuery(pathAndQuery);
 
 	const parameters = new URLSearchParams(query);
 	for (const param of params)

@@ -40,11 +40,14 @@ export default class Ph_PostsFeed extends Ph_Feed {
 			for (const postData of posts.data.children.reverse()) {
 				const newPost = new Ph_Post(postData, true);
 				this.insertAdjacentElement("afterbegin", newPost);
-				// window.scrollBy(0, newPost.getBoundingClientRect().height);
 			}
 
 			this.beforeData = this.children[0]["itemId"];
 		}
+	}
+
+	async setSorting(sortingMode: any): Promise<void> {
+		oath2Request
 	}
 }
 

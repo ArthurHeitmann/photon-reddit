@@ -1,14 +1,17 @@
 import { PostSorting, SortPostsTimeFrame } from "../../../../utils/types.js";
 import Ph_DropDownEntry from "../../../misc/dropDownEntry/dropDownEntry.js";
+import { Ph_Feed } from "../../feed.js";
 import Ph_PostsFeed from "../../postsFeed/postsFeed.js";
 
 export default class Ph_PostsSorter extends HTMLElement {
 	cancelMenuFuncRef: (e) => void;
+	feed: Ph_Feed;
 
 	constructor(feed: Ph_PostsFeed) {
 		super();
 
 		this.cancelMenuFuncRef = this.cancelMenu.bind(this);
+		this.feed = feed;
 		this.className = "dropDown";
 
 		const dropDownButton = document.createElement("button");
@@ -36,8 +39,10 @@ export default class Ph_PostsSorter extends HTMLElement {
 		dropDownButton.addEventListener("click", this.showMenu.bind(this));
 	}
 
-	handleOnSelect(e) {
+	handleOnSelect(e, selection) {
 		this.closeMenu();
+
+		this.feed.setSorting(selection);
 	}
 
 	showMenu() {

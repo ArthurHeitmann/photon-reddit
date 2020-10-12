@@ -4,6 +4,7 @@ import Ph_PostsFeed from "../components/feed/postsFeed/postsFeed.js";
 import { Ph_ViewState } from "../components/viewState/viewState.js";
 import Ph_ViewStateLoader from "../components/viewState/viewStateLoader/viewStateLoader.js";
 import ViewsStack from "./viewsStack.js";
+import { splitPathQuery } from "../utils/conv.js";
 
 export const viewsStack: ViewsStack = new ViewsStack();
 viewsStack.setNextIsReplace();
@@ -26,9 +27,7 @@ export enum PushType {
 }
 
 export function pushLinkToHistoryComb(pathAndQuery: string, pushType: PushType = PushType.PushAfter): void {
-	const querySeparation = pathAndQuery.match(/([\w\/]+)(\?[\w&=]*)?/);
-	let path = querySeparation[1] || "/";
-	let query = querySeparation[2] || "";
+	const [path, query] = splitPathQuery(pathAndQuery);
 	pushLinkToHistorySep(path, query, pushType);
 }
 

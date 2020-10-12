@@ -94,6 +94,8 @@ export abstract class Ph_Feed extends HTMLElement {
 	}
 
 	async abstract loadMore(loadPosition: LoadPosition): Promise<void>;
+
+	async abstract setSorting(sortingMode): Promise<void>;
 }
 
 export enum LoadPosition {
