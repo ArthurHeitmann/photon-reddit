@@ -1,5 +1,7 @@
 import { oath2Request } from "../../../api/api.js";
-import { HistoryState, RedditApiType } from "../../../utils/types.js";
+import { pushLinkToHistorySep, viewsStack } from "../../../state/stateManager.js";
+import { splitPathQuery } from "../../../utils/conv.js";
+import { HistoryState, PostSorting, RedditApiType, SortPostsOrder } from "../../../utils/types.js";
 import { LoadPosition, Ph_Feed } from "../../feed/feed.js";
 import Ph_Post from "../../post/post.js";
 import Ph_PostsSorter from "../sorting/postsSorter/postsSorter.js";
@@ -46,8 +48,30 @@ export default class Ph_PostsFeed extends Ph_Feed {
 		}
 	}
 
-	async setSorting(sortingMode: any): Promise<void> {
-		oath2Request
+	async setSorting(sortingMode: PostSorting): Promise<void> {
+		let [path, query] = splitPathQuery(this.requestUrl);
+		
+		const pathEnding = path.match(/\w*\/?$/)[0];
+		if (SortPostsOrder[pathEnding]) {
+			path = path.replace(/\w*\/?$/, sortingMode.order);
+		}
+		else {
+			path = path.replace(/\/?$/, "/");
+			path += sortingMode.order;
+		}
+		
+		// top and controversial can also be sorted by time
+		const params = new URLSearchParams(query);
+		if (sortingMode.order == SortPostsOrder.top || sortingMode.order == SortPostsOrder.controversial) {
+			params.set("t", sortingMode.timeFrame);
+		}
+		else {
+			params.delete("t");
+		}
+
+		const paramsStr = params.toString();
+		pushLinkToHistorySep(path, paramsStr ? `?${paramsStr}` : "");
+		
 	}
 }
 

@@ -1,8 +1,11 @@
 
 export default class Ph_DropDownEntry extends HTMLElement {
-	constructor(text: string, onSelectCallback, nestedElements: string[] = []) {
+	data: any[];
+
+	constructor(text: string, data: any[], onSelectCallback, nestedElements: string[] = []) {
 		super();
 
+		this.data = data;
 		this.className = "dropDownEntry";
 
 		const label = document.createElement("div");

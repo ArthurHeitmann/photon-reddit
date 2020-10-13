@@ -34,7 +34,6 @@ export interface PostSorting {
 }
 
 export enum SortPostsOrder {
-	default = "",
 	hot = "hot",
 	new = "new",
 	top = "top",
@@ -44,7 +43,6 @@ export enum SortPostsOrder {
 }
 
 export enum SortPostsTimeFrame {
-	default = "",
 	hour = "hour",
 	day = "day",
 	week = "week",
@@ -54,7 +52,6 @@ export enum SortPostsTimeFrame {
 }
 
 export enum SortCommentsOrder {
-	default = "",
 	best = "best",
 	top = "top",
 	new = "new",
