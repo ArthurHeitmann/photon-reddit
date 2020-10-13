@@ -14,22 +14,21 @@ header {
 	top: 0;
 	width: 100%;
 	height: vars.$headerHeight;
-	margin-bottom: calc(1rem * #{vars.$scale});
 	position: sticky;
-    top: 0;
     z-index: 1;
 	transform: translateY(-100%);
     transition: transform .25s linear;
 	
 	.actions {
 		height: 100%;
-		margin-top: calc(#{vars.$headerHeight} * .2);
+		margin-top: .2rem;
 		box-sizing: content-box;
 		position: relative;
 		z-index: 55;
+		transition: height .25s linear;
 		
 		& > * {
-			margin: 0 calc(1.5rem * #{vars.$scale});
+			margin: 0 1.5rem;
 		}
 	}
 	
@@ -58,10 +57,15 @@ header {
 	
 	.accessibilitySpacer {
 		width: 25%;
+		height: 50%;
 	}
 	
 	&.hover{
 		transform: translateY(0);
+
+		.actions {
+			height: 130%;
+		}
 		
 		.accessibilitySpacer {
 			height: 150%;
@@ -97,7 +101,7 @@ header {
 
 .postsFeed, .commentsFeed {
 	 > * {
-		margin: calc(1.5rem * #{vars.$scale}) 0;
+		margin: 1.5rem 0;
 	}
 }
 
@@ -131,19 +135,35 @@ header {
 	.dropDownArea {
 		position: absolute;
 		z-index: 1;
-		top: 0;
+		top: 100%;
 		right: 0;
-		background-color: vars.$background-el1;
 		display: none;
 	}
-
+	
 	.dropDownEntry {
 		display: flex;
 		gap: 1rem;
 		justify-content: space-between;
 		border: 1px solid vars.$text;
-		padding: .5rem;
+		padding: 0 .5rem;
 		cursor: pointer;
+		height: 2.4rem;
+		line-height: 2.4rem;
+		background-color: vars.$background-el1;
+		border-bottom: 1px solid vars.$text;
+		border-left: 1px solid vars.$text;
+		border-right: 1px solid vars.$text;
+		
+		&:first-child {
+			border-top-left-radius: 1.2rem;
+			border-top-right-radius: 1.2rem;
+			border-top: 1px solid vars.$text;
+		}
+		
+		&:last-child {
+			border-bottom-left-radius: 1.2rem;
+			border-bottom-right-radius: 1.2rem;
+		}
 	}
 }
 

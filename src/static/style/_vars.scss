@@ -8,8 +8,7 @@
 $background: var(--bg-color);
 $background-el1: #1f1f1f;
 $text: var(--text-color);
-$scale: var(--scale);
-$headerHeight: calc(5rem * var(--scale));
+$headerHeight: 5rem;
 $postActionsWidth: 2.2rem;
 $post-padding: 2rem;
 $b-r: $post-padding / 2;
