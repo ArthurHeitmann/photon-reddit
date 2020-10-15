@@ -54,6 +54,18 @@ export default class ViewsStack {
 		this.views[this.pos] = state;
 	}
 
+	changeCurrentUrl(newUrl: string) {
+		if (this.pos === null || !this.views[this.pos])
+			throw new Error("Trying to update state, but there is currently no state");
+			
+		this.views[this.pos].state.url = newUrl;
+		history.replaceState(
+			this.views[this.pos].state, 
+			this.views[this.pos].state.title, 
+			this.views[this.pos].state.url
+		);
+	}
+
 	forward(isFromPopStateEvent = false) {
 		if (this.views[this.pos + 1] == undefined) {			// probably a page reload,
 			if (isFromPopStateEvent)							// need to create to html elements

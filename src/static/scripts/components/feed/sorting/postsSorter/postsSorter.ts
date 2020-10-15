@@ -36,7 +36,7 @@ export default class Ph_PostsSorter extends HTMLElement {
 		const sortGilded = new Ph_DropDownEntry("Gilded", [SortPostsOrder.gilded], this.handleOnSelect.bind(this));
 		dropDownArea.appendChild(sortGilded);
 
-		dropDownButton.addEventListener("click", this.showMenu.bind(this));
+		dropDownButton.addEventListener("click", this.toggleMenu.bind(this));
 	}
 
 	handleOnSelect(e) {
@@ -52,13 +52,24 @@ export default class Ph_PostsSorter extends HTMLElement {
 		this.feed.setSorting(selection);
 	}
 
+	toggleMenu() {
+		if (this.classList.contains("expanded"))
+			this.closeMenu();
+		else
+			this.showMenu();
+	}
+
 	showMenu() {
 		this.classList.add("expanded");
+		this.classList.add("show");
+		this.classList.remove("remove");
 		window.addEventListener("click", this.cancelMenuFuncRef);
 	}
 	
 	closeMenu() {
 		this.classList.remove("expanded");
+		this.classList.remove("show");
+		this.classList.add("remove");
 		window.removeEventListener("click", this.cancelMenuFuncRef);
 	}
 	

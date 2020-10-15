@@ -117,19 +117,71 @@ header {
 	}
 }
 
+@keyframes showDropDownEntry {
+	0% {
+		opacity: 0;
+		transform: scale(.5);
+		display: inherit;
+	}
+
+	100% {
+		opacity: 1;
+		transform: scale(1);
+		display: inherit;
+	}
+}
+
+@keyframes hideDropDownEntry {
+	0% {
+		opacity: 1;
+		transform: scale(1);
+	}
+
+	99% {
+		opacity: 0;
+		transform: scale(.5);
+		// display: initial;
+	}
+
+	100% {
+		opacity: 0;
+		transform: scale(.5);
+		// display: none;
+	}
+}
+
 .dropDown {
 	position: relative;
+	min-width: 10rem;
 
-	&.expanded {
-		.dropDownArea {
-			display: initial;
+	// &.expanded {
+	// 	.dropDownArea {
+	// 		// display: initial;
+	// 	}
+	// }
+
+	&.show {
+		.dropDownEntry {
+			opacity: 1;
+			transform: scale(1);
+			visibility: visible;
+		}
+	}
+	
+	&.remove {
+		.dropDownEntry {
+			opacity: 0;
+			transform: scale(.5);
+			visibility: hidden;
 		}
 	}
 
 	.dropDownButton {
 		border: 1px solid vars.$text;
-		width: fit-content;
 		padding: .5rem;
+		width: 100%;
+		border-radius: 1.2rem;
+		background-color: vars.$background-el1;
 	}
 
 	.dropDownArea {
@@ -137,7 +189,8 @@ header {
 		z-index: 1;
 		top: 100%;
 		right: 0;
-		display: none;
+		width: 100%;
+		margin-top: 0.5rem;
 	}
 	
 	.dropDownEntry {
@@ -153,11 +206,24 @@ header {
 		border-bottom: 1px solid vars.$text;
 		border-left: 1px solid vars.$text;
 		border-right: 1px solid vars.$text;
+		@extend %shadow-diffuse;
+
+		visibility: hidden;
+		transition: all .15s ease;
+
+		// animation-duration: 1s;
+		// animation-fill-mode: forwards;
+
+		@for $i from 1 through 15 {
+			&:nth-child(#{$i}n) {
+				transition-delay: #{$i * 0.03 - .03}s;
+			}
+		}
 		
 		&:first-child {
+			border-top: 1px solid vars.$text;
 			border-top-left-radius: 1.2rem;
 			border-top-right-radius: 1.2rem;
-			border-top: 1px solid vars.$text;
 		}
 		
 		&:last-child {
@@ -254,6 +320,10 @@ header {
 		}
 
 		.content {
+			&.padded {
+				margin: vars.$post-padding;
+			}
+
 			.postImage {
 				border-bottom-left-radius: vars.$b-r;
 				border-bottom-right-radius: vars.$b-r;
@@ -303,10 +373,6 @@ header {
 
 	.content {
 		display: flex;
-
-			&.padded {
-				margin: vars.$post-padding;
-			}
 
 		.postImage {
 			width: 100%;

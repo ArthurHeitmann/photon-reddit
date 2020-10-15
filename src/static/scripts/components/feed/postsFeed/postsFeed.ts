@@ -70,7 +70,24 @@ export default class Ph_PostsFeed extends Ph_Feed {
 		}
 
 		const paramsStr = params.toString();
-		pushLinkToHistorySep(path, paramsStr ? `?${paramsStr}` : "");
+		const newUrl = path + (paramsStr ? `?${paramsStr}` : "");
+		
+		viewsStack.changeCurrentUrl(newUrl);
+
+        let last = this.lastElementChild;
+        while (last.className !== "feedHeader") {
+            last.remove();
+            last = this.lastElementChild;
+		}
+		
+        const request: RedditApiType = await oath2Request(newUrl);
+        if (request["error"]) {
+            throw new Error(`Error making sort request: ${JSON.stringify(request)}`);
+        }
+		
+        
+		for (const post of request.data.children)
+			this.appendChild(new Ph_Post(post, true));
 		
 	}
 }

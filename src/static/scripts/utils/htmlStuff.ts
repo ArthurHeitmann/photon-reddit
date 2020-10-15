@@ -19,6 +19,6 @@ function setLinkOnClick(elem: HTMLAnchorElement) {
 
 function linkOnClick(e) {
 	pushLinkToHistoryComb(e.currentTarget.getAttribute("href"));
-	e.preventDefault();
+	// e.preventDefault();
 	return false;
 }
