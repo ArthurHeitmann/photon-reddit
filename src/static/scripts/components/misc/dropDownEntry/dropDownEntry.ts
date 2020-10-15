@@ -6,7 +6,7 @@ export default class Ph_DropDownEntry extends HTMLElement {
 		super();
 
 		this.data = data;
-		this.className = "dropDownEntry";
+		this.classList.add("dropDownEntry");
 
 		const label = document.createElement("div");
 		label.innerText = text;

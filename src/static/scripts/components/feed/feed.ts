@@ -101,7 +101,3 @@ export abstract class Ph_Feed extends HTMLElement {
 export enum LoadPosition {
 	Before, After
 }
-
-export interface FeedItem {
-	itemId: string;
-}

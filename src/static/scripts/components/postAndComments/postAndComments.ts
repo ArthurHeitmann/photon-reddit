@@ -6,7 +6,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 	constructor(data: RedditApiType[]) {
 		super();
 
-		this.className = "postAndComments";
+		this.classList.add("postAndComments");
 
 		this.appendChild(new Ph_Post(data[0].data.children[0], false));
 		this.appendChild( new Ph_CommentsFeed(data[1]));

@@ -17,7 +17,7 @@ export default class Ph_PostImage extends HTMLElement {
 	constructor(postData: RedditApiType) {
 		super();
 
-		this.className = "w100";
+		this.classList.add("w100");
 
 		// preview image
 		this.imagePreview = document.createElement("img");

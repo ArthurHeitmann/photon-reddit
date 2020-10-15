@@ -1,23 +1,21 @@
 import { timePassedSinceStr, voteShortStr } from "../../utils/conv.js";
 import { linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
-import { FeedItem } from "../feed/feed.js";
+import Ph_FeedItem from "../feed/feedItem/feedItem.js";
 import Ph_PostBody from "./postBody/postBody.js";
 
-export default class Ph_Post extends HTMLElement implements FeedItem {
-	itemId: string;
+export default class Ph_Post extends Ph_FeedItem {
 	link: string;
 
 	constructor(postData: RedditApiType, isInFeed: boolean) {
-		super();
+		super(isInFeed, postData.data["name"]);
 
 		if (postData.kind !== "t3")
 			throw new Error("Invalid comment data type");
 
 		this.link = postData.data["permalink"];
-		this.itemId = postData.data["name"];
 
-		this.className = "post" + (isInFeed ? " isInFeed" : "");
+		this.classList.add("post");
 
 		const backgroundLink = document.createElement("a");
 		backgroundLink.className = "backgroundLink";

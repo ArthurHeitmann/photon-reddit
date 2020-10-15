@@ -277,9 +277,7 @@ header {
 	}
 }
 
-.post {
-	position: relative;
-
+.feedItem {
 	&.isInFeed {
 		background: vars.$background-el1;
 		border-radius: vars.$b-r;
@@ -295,7 +293,13 @@ header {
 		a:not(.backgroundLink), .content > * {
 			position: relative;
 		}
+	}
+}
 
+.post {
+	position: relative;
+
+	&.isInFeed {
 		.actions {
 			position: absolute;
 			transform: translateX(calc(-100% - 1.5rem));

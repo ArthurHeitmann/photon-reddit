@@ -12,7 +12,7 @@ export default class Ph_PostsSorter extends HTMLElement {
 
 		this.cancelMenuFuncRef = this.cancelMenu.bind(this);
 		this.feed = feed;
-		this.className = "dropDown";
+		this.classList.add("dropDown");
 
 		const dropDownButton = document.createElement("button");
 		this.appendChild(dropDownButton);

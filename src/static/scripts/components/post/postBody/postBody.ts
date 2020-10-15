@@ -7,7 +7,7 @@ export default class Ph_PostBody extends HTMLElement {
 	constructor(postData: RedditApiType) {
 		super();
 
-		this.className = "content";
+		this.classList.add("content");
 
 		switch (this.getPostType(postData.data)) {
 			case PostType.Image:

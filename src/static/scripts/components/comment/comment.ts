@@ -1,10 +1,11 @@
 import { replaceRedditLinks, timePassedSince, timePassedSinceStr, voteShortStr } from "../../utils/conv.js";
 import { linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
+import Ph_FeedItem from "../feed/feedItem/feedItem.js";
 
-export default class Ph_Comment extends HTMLElement {
+export default class Ph_Comment extends Ph_FeedItem {
 	constructor(commentData: RedditApiType, isChild: boolean, isInFeed: boolean) {
-		super();
+		super(isInFeed, commentData.data["name"]);
 
 		if (commentData.kind === "more") {
 			const loadMoreButton = document.createElement("button");
@@ -15,7 +16,7 @@ export default class Ph_Comment extends HTMLElement {
 		else if (commentData.kind !== "t1")
 			throw new Error("Invalid comment data type");
 
-		this.className = "comment" + (isInFeed ? " isInFeed" : "");
+		this.classList.add("comment");
 		if (!isChild)
 			this.classList.add("rootComment");
 
