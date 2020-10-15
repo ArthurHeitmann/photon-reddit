@@ -1,16 +1,17 @@
 import { oath2Request } from "../../../api/api.js";
 import { pushLinkToHistorySep, viewsStack } from "../../../state/stateManager.js";
 import { splitPathQuery } from "../../../utils/conv.js";
-import { HistoryState, PostSorting, RedditApiType, SortPostsOrder } from "../../../utils/types.js";
+import { HistoryState, PostSorting, RedditApiData, RedditApiType, SortPostsOrder } from "../../../utils/types.js";
+import Ph_Comment from "../../comment/comment.js";
 import { LoadPosition, Ph_Feed } from "../../feed/feed.js";
 import Ph_Post from "../../post/post.js";
 import Ph_PostsSorter from "../sorting/postsSorter/postsSorter.js";
 
-export default class Ph_PostsFeed extends Ph_Feed {
+export default class Ph_UniversalFeed extends Ph_Feed {
 	constructor(posts: RedditApiType, requestUrl: string) {
 		super(posts, true, requestUrl);
 
-		this.classList.add("postsFeed");
+		this.classList.add("universalFeed");
 
 		const header = document.createElement("div");
 		this.appendChild(header);
@@ -19,7 +20,19 @@ export default class Ph_PostsFeed extends Ph_Feed {
 		header.appendChild(new Ph_PostsSorter(this));
 
 		for (const postData of posts.data.children) {
-			this.appendChild(new Ph_Post(postData, true));
+			this.appendChild(this.makeFeedItem(postData));
+		}
+	}
+
+	makeFeedItem(itemData: RedditApiType): HTMLElement {
+		switch (itemData.kind) {
+			case "t3":
+				return new Ph_Post(itemData, true);
+			case "t1":
+				return new Ph_Comment(itemData, false, true);
+			default:
+				throw new Error(`What is this feed item? ${JSON.stringify(itemData, null, 4)}`);
+				;
 		}
 	}
 
@@ -86,10 +99,10 @@ export default class Ph_PostsFeed extends Ph_Feed {
         }
 		
         
-		for (const post of request.data.children)
-			this.appendChild(new Ph_Post(post, true));
+		for (const item of request.data.children)
+			this.appendChild(this.makeFeedItem(item));
 		
 	}
 }
 
-customElements.define("ph-posts-feed", Ph_PostsFeed);
+customElements.define("ph-universal-feed", Ph_UniversalFeed);

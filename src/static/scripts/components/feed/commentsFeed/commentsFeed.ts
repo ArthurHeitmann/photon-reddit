@@ -8,7 +8,7 @@ export default class Ph_CommentsFeed extends HTMLElement {
 		this.classList.add("commentsFeed");
 		
 		for (const commentData of comments.data.children) {
-			this.appendChild(new Ph_Comment(commentData, false));
+			this.appendChild(new Ph_Comment(commentData, false, false));
 		}
 	}
 }

@@ -1,13 +1,13 @@
 import { PostSorting, SortPostsOrder, SortPostsTimeFrame } from "../../../../utils/types.js";
 import Ph_DropDownEntry from "../../../misc/dropDownEntry/dropDownEntry.js";
 import { Ph_Feed } from "../../feed.js";
-import Ph_PostsFeed from "../../postsFeed/postsFeed.js";
+import Ph_UniversalFeed from "../../universalFeed/universalFeed.js";
 
 export default class Ph_PostsSorter extends HTMLElement {
 	cancelMenuFuncRef: (e) => void;
 	feed: Ph_Feed;
 
-	constructor(feed: Ph_PostsFeed) {
+	constructor(feed: Ph_UniversalFeed) {
 		super();
 
 		this.cancelMenuFuncRef = this.cancelMenu.bind(this);

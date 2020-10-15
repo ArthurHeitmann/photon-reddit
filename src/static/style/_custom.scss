@@ -99,7 +99,7 @@ header {
 	}
 }
 
-.postsFeed, .commentsFeed {
+.universalFeed, .commentsFeed {
 	 > * {
 		margin: 1.5rem 0;
 	}
@@ -243,12 +243,12 @@ header {
 	@extend %shadow-diffuse;
 }
 
-.postAndComments, .postsFeed {
+.postAndComments, .universalFeed {
 	width: calc(100% - 2rem);
 }
 
 @media (orientation: landscape) {
-	.postAndComments, .postsFeed {
+	.postAndComments, .universalFeed {
 		margin: 0 auto;
 		width: calc(50% - 2rem);
 	}
@@ -271,7 +271,6 @@ header {
 	}
 
 	.content {
-		word-break: break-all;
 		word-break: break-word;
 		overflow-wrap: anywhere;
 		max-width: 100%;

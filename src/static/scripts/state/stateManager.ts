@@ -1,6 +1,6 @@
 import { oath2Request } from "../api/api.js";
 import Ph_PostAndComments from "../components/postAndComments/postAndComments.js";
-import Ph_PostsFeed from "../components/feed/postsFeed/postsFeed.js";
+import Ph_UniversalFeed from "../components/feed/universalFeed/universalFeed.js";
 import { Ph_ViewState } from "../components/viewState/viewState.js";
 import Ph_ViewStateLoader from "../components/viewState/viewStateLoader/viewStateLoader.js";
 import ViewsStack from "./viewsStack.js";
@@ -62,7 +62,7 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 		viewsStack.setCurrentStateTitle(`Photon: ${requestData[0]["data"]["children"][0]["data"]["title"]}`);
 	}
 	else {
-		stateLoader.finishWith(new Ph_PostsFeed(requestData, path + query));
+		stateLoader.finishWith(new Ph_UniversalFeed(requestData, path + query));
 		viewsStack.setCurrentStateTitle(`Photon:  ${(path.length > 3) ? path.slice(1) : "Home"}`);
 	}
 }

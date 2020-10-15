@@ -3,7 +3,7 @@ import { linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
 
 export default class Ph_Comment extends HTMLElement {
-	constructor(commentData: RedditApiType, isChild: boolean) {
+	constructor(commentData: RedditApiType, isChild: boolean, isInFeed: boolean) {
 		super();
 
 		if (commentData.kind === "more") {
@@ -15,7 +15,7 @@ export default class Ph_Comment extends HTMLElement {
 		else if (commentData.kind !== "t1")
 			throw new Error("Invalid comment data type");
 
-		this.className = "comment";
+		this.className = "comment" + (isInFeed ? " isInFeed" : "");
 		if (!isChild)
 			this.classList.add("rootComment");
 
@@ -58,7 +58,7 @@ export default class Ph_Comment extends HTMLElement {
 			const childComments = document.createElement("div");
 			childComments.className = "replies";
 			for (const comment of commentData.data["replies"]["data"]["children"])
-				childComments.appendChild(new Ph_Comment(comment, true));
+				childComments.appendChild(new Ph_Comment(comment, true, false));
 			mainPart.appendChild(childComments);
 		}
 
