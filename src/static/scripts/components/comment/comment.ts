@@ -5,7 +5,7 @@ import Ph_FeedItem from "../feed/feedItem/feedItem.js";
 
 export default class Ph_Comment extends Ph_FeedItem {
 	constructor(commentData: RedditApiType, isChild: boolean, isInFeed: boolean) {
-		super(isInFeed, commentData.data["name"]);
+		super(commentData, isInFeed);
 
 		if (commentData.kind === "more") {
 			const loadMoreButton = document.createElement("button");

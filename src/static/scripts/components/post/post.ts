@@ -5,22 +5,14 @@ import Ph_FeedItem from "../feed/feedItem/feedItem.js";
 import Ph_PostBody from "./postBody/postBody.js";
 
 export default class Ph_Post extends Ph_FeedItem {
-	link: string;
 
 	constructor(postData: RedditApiType, isInFeed: boolean) {
-		super(isInFeed, postData.data["name"]);
+		super(postData, isInFeed);
 
 		if (postData.kind !== "t3")
 			throw new Error("Invalid comment data type");
 
-		this.link = postData.data["permalink"];
-
 		this.classList.add("post");
-
-		const backgroundLink = document.createElement("a");
-		backgroundLink.className = "backgroundLink";
-		backgroundLink.href = this.link;
-		this.appendChild(backgroundLink);
 
 		const actionBar = document.createElement("div");
 		actionBar.className = "actions";

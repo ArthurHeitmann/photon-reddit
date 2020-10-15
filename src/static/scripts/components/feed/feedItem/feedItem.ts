@@ -1,16 +1,25 @@
+import { RedditApiType } from "../../../utils/types.js";
 
 export default class Ph_FeedItem extends HTMLElement {
 	itemId: string;
+	link: string;
 
-	constructor(isInFeed: boolean, itemId: string) {
+	constructor(itemData: RedditApiType, isInFeed: boolean) {
 		super();
 
-		this.itemId = itemId;
+		this.itemId = itemData.data["name"];
+		this.link = itemData.data["permalink"];
 
 		this.classList.add("feedItem");
 
-		if (isInFeed)
+		if (isInFeed) {
 			this.classList.add("isInFeed");
+			const backgroundLink = document.createElement("a");
+			backgroundLink.className = "backgroundLink";
+			backgroundLink.href = this.link;
+			this.appendChild(backgroundLink);
+		}
+
 	}
 }
 
