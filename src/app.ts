@@ -10,16 +10,13 @@ const __dirname = process.cwd();
 // redirect from certain reddit api request
 app.get("/redirect", (req, res) => {
 	if (req.query["state"] && req.query["state"] === "initialLogin") {
-		try {
-			initialAccessToken(req.query["code"].toString()).then(
-				(data: Object) => res.redirect(
-					`/setAccessToken?accessToken=${encodeURIComponent(data["access_token"])}&refreshToken=${encodeURIComponent(data["refresh_token"])}`)
-			);
-		} catch (error) {
+		initialAccessToken(req.query["code"].toString()).then(
+			(data: Object) => res.redirect(
+				`/setAccessToken?accessToken=${encodeURIComponent(data["access_token"])}&refreshToken=${encodeURIComponent(data["refresh_token"])}`)
+		).catch(error => {
 			console.error(`Error getting access token ${error}`);
 			res.send(`error getting access token ${error}`);
-			return;
-		}
+		});
 	}
 	else {
 		res.setHeader('Content-Type', 'application/json');
@@ -31,16 +28,13 @@ app.get("/redirect", (req, res) => {
 app.get("/refreshToken", (req, res) => {
 	res.setHeader('Content-Type', 'application/json');
 	if (req.query["refreshToken"]) {
-		try {
-			refreshAccessToken(req.query["refreshToken"].toString()).then(
-				(data: Object) => 
-					res.send(`{ "accessToken": "${encodeURIComponent(data["access_token"])}" }`)
-			);
-		} catch (error) {
+		refreshAccessToken(req.query["refreshToken"].toString()).then(
+			(data: Object) => 
+				res.send(`{ "accessToken": "${encodeURIComponent(data["access_token"])}" }`)
+		).catch(error => {
 			console.error(`Error getting access token ${error}`);
 			res.send(`error getting access token ${error}`);
-			return;
-		}
+		});
 	}
 	else {
 		res.send('{ "error": "¯\\_(ツ)_/¯"}');
