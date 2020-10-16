@@ -34,6 +34,7 @@ export default class Ph_PostImage extends HTMLElement {
 		this.imageMax = document.createElement("div");
 		this.appendChild(this.imageMax);
 		this.imageMax.className = "imageMax hide";
+		this.imageMax.setAttribute("tabindex", "0");
 		this.imageMax.addEventListener("mousedown", e => this.beginDrag(e));
 		this.imageMax.addEventListener("mouseup", e => this.endDrag(e));
 		this.imageMax.addEventListener("mouseleave", e => this.endDrag(e));
@@ -51,10 +52,15 @@ export default class Ph_PostImage extends HTMLElement {
 		closeButton.className = "closeButton";
 
 		closeButton.onclick = e => this.onClose(e);
+		this.addEventListener("keyup", (e: KeyboardEvent) => {
+			if (e.key === "Escape")
+				this.onClose(e);
+		});
 	}
 
 	onShow(e) {
 		this.imageMax.classList.remove("hide");
+		this.imageMax.focus();
 		if (!this.isInitialized)
 			this.makePreview();
 		this.setMoveXY(0, 0);
