@@ -32,8 +32,7 @@ export default class Ph_DropDownEntry extends HTMLElement {
 			this.addEventListener("click", e => {
 				dropDown.closeMenu();
 				if (param.nestedEntries) {
-					this.nextDropDown.classList.add("show");
-					this.nextDropDown.classList.remove("remove");
+					this.nextDropDown.showMenu();
 				}
 				else
 					param.onSelectCallback(this.valueChain);

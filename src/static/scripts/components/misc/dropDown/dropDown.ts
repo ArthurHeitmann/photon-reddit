@@ -28,17 +28,17 @@ export default class Ph_DropDown extends HTMLElement {
 			this.closeMenu();
 		else
 			this.showMenu();
-		
-		this.isExpanded = !this.isExpanded;
 	}
 
 	showMenu() {
+		this.isExpanded = true;
 		this.classList.add("show");
 		this.classList.remove("remove");
 		setTimeout(() => window.addEventListener("click", this.cancelMenuFuncRef), 0);
 	}
 	
 	closeMenu() {
+		this.isExpanded = false;
 		this.classList.remove("show");
 		this.classList.add("remove");
 		setTimeout(() => window.removeEventListener("click", this.cancelMenuFuncRef), 0);
