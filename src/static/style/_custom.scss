@@ -117,39 +117,6 @@ header {
 	}
 }
 
-@keyframes showDropDownEntry {
-	0% {
-		opacity: 0;
-		transform: scale(.5);
-		display: inherit;
-	}
-
-	100% {
-		opacity: 1;
-		transform: scale(1);
-		display: inherit;
-	}
-}
-
-@keyframes hideDropDownEntry {
-	0% {
-		opacity: 1;
-		transform: scale(1);
-	}
-
-	99% {
-		opacity: 0;
-		transform: scale(.5);
-		// display: initial;
-	}
-
-	100% {
-		opacity: 0;
-		transform: scale(.5);
-		// display: none;
-	}
-}
-
 .dropDown {
 	position: relative;
 	min-width: 10rem;
@@ -166,6 +133,7 @@ header {
 	
 	&.remove {
 		visibility: hidden;
+
 		.dropDownEntry {
 			opacity: 0;
 			transform: scale(.75) translateY(-50%);
@@ -174,21 +142,7 @@ header {
 	}
 
 	.dropDownButton {
-		border: 1px solid vars.$text;
-		padding: .5rem;
 		width: 100%;
-		border-radius: 1.2rem;
-		background-color: vars.$background-el1;
-
-		transition: all .25s ease;
-
-		&:hover {
-			color: lightcoral;
-		}
-
-		&:active {
-			border-color: lightcoral;
-		}
 	}
 
 	.dropDownArea {
@@ -248,6 +202,25 @@ header {
 		&:active {
 			border: 1px solid lightcoral;
 		}
+	}
+}
+
+.button {
+	border: 1px solid vars.$text;
+	padding: .5rem;
+	min-width: 2.4rem;
+	min-height: 2.4rem;
+	border-radius: 1.2rem;
+	background-color: vars.$background-el1;
+
+	transition: all .25s ease;
+
+	&:hover {
+		color: lightcoral;
+	}
+
+	&:active {
+		border-color: lightcoral;
 	}
 }
 

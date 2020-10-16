@@ -6,6 +6,7 @@ import Ph_UniversalFeed from "../../universalFeed/universalFeed.js";
 export default class Ph_PostsSorter extends HTMLElement {
 	feed: Ph_Feed;
 	dropDown: Ph_DropDown;
+	dropDownButton: HTMLButtonElement;
 
 	constructor(feed: Ph_UniversalFeed) {
 		super();
@@ -13,10 +14,10 @@ export default class Ph_PostsSorter extends HTMLElement {
 		this.feed = feed;
 		this.classList.add("dropDown");
 
-		const dropDownButton = document.createElement("button");
-		this.appendChild(dropDownButton);
-		dropDownButton.className = "dropDownButton";
-		dropDownButton.innerText = "Sorting by; [...]";
+		this.dropDownButton = document.createElement("button");
+		this.appendChild(this.dropDownButton);
+		this.dropDownButton.className = "button dropDownButton";
+		this.dropDownButton.innerText = "Sorting by; [...]";
 
 		const dropDown = new Ph_DropDown([
 			{ displayText: "Hot", value: SortPostsOrder.hot, onSelectCallback: this.handleOnSelect.bind(this) },
@@ -39,7 +40,7 @@ export default class Ph_PostsSorter extends HTMLElement {
 				{ displayText: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.handleOnSelect.bind(this) }
 			] },
 			{ displayText: "Gilded", value: SortPostsOrder.gilded, onSelectCallback: this.handleOnSelect.bind(this) },
-		], dropDownButton);
+		], this.dropDownButton);
 
 		this.appendChild(dropDown);
 	}

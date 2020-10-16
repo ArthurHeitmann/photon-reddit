@@ -19,8 +19,8 @@ export function votesShort(upvotes: number): string {
 	}
 }
 
-export function voteShortStr(upvotes: string): string {
-	return votesShort(parseInt(upvotes));
+export function numberToShortStr(num: string): string {
+	return votesShort(parseInt(num));
 }
 
 

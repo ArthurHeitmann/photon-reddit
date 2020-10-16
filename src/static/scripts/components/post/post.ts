@@ -1,10 +1,14 @@
-import { timePassedSinceStr, voteShortStr } from "../../utils/conv.js";
+import { vote, VoteDirection, voteDirectionFromLikes } from "../../api/api.js";
+import { timePassedSinceStr, numberToShortStr } from "../../utils/conv.js";
 import { linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
 import Ph_FeedItem from "../feed/feedItem/feedItem.js";
+import Votable from "../misc/votable/votable.js";
 import Ph_PostBody from "./postBody/postBody.js";
 
-export default class Ph_Post extends Ph_FeedItem {
+export default class Ph_Post extends Ph_FeedItem implements Votable {
+	votableId: string;
+	currentVoteDirection: VoteDirection;
 
 	constructor(postData: RedditApiType, isInFeed: boolean) {
 		super(postData, isInFeed);
@@ -12,24 +16,52 @@ export default class Ph_Post extends Ph_FeedItem {
 		if (postData.kind !== "t3")
 			throw new Error("Invalid comment data type");
 
+		this.votableId = postData.data["name"];
+		this.currentVoteDirection = voteDirectionFromLikes(postData.data["likes"])
 		this.classList.add("post");
 
+		// actions bar
 		const actionBar = document.createElement("div");
-		actionBar.className = "actions";
-		actionBar.innerHTML = `
-			<div class="wrapper">
-				<button class="vote">+</button>
-				<div class="upvotes">${voteShortStr(postData.data["ups"])}</div>
-				<button class="vote">-</button>
-				<button class="additionalActions">^</button>
-				${isInFeed ?
-					`<button class="comments">
-						<img alt="comments" src="/img/comments.svg">
-					</button> `
-					: ""}
-			</div>`;
-		;
 		this.appendChild(actionBar);
+		actionBar.className = "actions";
+		const actionWrapper = document.createElement("div");
+		actionBar.appendChild(actionWrapper);
+		actionWrapper.className = "wrapper";
+		// vote up button
+		const voteUpButton = document.createElement("button");
+		voteUpButton.className = "vote";
+		voteUpButton.innerText = "+";
+		voteUpButton.addEventListener("click", e => this.vote(VoteDirection.up));
+		actionWrapper.appendChild(voteUpButton);
+		// current votes
+		const currentUpvotes = document.createElement("button");
+		currentUpvotes.className = "upvotes";
+		currentUpvotes.innerText = numberToShortStr(postData.data["ups"]);
+		actionWrapper.appendChild(currentUpvotes);
+		// vote down button
+		const voteDownButton = document.createElement("button");
+		voteDownButton.className = "vote";
+		voteDownButton.innerText = "-";
+		voteDownButton.addEventListener("click", e => this.vote(VoteDirection.down));
+		actionWrapper.appendChild(voteDownButton);
+		// additional actions button
+		const moreButton = document.createElement("button");
+		moreButton.className = "button additionActions";
+		moreButton.innerText = "^";
+		actionWrapper.appendChild(moreButton);
+		// go to comments link
+		if (isInFeed) {
+			const commentsLink = document.createElement("a");
+			commentsLink.className = "comments";
+			commentsLink.href = postData.data["permalink"];
+			commentsLink.innerHTML = `<img alt="comments" src="/img/comments.svg">`;
+			actionWrapper.appendChild(commentsLink);
+		}
+		// additional actions button
+		const numberOfComments = document.createElement("div");
+		numberOfComments.className = "";
+		numberOfComments.innerText = numberToShortStr(postData.data["num_comments"]);
+		actionWrapper.appendChild(numberOfComments);
 
 		const mainPart = document.createElement("div");
 		mainPart.className = "w100";
@@ -62,7 +94,15 @@ export default class Ph_Post extends Ph_FeedItem {
 		linksToSpa(this);
 	}
 
-
+	async vote (dir: VoteDirection): Promise<void> {
+		this.currentVoteDirection = dir === this.currentVoteDirection ? VoteDirection.none : dir;
+		
+		
+		const res = await vote(this);
+		if (!res) {
+			// TODO display error
+		}
+	};
 }
 
 customElements.define("ph-post", Ph_Post);

@@ -1,7 +1,8 @@
+import Votable from "../components/misc/votable/votable.js";
 import { checkTokenExpiry } from "../login/login.js";
 import { splitPathQuery } from "../utils/conv.js";
 
-export async function oath2Request(pathAndQuery, params: string[][] = [], attempt = 0) {
+export async function oath2Request(pathAndQuery, params: string[][] = [], options = {}, attempt = 0) {
 	pathAndQuery = fixUrl(pathAndQuery);
 	const [path, query] = splitPathQuery(pathAndQuery);
 
@@ -9,7 +10,8 @@ export async function oath2Request(pathAndQuery, params: string[][] = [], attemp
 	for (const param of params)
 		parameters.append(param[0], param[1]);
 	parameters.append("raw_json", "1");
-	const fetchOptions = { 
+	const fetchOptions: RequestInit = {
+		...options,
 		headers: {
 			Authorization: `Bearer ${ localStorage["accessToken"] }`
 		},
@@ -20,7 +22,7 @@ export async function oath2Request(pathAndQuery, params: string[][] = [], attemp
 	} catch (e) {
 		// maybe the token has expired, try to refresh it; try again up to 3 times
 		if (attempt < 3 && await checkTokenExpiry())
-			return await oath2Request(path, params, attempt + 1);
+			return await oath2Request(path, params, options, attempt + 1);
 		else
 			return { error: e }
 	}
@@ -34,18 +36,34 @@ export async function mySubreddits() {
 	return await oath2Request("subreddits/mine/subscriber");
 }
 
-// probably not needed
-// export async function subredditPosts(
-// 	subreddit: string, 
-// 	options: string[][] = [],
-// 	sort: sortPosts = sortPosts.default, 
-// 	time: sortPostsTime = sortPostsTime.default,
-// ) {
-// 	return await oath2Request(`${ subreddit }/${ sort }`, 
-// 		sort && sort == sortPosts.top 
-// 		? 
-// 		[...options, ["t", time]]
-// 		: 
-// 		options
-// 	);
-// }
+export enum VoteDirection {
+	up = "1",
+	down = "-1",
+	none = "0"
+}
+
+export function voteDirectionFromLikes(likes: boolean) {
+	switch (likes) {
+		case null:
+			return VoteDirection.none;
+		case true:
+			return VoteDirection.up;
+		case false:
+			return VoteDirection.down;
+		default:
+			throw new Error("Invalid likes value");
+	}
+}
+
+export async function vote(votable: Votable): Promise<boolean> {
+	try {
+		await oath2Request("/api/vote", [
+			["dir", votable.currentVoteDirection], 
+			["id", votable.votableId]
+		],
+		{ method: "POST" });
+		return true
+	} catch (error) {
+		return false	
+	}
+}

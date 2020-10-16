@@ -1,4 +1,4 @@
-import { replaceRedditLinks, timePassedSince, timePassedSinceStr, voteShortStr } from "../../utils/conv.js";
+import { replaceRedditLinks, timePassedSince, timePassedSinceStr, numberToShortStr } from "../../utils/conv.js";
 import { linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
 import Ph_FeedItem from "../feed/feedItem/feedItem.js";
@@ -24,7 +24,7 @@ export default class Ph_Comment extends Ph_FeedItem {
 		actionBar.className = "actions no-select";
 		actionBar.innerHTML = `
 			<button class="vote">+</button>
-			<div class="upvotes">${voteShortStr(commentData.data["ups"])}</div>
+			<div class="upvotes">${numberToShortStr(commentData.data["ups"])}</div>
 			<button class="vote">-</button>
 			<button class="additionalActions">^</button>
 		`;
