@@ -18,7 +18,10 @@ function setLinkOnClick(elem: HTMLAnchorElement) {
 }
 
 function linkOnClick(e) {
+	if (e.ctrlKey)
+		return true;
+
 	pushLinkToHistoryComb(e.currentTarget.getAttribute("href"));
-	// e.preventDefault();
+	
 	return false;
 }

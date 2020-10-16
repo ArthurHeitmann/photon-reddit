@@ -2,6 +2,7 @@ import { checkTokenExpiry } from "../login/login.js";
 import { splitPathQuery } from "../utils/conv.js";
 
 export async function oath2Request(pathAndQuery, params: string[][] = [], attempt = 0) {
+	pathAndQuery = fixUrl(pathAndQuery);
 	const [path, query] = splitPathQuery(pathAndQuery);
 
 	const parameters = new URLSearchParams(query);
@@ -23,6 +24,10 @@ export async function oath2Request(pathAndQuery, params: string[][] = [], attemp
 		else
 			return { error: e }
 	}
+}
+
+function fixUrl(url: string) {
+	return url.replace(/^\/u\//, "/user/");
 }
 
 export async function mySubreddits() {

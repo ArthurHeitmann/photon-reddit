@@ -154,16 +154,10 @@ header {
 	position: relative;
 	min-width: 10rem;
 
-	// &.expanded {
-	// 	.dropDownArea {
-	// 		// display: initial;
-	// 	}
-	// }
-
 	&.show {
 		.dropDownEntry {
 			opacity: 1;
-			transform: scale(1);
+			transform: scale(1) translateY(0);
 			visibility: visible;
 		}
 	}
@@ -171,7 +165,7 @@ header {
 	&.remove {
 		.dropDownEntry {
 			opacity: 0;
-			transform: scale(.5);
+			transform: scale(.75) translateY(-50%);
 			visibility: hidden;
 		}
 	}
@@ -208,11 +202,10 @@ header {
 		border-right: 1px solid vars.$text;
 		@extend %shadow-diffuse;
 
+		opacity: 0;
+		transform: scale(.5);
 		visibility: hidden;
 		transition: all .15s ease;
-
-		// animation-duration: 1s;
-		// animation-fill-mode: forwards;
 
 		@for $i from 1 through 15 {
 			&:nth-child(#{$i}n) {
@@ -254,8 +247,26 @@ header {
 	}
 }
 
-.post, .comment {
+.feedItem {
 	display: flex;
+	position: relative;
+
+	&.isInFeed {
+		background: vars.$background-el1;
+		border-radius: vars.$b-r;
+		@extend %shadow-diffuse;
+
+		.backgroundLink {
+			position: absolute;
+			z-index: 0;
+			width: 100%;
+			height: 100%;
+		}
+
+		a:not(.backgroundLink), .content > * {
+			position: relative;
+		}
+	}
 
 	ol, ul {
 		list-style-position: inside;
@@ -277,28 +288,7 @@ header {
 	}
 }
 
-.feedItem {
-	&.isInFeed {
-		background: vars.$background-el1;
-		border-radius: vars.$b-r;
-		@extend %shadow-diffuse;
-
-		.backgroundLink {
-			position: absolute;
-			z-index: 0;
-			width: 100%;
-			height: 100%;
-		}
-
-		a:not(.backgroundLink), .content > * {
-			position: relative;
-		}
-	}
-}
-
 .post {
-	position: relative;
-
 	&.isInFeed {
 		.actions {
 			position: absolute;
@@ -459,6 +449,9 @@ header {
 		}
 	}
 
+	.content {
+		margin-right: 2rem;
+	}
 }
 
 a {
