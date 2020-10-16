@@ -1,16 +1,16 @@
 import { PostSorting, SortPostsOrder, SortPostsTimeFrame } from "../../../../utils/types.js";
+import Ph_DropDown from "../../../misc/dropDown/dropDown.js";
 import Ph_DropDownEntry from "../../../misc/dropDownEntry/dropDownEntry.js";
 import { Ph_Feed } from "../../feed.js";
 import Ph_UniversalFeed from "../../universalFeed/universalFeed.js";
 
 export default class Ph_PostsSorter extends HTMLElement {
-	cancelMenuFuncRef: (e) => void;
 	feed: Ph_Feed;
+	dropDown: Ph_DropDown;
 
 	constructor(feed: Ph_UniversalFeed) {
 		super();
 
-		this.cancelMenuFuncRef = this.cancelMenu.bind(this);
 		this.feed = feed;
 		this.classList.add("dropDown");
 
@@ -19,63 +19,39 @@ export default class Ph_PostsSorter extends HTMLElement {
 		dropDownButton.className = "dropDownButton";
 		dropDownButton.innerText = "Sorting by; [...]";
 
-		const dropDownArea = document.createElement("div");
-		this.appendChild(dropDownArea);
-		dropDownArea.className = "dropDownArea";
+		const dropDown = new Ph_DropDown([
+			{ displayText: "Hot", value: SortPostsOrder.hot, onSelectCallback: this.handleOnSelect.bind(this) },
+			{ displayText: "Top", value: SortPostsOrder.top, onSelectCallback: this.handleOnSelect.bind(this), nestedEntries: [
+				{ displayText: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.handleOnSelect.bind(this) },
+				{ displayText: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.handleOnSelect.bind(this) },
+				{ displayText: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.handleOnSelect.bind(this) },
+				{ displayText: "Moth", value: SortPostsTimeFrame.month, onSelectCallback: this.handleOnSelect.bind(this) },
+				{ displayText: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.handleOnSelect.bind(this) },
+				{ displayText: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.handleOnSelect.bind(this) }
+			] },
+			{ displayText: "rising", value: SortPostsOrder.rising, onSelectCallback: this.handleOnSelect.bind(this) },
+			{ displayText: "new", value: SortPostsOrder.new, onSelectCallback: this.handleOnSelect.bind(this) },
+			{ displayText: "Controversial", value: SortPostsOrder.controversial, onSelectCallback: this.handleOnSelect.bind(this), nestedEntries: [
+				{ displayText: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.handleOnSelect.bind(this) },
+				{ displayText: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.handleOnSelect.bind(this) },
+				{ displayText: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.handleOnSelect.bind(this) },
+				{ displayText: "Moth", value: SortPostsTimeFrame.month, onSelectCallback: this.handleOnSelect.bind(this) },
+				{ displayText: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.handleOnSelect.bind(this) },
+				{ displayText: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.handleOnSelect.bind(this) }
+			] },
+			{ displayText: "Gilded", value: SortPostsOrder.gilded, onSelectCallback: this.handleOnSelect.bind(this) },
+		], dropDownButton);
 
-		const sortHot = new Ph_DropDownEntry("Hot", [SortPostsOrder.hot], this.handleOnSelect.bind(this));
-		dropDownArea.appendChild(sortHot);
-		const sortTop = new Ph_DropDownEntry("Top", [SortPostsOrder.top], this.handleOnSelect.bind(this), [SortPostsTimeFrame.hour]);
-		dropDownArea.appendChild(sortTop);
-		const sortRising = new Ph_DropDownEntry("Rising", [SortPostsOrder.rising], this.handleOnSelect.bind(this));
-		dropDownArea.appendChild(sortRising);
-		const sortNew = new Ph_DropDownEntry("New", [SortPostsOrder.new], this.handleOnSelect.bind(this));
-		dropDownArea.appendChild(sortNew);
-		const sortControversial = new Ph_DropDownEntry("Controversial", [SortPostsOrder.controversial], this.handleOnSelect.bind(this), [SortPostsTimeFrame.hour]);
-		dropDownArea.appendChild(sortControversial);
-		const sortGilded = new Ph_DropDownEntry("Gilded", [SortPostsOrder.gilded], this.handleOnSelect.bind(this));
-		dropDownArea.appendChild(sortGilded);
-
-		dropDownButton.addEventListener("click", this.toggleMenu.bind(this));
+		this.appendChild(dropDown);
 	}
 
-	handleOnSelect(e) {
-		this.closeMenu();
-
-		const data: any[] = e.currentTarget.data;
-
+	handleOnSelect(valueChain: any[]) {
 		const selection: PostSorting = {
-			order: data[0],
-			timeFrame: data[1]
+			order: valueChain[0],
+			timeFrame: valueChain[1]
 		};
 
 		this.feed.setSorting(selection);
-	}
-
-	toggleMenu() {
-		if (this.classList.contains("expanded"))
-			this.closeMenu();
-		else
-			this.showMenu();
-	}
-
-	showMenu() {
-		this.classList.add("expanded");
-		this.classList.add("show");
-		this.classList.remove("remove");
-		window.addEventListener("click", this.cancelMenuFuncRef);
-	}
-	
-	closeMenu() {
-		this.classList.remove("expanded");
-		this.classList.remove("show");
-		this.classList.add("remove");
-		window.removeEventListener("click", this.cancelMenuFuncRef);
-	}
-	
-	cancelMenu(e) {
-		if (!this.contains(e.target))
-			this.closeMenu();
 	}
 }
 

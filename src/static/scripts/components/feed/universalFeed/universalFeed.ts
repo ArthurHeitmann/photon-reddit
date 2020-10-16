@@ -47,7 +47,7 @@ export default class Ph_UniversalFeed extends Ph_Feed {
 				this.appendChild(new Ph_Post(postData, true));
 			}
 			
-			this.afterData = posts.data.after;
+			this.afterData = this.children[this.childElementCount - 1]["itemId"];
 			if (this.afterData === null)
 				this.hasReachedEndOfFeed = true;
 		}

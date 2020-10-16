@@ -163,6 +163,7 @@ header {
 	}
 	
 	&.remove {
+		visibility: hidden;
 		.dropDownEntry {
 			opacity: 0;
 			transform: scale(.75) translateY(-50%);
