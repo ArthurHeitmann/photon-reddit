@@ -153,6 +153,8 @@ header {
 .dropDown {
 	position: relative;
 	min-width: 10rem;
+	display: flex;
+	flex-direction: column;
 
 	&.show {
 		.dropDownEntry {
@@ -177,6 +179,16 @@ header {
 		width: 100%;
 		border-radius: 1.2rem;
 		background-color: vars.$background-el1;
+
+		transition: all .25s ease;
+
+		&:hover {
+			color: lightcoral;
+		}
+
+		&:active {
+			border-color: lightcoral;
+		}
 	}
 
 	.dropDownArea {
@@ -206,7 +218,7 @@ header {
 		opacity: 0;
 		transform: scale(.5);
 		visibility: hidden;
-		transition: all .15s ease;
+		transition: all .15s ease, color .25s ease, padding .25s ease, border .25s ease;
 
 		@for $i from 1 through 15 {
 			&:nth-child(#{$i}n) {
@@ -223,6 +235,18 @@ header {
 		&:last-child {
 			border-bottom-left-radius: 1.2rem;
 			border-bottom-right-radius: 1.2rem;
+		}
+
+		&:hover {
+			padding-left: .75rem;
+
+			* {
+				color: lightcoral;
+			}
+		}
+
+		&:active {
+			border: 1px solid lightcoral;
 		}
 	}
 }

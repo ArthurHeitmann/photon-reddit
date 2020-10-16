@@ -38,12 +38,12 @@ export default class Ph_DropDown extends HTMLElement {
 		setTimeout(() => window.addEventListener("click", this.cancelMenuFuncRef), 0);
 	}
 	
-	closeMenu() {
+	closeMenu(closeAllPrevious = false) {
 		this.isExpanded = false;
 		this.classList.remove("show");
 		this.classList.add("remove");
 		window.removeEventListener("click", this.cancelMenuFuncRef);
-		if (this.parentEntry)
+		if (this.parentEntry && !closeAllPrevious)
 			(this.parentEntry.parentElement as Ph_DropDown).showMenu();
 	}
 	

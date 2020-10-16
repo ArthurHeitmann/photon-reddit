@@ -1,6 +1,6 @@
 import Ph_DropDown from "../dropDown/dropDown.js";
 
-export default class Ph_DropDownEntry extends HTMLElement {
+export default class Ph_DropDownEntry extends HTMLButtonElement {
 	valueChain: any[];
 	nextDropDown: Ph_DropDown = null;
 
@@ -28,16 +28,16 @@ export default class Ph_DropDownEntry extends HTMLElement {
 			this.nextDropDown.classList.add("remove");
 		}
 
-		if (param.onSelectCallback) {
-			this.addEventListener("click", e => {
+		this.addEventListener("click", e => {
+			if (param.nestedEntries) {
+				this.nextDropDown.showMenu();
 				dropDown.closeMenu();
-				if (param.nestedEntries) {
-					this.nextDropDown.showMenu();
-				}
-				else
-					param.onSelectCallback(this.valueChain);
-			});
-		}
+			}
+			else if (param.onSelectCallback) {
+				param.onSelectCallback(this.valueChain);
+				dropDown.closeMenu(true);
+			}
+		});
 	}
 }
 
@@ -48,4 +48,4 @@ export interface DropDownEntryParam {
 	nestedEntries?: DropDownEntryParam[]
 }
 
-customElements.define("ph-drop-down-entry", Ph_DropDownEntry);
+customElements.define("ph-drop-down-entry", Ph_DropDownEntry, { extends: "button" });
