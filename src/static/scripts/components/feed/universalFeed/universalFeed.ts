@@ -1,7 +1,7 @@
 import { oath2Request } from "../../../api/api.js";
-import { pushLinkToHistorySep, viewsStack } from "../../../state/stateManager.js";
+import { viewsStack } from "../../../state/stateManager.js";
 import { splitPathQuery } from "../../../utils/conv.js";
-import { HistoryState, PostSorting, RedditApiData, RedditApiType, SortPostsOrder } from "../../../utils/types.js";
+import { PostSorting, RedditApiType, SortPostsOrder } from "../../../utils/types.js";
 import Ph_Comment from "../../comment/comment.js";
 import { LoadPosition, Ph_Feed } from "../../feed/feed.js";
 import Ph_Post from "../../post/post.js";

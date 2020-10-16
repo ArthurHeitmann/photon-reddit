@@ -1,4 +1,3 @@
-import { mainURL } from "./consts.js";
 
 export function votesShort(upvotes: number): string {
 	switch (upvotes.toString().length) {

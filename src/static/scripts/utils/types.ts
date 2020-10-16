@@ -1,5 +1,4 @@
 
-
 export interface RedditApiType {
 	kind: string,
 	data: RedditApiData

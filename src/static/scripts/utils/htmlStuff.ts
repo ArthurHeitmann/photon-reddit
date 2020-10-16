@@ -1,4 +1,4 @@
-import { pushLinkToHistoryComb, PushType } from "../state/stateManager.js";
+import { pushLinkToHistoryComb } from "../state/stateManager.js";
 
 export function $id(id) { return document.getElementById(id); };
 export function $class(c) { return document.getElementsByClassName(c); };

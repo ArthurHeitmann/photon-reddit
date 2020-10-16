@@ -1,10 +1,9 @@
 import { oath2Request } from "../api/api.js";
-import Ph_PostAndComments from "../components/postAndComments/postAndComments.js";
 import Ph_UniversalFeed from "../components/feed/universalFeed/universalFeed.js";
-import { Ph_ViewState } from "../components/viewState/viewState.js";
+import Ph_PostAndComments from "../components/postAndComments/postAndComments.js";
 import Ph_ViewStateLoader from "../components/viewState/viewStateLoader/viewStateLoader.js";
-import ViewsStack from "./viewsStack.js";
 import { splitPathQuery } from "../utils/conv.js";
+import ViewsStack from "./viewsStack.js";
 
 export const viewsStack: ViewsStack = new ViewsStack();
 viewsStack.setNextIsReplace();
