@@ -51,15 +51,11 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		this.voteDownButton.innerText = "-";
 		this.voteDownButton.addEventListener("click", e => this.vote(VoteDirection.down));
 		actionWrapper.appendChild(this.voteDownButton);
-		// additional actions button
-		const moreButton = document.createElement("button");
-		moreButton.className = "button additionActions";
-		moreButton.innerText = "...";
-		actionWrapper.appendChild(moreButton);
+		// additional actions drop down
 		const moreDropDown = new Ph_DropDown([ 
 			{ displayText: "Save", value: "save" },
 			{ displayText: "Report", value: "report" } 
-		], moreButton);
+		], "...");
 		actionWrapper.appendChild(moreDropDown);
 		// go to comments link
 		if (isInFeed) {
@@ -102,7 +98,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		`;
 		mainPart.appendChild(new Ph_PostBody(postData));
 		this.appendChild(mainPart);
-		
+
 		this.appendChild(this.actionBar);
 
 		linksToSpa(this);

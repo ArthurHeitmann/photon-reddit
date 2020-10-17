@@ -6,12 +6,22 @@ export default class Ph_DropDown extends HTMLElement {
 	feed: Ph_Feed;
 	isExpanded = false;
 	parentEntry: Ph_DropDownEntry = null;
+	toggleButton: HTMLButtonElement;
 
-	constructor(entryParams: DropDownEntryParam[], toggleButton?: HTMLElement, parentEntry?: Ph_DropDownEntry) {
+	constructor(entryParams: DropDownEntryParam[], toggleButtonText?: string, parentEntry?: Ph_DropDownEntry) {
 		super();
 
 		this.cancelMenuFuncRef = this.cancelMenu.bind(this);
 		this.classList.add("dropDown");
+
+		if (typeof toggleButtonText === "string") {
+			this.toggleButton = document.createElement("button");
+			this.toggleButton.className = "button dropDownButton";
+			this.toggleButton.innerText = toggleButtonText;
+			this.toggleButton.addEventListener("click", this.toggleMenu.bind(this));
+			this.appendChild(this.toggleButton);
+		}
+
 		const dropDownArea = document.createElement("div");
 		dropDownArea.classList.add("dropDownArea");
 		this.appendChild(dropDownArea);
@@ -21,9 +31,6 @@ export default class Ph_DropDown extends HTMLElement {
 		for (const param of entryParams) {
 			dropDownArea.appendChild(new Ph_DropDownEntry(param, this, parentEntry));
 		}
-
-		if (toggleButton)
-			toggleButton.addEventListener("click", this.toggleMenu.bind(this));
 	}
 
 	toggleMenu() {
@@ -46,7 +53,7 @@ export default class Ph_DropDown extends HTMLElement {
 		this.classList.add("remove");
 		window.removeEventListener("click", this.cancelMenuFuncRef);
 		if (this.parentEntry && !closeAllPrevious)
-			(this.parentEntry.parentElement as Ph_DropDown).showMenu();
+			(this.parentEntry.parentElement.parentElement as Ph_DropDown).showMenu();
 	}
 	
 	cancelMenu(e) {

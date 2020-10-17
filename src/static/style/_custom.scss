@@ -114,11 +114,14 @@ header {
 	> :first-child {
 		margin-left: auto;
 	}
+
+	.dropDownArea {
+		right: 0;
+	}
 }
 
 .dropDown {
 	position: relative;
-	min-width: 10rem;
 	display: flex;
 	flex-direction: column;
 
@@ -131,7 +134,9 @@ header {
 	}
 	
 	&.remove {
-		visibility: hidden;
+		.dropDownArea {
+			visibility: hidden;
+		}
 
 		.dropDownEntry {
 			opacity: 0;
@@ -141,16 +146,16 @@ header {
 	}
 
 	.dropDownButton {
-		width: 100%;
+		width: fit-content;
+		padding: 0 1.2rem;
 	}
 
 	.dropDownArea {
 		position: absolute;
 		z-index: 1;
 		top: 100%;
-		right: 0;
-		width: 100%;
 		margin-top: 0.5rem;
+		width: max-content;
 	}
 	
 	.dropDownEntry {
@@ -158,7 +163,7 @@ header {
 		gap: 1rem;
 		justify-content: space-between;
 		border: 1px solid vars.$text;
-		padding: 0 .5rem;
+		padding: 0 .65rem;
 		cursor: pointer;
 		width: 100%;
 		height: 2.4rem;
@@ -336,9 +341,10 @@ header {
 			flex-direction: column;
 			align-items: center;
 
-			.dropDown {
-				position: absolute;
-				left: 2.4rem;
+			.dropDownArea {
+				left: calc(100% + .5rem);
+				top: 0;
+				margin-top: 0;
 			}
 		}
 	}
