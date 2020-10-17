@@ -3,7 +3,7 @@ import { checkTokenExpiry } from "../login/login.js";
 import { splitPathQuery } from "../utils/conv.js";
 
 export async function oath2Request(pathAndQuery, params: string[][] = [], options = {}, attempt = 0) {
-	pathAndQuery = fixUrl(pathAndQuery);
+	pathAndQuery = fixUrl(pathAndQuery, attempt);
 	const [path, query] = splitPathQuery(pathAndQuery);
 
 	const parameters = new URLSearchParams(query);
@@ -12,9 +12,10 @@ export async function oath2Request(pathAndQuery, params: string[][] = [], option
 	parameters.append("raw_json", "1");
 	const fetchOptions: RequestInit = {
 		...options,
-		headers: {
-			Authorization: `Bearer ${ localStorage["accessToken"] }`
-		},
+		headers: new Headers ({
+			Authorization: `Bearer ${ localStorage["accessToken"] }`,
+			"User-Agent": "web:reddit-photon:0.1 (by u/RaiderBV)"
+		}),
 	};
 	try {
 		const response = await fetch(`https://oauth.reddit.com${ path }?${ parameters.toString() }`, fetchOptions);
@@ -28,8 +29,11 @@ export async function oath2Request(pathAndQuery, params: string[][] = [], option
 	}
 }
 
-function fixUrl(url: string) {
-	return url.replace(/^\/u\//, "/user/");
+function fixUrl(url: string, attempt = 0) {
+	url = url.replace(/^\/u\//, "/user/");
+	if (attempt > 0)
+		url = url.replace(/^\/user\/\w+\/m\//, "/me/m/")		// TODO do this by default if username == logged in user 
+	return url;
 }
 
 export async function mySubreddits() {
