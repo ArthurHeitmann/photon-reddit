@@ -12,12 +12,14 @@ export default class Ph_DropDown extends HTMLElement {
 
 		this.cancelMenuFuncRef = this.cancelMenu.bind(this);
 		this.classList.add("dropDown");
-		this.classList.add("dropDownArea");
+		const dropDownArea = document.createElement("div");
+		dropDownArea.classList.add("dropDownArea");
+		this.appendChild(dropDownArea);
 		if (parentEntry)
 			this.parentEntry = parentEntry;
 
 		for (const param of entryParams) {
-			this.appendChild(new Ph_DropDownEntry(param, this, parentEntry));
+			dropDownArea.appendChild(new Ph_DropDownEntry(param, this, parentEntry));
 		}
 
 		if (toggleButton)
@@ -50,6 +52,8 @@ export default class Ph_DropDown extends HTMLElement {
 	cancelMenu(e) {
 		if (!this.contains(e.target))
 			this.closeMenu();
+		
+		e.stopPropagation();
 	}
 }
 

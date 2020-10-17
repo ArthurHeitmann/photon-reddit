@@ -3,6 +3,7 @@ import { timePassedSinceStr, numberToShortStr, numberToShort as numberToShort } 
 import { linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
 import Ph_FeedItem from "../feed/feedItem/feedItem.js";
+import Ph_DropDown from "../misc/dropDown/dropDown.js";
 import Votable from "../misc/votable/votable.js";
 import Ph_PostBody from "./postBody/postBody.js";
 
@@ -29,7 +30,6 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 
 		// actions bar
 		this.actionBar = document.createElement("div");
-		this.appendChild(this.actionBar);
 		this.actionBar.className = "actions";
 		const actionWrapper = document.createElement("div");
 		this.actionBar.appendChild(actionWrapper);
@@ -54,8 +54,13 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		// additional actions button
 		const moreButton = document.createElement("button");
 		moreButton.className = "button additionActions";
-		moreButton.innerText = "^";
+		moreButton.innerText = "...";
 		actionWrapper.appendChild(moreButton);
+		const moreDropDown = new Ph_DropDown([ 
+			{ displayText: "Save", value: "save" },
+			{ displayText: "Report", value: "report" } 
+		], moreButton);
+		actionWrapper.appendChild(moreDropDown);
 		// go to comments link
 		if (isInFeed) {
 			const commentsLink = document.createElement("a");
@@ -97,6 +102,8 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		`;
 		mainPart.appendChild(new Ph_PostBody(postData));
 		this.appendChild(mainPart);
+		
+		this.appendChild(this.actionBar);
 
 		linksToSpa(this);
 	}
