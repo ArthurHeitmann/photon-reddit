@@ -1,5 +1,5 @@
 
-export function votesShort(upvotes: number): string {
+export function numberToShort(upvotes: number): string {
 	switch (upvotes.toString().length) {
 		case 0:
 		case 1:
@@ -20,7 +20,7 @@ export function votesShort(upvotes: number): string {
 }
 
 export function numberToShortStr(num: string): string {
-	return votesShort(parseInt(num));
+	return numberToShort(parseInt(num));
 }
 
 

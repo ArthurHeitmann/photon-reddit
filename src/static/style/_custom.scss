@@ -21,7 +21,6 @@ header {
 	
 	.actions {
 		height: 100%;
-		margin-top: .2rem;
 		box-sizing: content-box;
 		position: relative;
 		z-index: 55;
@@ -318,6 +317,8 @@ header {
 			.postImage {
 				border-bottom-left-radius: vars.$b-r;
 				border-bottom-right-radius: vars.$b-r;
+				max-height: 95vh;
+				object-fit: contain;
 			}
 		}
 	}

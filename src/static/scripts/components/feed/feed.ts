@@ -84,10 +84,10 @@ export abstract class Ph_Feed extends HTMLElement {
 			this.afterData = last["itemId"]
 		}
 		else if (loadPosition === LoadPosition.After) {
-			let first = this.children[0];
+			let first = this.children[1];
 			while (first && first.getBoundingClientRect().y < window.innerHeight * -12) {
 				first.remove();
-				first = this.children[0];
+				first = this.children[1];
 			}
 			this.beforeData = first["itemId"];
 		}

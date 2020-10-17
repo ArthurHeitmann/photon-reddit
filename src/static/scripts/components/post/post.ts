@@ -1,5 +1,5 @@
 import { vote, VoteDirection, voteDirectionFromLikes } from "../../api/api.js";
-import { timePassedSinceStr, numberToShortStr } from "../../utils/conv.js";
+import { timePassedSinceStr, numberToShortStr, numberToShort as numberToShort } from "../../utils/conv.js";
 import { linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
 import Ph_FeedItem from "../feed/feedItem/feedItem.js";
@@ -7,6 +7,12 @@ import Votable from "../misc/votable/votable.js";
 import Ph_PostBody from "./postBody/postBody.js";
 
 export default class Ph_Post extends Ph_FeedItem implements Votable {
+	actionBar: HTMLDivElement;
+	voteUpButton: HTMLButtonElement;
+	currentUpvotes: HTMLDivElement;
+	voteDownButton: HTMLButtonElement;
+	// Votable implementation
+	totalVotes: number;
 	votableId: string;
 	currentVoteDirection: VoteDirection;
 
@@ -18,32 +24,33 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 
 		this.votableId = postData.data["name"];
 		this.currentVoteDirection = voteDirectionFromLikes(postData.data["likes"])
+		this.totalVotes = parseInt(postData.data["ups"])
 		this.classList.add("post");
 
 		// actions bar
-		const actionBar = document.createElement("div");
-		this.appendChild(actionBar);
-		actionBar.className = "actions";
+		this.actionBar = document.createElement("div");
+		this.appendChild(this.actionBar);
+		this.actionBar.className = "actions";
 		const actionWrapper = document.createElement("div");
-		actionBar.appendChild(actionWrapper);
+		this.actionBar.appendChild(actionWrapper);
 		actionWrapper.className = "wrapper";
 		// vote up button
-		const voteUpButton = document.createElement("button");
-		voteUpButton.className = "vote";
-		voteUpButton.innerText = "+";
-		voteUpButton.addEventListener("click", e => this.vote(VoteDirection.up));
-		actionWrapper.appendChild(voteUpButton);
+		this.voteUpButton = document.createElement("button");
+		this.voteUpButton.className = "vote";
+		this.voteUpButton.innerText = "+";
+		this.voteUpButton.addEventListener("click", e => this.vote(VoteDirection.up));
+		actionWrapper.appendChild(this.voteUpButton);
 		// current votes
-		const currentUpvotes = document.createElement("button");
-		currentUpvotes.className = "upvotes";
-		currentUpvotes.innerText = numberToShortStr(postData.data["ups"]);
-		actionWrapper.appendChild(currentUpvotes);
+		this.currentUpvotes = document.createElement("div");
+		this.currentUpvotes.className = "upvotes";
+		this.setVotesState();
+		actionWrapper.appendChild(this.currentUpvotes);
 		// vote down button
-		const voteDownButton = document.createElement("button");
-		voteDownButton.className = "vote";
-		voteDownButton.innerText = "-";
-		voteDownButton.addEventListener("click", e => this.vote(VoteDirection.down));
-		actionWrapper.appendChild(voteDownButton);
+		this.voteDownButton = document.createElement("button");
+		this.voteDownButton.className = "vote";
+		this.voteDownButton.innerText = "-";
+		this.voteDownButton.addEventListener("click", e => this.vote(VoteDirection.down));
+		actionWrapper.appendChild(this.voteDownButton);
 		// additional actions button
 		const moreButton = document.createElement("button");
 		moreButton.className = "button additionActions";
@@ -94,15 +101,30 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		linksToSpa(this);
 	}
 
-	async vote (dir: VoteDirection): Promise<void> {
+	async vote(dir: VoteDirection): Promise<void> {
+		const prevDir = this.currentVoteDirection;
 		this.currentVoteDirection = dir === this.currentVoteDirection ? VoteDirection.none : dir;
-		
-		
+		this.setVotesState();
 		const res = await vote(this);
 		if (!res) {
+			console.error("Error voting on post");
+			this.currentVoteDirection = prevDir;
+			this.setVotesState();
 			// TODO display error
 		}
 	};
+
+	setVotesState() {
+		this.currentUpvotes.innerText = numberToShort(this.totalVotes + parseInt(this.currentVoteDirection));
+		switch (this.currentVoteDirection) {
+			case VoteDirection.up:
+				this.currentUpvotes.style.color = "orange"; break;
+			case VoteDirection.none:
+				this.currentUpvotes.style.color = "inherit"; break;
+			case VoteDirection.down:
+				this.currentUpvotes.style.color = "royalblue"; break;
+		}
+	}
 }
 
 customElements.define("ph-post", Ph_Post);

@@ -57,12 +57,12 @@ export function voteDirectionFromLikes(likes: boolean) {
 
 export async function vote(votable: Votable): Promise<boolean> {
 	try {
-		await oath2Request("/api/vote", [
+		const resp = await oath2Request("/api/vote", [
 			["dir", votable.currentVoteDirection], 
 			["id", votable.votableId]
 		],
 		{ method: "POST" });
-		return true
+		return Object.keys(resp).length === 0 && resp.constructor === Object;		// basic does what resp === {} should (but doesn't) do
 	} catch (error) {
 		return false	
 	}

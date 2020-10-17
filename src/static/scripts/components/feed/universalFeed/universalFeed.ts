@@ -8,16 +8,18 @@ import Ph_Post from "../../post/post.js";
 import Ph_PostsSorter from "../sorting/postsSorter/postsSorter.js";
 
 export default class Ph_UniversalFeed extends Ph_Feed {
+	header: HTMLDivElement;
+
 	constructor(posts: RedditApiType, requestUrl: string) {
 		super(posts, true, requestUrl);
 
 		this.classList.add("universalFeed");
 
-		const header = document.createElement("div");
-		this.appendChild(header);
-		header.className = "feedHeader";
+		this.header = document.createElement("div");
+		this.appendChild(this.header);
+		this.header.className = "feedHeader";
 
-		header.appendChild(new Ph_PostsSorter(this));
+		this.header.appendChild(new Ph_PostsSorter(this));
 
 		for (const postData of posts.data.children) {
 			this.appendChild(this.makeFeedItem(postData));
@@ -54,10 +56,10 @@ export default class Ph_UniversalFeed extends Ph_Feed {
 		else {
 			for (const postData of posts.data.children.reverse()) {
 				const newPost = new Ph_Post(postData, true);
-				this.insertAdjacentElement("afterbegin", newPost);
+				this.header.insertAdjacentElement("afterend", newPost);
 			}
 
-			this.beforeData = this.children[0]["itemId"];
+			this.beforeData = this.children[1]["itemId"];
 		}
 	}
 
