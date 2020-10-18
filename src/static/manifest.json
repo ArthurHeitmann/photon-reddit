@@ -1,0 +1,14 @@
+{
+	"name": "Reddit Photon",
+	"short_name": "Photon",
+	"description": "A fast and modern Reddit web client",
+	"lang": "en-US",
+	"start_url": "/",
+	"display": "standalone",
+	"theme_color": "lightcoral",
+	"background_color": "#121212",
+
+	"permissions": [
+		"clipboard-write"
+	]
+  }
