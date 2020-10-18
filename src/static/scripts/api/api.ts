@@ -71,3 +71,15 @@ export async function vote(votable: Votable): Promise<boolean> {
 		return false	
 	}
 }
+
+export async function save(id: string, isSaved: boolean): Promise<boolean> {
+	try {
+		const resp = await oath2Request(isSaved ? "/api/save" : "/api/unsave", [
+			["id", id]
+		],
+		{ method: "POST" });
+		return Object.keys(resp).length === 0 && resp.constructor === Object;		// basic does what resp === {} should (but doesn't) do
+	} catch (error) {
+		return false	
+	}
+}

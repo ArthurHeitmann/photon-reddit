@@ -3,6 +3,7 @@ import Ph_DropDown from "../dropDown/dropDown.js";
 export default class Ph_DropDownEntry extends HTMLButtonElement {
 	valueChain: any[];
 	nextDropDown: Ph_DropDown = null;
+	label: HTMLDivElement;
 
 	constructor(param: DropDownEntryParam, dropDown: Ph_DropDown, parentEntry?: Ph_DropDownEntry) {
 		super();
@@ -14,9 +15,9 @@ export default class Ph_DropDownEntry extends HTMLButtonElement {
 		else
 			this.valueChain = [param.value];
 
-		const label = document.createElement("div");
-		label.innerText = param.displayText;
-		this.appendChild(label);
+		this.label = document.createElement("div");
+		this.label.innerText = param.displayText;
+		this.appendChild(this.label);
 
 		if (param.nestedEntries && param.nestedEntries.length > 0) {
 			const expandList = document.createElement("div");
@@ -34,17 +35,21 @@ export default class Ph_DropDownEntry extends HTMLButtonElement {
 				dropDown.closeMenu();
 			}
 			else if (param.onSelectCallback) {
-				param.onSelectCallback(this.valueChain);
+				param.onSelectCallback(this.valueChain, this);
 				dropDown.closeMenu(true);
 			}
 		});
+	}
+
+	setText(text: string) {
+		this.label.innerText = text;
 	}
 }
 
 export interface DropDownEntryParam {
 	displayText: string,
 	value: any,
-	onSelectCallback?: (valueChain: any[]) => void,
+	onSelectCallback?: (valueChain: any[], source: Ph_DropDownEntry) => void,
 	nestedEntries?: DropDownEntryParam[]
 }
 

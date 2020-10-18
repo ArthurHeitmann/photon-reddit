@@ -1,9 +1,10 @@
-import { vote, VoteDirection, voteDirectionFromLikes } from "../../api/api.js";
+import { save, vote, VoteDirection, voteDirectionFromLikes } from "../../api/api.js";
 import { timePassedSinceStr, numberToShortStr, numberToShort as numberToShort } from "../../utils/conv.js";
 import { linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
 import Ph_FeedItem from "../feed/feedItem/feedItem.js";
 import Ph_DropDown from "../misc/dropDown/dropDown.js";
+import Ph_DropDownEntry from "../misc/dropDownEntry/dropDownEntry.js";
 import Votable from "../misc/votable/votable.js";
 import Ph_PostBody from "./postBody/postBody.js";
 
@@ -17,6 +18,8 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 	votableId: string;
 	currentVoteDirection: VoteDirection;
 
+	isSaved: boolean;
+
 	constructor(postData: RedditApiType, isInFeed: boolean) {
 		super(postData, isInFeed);
 
@@ -24,8 +27,9 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			throw new Error("Invalid comment data type");
 
 		this.votableId = postData.data["name"];
-		this.currentVoteDirection = voteDirectionFromLikes(postData.data["likes"])
-		this.totalVotes = parseInt(postData.data["ups"])
+		this.currentVoteDirection = voteDirectionFromLikes(postData.data["likes"]);
+		this.totalVotes = parseInt(postData.data["ups"]);
+		this.isSaved = postData.data["saved"];
 		this.classList.add("post");
 
 		// actions bar
@@ -53,7 +57,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		actionWrapper.appendChild(this.voteDownButton);
 		// additional actions drop down
 		const moreDropDown = new Ph_DropDown([ 
-			{ displayText: "Save", value: "save" },
+			{ displayText: this.isSaved ? "Unsave" : "Save", value: "save", onSelectCallback: this.toggleSave.bind(this) },
 			{ displayText: "Report", value: "report" } 
 		], "...");
 		actionWrapper.appendChild(moreDropDown);
@@ -127,6 +131,12 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			case VoteDirection.down:
 				this.currentUpvotes.style.color = "royalblue"; break;
 		}
+	}
+
+	toggleSave(valueChain: any[], source: Ph_DropDownEntry) {
+		this.isSaved = !this.isSaved;
+		source.innerText = this.isSaved ? "Unsave" : "Save";
+		save(this.itemId, this.isSaved);
 	}
 }
 
