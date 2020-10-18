@@ -48,7 +48,7 @@ export default class Ph_DropDownEntry extends HTMLButtonElement {
 
 export interface DropDownEntryParam {
 	displayText: string,
-	value: any,
+	value?: any,
 	onSelectCallback?: (valueChain: any[], source: Ph_DropDownEntry) => void,
 	nestedEntries?: DropDownEntryParam[]
 }

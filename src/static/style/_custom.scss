@@ -330,6 +330,7 @@ header {
 	}
 
 	.actions {
+		z-index: 1;
 		@media (orientation: landscape) {
 			min-height: 100%;
 		}

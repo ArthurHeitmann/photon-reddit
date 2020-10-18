@@ -1,4 +1,5 @@
 import { save, vote, VoteDirection, voteDirectionFromLikes } from "../../api/api.js";
+import { mainURL } from "../../utils/consts.js";
 import { timePassedSinceStr, numberToShortStr, numberToShort as numberToShort } from "../../utils/conv.js";
 import { linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
@@ -19,6 +20,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 	currentVoteDirection: VoteDirection;
 
 	isSaved: boolean;
+	url: string;
 
 	constructor(postData: RedditApiType, isInFeed: boolean) {
 		super(postData, isInFeed);
@@ -30,6 +32,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		this.currentVoteDirection = voteDirectionFromLikes(postData.data["likes"]);
 		this.totalVotes = parseInt(postData.data["ups"]);
 		this.isSaved = postData.data["saved"];
+		this.url = postData.data["url"];
 		this.classList.add("post");
 
 		// actions bar
@@ -57,8 +60,13 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		actionWrapper.appendChild(this.voteDownButton);
 		// additional actions drop down
 		const moreDropDown = new Ph_DropDown([ 
-			{ displayText: this.isSaved ? "Unsave" : "Save", value: "save", onSelectCallback: this.toggleSave.bind(this) },
-			{ displayText: "Report", value: "report" } 
+			{ displayText: this.isSaved ? "Unsave" : "Save", onSelectCallback: this.toggleSave.bind(this) },
+			{ displayText: "Share", nestedEntries: [
+				{ displayText: "Copy Post Link", value: "post link", onSelectCallback: this.share.bind(this) },
+				{ displayText: "Copy Reddit Link", value: "reddit link", onSelectCallback: this.share.bind(this) },
+				{ displayText: "Copy Link", value: "link", onSelectCallback: this.share.bind(this) },
+				{ displayText: "Crosspost", onSelectCallback: this.crossPost.bind(this) },
+			] }
 		], "...");
 		actionWrapper.appendChild(moreDropDown);
 		// go to comments link
@@ -137,6 +145,28 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		this.isSaved = !this.isSaved;
 		source.innerText = this.isSaved ? "Unsave" : "Save";
 		save(this.itemId, this.isSaved);
+	}
+
+	share([ _, shareType ]) {
+		switch (shareType) {
+			case "post link":
+				navigator.clipboard.writeText(mainURL + this.link);
+				break;
+			case "reddit link":
+				navigator.clipboard.writeText("reddit.com" + this.link);
+				break;
+			case "link":
+				if (this.url)
+					navigator.clipboard.writeText(this.url);
+				break;
+			default:
+				throw new Error("Invalid share type");
+				
+		}
+	}
+
+	crossPost() {
+
 	}
 }
 
