@@ -208,6 +208,18 @@ header {
 	}
 }
 
+.videoPlayer {
+	overflow: hidden;
+	width: 100%;
+
+	video {
+		width: 100%;
+		display: block;
+		max-height: 95vh;
+		object-fit: contain;
+	}
+}
+
 .button {
 	border: 1px solid vars.$text;
 	padding: .5rem;
@@ -323,6 +335,13 @@ header {
 				border-bottom-right-radius: vars.$b-r;
 				max-height: 95vh;
 				object-fit: contain;
+			}
+
+			.videoPlayer {
+				video {
+					border-bottom-left-radius: 1rem;
+					border-bottom-right-radius: 1rem;
+				}
 			}
 		}
 	}

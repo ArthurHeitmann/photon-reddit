@@ -1,11 +1,14 @@
 import { replaceRedditLinks } from "../../../utils/conv.js";
 import { linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiData, RedditApiType } from "../../../utils/types.js";
+import Ph_VideoPlayer from "../../videoPlayer/videoPlayer.js";
 import Ph_PostImage from "./postImage/postImage.js";
 
 export default class Ph_PostBody extends HTMLElement {
 	constructor(postData: RedditApiType) {
 		super();
+		if (postData.data["crosspost_parent_list"])		// is cross post ? use original post data
+			postData.data = postData.data["crosspost_parent_list"][0];
 
 		this.classList.add("content");
 
@@ -26,14 +29,10 @@ export default class Ph_PostBody extends HTMLElement {
 				this.classList.add("padded");
 				this.innerHTML = `<a href="${postData.data["url"]}" target="_blank">${postData.data["url"]}</a>`
 				break;
-			// case PostType.Video:
-			// 	this.classList.add("padded");
-			// 	this.innerHTML = `
-			// 		<video>
-			// 			<source src="${postData.data["secure_media"]["reddit_video"]["hls_url"]}" type="application/vnd.apple.mpegURL">
-			// 		</video>
-			// 	`;
-			// 	break;
+			case PostType.Video:
+				this.classList.add("fullScale");
+				this.appendChild(new Ph_VideoPlayer(postData));
+				break;
 			default:
 				this.classList.add("padded");
 				this.innerText = `Unknown post type ${this.getPostType(postData.data)}`;
@@ -50,6 +49,8 @@ export default class Ph_PostBody extends HTMLElement {
 	private getPostType(postData: RedditApiData): PostType {
 		if (postData["is_self"])
 			return PostType.Text;
+		else if (postData["url"].match(/(https:\/\/i.imgur.com\/[\w-]+.gifv)|(https:\/\/gfycat.com\/[\w-]+)/))
+			return PostType.Video;
 		else if (postData["post_hint"] == "link")
 			return PostType.Link;
 		else if (postData["post_hint"] == "image")
