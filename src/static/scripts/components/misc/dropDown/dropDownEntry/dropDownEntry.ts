@@ -1,11 +1,12 @@
-import Ph_DropDown from "../dropDown/dropDown.js";
+import Ph_DropDown from "../dropDown.js";
+import Ph_DropDownArea from "../dropDownArea/dropDownArea.js";
 
 export default class Ph_DropDownEntry extends HTMLButtonElement {
 	valueChain: any[];
-	nextDropDown: Ph_DropDown = null;
+	nextDropDown: Ph_DropDownArea = null;
 	label: HTMLDivElement;
 
-	constructor(param: DropDownEntryParam, dropDown: Ph_DropDown, parentEntry?: Ph_DropDownEntry) {
+	constructor(param: DropDownEntryParam, dropDown: Ph_DropDownArea, parentEntry?: Ph_DropDownEntry) {
 		super();
 
 		this.classList.add("dropDownEntry");
@@ -24,7 +25,7 @@ export default class Ph_DropDownEntry extends HTMLButtonElement {
 			expandList.innerText = ">";
 			this.appendChild(expandList);
 
-			this.nextDropDown = new Ph_DropDown(param.nestedEntries, null, this);
+			this.nextDropDown = new Ph_DropDownArea(param.nestedEntries, null, this);
 			setTimeout(() => dropDown.insertAdjacentElement("afterend", this.nextDropDown), 0);
 			this.nextDropDown.classList.add("remove");
 		}

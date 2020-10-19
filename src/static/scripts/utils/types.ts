@@ -33,6 +33,7 @@ export interface PostSorting {
 }
 
 export enum SortPostsOrder {
+	default = "",
 	hot = "hot",
 	new = "new",
 	top = "top",

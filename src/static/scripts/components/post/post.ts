@@ -5,7 +5,7 @@ import { linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
 import Ph_FeedItem from "../feed/feedItem/feedItem.js";
 import Ph_DropDown from "../misc/dropDown/dropDown.js";
-import Ph_DropDownEntry from "../misc/dropDownEntry/dropDownEntry.js";
+import Ph_DropDownEntry from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Votable from "../misc/votable/votable.js";
 import Ph_PostBody from "./postBody/postBody.js";
 

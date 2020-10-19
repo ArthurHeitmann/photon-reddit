@@ -125,7 +125,7 @@ header {
 	display: flex;
 	flex-direction: column;
 
-	&.show {
+	.show {
 		.dropDownEntry {
 			opacity: 1;
 			transform: scale(1) translateY(0);
@@ -133,10 +133,8 @@ header {
 		}
 	}
 	
-	&.remove {
-		.dropDownArea {
-			visibility: hidden;
-		}
+	.remove {
+		visibility: hidden;
 
 		.dropDownEntry {
 			opacity: 0;
