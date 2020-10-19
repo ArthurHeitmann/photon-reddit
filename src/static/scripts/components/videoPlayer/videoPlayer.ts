@@ -28,6 +28,18 @@ export default class Ph_VideoPlayer extends HTMLElement {
 				</video>
 				`;
 				break;
+			case "v.redd.it":
+				const videoUrl = postData.data["media"]["reddit_video"]["fallback_url"];
+				const audioUrl = postData.data["url"] + "/DASH_audio.mp4";
+				this.innerHTML = `
+					<video controls>
+						<source src="${videoUrl}" type="video/mp4">
+					</video>
+					<video controls>
+						<source src="${audioUrl}" type="video/mp4">
+					</video>
+				`;
+				break;
 			default:
 				this.innerText = `Unknown video provider for ${postData.data["url"]}`;
 				break;
