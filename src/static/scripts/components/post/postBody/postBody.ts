@@ -1,7 +1,7 @@
 import { replaceRedditLinks } from "../../../utils/conv.js";
 import { linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiData, RedditApiType } from "../../../utils/types.js";
-import Ph_VideoPlayer from "../../videoPlayer/videoPlayer.js";
+import Ph_MediaPlayer from "../../videoPlayer/mediaPlayer.js";
 import Ph_PostImage from "./postImage/postImage.js";
 
 export default class Ph_PostBody extends HTMLElement {
@@ -31,7 +31,7 @@ export default class Ph_PostBody extends HTMLElement {
 				break;
 			case PostType.Video:
 				this.classList.add("fullScale");
-				this.appendChild(new Ph_VideoPlayer(postData));
+				this.appendChild(new Ph_MediaPlayer(postData));
 				break;
 			default:
 				this.classList.add("padded");
