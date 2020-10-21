@@ -1,3 +1,4 @@
+import { threadId } from "worker_threads";
 import Ph_VideoWrapper from "../videoWrapper.js";
 
 export default class Ph_VideoAudio extends Ph_VideoWrapper {
@@ -24,8 +25,10 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 		this.video.addEventListener("play", () => this.audio.play());
 		this.video.addEventListener("pause", () => this.audio.pause());
 		this.video.addEventListener("seeking", () => this.audio.currentTime = this.video.currentTime);
+		this.audio.addEventListener("play", () => this.video.paused && this.audio.pause());
+		this.audio.addEventListener("pause", () => !this.video.paused && this.audio.play());
 
-		this.lastNon0Volume = this.video.volume;
+		this.lastNon0Volume = this.audio.volume;
 	}
 
 	play() {
@@ -58,12 +61,12 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 	}
 
 	toggleMute(): boolean {
-		if (this.video.volume === 0)
+		if (this.audio.volume === 0)
 			this.setVolume(this.lastNon0Volume ? this.lastNon0Volume : .5);
 		else
 			this.setVolume(0);
 
-		return this.video.volume !== 0;
+		return this.audio.volume !== 0;
 	}
 
 	setVolume(vol: number): void {
@@ -73,15 +76,15 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 	}
 
 	volumePlus(): void {
-		this.setVolume(this.video.volume + .1)
+		this.setVolume(this.audio.volume + .1)
 	}
 	
 	volumeMinus(): void {
-		this.setVolume(this.video.volume - .1)
+		this.setVolume(this.audio.volume - .1)
 	}
 
 	getVolume(): number {
-		return this.video.volume;
+		return this.audio.volume;
 	}
 
 	setTimeUpdateCallback(callback: () => void): void {

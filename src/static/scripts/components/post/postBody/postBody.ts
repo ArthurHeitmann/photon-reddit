@@ -53,7 +53,8 @@ export default class Ph_PostBody extends HTMLElement {
 		else if (postData["url"].match(new RegExp(
 			"(https?://i?\.?imgur\\.com\/[\\w-]+.(gifv|mp4))|" + 
 			"(https?://gfycat.com\/[\\w-]+)|" + 
-			"(https?://v.redd.it\/[\\w-]+)"
+			"(https?://v.redd.it\/[\\w-]+)|" +
+			"(https?://clips.twitch.tv\/[\\w-]+)"
 		)))
 			return PostType.Video;
 		else if (postData["post_hint"] == "link")

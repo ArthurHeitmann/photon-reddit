@@ -41,6 +41,10 @@ export default class Ph_VideoPlayer extends HTMLElement {
 					{ src: postData.data["url"] + "/DASH_96.mp4", type: "video/mp4" },
 				], audioUrl));
 				break;
+			case "clips.twitch.tv":
+				const url = postData.data["media"]["oembed"]["thumbnail_url"].match(/(.*)-social-preview.jpg$/)[1];
+				this.appendChild(this. video = new Ph_SimpleVideo([{ src: url + ".mp4", type: "video/mp4" }]));
+				break;
 			default:
 				this.innerText = `Unknown video provider for ${postData.data["url"]}`;
 				break;
