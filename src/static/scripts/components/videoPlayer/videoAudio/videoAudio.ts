@@ -4,13 +4,15 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 	video: HTMLVideoElement;
 	audio: HTMLVideoElement;
 	lastNon0Volume: number;
+	isFullscreen: boolean = false;
 
-	constructor(videoMp4Url: string, audioMp4Url: string) {
+	constructor(videoSources: { src: string, type: string }[], audioMp4Url: string) {
 		super();
 
 		this.video = document.createElement("video");
 		this.video.setAttribute("loop", "");
-		this.video.innerHTML = `<source src="${videoMp4Url}" type="video/mp4">`;
+		for (const source of videoSources)
+			this.video.insertAdjacentHTML("beforeend", `<source src="${source.src}" type="${source.type}">`);
 		this.appendChild(this.video);
 		
 		this.audio = document.createElement("video");
@@ -34,11 +36,13 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 		this.video.pause();
 	}
 
-	togglePlay() {
+	togglePlay(): boolean {
 		if (this.video.paused)
 			this.play();
 		else
 			this.pause();
+
+		return !this.video.paused;
 	}
 
 	seekTo(time: number) {
@@ -53,11 +57,13 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 		return this.video.duration;
 	}
 
-	toggleMute(): void {
+	toggleMute(): boolean {
 		if (this.video.volume === 0)
 			this.setVolume(this.lastNon0Volume ? this.lastNon0Volume : .5);
 		else
 			this.setVolume(0);
+
+		return this.video.volume !== 0;
 	}
 
 	setVolume(vol: number): void {
@@ -82,6 +88,20 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 		this.video.addEventListener("timeupdate", callback);
 	}
 
+	toggleFullscreen(): boolean {
+		if (this.isFullscreen) {
+			document.exitFullscreen();
+			return this.isFullscreen = false;
+		}
+		else if (this.requestFullscreen)
+			this.requestFullscreen();
+		else if (this.video.mozRequestFullScreen)
+			this.mozRequestFullScreen();
+		else if (this.webkitRequestFullScreen)
+			this.webkitRequestFullScreen();
+
+		return this.isFullscreen = true;
+	}
 }
 
 customElements.define("ph-video-audio", Ph_VideoAudio);

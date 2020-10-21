@@ -3,6 +3,7 @@ import Ph_VideoWrapper from "../videoWrapper.js";
 export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 	video: HTMLVideoElement;
 	lastNon0Volume: number;
+	isFullscreen: boolean = false;
 
 	constructor(sources: { src: string, type: string }[]) {
 		super();
@@ -24,11 +25,13 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 		this.video.pause();
 	}
 
-	togglePlay(): void {
+	togglePlay(): boolean {
 		if (this.video.paused)
 			this.video.play();
 		else
 			this.video.pause();
+		
+		return !this.video.paused;
 	}
 
 	seekTo(time: number): void {
@@ -43,11 +46,13 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 		return this.video.duration;
 	}
 
-	toggleMute(): void {
+	toggleMute(): boolean {
 		if (this.video.volume === 0)
 			this.setVolume(this.lastNon0Volume ? this.lastNon0Volume : .5);
 		else
 			this.setVolume(0);
+		
+		return this.video.volume !== 0;
 	}
 
 	setVolume(vol: number): void {
@@ -72,6 +77,20 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 		this.video.addEventListener("timeupdate", callback);
 	}
 
+	toggleFullscreen(): boolean {
+		if (this.isFullscreen) {
+			document.exitFullscreen();
+			return this.isFullscreen = false;
+		}
+		else if (this.requestFullscreen)
+			this.requestFullscreen();
+		else if (this.mozRequestFullScreen)
+			this.mozRequestFullScreen();
+		else if (this.webkitRequestFullScreen)
+			this.webkitRequestFullScreen();
+
+		return this.isFullscreen = true;
+	}
 }
 
 customElements.define("ph-video", Ph_SimpleVideo);

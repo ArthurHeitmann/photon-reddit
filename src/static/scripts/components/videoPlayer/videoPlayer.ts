@@ -33,7 +33,13 @@ export default class Ph_VideoPlayer extends HTMLElement {
 			case "v.redd.it":
 				const videoUrl = postData.data["url"] + "/DASH_720.mp4";
 				const audioUrl = postData.data["url"] + "/DASH_audio.mp4";
-				this.appendChild(this.video = new Ph_VideoAudio(videoUrl, audioUrl));
+				this.appendChild(this.video = new Ph_VideoAudio([
+					{ src: postData.data["url"] + "/DASH_720.mp4", type: "video/mp4" },
+					{ src: postData.data["url"] + "/DASH_480.mp4", type: "video/mp4" },
+					{ src: postData.data["url"] + "/DASH_360.mp4", type: "video/mp4" },
+					{ src: postData.data["url"] + "/DASH_240.mp4", type: "video/mp4" },
+					{ src: postData.data["url"] + "/DASH_96.mp4", type: "video/mp4" },
+				], audioUrl));
 				break;
 			default:
 				this.innerText = `Unknown video provider for ${postData.data["url"]}`;
@@ -67,6 +73,11 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		controls.appendChild(muteButton);
 		muteButton.innerText = "M";
 		muteButton.addEventListener("click", () => this.video.toggleMute());
+
+		const fullscreenButton = document.createElement("button");
+		controls.appendChild(fullscreenButton);
+		fullscreenButton.innerText = "[ ]";
+		fullscreenButton.addEventListener("click", () => this.video.toggleFullscreen());
 	}
 
 	showControls() {
