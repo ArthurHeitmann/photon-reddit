@@ -212,6 +212,7 @@ header {
 	overflow: hidden;
 	width: 100%;
 	position: relative;
+	cursor: none;
 
 	video {
 		width: 100%;
@@ -233,6 +234,8 @@ header {
 	}
 	
 	&.controlsVisible {
+		cursor: default;
+
 		.controls {
 			transform: translateY(0%);
 			

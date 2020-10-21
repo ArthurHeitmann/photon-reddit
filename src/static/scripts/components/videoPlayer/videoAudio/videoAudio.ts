@@ -93,14 +93,10 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 			document.exitFullscreen();
 			return this.isFullscreen = false;
 		}
-		else if (this.requestFullscreen)
-			this.requestFullscreen();
-		else if (this.video.mozRequestFullScreen)
-			this.mozRequestFullScreen();
-		else if (this.webkitRequestFullScreen)
-			this.webkitRequestFullScreen();
-
-		return this.isFullscreen = true;
+		else if (this.parentElement.requestFullscreen) {
+			this.parentElement.requestFullscreen();
+			return this.isFullscreen = true;
+		}
 	}
 }
 

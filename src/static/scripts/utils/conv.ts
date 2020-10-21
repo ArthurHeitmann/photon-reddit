@@ -1,6 +1,6 @@
 
 export function numberToShort(upvotes: number): string {
-	switch (upvotes.toString().length) {
+	switch (Math.abs(upvotes).toString().length) {
 		case 0:
 		case 1:
 		case 2:

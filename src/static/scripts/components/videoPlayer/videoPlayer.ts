@@ -58,11 +58,8 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		this.addEventListener("mouseenter", this.showControls.bind(this));
 		this.addEventListener("mousemove", this.restartHideTimeout.bind(this));
 		this.addEventListener("mouseleave", this.hideControls.bind(this));
-		this.addEventListener("click", (e: MouseEvent) => {
-			if (e.target === controls || controls.contains(e.target as HTMLElement))
-				return;
-			this.video.togglePlay()
-		});
+		this.video.addEventListener("click", () => this.video.togglePlay());
+		this.video.addEventListener("dblclick", () => this.video.toggleFullscreen());
 
 		const playButton = document.createElement("button");
 		controls.appendChild(playButton);
@@ -83,7 +80,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 	showControls() {
 		this.classList.add("controlsVisible");
 
-		this.hideTimeout = setTimeout(() => this.hideControls(), 5000);
+		this.hideTimeout = setTimeout(() => this.hideControls(), 2000);
 	}
 
 	restartHideTimeout() {
@@ -95,7 +92,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 
 		this.clearHideTimeout();
 
-		this.hideTimeout = setTimeout(() => this.hideControls(), 5000);
+		this.hideTimeout = setTimeout(() => this.hideControls(), 2000);
 	}
 
 	clearHideTimeout() {
