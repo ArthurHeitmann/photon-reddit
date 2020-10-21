@@ -1,14 +1,14 @@
 import { replaceRedditLinks } from "../../../utils/conv.js";
 import { linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiData, RedditApiType } from "../../../utils/types.js";
-import Ph_MediaPlayer from "../../videoPlayer/mediaPlayer.js";
+import Ph_VideoPlayer from "../../videoPlayer/videoPlayer.js";
 import Ph_PostImage from "./postImage/postImage.js";
 
 export default class Ph_PostBody extends HTMLElement {
 	constructor(postData: RedditApiType) {
 		super();
 		if (postData.data["crosspost_parent_list"])		// is cross post ? use original post data
-			postData.data = postData.data["crosspost_parent_list"][0];
+			postData.data = { ...postData.data, ...postData.data["crosspost_parent_list"][0] };
 
 		this.classList.add("content");
 
@@ -21,9 +21,10 @@ export default class Ph_PostBody extends HTMLElement {
 				this.classList.add("padded");
 				this.innerHTML = `<div class="postText">${postData.data["selftext_html"] || ""}</div>`;
 				break;
-			case PostType.YtVideo:
+			case PostType.EmbeddedVideo:
 				this.classList.add("padded");
-				this.innerHTML = postData.data["media_embed"]["content"];
+				const iframeSrc = postData.data["media_embed"]["content"].match(/src="([^"]+)"/)[1]; 
+				this.innerHTML = `<div class="aspect-ratio-16-9-wrapper"><iframe src="${iframeSrc}" allowfullscreen></iframe></div>`;
 				break;
 			case PostType.Link:
 				this.classList.add("padded");
@@ -31,7 +32,7 @@ export default class Ph_PostBody extends HTMLElement {
 				break;
 			case PostType.Video:
 				this.classList.add("fullScale");
-				this.appendChild(new Ph_MediaPlayer(postData));
+				this.appendChild(new Ph_VideoPlayer(postData));
 				break;
 			default:
 				this.classList.add("padded");
@@ -49,7 +50,11 @@ export default class Ph_PostBody extends HTMLElement {
 	private getPostType(postData: RedditApiData): PostType {
 		if (postData["is_self"])
 			return PostType.Text;
-		else if (postData["url"].match(/(https:\/\/i.imgur.com\/[\w-]+.gifv)|(https:\/\/gfycat.com\/[\w-]+)/))
+		else if (postData["url"].match(new RegExp(
+			"(https?://i?\.?imgur\\.com\/[\\w-]+.(gifv|mp4))|" + 
+			"(https?://gfycat.com\/[\\w-]+)|" + 
+			"(https?://v.redd.it\/[\\w-]+)"
+		)))
 			return PostType.Video;
 		else if (postData["post_hint"] == "link")
 			return PostType.Link;
@@ -58,7 +63,7 @@ export default class Ph_PostBody extends HTMLElement {
 		else if (postData["post_hint"] == "hosted:video")
 			return PostType.Video;
 		else if (postData["post_hint"] == "rich:video")
-			return PostType.YtVideo;
+			return PostType.EmbeddedVideo;
 		else
 			return PostType.Link;
 		}
@@ -70,6 +75,6 @@ enum PostType {
 	Link,
 	Image,
 	Video,
-	YtVideo,
+	EmbeddedVideo,
 	Text,
 }

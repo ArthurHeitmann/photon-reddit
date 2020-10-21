@@ -44,6 +44,21 @@
 
 .no-select { user-select: none }
 
+.aspect-ratio-16-9-wrapper {
+	position: relative;
+	width: 100%;
+	height: 0;
+	padding-bottom: 56.25%;
+
+	> * {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+	}
+}
+
 .debug1 { border: 1px dotted lightcoral }
 .debug2 { border: 1px dotted lightblue }
 .debug3 { border: 1px dotted lightgreen }

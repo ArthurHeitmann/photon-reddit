@@ -42,3 +42,20 @@ hr {
 button {
 	cursor: pointer;
 }
+
+blockquote {
+	border-left: 0.3rem solid cornflowerblue;
+	padding-left: .5rem;
+	margin: .5rem 0 .5rem 0.5rem;
+}
+
+.md-spoiler-text {
+	background: vars.$text;
+	transition: background-color .5s ease;
+	transition-duration: 2.5s;
+	
+	&:hover {
+		background: inherit;
+		transition-duration: .5s;
+	}
+}

@@ -1,47 +1,37 @@
 import Ph_VideoWrapper from "../videoWrapper.js";
 
-export default class Ph_VideoAudio extends Ph_VideoWrapper {
+export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 	video: HTMLVideoElement;
-	audio: HTMLVideoElement;
 	lastNon0Volume: number;
 
-	constructor(videoMp4Url: string, audioMp4Url: string) {
+	constructor(sources: { src: string, type: string }[]) {
 		super();
 
 		this.video = document.createElement("video");
 		this.video.setAttribute("loop", "");
-		this.video.innerHTML = `<source src="${videoMp4Url}" type="video/mp4">`;
 		this.appendChild(this.video);
-		
-		this.audio = document.createElement("video");
-		this.audio.setAttribute("loop", "");
-		this.audio.classList.add("hide");
-		this.audio.innerHTML = `<source src="${audioMp4Url}" type="video/mp4">`;
-		this.appendChild(this.audio);
-
-		this.video.addEventListener("play", () => this.audio.play());
-		this.video.addEventListener("pause", () => this.audio.pause());
-		this.video.addEventListener("seeking", () => this.audio.currentTime = this.video.currentTime);
+		for (const source of sources)
+			this.video.insertAdjacentHTML("beforeend", `<source src="${source.src}" type="${source.type}">`);
 
 		this.lastNon0Volume = this.video.volume;
 	}
 
-	play() {
+	play(): void {
 		this.video.play();
 	}
 
-	pause() {
+	pause(): void {
 		this.video.pause();
 	}
 
-	togglePlay() {
+	togglePlay(): void {
 		if (this.video.paused)
-			this.play();
+			this.video.play();
 		else
-			this.pause();
+			this.video.pause();
 	}
 
-	seekTo(time: number) {
+	seekTo(time: number): void {
 		this.video.currentTime = time;
 	}
 
@@ -61,9 +51,9 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 	}
 
 	setVolume(vol: number): void {
-		this.audio.volume = Math.min(1, Math.max(0, vol));
-		if (this.audio.volume > 0)
-			this.lastNon0Volume = this.audio.volume;
+		this.video.volume = Math.min(1, Math.max(0, vol));
+		if (this.video.volume > 0)
+			this.lastNon0Volume = this.video.volume;
 	}
 
 	volumePlus(): void {
@@ -84,4 +74,4 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 
 }
 
-customElements.define("ph-video-audio", Ph_VideoAudio);
+customElements.define("ph-video", Ph_SimpleVideo);
