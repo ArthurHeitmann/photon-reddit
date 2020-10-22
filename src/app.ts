@@ -14,8 +14,8 @@ app.get("/redirect", (req, res) => {
 			(data: Object) => res.redirect(
 				`/setAccessToken?accessToken=${encodeURIComponent(data["access_token"])}&refreshToken=${encodeURIComponent(data["refresh_token"])}`)
 		).catch(error => {
-			console.error(`Error getting access token ${error}`);
-			res.send(`error getting access token ${error}`);
+			console.error(`Error getting access token ${JSON.stringify(error, null, 4)}`);
+			res.send(`error getting access token ${JSON.stringify(error, null, 4)}`);
 		});
 	}
 	else {
@@ -32,8 +32,8 @@ app.get("/refreshToken", (req, res) => {
 			(data: Object) => 
 				res.send(`{ "accessToken": "${encodeURIComponent(data["access_token"])}" }`)
 		).catch(error => {
-			console.error(`Error getting access token ${error}`);
-			res.send(`error getting access token ${error}`);
+			console.error(`Error getting access token ${JSON.stringify(error, null, 4)}`);
+			res.send(`error getting access token ${JSON.stringify(error, null, 4)}`);
 		});
 	}
 	else {

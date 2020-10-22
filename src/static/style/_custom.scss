@@ -217,20 +217,51 @@ header {
 	video {
 		width: 100%;
 		display: block;
-		max-height: 95vh;
 		object-fit: contain;
+		max-height: 95vh;
 	}
 
 	.controls {
 		position: absolute;
 		bottom: 0;
 		display: flex;
-		justify-content: space-between;
+		gap: .5rem;
 		width: 100%;
 		height: 3rem;
 		background-color: #121212ad;
 		transition: all .25s ease;
 		transform: translateY(100%);
+
+		&:hover {
+			.progressBar {
+				background: #f07f7f80;
+				transform: scaleY(3);
+			}
+		}
+
+		.progressBar {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: .25rem;
+			--progress: 0;
+			transition: all .25s ease;
+
+			> div {
+				height: 100%;
+				width: calc(100% * var(--progress));
+				transition: width .25s linear;
+				background: lightcoral;
+				border-right: .25rem solid white;
+			}
+		}
+	}
+
+	.fullscreen {
+		video {
+			max-height: unset;
+		}
 	}
 	
 	&.controlsVisible {
@@ -364,6 +395,12 @@ header {
 				video {
 					border-bottom-left-radius: 1rem;
 					border-bottom-right-radius: 1rem;
+				}
+
+				.fullscreen {
+					video {
+						border-radius: 0;
+					}
 				}
 			}
 		}

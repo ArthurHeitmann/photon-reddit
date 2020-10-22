@@ -3,7 +3,6 @@ import Ph_VideoWrapper from "../videoWrapper.js";
 export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 	video: HTMLVideoElement;
 	lastNon0Volume: number;
-	isFullscreen: boolean = false;
 
 	constructor(sources: { src: string, type: string }[]) {
 		super();
@@ -74,17 +73,18 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 	}
 
 	setTimeUpdateCallback(callback: () => void): void {
-		this.video.addEventListener("timeupdate", callback);
+		this.video.addEventListener("timeupdate", callback, { passive: true });
 	}
 
 	toggleFullscreen(): boolean {
-		if (this.isFullscreen) {
+		this.classList.toggle("fullscreen");
+		if (document.fullscreenElement) {
 			document.exitFullscreen();
-			return this.isFullscreen = false;
+			return false;
 		}
 		else if (this.parentElement.requestFullscreen) {
 			this.parentElement.requestFullscreen();
-			return this.isFullscreen = true;
+			return true;
 		}
 	}
 }

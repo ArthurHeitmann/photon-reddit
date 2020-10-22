@@ -58,10 +58,13 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		const controls = document.createElement("div");
 		this.appendChild(controls);
 		controls.className = "controls";
+		this.classList.add("controlsVisible");
 
-		this.addEventListener("mouseenter", this.showControls.bind(this));
-		this.addEventListener("mousemove", this.restartHideTimeout.bind(this));
-		this.addEventListener("mouseleave", this.hideControls.bind(this));
+		this.video.addEventListener("mouseenter", this.showControls.bind(this));
+		this.video.addEventListener("mousemove", this.restartHideTimeout.bind(this));
+		this.video.addEventListener("mouseleave", e => controls.contains(e.relatedTarget as HTMLElement) || this.hideControls());
+		controls.addEventListener("mouseenter", this.clearHideTimeout.bind(this))
+		controls.addEventListener("mouseleave", e => this.video.contains(e.relatedTarget as HTMLElement) || this.hideControls());
 		this.video.addEventListener("click", () => this.video.togglePlay());
 		this.video.addEventListener("dblclick", () => this.video.toggleFullscreen());
 
@@ -70,6 +73,19 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		playButton.innerText = ">";
 		playButton.addEventListener("click", () => this.video.togglePlay());
 
+		const progressBarWrapper = document.createElement("div");
+		controls.appendChild(progressBarWrapper);
+		progressBarWrapper.className = "progressBar";
+		const progressBar = document.createElement("div");
+		progressBarWrapper.appendChild(progressBar);
+
+		this.video.setTimeUpdateCallback(() => {
+			progressBarWrapper.style.setProperty("--progress", (this.video.getCurrentTime() / this.video.getMaxTime()).toString());
+		});
+		progressBarWrapper.addEventListener("click", (e: MouseEvent) => {
+			this.video.seekTo(e.offsetX / progressBarWrapper.offsetWidth * this.video.getMaxTime());
+		});
+
 		const muteButton = document.createElement("button");
 		controls.appendChild(muteButton);
 		muteButton.innerText = "M";
@@ -77,7 +93,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 
 		const fullscreenButton = document.createElement("button");
 		controls.appendChild(fullscreenButton);
-		fullscreenButton.innerText = "[ ]";
+		fullscreenButton.innerHTML = "[&nbsp;&nbsp;&nbsp;]";
 		fullscreenButton.addEventListener("click", () => this.video.toggleFullscreen());
 	}
 
