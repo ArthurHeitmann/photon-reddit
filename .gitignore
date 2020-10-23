@@ -121,3 +121,4 @@ src/**/*.css
 src/**/*.css.map
 
 .vscode/**
+.idea/**
