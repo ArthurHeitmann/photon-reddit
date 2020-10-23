@@ -230,14 +230,7 @@ header {
 		height: 3rem;
 		background-color: #121212ad;
 		transition: all .25s ease;
-		transform: translateY(100%);
-
-		&:hover {
-			.progressBar {
-				background: #f07f7f80;
-				transform: scaleY(3);
-			}
-		}
+		transform: translateY(101%);
 
 		.progressBar {
 			position: absolute;
@@ -247,6 +240,11 @@ header {
 			height: .25rem;
 			--progress: 0;
 			transition: all .25s ease;
+
+			&:hover {
+				background: #f07f7f80;
+				transform: scaleY(3);
+			}
 
 			> div {
 				height: 100%;
@@ -260,7 +258,7 @@ header {
 
 	.fullscreen {
 		video {
-			max-height: unset;
+			max-height: 100%;
 		}
 	}
 	
@@ -501,6 +499,10 @@ header {
 	padding: 1rem 0 1rem 1rem;
 
 	&.isCollapsed {
+		&.rootComment {
+			padding-bottom: 0;
+		}
+
 		.actions > :not(.commentCollapser) {
 			display: none;
 		}
@@ -516,6 +518,27 @@ header {
 
 		 > * {
 			margin: 0 .25rem;
+		}
+
+		.user.op {
+			margin-right: .75rem;
+
+			::before {
+				content: "";
+				position: absolute;
+				z-index: -1;
+				width: 100%;
+				height: 100%;
+				background: #e65d5d;
+				padding: .125rem 0.6rem;
+				margin-top: -.125rem;
+				margin-left: -.6rem;
+				border-radius: 1rem;
+			}
+
+			* {
+				color: vars.$text;
+			}
 		}
 	}
 

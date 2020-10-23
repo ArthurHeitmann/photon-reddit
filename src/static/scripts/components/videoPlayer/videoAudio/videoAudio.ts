@@ -24,8 +24,8 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 		this.video.addEventListener("play", () => this.audio.play());
 		this.video.addEventListener("pause", () => this.audio.pause());
 		this.video.addEventListener("seeking", () => this.audio.currentTime = this.video.currentTime);
-		this.audio.addEventListener("play", () => this.video.paused && this.audio.pause());
-		this.audio.addEventListener("pause", () => !this.video.paused && this.audio.play());
+		this.audio.addEventListener("play", () => this.video.play());
+		this.audio.addEventListener("pause", () => this.video.pause());
 		
 		this.lastNon0Volume = this.audio.volume;
 	}

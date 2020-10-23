@@ -38,7 +38,7 @@ export default class Ph_Comment extends Ph_FeedItem {
 		const mainPart = document.createElement("div");
 		mainPart.innerHTML = `
 			<div class="header flex">
-				<a href="/u/${commentData.data["author"]}" class="user">
+				<a href="/u/${commentData.data["author"]}" class="user ${commentData.data["is_submitter"] ? "op" : ""}">
 					<span>u/${commentData.data["author"]}</span>
 				</a>
 				<div class="dropdown">${ new Date(parseInt(commentData.data["created_utc"])).toTimeString() }</div>

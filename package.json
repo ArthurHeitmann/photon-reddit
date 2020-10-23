@@ -6,8 +6,11 @@
   "type": "module",
   "scripts": {
     "start": "tsc && sass src/static && node src/app.js",
-    "build": "tsc && sass src/static",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "watch-sass": " sass --watch src/static/style/main.scss:src/static/style/main.css",
+    "watch-sass-wsl2": " sass --watch --poll src/static/style/main.scss:src/static/style/main.css",
+    "watch-tsc": "tsc -w",
+    "watch": "npm run watch-sass & npm run watch-tsc",
+    "watch-wsl2": "npm run watch-sass-wsl2 & npm run watch-tsc"
   },
   "author": "",
   "license": "MIT",
