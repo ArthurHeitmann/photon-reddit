@@ -40,6 +40,8 @@ export default class ViewsStack {
 		}
 		else
 			history.pushState(state.state, state.state.title, state.state.url);
+
+		window.dispatchEvent(new Event("viewChange"));
 	}
 
 	pushBefore(state: Ph_ViewState) {
@@ -76,16 +78,21 @@ export default class ViewsStack {
 
 		this.views[this.pos++].classList.add("hide");
 		this.views[this.pos].classList.remove("hide");
+
+		window.dispatchEvent(new Event("viewChange"));
 	}
 
 	back() {
 		if (this.views[this.pos - 1] == undefined) {						// probably a page reload,
 			pushLinkToHistoryComb(history.state.url, PushType.PushBefore);	// need to create to html elements
+			window.dispatchEvent(new Event("viewChange"));
 			return;
 		}
 
 		this.views[this.pos--].classList.add("hide");
 		this.views[this.pos].classList.remove("hide");
+
+		window.dispatchEvent(new Event("viewChange"));
 	}
 
 	setNextIsReplace() {

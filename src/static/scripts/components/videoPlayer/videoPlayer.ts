@@ -62,6 +62,8 @@ export default class Ph_VideoPlayer extends HTMLElement {
 	}
 
 	makeControls() {
+		window.addEventListener("viewChange", () => this.video.pause());
+
 		const controls = document.createElement("div");
 		this.appendChild(controls);
 		controls.className = "controls";
