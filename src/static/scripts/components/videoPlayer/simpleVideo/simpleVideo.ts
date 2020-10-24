@@ -4,14 +4,22 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 	video: HTMLVideoElement;
 	lastNon0Volume: number;
 
-	constructor(sources: { src: string, type: string }[]) {
+	constructor(sourcesArray?: { src?: string, type: string }[], sourcesHtml?: string[]) {
 		super();
 
 		this.video = document.createElement("video");
 		this.video.setAttribute("loop", "");
 		this.appendChild(this.video);
-		for (const source of sources)
-			this.video.insertAdjacentHTML("beforeend", `<source src="${source.src}" type="${source.type}">`);
+		if (sourcesArray) {
+			for (const source of sourcesArray)
+				this.video.insertAdjacentHTML("beforeend", `<source src="${source.src}" type="${source.type}">`);
+		}
+		else if (sourcesHtml) {
+			for (const source of sourcesHtml)
+				this.video.insertAdjacentHTML("beforeend", source);
+		}
+		else
+			throw Error("Invalid video sources")
 
 		this.lastNon0Volume = this.video.volume;
 	}

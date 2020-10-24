@@ -36,9 +36,14 @@ export default class Ph_Comment extends Ph_FeedItem {
 		this.appendChild(actionBar);
 
 		const mainPart = document.createElement("div");
+		let userAdditionClasses = "";
+		if (commentData.data["is_submitter"])
+			userAdditionClasses += " op";
+		if (commentData.data["distinguished"] === "moderator")
+			userAdditionClasses += " mod";
 		mainPart.innerHTML = `
 			<div class="header flex">
-				<a href="/u/${commentData.data["author"]}" class="user ${commentData.data["is_submitter"] ? "op" : ""}">
+				<a href="/u/${commentData.data["author"]}" class="user${userAdditionClasses}">
 					<span>u/${commentData.data["author"]}</span>
 				</a>
 				<div class="dropdown">${ new Date(parseInt(commentData.data["created_utc"])).toTimeString() }</div>

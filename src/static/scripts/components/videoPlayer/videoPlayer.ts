@@ -13,7 +13,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 
 		this.url = postData.data["url"]; 
 		this.classList.add("videoPlayer");
-		switch (this.url.match(/^https?:\/\/([\w\.]+)/)[1]) {
+		switch (this.url.match(/^https?:\/\/w?w?w?\.?([\w\.]+)/)[1]) {
 			case "imgur.com":
 			case "i.imgur.com":
 				const typelessUrl = this.url.match(/^https?:\/\/i?\.?imgur\.com\/\w+/)[0];
@@ -42,8 +42,15 @@ export default class Ph_VideoPlayer extends HTMLElement {
 				], audioUrl));
 				break;
 			case "clips.twitch.tv":
-				const url = postData.data["media"]["oembed"]["thumbnail_url"].match(/(.*)-social-preview.jpg$/)[1];
-				this.appendChild(this. video = new Ph_SimpleVideo([{ src: url + ".mp4", type: "video/mp4" }]));
+				const twitchUrl = postData.data["media"]["oembed"]["thumbnail_url"].match(/(.*)-social-preview.jpg$/)[1];
+				this.appendChild(this. video = new Ph_SimpleVideo([{ src: twitchUrl + ".mp4", type: "video/mp4" }]));
+				break;
+			case "redgifs.com":
+				const iframeUrl = this.url.replace(/\/watch\//, "/ifr/");
+				fetch(`/getIframeSrc?url=${encodeURIComponent(iframeUrl)}`).then(res => res.json().then(src => {
+					this.appendChild(this.video = new Ph_SimpleVideo(null, src["src"]));
+					this.makeControls();
+				}));
 				break;
 			default:
 				this.innerText = `Unknown video provider for ${postData.data["url"]}`;

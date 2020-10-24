@@ -1,5 +1,6 @@
 import express from "express";
 import { initialAccessToken, refreshAccessToken } from "./static/scripts/login/loginRedirect.js"
+import fetch from "node-fetch"
 const app = express();
 app.use(express.static('src/static'));
 const port = 8080;
@@ -47,6 +48,15 @@ app.get("/setAccessToken", (req, res) => {
 	res.sendFile(setAccessTokenFile);
 });
 
+app.get("/getIframeSrc", (req, res) => {
+	fetch(req.query["url"].toString()).then(resp => resp.text().then(text => {
+		let matches: string[] = text.match(/<source\s+src="[^<>\]!+"]*"\s+type="[\w\/]+"\s*\/?>/g);
+		matches = matches.map(src => src.replace(/\s+/g, " "));
+		res.send(JSON.stringify({
+			"src": matches
+		}));
+	}));
+});
 
 const indexFile = __dirname + "/src/static/index.html"
 // catch all paths

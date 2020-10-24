@@ -149,6 +149,7 @@ header {
 	}
 
 	.dropDownArea {
+		visibility: hidden;
 		position: absolute;
 		z-index: 1;
 		top: 100%;
@@ -167,9 +168,6 @@ header {
 		height: 2.4rem;
 		line-height: 2.4rem;
 		background-color: vars.$background-el1;
-		border-bottom: 1px solid vars.$text;
-		border-left: 1px solid vars.$text;
-		border-right: 1px solid vars.$text;
 		@extend %shadow-diffuse;
 
 		opacity: 0;
@@ -309,6 +307,39 @@ header {
 	.postAndComments, .universalFeed {
 		margin: 0 auto;
 		width: calc(50% - 2rem);
+	}
+}
+
+.user {
+	&.mod * {
+		color: lightgreen;
+	}
+
+	&.op {
+		margin-right: .75rem;
+
+		::before {
+			content: "";
+			position: absolute;
+			z-index: -1;
+			width: 100%;
+			height: 100%;
+			background: #e65d5d;
+			padding: .125rem 0.6rem;
+			margin-top: -.125rem;
+			margin-left: -.6rem;
+			border-radius: 1rem;
+		}
+
+		&.mod {
+			::before {
+				background: green;
+			}
+		}
+
+		* {
+			color: vars.$text;
+		}
 	}
 }
 
@@ -519,27 +550,6 @@ header {
 		 > * {
 			margin: 0 .25rem;
 		}
-
-		.user.op {
-			margin-right: .75rem;
-
-			::before {
-				content: "";
-				position: absolute;
-				z-index: -1;
-				width: 100%;
-				height: 100%;
-				background: #e65d5d;
-				padding: .125rem 0.6rem;
-				margin-top: -.125rem;
-				margin-left: -.6rem;
-				border-radius: 1rem;
-			}
-
-			* {
-				color: vars.$text;
-			}
-		}
 	}
 
 	.commentCollapser {
@@ -591,4 +601,40 @@ a {
 	right: 2rem;
 	width: 2rem;
 	height: 2rem;
+
+	&::before {
+		content: "";
+		position: absolute;
+		background: var(--text-color);
+		border-radius: .1rem;
+		width: 100%;
+		height: 10%;
+		top: 50%;
+		left: 0;
+		transform: translateY(-50%) rotate(45deg);
+		transition: transform .25s ease;
+	}
+
+	&::after {
+		content: "";
+		position: absolute;
+		background: var(--text-color);
+		border-radius: .1rem;
+		width: 100%;
+		height: 10%;
+		top: 50%;
+		left: 0;
+		transform: translateY(-50%) rotate(-45deg);
+		transition: transform .25s ease;
+	}
+
+	&:hover {
+		&::before {
+			transform: translateY(-50%) rotate(45deg) scaleY(1.5);
+		}
+
+		&::after {
+			transform: translateY(-50%) rotate(-45deg) scaleY(1.5);
+		}
+	}
 }
