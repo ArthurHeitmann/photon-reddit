@@ -300,13 +300,14 @@ header {
 }
 
 .postAndComments, .universalFeed {
-	width: calc(100% - 2rem);
+	margin: 0 .5rem 0 auto;
+	width: calc(100% - 2.8rem);
 }
 
 @media (orientation: landscape) {
 	.postAndComments, .universalFeed {
 		margin: 0 auto;
-		width: calc(50% - 2rem);
+		width: 50%;
 	}
 }
 
@@ -394,18 +395,12 @@ header {
 
 		@media (orientation: portrait) {
 			.actions {
-				transform: translateX(calc(100%));
+				transform: translateX(-100%);
 			}
-		}
-		
-		.header {
-			margin: vars.$post-padding;
 		}
 
-		@media (orientation: portrait) {
-			.header {
-				margin-left: 6.5rem
-			}
+		.header {
+			margin: vars.$post-padding;
 		}
 
 		.content {
@@ -437,9 +432,7 @@ header {
 
 	.actions {
 		z-index: 1;
-		@media (orientation: landscape) {
-			min-height: 100%;
-		}
+		min-height: 100%;
 
 		> .wrapper {
 			position: sticky;
