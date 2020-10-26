@@ -1,8 +1,39 @@
 import Votable from "../components/misc/votable/votable.js";
 import { checkTokenExpiry } from "../login/login.js";
 import { splitPathQuery } from "../utils/conv.js";
+import {isLoggedIn} from "../utils/globals.js";
 
-export async function oath2Request(pathAndQuery, params: string[][] = [], options = {}, attempt = 0) {
+export async function redditApiRequest(pathAndQuery, params: string[][], requiresLogin: boolean, options = {}) {
+	if (requiresLogin && !isLoggedIn)
+		throw Error("This feature requires te be logged in");
+
+	if (requiresLogin || isLoggedIn)
+		return  await oath2Request(pathAndQuery, params, options);
+	else
+		return  await simpleApiRequest(pathAndQuery, params);
+}
+
+async function simpleApiRequest(pathAndQuery, params: string[][]) {
+	pathAndQuery = fixUrl(pathAndQuery);
+	let [path, query] = splitPathQuery(pathAndQuery);
+	path = path.replace(/\/?$/, "/.json")
+
+	const parameters = new URLSearchParams(query);
+	for (const param of params)
+		parameters.append(param[0], param[1]);
+	parameters.append("raw_json", "1");
+
+	try {
+		const response = await fetch(`https://www.reddit.com${path}?${parameters.toString()}`);
+		return await response.json();
+	} catch (e) {
+		// maybe the token has expired, try to refresh it; try again up to 3 times
+		return { error: e }
+	}
+
+}
+
+async function oath2Request(pathAndQuery, params: string[][], options: Object, attempt = 0) {
 	pathAndQuery = fixUrl(pathAndQuery, attempt);
 	const [path, query] = splitPathQuery(pathAndQuery);
 
@@ -14,7 +45,6 @@ export async function oath2Request(pathAndQuery, params: string[][] = [], option
 		...options,
 		headers: new Headers ({
 			Authorization: `Bearer ${ localStorage["accessToken"] }`,
-			"User-Agent": "web:reddit-photon:0.1 (by u/RaiderBV)"
 		}),
 	};
 	try {
@@ -37,7 +67,7 @@ function fixUrl(url: string, attempt = 0) {
 }
 
 export async function mySubreddits() {
-	return await oath2Request("subreddits/mine/subscriber");
+	return await redditApiRequest("subreddits/mine/subscriber", [], true);
 }
 
 export enum VoteDirection {
@@ -61,11 +91,11 @@ export function voteDirectionFromLikes(likes: boolean) {
 
 export async function vote(votable: Votable): Promise<boolean> {
 	try {
-		const resp = await oath2Request("/api/vote", [
+		const resp = await redditApiRequest("/api/vote", [
 			["dir", votable.currentVoteDirection], 
 			["id", votable.votableId]
 		],
-		{ method: "POST" });
+		true, { method: "POST" });
 		return Object.keys(resp).length === 0 && resp.constructor === Object;		// basic does what resp === {} should (but doesn't) do
 	} catch (error) {
 		return false	
@@ -74,10 +104,10 @@ export async function vote(votable: Votable): Promise<boolean> {
 
 export async function save(id: string, isSaved: boolean): Promise<boolean> {
 	try {
-		const resp = await oath2Request(isSaved ? "/api/save" : "/api/unsave", [
+		const resp = await redditApiRequest(isSaved ? "/api/save" : "/api/unsave", [
 			["id", id]
 		],
-		{ method: "POST" });
+		true, { method: "POST" });
 		return Object.keys(resp).length === 0 && resp.constructor === Object;		// basic does what resp === {} should (but doesn't) do
 	} catch (error) {
 		return false	

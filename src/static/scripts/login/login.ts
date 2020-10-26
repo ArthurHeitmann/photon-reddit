@@ -1,4 +1,5 @@
 import { appId, redirectURI } from "../utils/consts.js";
+import {isLoggedIn, setIsLoggedIn} from "../utils/globals.js";
 
 const tokenDuration = "temporary";
 const scope = ["identity", "edit", "flair", "history", "modconfig", "modflair", "modlog", "modposts", "modwiki", "mysubreddits", "privatemessages", "read", "report", "save", "submit", "subscribe", "vote", "wikiedit", "wikiread"];
@@ -22,16 +23,17 @@ export function initiateLogin() {
  */
 export async function checkTokenExpiry(): Promise<boolean> {
 	// check if token and expiration date are set
+
 	if (!localStorage.accessToken || !localStorage.expiration)
-		return false;
+		return setIsLoggedIn(false);
 	// parse expiration date
 	const expiration = parseInt(localStorage.expiration);
 	if (!expiration)
-		return false;
+		return setIsLoggedIn(false);
 	let timeToExpiration = expiration - Date.now();
 	// return if more than 60 seconds until expiry
 	if (timeToExpiration > 60000)
-		return true;
+		return setIsLoggedIn(true);
 	
 	const response = await fetch(`/refreshToken?refreshToken=${ encodeURIComponent(localStorage.refreshToken) }`);
 	const newTokenText = await response.text();
@@ -40,17 +42,17 @@ export async function checkTokenExpiry(): Promise<boolean> {
 		localStorage.accessToken = newToken.accessToken;
 		localStorage.expiration = (Date.now() + (59 * 60 * 1000)).toString();
 		console.log("successfully refreshed access token");			// TODO remove
-		return true;
+		return setIsLoggedIn(true);
 	}
 	else {
 		console.error("error getting new token");	// TODO display error in UI
-		return false;
+		return setIsLoggedIn(false);
 	}
 }
 
 export function isAccessTokenValid(): boolean {
 	// check if token and expiration date are set
-	if (!localStorage.accessToken || !localStorage.expiration)
+	if (!localStorage.accessToken || !localStorage.expiration || !isLoggedIn)
 		return false;
 	// parse expiration date
 	const expiration = parseInt(localStorage.expiration);

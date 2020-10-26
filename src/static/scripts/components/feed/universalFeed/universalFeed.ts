@@ -1,4 +1,4 @@
-import { oath2Request } from "../../../api/api.js";
+import {redditApiRequest} from "../../../api/api.js";
 import { viewsStack } from "../../../state/stateManager.js";
 import { splitPathQuery } from "../../../utils/conv.js";
 import { PostSorting, RedditApiType, SortPostsOrder } from "../../../utils/types.js";
@@ -34,15 +34,14 @@ export default class Ph_UniversalFeed extends Ph_Feed {
 				return new Ph_Comment(itemData, false, true);
 			default:
 				throw new Error(`What is this feed item? ${JSON.stringify(itemData, null, 4)}`);
-				;
 		}
 	}
 
 	async loadMore(loadPosition) {
-		const posts: RedditApiType = await oath2Request(this.requestUrl, [
+		const posts: RedditApiType = await redditApiRequest(this.requestUrl, [
 			["before", loadPosition === LoadPosition.Before ? this.beforeData : "null"],
 			["after",  loadPosition === LoadPosition.After  ? this.afterData : "null"],
-		]);
+		], false);
 
 		if (loadPosition === LoadPosition.After) {
 			for (const postData of posts.data.children) {
@@ -95,7 +94,7 @@ export default class Ph_UniversalFeed extends Ph_Feed {
             last = this.lastElementChild;
 		}
 		
-        const request: RedditApiType = await oath2Request(newUrl);
+        const request: RedditApiType = await redditApiRequest(newUrl, [], false);
         if (request["error"]) {
             throw new Error(`Error making sort request: ${JSON.stringify(request)}`);
         }

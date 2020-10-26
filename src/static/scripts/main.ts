@@ -17,11 +17,9 @@ function init(): void {
 	}
 	else {
 		checkTokenExpiry().then(isValid => {
-			if (isValid)
-				loadPosts();
-			else
-			loginBtn.hidden = false;
-			
+			if (!isValid)
+				loginBtn.hidden = false;
+			loadPosts();
 		})
 	}
 }

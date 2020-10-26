@@ -1,4 +1,4 @@
-import { oath2Request } from "../api/api.js";
+import {redditApiRequest} from "../api/api.js";
 import Ph_UniversalFeed from "../components/feed/universalFeed/universalFeed.js";
 import Ph_PostAndComments from "../components/postAndComments/postAndComments.js";
 import Ph_ViewStateLoader from "../components/viewState/viewStateLoader/viewStateLoader.js";
@@ -52,7 +52,7 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 	for (const param of urlParams.entries())
 		params.push(param);
 
-	const requestData = await oath2Request(path, params);
+	const requestData = await redditApiRequest(path, params, false);
 	if (requestData["error"])
 		throw new Error("Error making request to reddit");
 
