@@ -307,7 +307,14 @@ header {
 @media (orientation: landscape) {
 	.postAndComments, .universalFeed {
 		margin: 0 auto;
+	}
+
+	.universalFeed {
 		width: 50%;
+	}
+
+	.postAndComments, {
+		width: 60%;
 	}
 }
 

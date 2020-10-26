@@ -8,7 +8,7 @@ import ViewsStack from "./viewsStack.js";
 export const viewsStack: ViewsStack = new ViewsStack();
 viewsStack.setNextIsReplace();
 
-window.onpopstate = (e: PopStateEvent) => {
+window.addEventListener("popstate", (e: PopStateEvent) => {
 	if (e.state.index > viewsStack.position()) {
 		for(let i = e.state.index - viewsStack.position(); i > 0; --i) 
 			viewsStack.forward(true);
@@ -19,7 +19,7 @@ window.onpopstate = (e: PopStateEvent) => {
 	}
 	else
 		throw new Error("Equal state");
-};
+});
 
 export enum PushType {
 	PushAfter, PushBefore
