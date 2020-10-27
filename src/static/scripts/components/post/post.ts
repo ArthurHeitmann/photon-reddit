@@ -26,7 +26,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		super(postData, isInFeed);
 
 		if (postData.kind !== "t3")
-			throw new Error("Invalid comment data type");
+			throw "Invalid comment data type";
 
 		this.votableId = postData.data["name"];
 		this.currentVoteDirection = voteDirectionFromLikes(postData.data["likes"]);

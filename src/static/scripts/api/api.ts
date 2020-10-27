@@ -5,7 +5,7 @@ import {isLoggedIn} from "../utils/globals.js";
 
 export async function redditApiRequest(pathAndQuery, params: string[][], requiresLogin: boolean, options = {}) {
 	if (requiresLogin && !isLoggedIn)
-		throw Error("This feature requires te be logged in");
+		throw "This feature requires te be logged in";
 
 	if (requiresLogin || isLoggedIn)
 		return  await oath2Request(pathAndQuery, params, options);

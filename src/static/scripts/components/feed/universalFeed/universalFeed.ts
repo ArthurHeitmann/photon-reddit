@@ -45,16 +45,15 @@ export default class Ph_UniversalFeed extends Ph_Feed {
 
 		if (loadPosition === LoadPosition.After) {
 			for (const postData of posts.data.children) {
-				this.appendChild(new Ph_Post(postData, true));
+				this.appendChild(this.makeFeedItem(postData));
 			}
-			
 			this.afterData = this.children[this.childElementCount - 1]["itemId"];
 			if (this.afterData === null)
 				this.hasReachedEndOfFeed = true;
 		}
 		else {
 			for (const postData of posts.data.children.reverse()) {
-				const newPost = new Ph_Post(postData, true);
+				const newPost = this.makeFeedItem(postData);
 				this.header.insertAdjacentElement("afterend", newPost);
 			}
 

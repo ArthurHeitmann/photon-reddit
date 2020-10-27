@@ -19,9 +19,10 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 				this.video.insertAdjacentHTML("beforeend", source);
 		}
 		else
-			throw Error("Invalid video sources")
+			throw "Invalid video sources"
 
 		this.lastNon0Volume = this.video.volume;
+		this.video.muted = true;
 	}
 
 	play(): void {
@@ -54,12 +55,7 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 	}
 
 	toggleMute(): boolean {
-		if (this.video.volume === 0)
-			this.setVolume(this.lastNon0Volume ? this.lastNon0Volume : .5);
-		else
-			this.setVolume(0);
-		
-		return this.video.volume !== 0;
+		return this.video.muted = !this.video.muted;
 	}
 
 	setVolume(vol: number): void {

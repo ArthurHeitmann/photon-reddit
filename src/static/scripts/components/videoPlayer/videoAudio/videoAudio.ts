@@ -28,6 +28,7 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 		this.audio.addEventListener("pause", () => this.video.pause());
 		
 		this.lastNon0Volume = this.audio.volume;
+		this.audio.muted = true;
 	}
 
 	play() {
@@ -60,12 +61,7 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 	}
 
 	toggleMute(): boolean {
-		if (this.audio.volume === 0)
-			this.setVolume(this.lastNon0Volume ? this.lastNon0Volume : .5);
-		else
-			this.setVolume(0);
-
-		return this.audio.volume !== 0;
+		return this.audio.muted = !this.audio.muted;
 	}
 
 	setVolume(vol: number): void {
