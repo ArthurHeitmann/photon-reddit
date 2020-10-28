@@ -275,6 +275,7 @@ header {
 		.volumeWrapper {
 			height: 2.5rem;
 			display: flex;
+			transition: all .5s ease;
 
 			> .progressBar {
 				&:hover {
@@ -285,6 +286,11 @@ header {
 				height: .4rem;
 				margin: auto 0;
 				background: black;
+			}
+
+			&.remove {
+				opacity: 0;
+				visibility: hidden;
 			}
 		}
 

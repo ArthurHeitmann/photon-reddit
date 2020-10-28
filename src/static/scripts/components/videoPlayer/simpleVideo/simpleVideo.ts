@@ -3,6 +3,7 @@ import Ph_VideoWrapper from "../videoWrapper.js";
 export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 	video: HTMLVideoElement;
 	lastNon0Volume: number;
+	noAudioProgressCallback: () => void;
 
 	constructor(sourcesArray?: { src?: string, type: string }[], sourcesHtml?: string[]) {
 		super();
@@ -23,6 +24,16 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 
 		this.lastNon0Volume = this.video.volume;
 		this.video.muted = true;
+
+		// this mess is needed in order to know if the video has audio
+		this.video.addEventListener("timeupdate", this.noAudioProgressCallback = () => {
+			if (this.video.currentTime > 0) {
+				this.video.removeEventListener("timeupdate", this.noAudioProgressCallback);
+				this.noAudioProgressCallback = undefined;
+				if (this.video["webkitAudioDecodedByteCount"] === 0 || this.video["mozHasAudio"] === false || this.video["audioTracks"] && this.video["audioTracks"]["length"] === 0)
+					this.dispatchEvent(new Event("ph-noaudio"));
+			}
+		});
 
 		this.video.addEventListener("play", () => this.dispatchEvent( new Event("ph-play")));
 		this.video.addEventListener("pause", () => this.dispatchEvent( new Event("ph-pause")));

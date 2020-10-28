@@ -113,6 +113,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 				volumeSlider.setProgress(e.detail);
 			}
 		)
+		this.video.addEventListener("ph-noaudio", () => volumeWrapper.classList.add("remove"));
 
 		// fullscreen
 		const { btn: fullscreenButton, img: fullscreenButtonImg} = this.makeImgBtn("/img/fullscreen.svg", controls);
