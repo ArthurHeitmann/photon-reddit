@@ -208,12 +208,12 @@ header {
 
 .progressBar {
 	--progress: 0;
+	position: relative;
 	transition: all .25s ease;
 
 	> .progress {
 		height: 100%;
 		width: calc(100% * var(--progress));
-		transition: width .1s linear;
 		background: lightcoral;
 	}
 
@@ -305,6 +305,7 @@ header {
 			}
 
 			> .progress {
+				transition: width .1s linear;
 				border-right: .25rem solid white;
 			}
 		}

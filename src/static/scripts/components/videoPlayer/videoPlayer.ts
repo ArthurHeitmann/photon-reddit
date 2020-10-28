@@ -102,12 +102,8 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		controls.appendChild(volumeWrapper);
 		const { btn: muteButton, img: muteButtonImg } = this.makeImgBtn("/img/audio.svg", volumeWrapper);
 		muteButton.addEventListener("click", () => this.video.toggleMute());
-		const volumeSlider = new Ph_ProgressBar();
-		volumeSlider.addEventListener("click", (e: MouseEvent) => {
-			const newVolume = e.offsetX / volumeSlider.offsetWidth;
-			this.video.setVolume(newVolume);
-
-		});
+		const volumeSlider = new Ph_ProgressBar(true, 20);
+		volumeSlider.addEventListener("ph-drag", (e: CustomEvent) => this.video.setVolume(e.detail));
 		volumeWrapper.appendChild(volumeSlider);
 		this.video.addEventListener("ph-volumechange",
 			(e: CustomEvent) => {
@@ -129,10 +125,10 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		)
 
 		// progress bar
-		const progressBar = new Ph_ProgressBar();
+		const progressBar = new Ph_ProgressBar(true);
 		controls.appendChild(progressBar);
-		progressBar.addEventListener("click", (e: MouseEvent) => {
-			this.video.seekTo(e.offsetX / progressBar.offsetWidth * this.video.getMaxTime());
+		progressBar.addEventListener("ph-drag", (e: CustomEvent) => {
+			this.video.seekTo(e.detail * this.video.getMaxTime());
 		});
 	}
 
