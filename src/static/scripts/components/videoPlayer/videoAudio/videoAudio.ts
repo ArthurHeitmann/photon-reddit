@@ -21,7 +21,8 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 		this.audio.innerHTML = `<source src="${audioMp4Url}" type="video/mp4">`;
 		this.appendChild(this.audio);
 
-		this.video.addEventListener("play", () => this.audio.play());
+		this.video.addEventListener("play", () => this.audio.play()
+			.catch(() => undefined /* the the event from the line below will cause a weird exception */));
 		this.video.addEventListener("pause", () => this.audio.pause());
 		this.video.addEventListener("seeking", () => this.audio.currentTime = this.video.currentTime);
 		this.audio.addEventListener("play", () => this.video.play());
@@ -30,12 +31,11 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 		this.lastNon0Volume = this.audio.volume;
 		this.audio.muted = true;
 
-		this.video.addEventListener("play", () => this.dispatchEvent( new Event("play")));
-		this.video.addEventListener("pause", () => this.dispatchEvent( new Event("pause")));
+		this.video.addEventListener("play", () => this.dispatchEvent( new Event("ph-play")));
+		this.video.addEventListener("pause", () => this.dispatchEvent( new Event("ph-pause")));
 		this.audio.addEventListener("volumechange", () => this.dispatchEvent(
-			new CustomEvent("volumechange", { detail: this.audio.muted ? 0 : this.audio.volume })));
-		this.video.addEventListener("progress", () => this.dispatchEvent(
-			new CustomEvent("currenttimechange", { detail: this.video.currentTime })));
+			new CustomEvent("ph-volumechange", { detail: this.audio.muted ? 0 : this.audio.volume })));
+		this.video.addEventListener("seeked", () => this.dispatchEvent(new Event("ph-seek")));
 	}
 
 	play() {

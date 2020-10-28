@@ -24,12 +24,11 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 		this.lastNon0Volume = this.video.volume;
 		this.video.muted = true;
 
-		this.video.addEventListener("play", () => this.dispatchEvent( new Event("play")));
-		this.video.addEventListener("pause", () => this.dispatchEvent( new Event("pause")));
+		this.video.addEventListener("play", () => this.dispatchEvent( new Event("ph-play")));
+		this.video.addEventListener("pause", () => this.dispatchEvent( new Event("ph-pause")));
 		this.video.addEventListener("volumechange", () => this.dispatchEvent(
-			new CustomEvent("volumechange", { detail: this.video.muted ? 0 : this.video.volume })));
-		this.video.addEventListener("progress", () => this.dispatchEvent(
-			new CustomEvent("currenttimechange", { detail: this.video.currentTime })));
+			new CustomEvent("ph-volumechange", { detail: this.video.muted ? 0 : this.video.volume })));
+		this.video.addEventListener("seeked", () => this.dispatchEvent(new Event("ph-seek")));
 	}
 
 	play(): void {

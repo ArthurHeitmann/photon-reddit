@@ -16,9 +16,8 @@ export default abstract class Ph_VideoWrapper extends HTMLElement {
 	abstract setVolume(vol: number): void;
 	abstract getVolume(): number;
 	// should be dispatching the following events
-	// - play
-	// - pause
-	// - volumechange
-	// - currenttimechange
-
+	// - ph-play
+	// - ph-pause
+	// - ph-volumechange
+	// - ph-seek
 }

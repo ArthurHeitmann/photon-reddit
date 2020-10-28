@@ -7,6 +7,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 	video: Ph_VideoWrapper;
 	hideTimeout = null;
 	url: string;
+	videoProgressInterval = null;
 
 	constructor(postData: RedditApiType) {
 		super();
@@ -78,12 +79,24 @@ export default class Ph_VideoPlayer extends HTMLElement {
 
 		const { btn: playButton, img: playBtnImg } = this.makeImgBtn("/img/playVideo.svg", controls);
 		playButton.addEventListener("click", () => this.video.togglePlay());
-		this.video.addEventListener("play", () => playBtnImg.src = "/img/pause.svg");
-		this.video.addEventListener("pause", () => playBtnImg.src = "/img/playVideo.svg");
+		this.video.addEventListener("ph-play", () => {
+			playBtnImg.src = "/img/pause.svg";
+			this.videoProgressInterval = setInterval(() => {
+				progressBarWrapper.style.setProperty("--progress", (this.video.getCurrentTime() / this.video.getMaxTime()).toString());
+			}, 100);
+		});
+		this.video.addEventListener("ph-seek", () => progressBarWrapper.style.setProperty("--progress", (this.video.getCurrentTime() / this.video.getMaxTime()).toString()));
+		this.video.addEventListener("ph-pause", () => {
+			playBtnImg.src = "/img/playVideo.svg";
+			if (this.videoProgressInterval !== null) {
+				clearTimeout(this.videoProgressInterval)
+				this.videoProgressInterval = null;
+			}
+		});
 
 		const { btn: muteButton, img: muteButtonImg } = this.makeImgBtn("/img/audio.svg", controls);
 		muteButton.addEventListener("click", () => this.video.toggleMute());
-		this.video.addEventListener("volumechange",
+		this.video.addEventListener("ph-volumechange",
 			(e: CustomEvent) => e.detail === 0 ?
 				muteButtonImg.src = "/img/mute.svg":
 				muteButtonImg.src = "/img/audio.svg"
@@ -104,9 +117,6 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		const progressBar = document.createElement("div");
 		progressBarWrapper.appendChild(progressBar);
 
-		this.video.addEventListener("currenttimechange", () => {
-			progressBarWrapper.style.setProperty("--progress", (this.video.getCurrentTime() / this.video.getMaxTime()).toString());
-		});
 		progressBarWrapper.addEventListener("click", (e: MouseEvent) => {
 			this.video.seekTo(e.offsetX / progressBarWrapper.offsetWidth * this.video.getMaxTime());
 		});

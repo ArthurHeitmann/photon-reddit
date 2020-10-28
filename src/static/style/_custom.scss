@@ -269,14 +269,14 @@ header {
 			> div {
 				height: 100%;
 				width: calc(100% * var(--progress));
-				transition: width .25s linear;
+				transition: width .1s linear;
 				background: lightcoral;
 				border-right: .25rem solid white;
 			}
 		}
 	}
 
-	.fullscreen {
+	&.fullscreen {
 		video {
 			max-height: 100%;
 			height: 100%;
