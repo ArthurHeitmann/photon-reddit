@@ -1,4 +1,5 @@
 import { RedditApiType } from "../../utils/types.js";
+import Ph_ProgressBar from "../misc/progressBar/progressBar.js";
 import Ph_SimpleVideo from "./simpleVideo/simpleVideo.js";
 import Ph_VideoAudio from "./videoAudio/videoAudio.js";
 import Ph_VideoWrapper from "./videoWrapper.js";
@@ -77,15 +78,16 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		this.video.addEventListener("click", () => this.video.togglePlay());
 		this.video.addEventListener("dblclick", () => this.toggleFullscreen());
 
+		// play, pause, progress bar
 		const { btn: playButton, img: playBtnImg } = this.makeImgBtn("/img/playVideo.svg", controls);
 		playButton.addEventListener("click", () => this.video.togglePlay());
 		this.video.addEventListener("ph-play", () => {
 			playBtnImg.src = "/img/pause.svg";
 			this.videoProgressInterval = setInterval(() => {
-				progressBarWrapper.style.setProperty("--progress", (this.video.getCurrentTime() / this.video.getMaxTime()).toString());
+				progressBar.setProgress(this.video.getCurrentTime() / this.video.getMaxTime());
 			}, 100);
 		});
-		this.video.addEventListener("ph-seek", () => progressBarWrapper.style.setProperty("--progress", (this.video.getCurrentTime() / this.video.getMaxTime()).toString()));
+		this.video.addEventListener("ph-seek", () => progressBar.setProgress(this.video.getCurrentTime() / this.video.getMaxTime()));
 		this.video.addEventListener("ph-pause", () => {
 			playBtnImg.src = "/img/playVideo.svg";
 			if (this.videoProgressInterval !== null) {
@@ -94,14 +96,29 @@ export default class Ph_VideoPlayer extends HTMLElement {
 			}
 		});
 
-		const { btn: muteButton, img: muteButtonImg } = this.makeImgBtn("/img/audio.svg", controls);
+		// volume
+		const volumeWrapper = document.createElement("div");
+		volumeWrapper.className = "volumeWrapper";
+		controls.appendChild(volumeWrapper);
+		const { btn: muteButton, img: muteButtonImg } = this.makeImgBtn("/img/audio.svg", volumeWrapper);
 		muteButton.addEventListener("click", () => this.video.toggleMute());
+		const volumeSlider = new Ph_ProgressBar();
+		volumeSlider.addEventListener("click", (e: MouseEvent) => {
+			const newVolume = e.offsetX / volumeSlider.offsetWidth;
+			this.video.setVolume(newVolume);
+
+		});
+		volumeWrapper.appendChild(volumeSlider);
 		this.video.addEventListener("ph-volumechange",
-			(e: CustomEvent) => e.detail === 0 ?
-				muteButtonImg.src = "/img/mute.svg":
-				muteButtonImg.src = "/img/audio.svg"
+			(e: CustomEvent) => {
+				e.detail === 0 ?
+					muteButtonImg.src = "/img/mute.svg":
+					muteButtonImg.src = "/img/audio.svg";
+				volumeSlider.setProgress(e.detail);
+			}
 		)
 
+		// fullscreen
 		const { btn: fullscreenButton, img: fullscreenButtonImg} = this.makeImgBtn("/img/fullscreen.svg", controls);
 		fullscreenButton.classList.add("mla");
 		fullscreenButton.addEventListener("click", () => this.toggleFullscreen())
@@ -111,14 +128,11 @@ export default class Ph_VideoPlayer extends HTMLElement {
 			fullscreenButtonImg.src = "/img/fullscreen.svg"
 		)
 
-		const progressBarWrapper = document.createElement("div");
-		controls.appendChild(progressBarWrapper);
-		progressBarWrapper.className = "progressBar";
-		const progressBar = document.createElement("div");
-		progressBarWrapper.appendChild(progressBar);
-
-		progressBarWrapper.addEventListener("click", (e: MouseEvent) => {
-			this.video.seekTo(e.offsetX / progressBarWrapper.offsetWidth * this.video.getMaxTime());
+		// progress bar
+		const progressBar = new Ph_ProgressBar();
+		controls.appendChild(progressBar);
+		progressBar.addEventListener("click", (e: MouseEvent) => {
+			this.video.seekTo(e.offsetX / progressBar.offsetWidth * this.video.getMaxTime());
 		});
 	}
 

@@ -68,6 +68,8 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 		this.video.volume = Math.min(1, Math.max(0, vol));
 		if (this.video.volume > 0)
 			this.lastNon0Volume = this.video.volume;
+		if (vol > 0 && this.video.muted)
+			this.video.muted = false;
 	}
 
 	getVolume(): number {

@@ -22,7 +22,7 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 		this.appendChild(this.audio);
 
 		this.video.addEventListener("play", () => this.audio.play()
-			.catch(() => undefined /* the the event from the line below will cause a weird exception */));
+			.catch(() => undefined /* the pause() call from the line below will cause a weird exception */));
 		this.video.addEventListener("pause", () => this.audio.pause());
 		this.video.addEventListener("seeking", () => this.audio.currentTime = this.video.currentTime);
 		this.audio.addEventListener("play", () => this.video.play());
@@ -75,6 +75,8 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 		this.audio.volume = Math.min(1, Math.max(0, vol));
 		if (this.audio.volume > 0)
 			this.lastNon0Volume = this.audio.volume;
+		if (vol > 0 && this.audio.muted)
+			this.audio.muted = false;
 	}
 
 	getVolume(): number {

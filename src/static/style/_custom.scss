@@ -206,6 +206,26 @@ header {
 	}
 }
 
+.progressBar {
+	--progress: 0;
+	transition: all .25s ease;
+
+	> .progress {
+		height: 100%;
+		width: calc(100% * var(--progress));
+		transition: width .1s linear;
+		background: lightcoral;
+	}
+
+	.accessibilitySpacer {
+		position: absolute;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		transform: scaleY(2.5);
+	}
+}
+
 .videoPlayer {
 	overflow: hidden;
 	width: 100%;
@@ -252,25 +272,39 @@ header {
 			}
 		}
 
-		.progressBar {
+		.volumeWrapper {
+			height: 2.5rem;
+			display: flex;
+
+			> .progressBar {
+				&:hover {
+					background: #f07f7f80;
+				}
+
+				width: 5rem;
+				height: .4rem;
+				margin: auto 0;
+				background: black;
+			}
+		}
+
+		 > .progressBar {
 			position: absolute;
 			top: 0;
 			left: 0;
 			width: 100%;
 			height: .25rem;
-			--progress: 0;
-			transition: all .25s ease;
 
 			&:hover {
 				background: #f07f7f80;
 				transform: scaleY(3);
+
+				.accessibilitySpacer {
+					transform: scaleY(2);
+				}
 			}
 
-			> div {
-				height: 100%;
-				width: calc(100% * var(--progress));
-				transition: width .1s linear;
-				background: lightcoral;
+			> .progress {
 				border-right: .25rem solid white;
 			}
 		}
