@@ -23,6 +23,13 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 
 		this.lastNon0Volume = this.video.volume;
 		this.video.muted = true;
+
+		this.video.addEventListener("play", () => this.dispatchEvent( new Event("play")));
+		this.video.addEventListener("pause", () => this.dispatchEvent( new Event("pause")));
+		this.video.addEventListener("volumechange", () => this.dispatchEvent(
+			new CustomEvent("volumechange", { detail: this.video.muted ? 0 : this.video.volume })));
+		this.video.addEventListener("progress", () => this.dispatchEvent(
+			new CustomEvent("currenttimechange", { detail: this.video.currentTime })));
 	}
 
 	play(): void {
@@ -64,33 +71,10 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 			this.lastNon0Volume = this.video.volume;
 	}
 
-	volumePlus(): void {
-		this.setVolume(this.video.volume + .1)
-	}
-	
-	volumeMinus(): void {
-		this.setVolume(this.video.volume - .1)
-	}
-
 	getVolume(): number {
 		return this.video.volume;
 	}
 
-	setTimeUpdateCallback(callback: () => void): void {
-		this.video.addEventListener("timeupdate", callback, { passive: true });
-	}
-
-	toggleFullscreen(): boolean {
-		this.classList.toggle("fullscreen");
-		if (document.fullscreenElement) {
-			document.exitFullscreen();
-			return false;
-		}
-		else if (this.parentElement.requestFullscreen) {
-			this.parentElement.requestFullscreen();
-			return true;
-		}
-	}
 }
 
 customElements.define("ph-video", Ph_SimpleVideo);

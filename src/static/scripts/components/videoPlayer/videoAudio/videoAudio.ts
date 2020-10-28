@@ -29,6 +29,13 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 		
 		this.lastNon0Volume = this.audio.volume;
 		this.audio.muted = true;
+
+		this.video.addEventListener("play", () => this.dispatchEvent( new Event("play")));
+		this.video.addEventListener("pause", () => this.dispatchEvent( new Event("pause")));
+		this.audio.addEventListener("volumechange", () => this.dispatchEvent(
+			new CustomEvent("volumechange", { detail: this.audio.muted ? 0 : this.audio.volume })));
+		this.video.addEventListener("progress", () => this.dispatchEvent(
+			new CustomEvent("currenttimechange", { detail: this.video.currentTime })));
 	}
 
 	play() {
@@ -70,32 +77,8 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 			this.lastNon0Volume = this.audio.volume;
 	}
 
-	volumePlus(): void {
-		this.setVolume(this.audio.volume + .1)
-	}
-	
-	volumeMinus(): void {
-		this.setVolume(this.audio.volume - .1)
-	}
-
 	getVolume(): number {
 		return this.audio.volume;
-	}
-
-	setTimeUpdateCallback(callback: () => void): void {
-		this.video.addEventListener("timeupdate", callback, { passive: true });
-	}
-
-	toggleFullscreen(): boolean {
-		this.classList.toggle("fullscreen");
-		if (document.fullscreenElement) {
-			document.exitFullscreen();
-			return false;
-		}
-		else if (this.parentElement.requestFullscreen) {
-			this.parentElement.requestFullscreen();
-			return true;
-		}
 	}
 }
 

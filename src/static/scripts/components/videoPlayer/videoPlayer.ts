@@ -71,16 +71,32 @@ export default class Ph_VideoPlayer extends HTMLElement {
 
 		this.video.addEventListener("mouseenter", this.showControls.bind(this));
 		this.video.addEventListener("mousemove", this.restartHideTimeout.bind(this));
-		this.video.addEventListener("mouseleave", e => controls.contains(e.relatedTarget as HTMLElement) || this.hideControls());
 		controls.addEventListener("mouseenter", this.clearHideTimeout.bind(this))
-		controls.addEventListener("mouseleave", e => this.video.contains(e.relatedTarget as HTMLElement) || this.hideControls());
+		controls.addEventListener("mouseleave", e => this.video.contains(e.relatedTarget as HTMLElement) || this.restartHideTimeout());
 		this.video.addEventListener("click", () => this.video.togglePlay());
-		this.video.addEventListener("dblclick", () => this.video.toggleFullscreen());
+		this.video.addEventListener("dblclick", () => this.toggleFullscreen());
 
-		const playButton = document.createElement("button");
-		controls.appendChild(playButton);
-		playButton.innerText = ">";
+		const { btn: playButton, img: playBtnImg } = this.makeImgBtn("/img/playVideo.svg", controls);
 		playButton.addEventListener("click", () => this.video.togglePlay());
+		this.video.addEventListener("play", () => playBtnImg.src = "/img/pause.svg");
+		this.video.addEventListener("pause", () => playBtnImg.src = "/img/playVideo.svg");
+
+		const { btn: muteButton, img: muteButtonImg } = this.makeImgBtn("/img/audio.svg", controls);
+		muteButton.addEventListener("click", () => this.video.toggleMute());
+		this.video.addEventListener("volumechange",
+			(e: CustomEvent) => e.detail === 0 ?
+				muteButtonImg.src = "/img/mute.svg":
+				muteButtonImg.src = "/img/audio.svg"
+		)
+
+		const { btn: fullscreenButton, img: fullscreenButtonImg} = this.makeImgBtn("/img/fullscreen.svg", controls);
+		fullscreenButton.classList.add("mla");
+		fullscreenButton.addEventListener("click", () => this.toggleFullscreen())
+		this.addEventListener("fullscreenchange",
+			() => document.fullscreenElement ?
+			fullscreenButtonImg.src = "/img/minimize.svg" :
+			fullscreenButtonImg.src = "/img/fullscreen.svg"
+		)
 
 		const progressBarWrapper = document.createElement("div");
 		controls.appendChild(progressBarWrapper);
@@ -88,22 +104,23 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		const progressBar = document.createElement("div");
 		progressBarWrapper.appendChild(progressBar);
 
-		this.video.setTimeUpdateCallback(() => {
+		this.video.addEventListener("currenttimechange", () => {
 			progressBarWrapper.style.setProperty("--progress", (this.video.getCurrentTime() / this.video.getMaxTime()).toString());
 		});
 		progressBarWrapper.addEventListener("click", (e: MouseEvent) => {
 			this.video.seekTo(e.offsetX / progressBarWrapper.offsetWidth * this.video.getMaxTime());
 		});
+	}
 
-		const muteButton = document.createElement("button");
-		controls.appendChild(muteButton);
-		muteButton.innerText = "M";
-		muteButton.addEventListener("click", () => this.video.toggleMute());
-
-		const fullscreenButton = document.createElement("button");
-		controls.appendChild(fullscreenButton);
-		fullscreenButton.innerHTML = "[&nbsp;&nbsp;&nbsp;]";
-		fullscreenButton.addEventListener("click", () => this.video.toggleFullscreen());
+	makeImgBtn(defaultSrc: string, appendTo: HTMLElement): { btn: HTMLButtonElement, img: HTMLImageElement } {
+		const button = document.createElement("button");
+		button.className = "imgBtn";
+		const btnImg = document.createElement("img");
+		btnImg.draggable = false;
+		btnImg.src = defaultSrc;
+		button.appendChild(btnImg);
+		appendTo.appendChild(button);
+		return { btn: button, img: btnImg };
 	}
 
 	showControls() {
@@ -135,6 +152,19 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		this.classList.remove("controlsVisible");
 		
 		this.clearHideTimeout();
+	}
+
+	toggleFullscreen(): boolean {
+		this.classList.toggle("fullscreen");
+		if (document.fullscreenElement) {
+			document.exitFullscreen();
+			return false;
+		}
+		else if (this.requestFullscreen) {
+			this.requestFullscreen();
+			return  true
+		}
+		throw "can't enter fullscreen";
 	}
 }
 
