@@ -1,7 +1,7 @@
 import { appId, redirectURI } from "../utils/consts.js";
 import {isLoggedIn, setIsLoggedIn} from "../utils/globals.js";
 
-const tokenDuration = "temporary";
+const tokenDuration = "permanent";
 const scope = ["identity", "edit", "flair", "history", "modconfig", "modflair", "modlog", "modposts", "modwiki", "mysubreddits", "privatemessages", "read", "report", "save", "submit", "subscribe", "vote", "wikiedit", "wikiread"];
 
 export function initiateLogin() {
