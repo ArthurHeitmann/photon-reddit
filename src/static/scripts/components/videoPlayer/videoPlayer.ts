@@ -204,6 +204,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 			{ displayHTML: "Popout", onSelectCallback: this.popoutVideo.bind(this) },
 		], `<img src="/img/settings2.svg">`, DirectionX.right, DirectionY.top, false);
 		this.controlsDropDown.classList.add("settings");
+		this.controlsDropDown.getElementsByClassName("dropDownButton")[0].classList.add("imgBtn");
 		controls.appendChild(this.controlsDropDown);
 
 		// fullscreen

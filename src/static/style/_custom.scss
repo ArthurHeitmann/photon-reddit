@@ -260,6 +260,12 @@ header {
 		&:active {
 			border: 1px solid lightcoral;
 		}
+
+		img.nextMenu {
+			height: 2rem;
+			margin-top: .2rem;
+			margin-right: -.6rem;
+		}
 	}
 }
 
@@ -312,7 +318,7 @@ header {
 			height: 2.5rem;
 			width: 2.5rem;
 
-			> img {
+			img {
 				height: 100%;
 				width: 100%;
 				padding: 10%;
@@ -320,11 +326,11 @@ header {
 				filter: drop-shadow(0px 0px 0px lightcoral) drop-shadow(0px 0px 0px lightcoral);
 			}
 
-			&:hover > img {
+			&:hover img {
 				filter: drop-shadow(0px 0px 3px lightcoral) drop-shadow(0px 0px 0px lightcoral);
 			}
 
-			&:active > img {
+			&:active img {
 				filter: drop-shadow(0px 0px 3px lightcoral) drop-shadow(0px 0px 6px lightcoral);
 			}
 		}
