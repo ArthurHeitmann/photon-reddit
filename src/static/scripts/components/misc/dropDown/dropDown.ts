@@ -6,15 +6,15 @@ export default class Ph_DropDown extends HTMLElement {
 	feed: Ph_Feed;
 	toggleButton: HTMLButtonElement;
 
-	constructor(entryParams: DropDownEntryParam[], toggleButtonText?: string, parentEntry?: Ph_DropDownEntry) {
+	constructor(entryParams: DropDownEntryParam[], toggleButtonHTML?: string, parentEntry?: Ph_DropDownEntry) {
 		super();
 
 		this.classList.add("dropDown");
 
-		if (typeof toggleButtonText === "string") {
+		if (typeof toggleButtonHTML === "string") {
 			this.toggleButton = document.createElement("button");
 			this.toggleButton.className = "button dropDownButton";
-			this.toggleButton.innerText = toggleButtonText;
+			this.toggleButton.innerHTML = toggleButtonHTML;
 			this.appendChild(this.toggleButton);
 		}
 

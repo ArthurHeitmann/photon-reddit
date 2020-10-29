@@ -1,8 +1,11 @@
+import {secondsToVideoTime} from "../../utils/conv.js";
 import { RedditApiType } from "../../utils/types.js";
+import Ph_DropDown from "../misc/dropDown/dropDown.js";
 import Ph_ProgressBar from "../misc/progressBar/progressBar.js";
 import Ph_SimpleVideo from "./simpleVideo/simpleVideo.js";
 import Ph_VideoAudio from "./videoAudio/videoAudio.js";
 import Ph_VideoWrapper from "./videoWrapper.js";
+import set = Reflect.set;
 
 export default class Ph_VideoPlayer extends HTMLElement {
 	video: Ph_VideoWrapper;
@@ -85,6 +88,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 			playBtnImg.src = "/img/pause.svg";
 			this.videoProgressInterval = setInterval(() => {
 				progressBar.setProgress(this.video.getCurrentTime() / this.video.getMaxTime());
+				timeText.innerText = `${secondsToVideoTime(this.video.getCurrentTime())} / ${secondsToVideoTime(this.video.getMaxTime())}`;
 			}, 100);
 		});
 		this.video.addEventListener("ph-seek", () => progressBar.setProgress(this.video.getCurrentTime() / this.video.getMaxTime()));
@@ -95,6 +99,11 @@ export default class Ph_VideoPlayer extends HTMLElement {
 				this.videoProgressInterval = null;
 			}
 		});
+
+		// time text
+		const timeText = document.createElement("div");
+		controls.appendChild(timeText);
+		timeText.innerText = "00:00 / 00:00";
 
 		// volume
 		const volumeWrapper = document.createElement("div");
@@ -115,9 +124,27 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		)
 		this.video.addEventListener("ph-noaudio", () => volumeWrapper.classList.add("remove"));
 
+		// left right divider
+		const divider = document.createElement("div");
+		divider.className = "mla";
+		controls.appendChild(divider);
+
+		// video src
+		const srcText = document.createElement("div");
+		controls.appendChild(srcText);
+		srcText.innerHTML = `<a href="${this.url}" target="_blank">${this.url.match(/([\w.\.]+)\//)[1]}</a>`;
+
+		// settings
+		const settingsDropdown = new Ph_DropDown([
+			{ displayHTML: "Quality" },
+			{ displayHTML: "Speed" },
+			{ displayHTML: "Popout" },
+		], `<img src="/img/settings1.svg">`);
+		settingsDropdown.classList.add("settings");
+		controls.appendChild(settingsDropdown);
+
 		// fullscreen
 		const { btn: fullscreenButton, img: fullscreenButtonImg} = this.makeImgBtn("/img/fullscreen.svg", controls);
-		fullscreenButton.classList.add("mla");
 		fullscreenButton.addEventListener("click", () => this.toggleFullscreen())
 		this.addEventListener("fullscreenchange",
 			() => document.fullscreenElement ?

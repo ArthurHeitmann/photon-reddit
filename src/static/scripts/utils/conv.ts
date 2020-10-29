@@ -65,3 +65,11 @@ export function splitPathQuery(pathAndQuery: string): string[] {
 	const querySeparation = pathAndQuery.match(/([\w\/]+)(\?[\w&=]*)?/);
 	return [querySeparation[1] || "/", querySeparation[2] || ""];
 }
+
+export function secondsToVideoTime(seconds: number): string {
+	return `${padWith0(Math.floor(seconds / 60), 2)}:${padWith0(Math.floor(seconds % 60), 2)}`;
+}
+
+function padWith0(num: number, minLength: number): string {
+	return "0".repeat(Math.max(0, minLength - num.toString().length)) + num.toString();
+}

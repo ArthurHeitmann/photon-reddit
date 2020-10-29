@@ -294,6 +294,21 @@ header {
 			}
 		}
 
+		.settings {
+			.dropDownButton {
+				height: 2.5rem;
+				width: 2.5rem;
+				border: none;
+				background: none;
+				padding: 0;
+
+				img {
+					height: 2.5rem;
+					width: 2.5rem;
+				}
+			}
+		}
+
 		 > .progressBar {
 			position: absolute;
 			top: 0;

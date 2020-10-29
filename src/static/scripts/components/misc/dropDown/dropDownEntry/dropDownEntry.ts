@@ -17,7 +17,7 @@ export default class Ph_DropDownEntry extends HTMLButtonElement {
 			this.valueChain = [param.value];
 
 		this.label = document.createElement("div");
-		this.label.innerText = param.displayText;
+		this.label.innerText = param.displayHTML;
 		this.appendChild(this.label);
 
 		if (param.nestedEntries && param.nestedEntries.length > 0) {
@@ -43,12 +43,12 @@ export default class Ph_DropDownEntry extends HTMLButtonElement {
 	}
 
 	setText(text: string) {
-		this.label.innerText = text;
+		this.label.innerHTML = text;
 	}
 }
 
 export interface DropDownEntryParam {
-	displayText: string,
+	displayHTML: string,
 	value?: any,
 	onSelectCallback?: (valueChain: any[], source: Ph_DropDownEntry) => void,
 	nestedEntries?: DropDownEntryParam[]

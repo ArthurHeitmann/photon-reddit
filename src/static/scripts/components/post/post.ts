@@ -60,12 +60,12 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		actionWrapper.appendChild(this.voteDownButton);
 		// additional actions drop down
 		const moreDropDown = new Ph_DropDown([ 
-			{ displayText: this.isSaved ? "Unsave" : "Save", onSelectCallback: this.toggleSave.bind(this) },
-			{ displayText: "Share", nestedEntries: [
-				{ displayText: "Copy Post Link", value: "post link", onSelectCallback: this.share.bind(this) },
-				{ displayText: "Copy Reddit Link", value: "reddit link", onSelectCallback: this.share.bind(this) },
-				{ displayText: "Copy Link", value: "link", onSelectCallback: this.share.bind(this) },
-				{ displayText: "Crosspost", onSelectCallback: this.crossPost.bind(this) },
+			{ displayHTML: this.isSaved ? "Unsave" : "Save", onSelectCallback: this.toggleSave.bind(this) },
+			{ displayHTML: "Share", nestedEntries: [
+				{ displayHTML: "Copy Post Link", value: "post link", onSelectCallback: this.share.bind(this) },
+				{ displayHTML: "Copy Reddit Link", value: "reddit link", onSelectCallback: this.share.bind(this) },
+				{ displayHTML: "Copy Link", value: "link", onSelectCallback: this.share.bind(this) },
+				{ displayHTML: "Crosspost", onSelectCallback: this.crossPost.bind(this) },
 			] }
 		], "...");
 		actionWrapper.appendChild(moreDropDown);

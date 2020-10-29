@@ -14,27 +14,27 @@ export default class Ph_PostsSorter extends HTMLElement {
 		this.classList.add("dropDown");
 
 		const dropDown = new Ph_DropDown([
-			{ displayText: "Default", value: SortPostsOrder.default, onSelectCallback: this.handleOnSelect.bind(this) },
-			{ displayText: "Hot", value: SortPostsOrder.hot, onSelectCallback: this.handleOnSelect.bind(this) },
-			{ displayText: "Top", value: SortPostsOrder.top, onSelectCallback: this.handleOnSelect.bind(this), nestedEntries: [
-				{ displayText: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.handleOnSelect.bind(this) },
-				{ displayText: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.handleOnSelect.bind(this) },
-				{ displayText: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.handleOnSelect.bind(this) },
-				{ displayText: "Moth", value: SortPostsTimeFrame.month, onSelectCallback: this.handleOnSelect.bind(this) },
-				{ displayText: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.handleOnSelect.bind(this) },
-				{ displayText: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.handleOnSelect.bind(this) }
+			{ displayHTML: "Default", value: SortPostsOrder.default, onSelectCallback: this.handleOnSelect.bind(this) },
+			{ displayHTML: "Hot", value: SortPostsOrder.hot, onSelectCallback: this.handleOnSelect.bind(this) },
+			{ displayHTML: "Top", value: SortPostsOrder.top, onSelectCallback: this.handleOnSelect.bind(this), nestedEntries: [
+				{ displayHTML: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.handleOnSelect.bind(this) },
+				{ displayHTML: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.handleOnSelect.bind(this) },
+				{ displayHTML: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.handleOnSelect.bind(this) },
+				{ displayHTML: "Moth", value: SortPostsTimeFrame.month, onSelectCallback: this.handleOnSelect.bind(this) },
+				{ displayHTML: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.handleOnSelect.bind(this) },
+				{ displayHTML: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.handleOnSelect.bind(this) }
 			] },
-			{ displayText: "Rising", value: SortPostsOrder.rising, onSelectCallback: this.handleOnSelect.bind(this) },
-			{ displayText: "New", value: SortPostsOrder.new, onSelectCallback: this.handleOnSelect.bind(this) },
-			{ displayText: "Controversial", value: SortPostsOrder.controversial, onSelectCallback: this.handleOnSelect.bind(this), nestedEntries: [
-				{ displayText: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.handleOnSelect.bind(this) },
-				{ displayText: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.handleOnSelect.bind(this) },
-				{ displayText: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.handleOnSelect.bind(this) },
-				{ displayText: "Moth", value: SortPostsTimeFrame.month, onSelectCallback: this.handleOnSelect.bind(this) },
-				{ displayText: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.handleOnSelect.bind(this) },
-				{ displayText: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.handleOnSelect.bind(this) }
+			{ displayHTML: "Rising", value: SortPostsOrder.rising, onSelectCallback: this.handleOnSelect.bind(this) },
+			{ displayHTML: "New", value: SortPostsOrder.new, onSelectCallback: this.handleOnSelect.bind(this) },
+			{ displayHTML: "Controversial", value: SortPostsOrder.controversial, onSelectCallback: this.handleOnSelect.bind(this), nestedEntries: [
+				{ displayHTML: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.handleOnSelect.bind(this) },
+				{ displayHTML: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.handleOnSelect.bind(this) },
+				{ displayHTML: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.handleOnSelect.bind(this) },
+				{ displayHTML: "Moth", value: SortPostsTimeFrame.month, onSelectCallback: this.handleOnSelect.bind(this) },
+				{ displayHTML: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.handleOnSelect.bind(this) },
+				{ displayHTML: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.handleOnSelect.bind(this) }
 			] },
-			{ displayText: "Gilded", value: SortPostsOrder.gilded, onSelectCallback: this.handleOnSelect.bind(this) },
+			{ displayHTML: "Gilded", value: SortPostsOrder.gilded, onSelectCallback: this.handleOnSelect.bind(this) },
 		], "Sort by");
 
 		this.appendChild(dropDown);
