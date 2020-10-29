@@ -22,6 +22,8 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		this.postData = postData;
 		this.url = postData.data["url"];
 		this.classList.add("videoPlayer");
+		this.setAttribute("tabindex", "0")
+
 		switch (this.url.match(/^https?:\/\/w?w?w?\.?([\w\.]+)/)[1]) {
 			case "imgur.com":
 			case "i.imgur.com":
@@ -84,6 +86,51 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		controls.addEventListener("mouseleave", e => this.video.contains(e.relatedTarget as HTMLElement) || this.restartHideTimeout());
 		this.video.addEventListener("click", () => this.video.togglePlay());
 		this.video.addEventListener("dblclick", () => this.toggleFullscreen());
+		this.addEventListener("keydown", e => {
+			let actionExecuted = false;
+			switch (e.code) {
+				case "Space":
+				case "KeyP":
+				case "KeyK":
+					this.video.togglePlay();
+					actionExecuted = true;
+					break;
+				case "ArrowLeft":
+				case "KeyJ":
+					this.video.seekTo(this.video.getCurrentTime() - 5);
+					actionExecuted = true;
+					break;
+				case "ArrowRight":
+				case "KeyL":
+					this.video.seekTo(this.video.getCurrentTime() + 5);
+					actionExecuted = true;
+					break;
+				case "ArrowUp":
+					this.video.setVolume(this.video.getVolume() + .1);
+					actionExecuted = true;
+					break;
+				case "ArrowDown":
+					this.video.setVolume(this.video.getVolume() - .1);
+					actionExecuted = true;
+					break;
+				case "KeyF":
+					this.toggleFullscreen();
+					actionExecuted = true;
+					break;
+				case "KeyM":
+					this.video.toggleMute();
+					actionExecuted = true;
+					break;
+				case "KeyI":
+					this.popoutVideo();
+					actionExecuted = true;
+					break;
+			}
+			if (actionExecuted) {
+				e.preventDefault();
+				this.restartHideTimeout();
+			}
+		});
 
 		// play, pause, progress bar
 		const { btn: playButton, img: playBtnImg } = this.makeImgBtn("/img/playVideo.svg", controls);
@@ -126,6 +173,10 @@ export default class Ph_VideoPlayer extends HTMLElement {
 				volumeSlider.setProgress(e.detail);
 			}
 		)
+		volumeWrapper.addEventListener("wheel", e => {
+			e.preventDefault();
+			this.video.setVolume(this.video.getVolume() + (-e.deltaY || e.deltaX) / 1000)
+		}, { passive: false });
 		this.video.addEventListener("ph-noaudio", () => volumeWrapper.classList.add("remove"));
 
 		// left right divider
@@ -170,6 +221,10 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		progressBar.addEventListener("ph-drag", (e: CustomEvent) => {
 			this.video.seekTo(e.detail * this.video.getMaxTime());
 		});
+		progressBar.addEventListener("wheel", e => {
+			e.preventDefault();
+			this.video.seekTo(this.video.getCurrentTime() + (-e.deltaY || e.deltaX) / 20);
+		}, { passive: false });
 	}
 
 	setVideoSpeed(valueChain: any[], source: Ph_DropDownEntry) {

@@ -48,6 +48,10 @@ export default class Ph_ProgressBar extends HTMLElement {
 		this.style.setProperty("--progress", percentage.toString());
 	}
 
+	getProgress(): number {
+		return parseFloat(this.style.getPropertyValue("--progress"));
+	}
+
 	private throttle(callback, limit) {
 		let wait = false;
 		return function() {

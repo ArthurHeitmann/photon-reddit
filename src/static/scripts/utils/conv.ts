@@ -70,6 +70,10 @@ export function secondsToVideoTime(seconds: number): string {
 	return `${padWith0(Math.floor(seconds / 60), 2)}:${padWith0(Math.floor(seconds % 60), 2)}`;
 }
 
-function padWith0(num: number, minLength: number): string {
+export function padWith0(num: number, minLength: number): string {
 	return "0".repeat(Math.max(0, minLength - num.toString().length)) + num.toString();
+}
+
+export function clamp(val: number, min: number, max: number): number {
+	return Math.min(max, Math.max(min, val));
 }

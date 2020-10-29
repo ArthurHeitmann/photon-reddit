@@ -1,3 +1,4 @@
+import { clamp } from "../../../utils/conv.js";
 import Ph_VideoWrapper from "../videoWrapper.js";
 
 export default class Ph_SimpleVideo extends Ph_VideoWrapper {
@@ -40,6 +41,7 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 		this.video.addEventListener("volumechange", () => this.dispatchEvent(
 			new CustomEvent("ph-volumechange", { detail: this.video.muted ? 0 : this.video.volume })));
 		this.video.addEventListener("seeked", () => this.dispatchEvent(new Event("ph-seek")));
+		this.video.addEventListener("seeking", () => this.dispatchEvent(new Event("ph-seek")));
 	}
 
 	play(): void {
@@ -76,7 +78,7 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 	}
 
 	setVolume(vol: number): void {
-		this.video.volume = Math.min(1, Math.max(0, vol));
+		this.video.volume = clamp(vol, 0, 1);
 		if (this.video.volume > 0)
 			this.lastNon0Volume = this.video.volume;
 		if (vol > 0 && this.video.muted)

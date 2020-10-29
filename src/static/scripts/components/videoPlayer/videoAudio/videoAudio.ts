@@ -1,4 +1,5 @@
 import { threadId } from "worker_threads";
+import { clamp } from "../../../utils/conv.js";
 import Ph_VideoWrapper from "../videoWrapper.js";
 
 export default class Ph_VideoAudio extends Ph_VideoWrapper {
@@ -47,6 +48,7 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 		this.audio.addEventListener("volumechange", () => this.dispatchEvent(
 			new CustomEvent("ph-volumechange", { detail: this.audio.muted ? 0 : this.audio.volume })));
 		this.video.addEventListener("seeked", () => this.dispatchEvent(new Event("ph-seek")));
+		this.video.addEventListener("seeking", () => this.dispatchEvent(new Event("ph-seek")));
 	}
 
 	play() {
@@ -83,7 +85,7 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 	}
 
 	setVolume(vol: number): void {
-		this.audio.volume = Math.min(1, Math.max(0, vol));
+		this.audio.volume = clamp(vol, 0, 1);
 		if (this.audio.volume > 0)
 			this.lastNon0Volume = this.audio.volume;
 		if (vol > 0 && this.audio.muted)
