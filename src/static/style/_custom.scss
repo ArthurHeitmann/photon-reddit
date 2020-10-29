@@ -148,13 +148,70 @@ header {
 		padding: 0 1.2rem;
 	}
 
-	.dropDownArea {
-		visibility: hidden;
+	.areaWrapper {
 		position: absolute;
-		z-index: 1;
-		top: 100%;
-		margin-top: 0.5rem;
-		width: max-content;
+		&.dirTop {
+			top: 0;
+
+			&.sameLine {
+				top: initial;
+				bottom: 0;
+			}
+
+			.dropDownArea {
+				top: initial;
+				bottom: 0;
+			}
+		}
+
+		&.dirBottom {
+			bottom: 0;
+
+			&.sameLine {
+				bottom: initial;
+				top: 0;
+			}
+
+			.dropDownArea {
+				bottom: initial;
+				top: 0;
+			}
+		}
+
+		&.dirLeft {
+			left: 0;
+
+			&.sameLine {
+				left: initial;
+				right: 0;
+			}
+
+			.dropDownArea {
+				left: 0;
+			}
+		}
+
+		&.dirRight {
+			right: 0;
+
+			&.sameLine {
+				right: initial;
+				left: 0;
+			}
+
+			.dropDownArea {
+				right: 0;
+			}
+		}
+
+		.dropDownArea {
+			visibility: hidden;
+			position: absolute;
+			z-index: 1;
+			top: 100%;
+			margin-top: 0.5rem;
+			width: max-content;
+		}
 	}
 	
 	.dropDownEntry {

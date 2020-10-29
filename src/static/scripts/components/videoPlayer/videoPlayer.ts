@@ -1,11 +1,10 @@
 import {secondsToVideoTime} from "../../utils/conv.js";
-import { RedditApiType } from "../../utils/types.js";
-import Ph_DropDown from "../misc/dropDown/dropDown.js";
+import {RedditApiType} from "../../utils/types.js";
+import Ph_DropDown, {DirectionX, DirectionY} from "../misc/dropDown/dropDown.js";
 import Ph_ProgressBar from "../misc/progressBar/progressBar.js";
 import Ph_SimpleVideo from "./simpleVideo/simpleVideo.js";
 import Ph_VideoAudio from "./videoAudio/videoAudio.js";
 import Ph_VideoWrapper from "./videoWrapper.js";
-import set = Reflect.set;
 
 export default class Ph_VideoPlayer extends HTMLElement {
 	video: Ph_VideoWrapper;
@@ -139,7 +138,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 			{ displayHTML: "Quality" },
 			{ displayHTML: "Speed" },
 			{ displayHTML: "Popout" },
-		], `<img src="/img/settings1.svg">`);
+		], `<img src="/img/settings1.svg">`, DirectionX.right, DirectionY.top, false);
 		settingsDropdown.classList.add("settings");
 		controls.appendChild(settingsDropdown);
 

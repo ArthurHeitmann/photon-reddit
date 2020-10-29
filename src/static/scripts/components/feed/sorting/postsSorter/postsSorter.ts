@@ -1,6 +1,6 @@
-import { PostSorting, SortPostsOrder, SortPostsTimeFrame } from "../../../../utils/types.js";
-import Ph_DropDown from "../../../misc/dropDown/dropDown.js";
-import { Ph_Feed } from "../../feed.js";
+import {PostSorting, SortPostsOrder, SortPostsTimeFrame} from "../../../../utils/types.js";
+import Ph_DropDown, {DirectionX, DirectionY} from "../../../misc/dropDown/dropDown.js";
+import {Ph_Feed} from "../../feed.js";
 import Ph_UniversalFeed from "../../universalFeed/universalFeed.js";
 
 export default class Ph_PostsSorter extends HTMLElement {
@@ -35,7 +35,7 @@ export default class Ph_PostsSorter extends HTMLElement {
 				{ displayHTML: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.handleOnSelect.bind(this) }
 			] },
 			{ displayHTML: "Gilded", value: SortPostsOrder.gilded, onSelectCallback: this.handleOnSelect.bind(this) },
-		], "Sort by");
+		], "Sort by", DirectionX.right, DirectionY.bottom, false);
 
 		this.appendChild(dropDown);
 	}

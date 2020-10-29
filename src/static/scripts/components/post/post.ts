@@ -1,10 +1,10 @@
-import { save, vote, VoteDirection, voteDirectionFromLikes } from "../../api/api.js";
-import { mainURL } from "../../utils/consts.js";
-import { timePassedSinceStr, numberToShortStr, numberToShort as numberToShort } from "../../utils/conv.js";
-import { linksToSpa } from "../../utils/htmlStuff.js";
-import { RedditApiType } from "../../utils/types.js";
+import {save, vote, VoteDirection, voteDirectionFromLikes} from "../../api/api.js";
+import {mainURL} from "../../utils/consts.js";
+import {numberToShort as numberToShort, numberToShortStr, timePassedSinceStr} from "../../utils/conv.js";
+import {linksToSpa} from "../../utils/htmlStuff.js";
+import {RedditApiType} from "../../utils/types.js";
 import Ph_FeedItem from "../feed/feedItem/feedItem.js";
-import Ph_DropDown from "../misc/dropDown/dropDown.js";
+import Ph_DropDown, {DirectionX, DirectionY} from "../misc/dropDown/dropDown.js";
 import Ph_DropDownEntry from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Votable from "../misc/votable/votable.js";
 import Ph_PostBody from "./postBody/postBody.js";
@@ -67,7 +67,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 				{ displayHTML: "Copy Link", value: "link", onSelectCallback: this.share.bind(this) },
 				{ displayHTML: "Crosspost", onSelectCallback: this.crossPost.bind(this) },
 			] }
-		], "...");
+		], "...", DirectionX.left, DirectionY.bottom, true);
 		actionWrapper.appendChild(moreDropDown);
 		// go to comments link
 		if (isInFeed) {
