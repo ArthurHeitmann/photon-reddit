@@ -93,6 +93,15 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 	getVolume(): number {
 		return this.audio.volume;
 	}
+
+	setPlaybackSpeed(speed: number) {
+		this.video.playbackRate = speed;
+		this.audio.playbackRate = speed;
+	}
+
+	getDimensions(): number[] {
+		return [ this.video.videoWidth, this.video.videoHeight ];
+	}
 }
 
 customElements.define("ph-video-audio", Ph_VideoAudio);

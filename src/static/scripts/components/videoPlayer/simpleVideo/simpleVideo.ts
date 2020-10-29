@@ -87,6 +87,13 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 		return this.video.volume;
 	}
 
+	setPlaybackSpeed(speed: number) {
+		this.video.playbackRate = speed;
+	}
+
+	getDimensions(): number[] {
+		return [ this.video.videoWidth, this.video.videoHeight ];
+	}
 }
 
 customElements.define("ph-video", Ph_SimpleVideo);

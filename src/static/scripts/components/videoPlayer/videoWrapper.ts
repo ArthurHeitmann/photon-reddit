@@ -15,6 +15,8 @@ export default abstract class Ph_VideoWrapper extends HTMLElement {
 	abstract toggleMute(): boolean;
 	abstract setVolume(vol: number): void;
 	abstract getVolume(): number;
+	abstract setPlaybackSpeed(speed: number): void;
+	abstract getDimensions(): number[];
 	// should be dispatching the following events
 	// - ph-play
 	// - ph-pause

@@ -1,21 +1,26 @@
-import {secondsToVideoTime} from "../../utils/conv.js";
-import {RedditApiType} from "../../utils/types.js";
+import { secondsToVideoTime } from "../../utils/conv.js";
+import { RedditApiType } from "../../utils/types.js";
 import Ph_DropDown, {DirectionX, DirectionY} from "../misc/dropDown/dropDown.js";
+import Ph_DropDownArea from "../misc/dropDown/dropDownArea/dropDownArea.js";
+import Ph_DropDownEntry from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_ProgressBar from "../misc/progressBar/progressBar.js";
 import Ph_SimpleVideo from "./simpleVideo/simpleVideo.js";
 import Ph_VideoAudio from "./videoAudio/videoAudio.js";
 import Ph_VideoWrapper from "./videoWrapper.js";
 
 export default class Ph_VideoPlayer extends HTMLElement {
+	postData: RedditApiType;
 	video: Ph_VideoWrapper;
 	hideTimeout = null;
 	url: string;
 	videoProgressInterval = null;
+	controlsDropDown: Ph_DropDown;
 
 	constructor(postData: RedditApiType) {
 		super();
 
-		this.url = postData.data["url"]; 
+		this.postData = postData;
+		this.url = postData.data["url"];
 		this.classList.add("videoPlayer");
 		switch (this.url.match(/^https?:\/\/w?w?w?\.?([\w\.]+)/)[1]) {
 			case "imgur.com":
@@ -134,13 +139,21 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		srcText.innerHTML = `<a href="${this.url}" target="_blank">${this.url.match(/([\w.\.]+)\//)[1]}</a>`;
 
 		// settings
-		const settingsDropdown = new Ph_DropDown([
-			{ displayHTML: "Quality" },
-			{ displayHTML: "Speed" },
-			{ displayHTML: "Popout" },
-		], `<img src="/img/settings1.svg">`, DirectionX.right, DirectionY.top, false);
-		settingsDropdown.classList.add("settings");
-		controls.appendChild(settingsDropdown);
+		this.controlsDropDown = new Ph_DropDown([
+			{ displayHTML: "Speed", nestedEntries: [
+					{ displayHTML: "0.10x", value: 0.10, onSelectCallback: this.setVideoSpeed.bind(this) },
+					{ displayHTML: "0.25x", value: 0.25, onSelectCallback: this.setVideoSpeed.bind(this) },
+					{ displayHTML: "0.50x", value: 0.50, onSelectCallback: this.setVideoSpeed.bind(this) },
+					{ displayHTML: "1.00x", value: 1.00, onSelectCallback: this.setVideoSpeed.bind(this) },
+					{ displayHTML: "2.00x", value: 2.00, onSelectCallback: this.setVideoSpeed.bind(this) },
+					{ displayHTML: "4.00x", value: 4.00, onSelectCallback: this.setVideoSpeed.bind(this) },
+					{ displayHTML: "8.00x", value: 8.00, onSelectCallback: this.setVideoSpeed.bind(this) },
+					{ displayHTML: "16.00x", value: 16.00, onSelectCallback: this.setVideoSpeed.bind(this) },
+				] },
+			{ displayHTML: "Popout", onSelectCallback: this.popoutVideo.bind(this) },
+		], `<img src="/img/settings2.svg">`, DirectionX.right, DirectionY.top, false);
+		this.controlsDropDown.classList.add("settings");
+		controls.appendChild(this.controlsDropDown);
 
 		// fullscreen
 		const { btn: fullscreenButton, img: fullscreenButtonImg} = this.makeImgBtn("/img/fullscreen.svg", controls);
@@ -157,6 +170,18 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		progressBar.addEventListener("ph-drag", (e: CustomEvent) => {
 			this.video.seekTo(e.detail * this.video.getMaxTime());
 		});
+	}
+
+	setVideoSpeed(valueChain: any[], source: Ph_DropDownEntry) {
+		this.video.setPlaybackSpeed(valueChain[1]);
+	}
+
+	popoutVideo() {
+		window.open(
+			`/mediaViewer.html?url=${encodeURIComponent(this.postData.data["permalink"])}`,
+			"_blank",
+			`location=no,status=no,menubar=no,width=${this.video.getDimensions()[0]},height=${this.video.getDimensions()[1]}`
+		);
 	}
 
 	makeImgBtn(defaultSrc: string, appendTo: HTMLElement): { btn: HTMLButtonElement, img: HTMLImageElement } {
@@ -197,7 +222,11 @@ export default class Ph_VideoPlayer extends HTMLElement {
 
 	hideControls() {
 		this.classList.remove("controlsVisible");
-		
+
+		for (let area of this.controlsDropDown.getElementsByClassName("dropDownArea")) {
+			(area as Ph_DropDownArea).closeMenu(true);
+		}
+
 		this.clearHideTimeout();
 	}
 

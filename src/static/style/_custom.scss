@@ -339,6 +339,10 @@ header {
 					background: #f07f7f80;
 				}
 
+				.accessibilitySpacer {
+					transform: scaleY(6);
+				}
+
 				width: 5rem;
 				height: .4rem;
 				margin: auto 0;
@@ -362,6 +366,7 @@ header {
 				img {
 					height: 2.5rem;
 					width: 2.5rem;
+					padding: 15%;
 				}
 			}
 		}
