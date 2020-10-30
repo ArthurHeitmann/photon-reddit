@@ -52,13 +52,11 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 		this.video.pause();
 	}
 
-	togglePlay(): boolean {
+	togglePlay(): void {
 		if (this.video.paused)
 			this.video.play();
 		else
 			this.video.pause();
-		
-		return !this.video.paused;
 	}
 
 	seekTo(time: number): void {
@@ -73,8 +71,8 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 		return this.video.duration;
 	}
 
-	toggleMute(): boolean {
-		return this.video.muted = !this.video.muted;
+	toggleMute(): void {
+		this.video.muted = !this.video.muted;
 	}
 
 	setVolume(vol: number): void {
@@ -89,7 +87,7 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 		return this.video.volume;
 	}
 
-	setPlaybackSpeed(speed: number) {
+	setPlaybackSpeed(speed: number): void {
 		this.video.playbackRate = speed;
 	}
 

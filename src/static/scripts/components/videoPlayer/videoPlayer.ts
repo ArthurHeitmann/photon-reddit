@@ -4,6 +4,7 @@ import Ph_DropDown, {DirectionX, DirectionY} from "../misc/dropDown/dropDown.js"
 import Ph_DropDownArea from "../misc/dropDown/dropDownArea/dropDownArea.js";
 import Ph_DropDownEntry from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_ProgressBar from "../misc/progressBar/progressBar.js";
+import Ph_GifVideo from "./gifVideo/gifVideo.js";
 import Ph_SimpleVideo from "./simpleVideo/simpleVideo.js";
 import Ph_VideoAudio from "./videoAudio/videoAudio.js";
 import Ph_VideoWrapper from "./videoWrapper.js";
@@ -64,6 +65,10 @@ export default class Ph_VideoPlayer extends HTMLElement {
 				}));
 				break;
 			default:
+				if (/\.gif$/.test(this.url)) {
+					this.appendChild(this.video = new Ph_GifVideo(this.url));
+					break;
+				}
 				this.innerText = `Unknown video provider for ${postData.data["url"]}`;
 				break;
 		}

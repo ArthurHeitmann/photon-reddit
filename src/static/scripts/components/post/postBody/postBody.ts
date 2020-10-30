@@ -55,7 +55,8 @@ export default class Ph_PostBody extends HTMLElement {
 			"(https?://gfycat.com\/[\\w-]+)|" + 
 			"(https?://v.redd.it\/[\\w-]+)|" +
 			"(https?://clips.twitch.tv\/[\\w-]+)|" +
-			"(https?://w?w?w?\.?redgifs.com\/watch\/\\w+)"
+			"(https?://w?w?w?\.?redgifs.com\/watch\/\\w+)|" +
+			"(\.gif$)"
 		)))
 			return PostType.Video;
 		else if (postData["post_hint"] == "link")

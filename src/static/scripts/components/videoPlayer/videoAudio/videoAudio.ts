@@ -51,24 +51,22 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 		this.video.addEventListener("seeking", () => this.dispatchEvent(new Event("ph-seek")));
 	}
 
-	play() {
+	play(): void {
 		this.video.play();
 	}
 
-	pause() {
+	pause(): void {
 		this.video.pause();
 	}
 
-	togglePlay(): boolean {
+	togglePlay(): void {
 		if (this.video.paused)
 			this.play();
 		else
 			this.pause();
-
-		return !this.video.paused;
 	}
 
-	seekTo(time: number) {
+	seekTo(time: number): void {
 		this.video.currentTime = time;
 	}
 
@@ -80,8 +78,8 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 		return this.video.duration;
 	}
 
-	toggleMute(): boolean {
-		return this.audio.muted = !this.audio.muted;
+	toggleMute(): void {
+		this.audio.muted = !this.audio.muted;
 	}
 
 	setVolume(vol: number): void {
@@ -96,7 +94,7 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 		return this.audio.volume;
 	}
 
-	setPlaybackSpeed(speed: number) {
+	setPlaybackSpeed(speed: number): void {
 		this.video.playbackRate = speed;
 		this.audio.playbackRate = speed;
 	}
