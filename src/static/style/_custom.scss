@@ -120,6 +120,14 @@ header {
 	}
 }
 
+@keyframes fadeIn {
+	from { opacity: 0 } to { opacity: 1 }
+}
+
+.loadingIcon {
+	animation: fadeIn 1s ease;
+}
+
 .dropDown {
 	position: relative;
 	display: flex;
@@ -449,6 +457,7 @@ header {
 .postAndComments, .universalFeed {
 	margin: 0 .5rem 0 auto;
 	width: calc(100% - 2.8rem);
+	animation: fadeIn .5s ease;
 }
 
 @media (orientation: landscape) {
