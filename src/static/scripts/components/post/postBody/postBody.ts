@@ -22,7 +22,7 @@ export default class Ph_PostBody extends HTMLElement {
 				this.innerHTML = `<div class="postText">${postData.data["selftext_html"] || ""}</div>`;
 				break;
 			case PostType.EmbeddedVideo:
-				this.classList.add("padded");
+				this.classList.add("fullScale");
 				const iframeSrc = postData.data["media_embed"]["content"].match(/src="([^"]+)"/)[1]; 
 				this.innerHTML = `<div class="aspect-ratio-16-9-wrapper"><iframe src="${iframeSrc}" allowfullscreen></iframe></div>`;
 				break;

@@ -61,6 +61,7 @@ async function oath2Request(pathAndQuery, params: string[][], options: Object, a
 
 function fixUrl(url: string, attempt = 0) {
 	url = url.replace(/^\/u\//, "/user/");
+	url = url.replace(/(\/(u|user)\/\w+\/)posts\/?/, "$1submitted/")
 	if (attempt > 0)
 		url = url.replace(/^\/user\/\w+\/m\//, "/me/m/")		// TODO do this by default if username == logged in user 
 	return url;

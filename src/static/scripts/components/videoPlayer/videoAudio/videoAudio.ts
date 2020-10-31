@@ -8,7 +8,7 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 	lastNon0Volume: number;
 	noAudioProgressCallback: () => void;
 
-	constructor(videoSources: { src: string, type: string }[], audioMp4Url: string) {
+	constructor(videoSources: { src: string, type: string }[], audioSources: { src: string, type: string }[]) {
 		super();
 
 		this.video = document.createElement("video");
@@ -20,7 +20,8 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 		this.audio = document.createElement("video");
 		this.audio.setAttribute("loop", "");
 		this.audio.classList.add("hide");
-		this.audio.innerHTML = `<source src="${audioMp4Url}" type="video/mp4">`;
+		for (const source of audioSources)
+			this.audio.insertAdjacentHTML("beforeend", `<source src="${source.src}" type="${source.type}">`);
 		this.appendChild(this.audio);
 
 		this.video.addEventListener("waiting", () => this.dispatchEvent(new Event("ph-buffering")));

@@ -627,19 +627,18 @@ header {
 				margin: vars.$post-padding;
 			}
 
+			&.fullScale {
+				border-bottom-left-radius: 1rem;
+				border-bottom-right-radius: 1rem;
+				overflow: hidden;
+			}
+
 			.postImage {
-				border-bottom-left-radius: vars.$b-r;
-				border-bottom-right-radius: vars.$b-r;
 				max-height: 95vh;
 				object-fit: contain;
 			}
 
 			.videoPlayer {
-				video {
-					border-bottom-left-radius: 1rem;
-					border-bottom-right-radius: 1rem;
-				}
-
 				.fullscreen {
 					video {
 						border-radius: 0;

@@ -56,15 +56,30 @@ export default class Ph_VideoPlayer extends HTMLElement {
 				]));
 				break;
 			case "v.redd.it":
-				const videoUrl = postData.data["url"] + "/DASH_720.mp4";
-				const audioUrl = postData.data["url"] + "/DASH_audio.mp4";
+				// wtf is this inconsistency v.redd.it ??????!
 				this.appendChild(this.video = new Ph_VideoAudio([
+					{ src: postData.data["url"] + "/DASH_1080.mp4", type: "video/mp4" },
+					{ src: postData.data["url"] + "/DASH_1080", type: "video/mp4" },
 					{ src: postData.data["url"] + "/DASH_720.mp4", type: "video/mp4" },
+					{ src: postData.data["url"] + "/DASH_720", type: "video/mp4" },
 					{ src: postData.data["url"] + "/DASH_480.mp4", type: "video/mp4" },
+					{ src: postData.data["url"] + "/DASH_480", type: "video/mp4" },
 					{ src: postData.data["url"] + "/DASH_360.mp4", type: "video/mp4" },
+					{ src: postData.data["url"] + "/DASH_360", type: "video/mp4" },
 					{ src: postData.data["url"] + "/DASH_240.mp4", type: "video/mp4" },
+					{ src: postData.data["url"] + "/DASH_240", type: "video/mp4" },
 					{ src: postData.data["url"] + "/DASH_96.mp4", type: "video/mp4" },
-				], audioUrl));
+					{ src: postData.data["url"] + "/DASH_96", type: "video/mp4" },
+					{ src: postData.data["url"] + "/DASH_4_8_M", type: "video/mp4" },
+					{ src: postData.data["url"] + "/DASH_2_4_M", type: "video/mp4" },
+					{ src: postData.data["url"] + "/DASH_1_2_M", type: "video/mp4" },
+					{ src: postData.data["url"] + "/DASH_600_K", type: "video/mp4" },
+				], [
+					{ src: postData.data["url"] + "/DASH_audio.mp4", type: "video/mp4" },
+					{ src: postData.data["url"] + "/DASH_audio", type: "video/mp4" },
+					{ src: postData.data["url"] + "/audio.mp4", type: "video/mp4" },
+					{ src: postData.data["url"] + "/audio", type: "video/mp4" },
+				]));
 				break;
 			case "clips.twitch.tv":
 				const twitchUrl = postData.data["media"]["oembed"]["thumbnail_url"].match(/(.*)-social-preview.jpg$/)[1];
