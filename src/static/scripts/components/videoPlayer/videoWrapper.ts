@@ -23,4 +23,7 @@ export default abstract class Ph_VideoWrapper extends HTMLElement {
 	// - ph-volumechange
 	// - ph-seek
 	// - ph-noaudio
+	// - ph-ready
+	// - ph-buffering
+	// - ph-playing
 }

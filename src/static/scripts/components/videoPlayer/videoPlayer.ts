@@ -4,7 +4,10 @@ import Ph_DropDown, {DirectionX, DirectionY} from "../misc/dropDown/dropDown.js"
 import Ph_DropDownArea from "../misc/dropDown/dropDownArea/dropDownArea.js";
 import Ph_DropDownEntry from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_ProgressBar from "../misc/progressBar/progressBar.js";
+import Ph_SwitchingImage from "../misc/switchableImage/switchableImage.js";
+import switchableImage from "../misc/switchableImage/switchableImage.js";
 import Ph_GifVideo from "./gifVideo/gifVideo.js";
+import Ph_PlayImage from "./icons/playImage.js";
 import Ph_SimpleVideo from "./simpleVideo/simpleVideo.js";
 import Ph_VideoAudio from "./videoAudio/videoAudio.js";
 import Ph_VideoWrapper from "./videoWrapper.js";
@@ -12,6 +15,7 @@ import Ph_VideoWrapper from "./videoWrapper.js";
 export default class Ph_VideoPlayer extends HTMLElement {
 	postData: RedditApiType;
 	video: Ph_VideoWrapper;
+	overlayIcon: Ph_SwitchingImage;
 	hideTimeout = null;
 	url: string;
 	videoProgressInterval = null;
@@ -23,12 +27,21 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		this.postData = postData;
 		this.url = postData.data["url"];
 		this.classList.add("videoPlayer");
-		this.setAttribute("tabindex", "0")
+		this.setAttribute("tabindex", "0");
+
+		this.overlayIcon = new Ph_SwitchingImage([
+			{ src: "/img/loading.svg", key: "loading" },
+			{ src: "/img/playVideo.svg", key: "ready" },
+			{ src: "", key: "none" },
+		]);
+		this.overlayIcon.classList.add("initialIcon");
+		this.appendChild(this.overlayIcon);
 
 		switch (this.url.match(/^https?:\/\/w?w?w?\.?([\w\.]+)/)[1]) {
 			case "imgur.com":
+			case "m.imgur.com":
 			case "i.imgur.com":
-				const typelessUrl = this.url.match(/^https?:\/\/i?\.?imgur\.com\/\w+/)[0];
+				const typelessUrl = this.url.match(/^https?:\/\/(i|m)?\.?imgur\.com\/\w+/)[0];
 				this.appendChild(this.video = new Ph_SimpleVideo([
 					{ src: typelessUrl + ".mp4", type: "video/mp4" },
 				]));
@@ -136,12 +149,16 @@ export default class Ph_VideoPlayer extends HTMLElement {
 				this.restartHideTimeout();
 			}
 		});
+		this.video.addEventListener("ph-ready", () => this.overlayIcon.activate("ready"));
+		this.video.addEventListener("ph-buffering", () => this.overlayIcon.activate("loading"));
+		this.video.addEventListener("ph-playing", () => this.overlayIcon.activate("none"));
 
 		// play, pause, progress bar
-		const { btn: playButton, img: playBtnImg } = this.makeImgBtn("/img/playVideo.svg", controls);
+		const playButton = new Ph_PlayImage();
+		controls.appendChild(playButton);
 		playButton.addEventListener("click", () => this.video.togglePlay());
 		this.video.addEventListener("ph-play", () => {
-			playBtnImg.src = "/img/pause.svg";
+			playButton.toPause();
 			this.videoProgressInterval = setInterval(() => {
 				progressBar.setProgress(this.video.getCurrentTime() / this.video.getMaxTime());
 				timeText.innerText = `${secondsToVideoTime(this.video.getCurrentTime())} / ${secondsToVideoTime(this.video.getMaxTime())}`;
@@ -149,7 +166,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		});
 		this.video.addEventListener("ph-seek", () => progressBar.setProgress(this.video.getCurrentTime() / this.video.getMaxTime()));
 		this.video.addEventListener("ph-pause", () => {
-			playBtnImg.src = "/img/playVideo.svg";
+			playButton.toPlay();
 			if (this.videoProgressInterval !== null) {
 				clearTimeout(this.videoProgressInterval)
 				this.videoProgressInterval = null;
@@ -165,16 +182,17 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		const volumeWrapper = document.createElement("div");
 		volumeWrapper.className = "volumeWrapper";
 		controls.appendChild(volumeWrapper);
-		const { btn: muteButton, img: muteButtonImg } = this.makeImgBtn("/img/audio.svg", volumeWrapper);
-		muteButton.addEventListener("click", () => this.video.toggleMute());
+		const muteButton = this.makeImgBtn(new Ph_SwitchingImage([
+			{ src: "/img/mute.svg", key: "mute" },
+			{ src: "/img/audio.svg", key: "audio" },
+		]), volumeWrapper);
+		muteButton.parentElement.addEventListener("click", () => this.video.toggleMute());
 		const volumeSlider = new Ph_ProgressBar(true, 20);
 		volumeSlider.addEventListener("ph-drag", (e: CustomEvent) => this.video.setVolume(e.detail));
 		volumeWrapper.appendChild(volumeSlider);
 		this.video.addEventListener("ph-volumechange",
 			(e: CustomEvent) => {
-				e.detail === 0 ?
-					muteButtonImg.src = "/img/mute.svg":
-					muteButtonImg.src = "/img/audio.svg";
+				muteButton.activate(e.detail === 0 ? "mute" : "audio");
 				volumeSlider.setProgress(e.detail);
 			}
 		)
@@ -207,19 +225,20 @@ export default class Ph_VideoPlayer extends HTMLElement {
 					{ displayHTML: "16.00x", value: 16.00, onSelectCallback: this.setVideoSpeed.bind(this) },
 				] },
 			{ displayHTML: "Popout", onSelectCallback: this.popoutVideo.bind(this) },
-		], `<img src="/img/settings2.svg">`, DirectionX.right, DirectionY.top, false);
+		], `<img src="/img/settings2.svg" draggable="false">`, DirectionX.right, DirectionY.top, false);
 		this.controlsDropDown.classList.add("settings");
 		this.controlsDropDown.getElementsByClassName("dropDownButton")[0].classList.add("imgBtn");
 		controls.appendChild(this.controlsDropDown);
 
 		// fullscreen
-		const { btn: fullscreenButton, img: fullscreenButtonImg} = this.makeImgBtn("/img/fullscreen.svg", controls);
-		fullscreenButton.addEventListener("click", () => this.toggleFullscreen())
+		const fullscreenButton = this.makeImgBtn(new Ph_SwitchingImage([
+			{ src: "/img/fullscreen.svg", key: "fullscreen" },
+			{ src: "/img/minimize.svg", key: "minimize" },
+		]), controls);
+		fullscreenButton.parentElement.addEventListener("click", () => this.toggleFullscreen())
 		this.addEventListener("fullscreenchange",
-			() => document.fullscreenElement ?
-			fullscreenButtonImg.src = "/img/minimize.svg" :
-			fullscreenButtonImg.src = "/img/fullscreen.svg"
-		)
+			() => fullscreenButton.activate(document.fullscreenElement ? "minimize" : "fullscreen")
+		);
 
 		// progress bar
 		const progressBar = new Ph_ProgressBar(true);
@@ -233,6 +252,14 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		}, { passive: false });
 	}
 
+	makeImgBtn(img: Ph_SwitchingImage, appendTo: HTMLElement): Ph_SwitchingImage {
+		const button = document.createElement("button");
+		button.className = "imgBtn";
+		button.appendChild(img);
+		appendTo.appendChild(button);
+		return img;
+	}
+
 	setVideoSpeed(valueChain: any[], source: Ph_DropDownEntry) {
 		this.video.setPlaybackSpeed(valueChain[1]);
 	}
@@ -243,17 +270,6 @@ export default class Ph_VideoPlayer extends HTMLElement {
 			"_blank",
 			`location=no,status=no,menubar=no,width=${this.video.getDimensions()[0]},height=${this.video.getDimensions()[1]}`
 		);
-	}
-
-	makeImgBtn(defaultSrc: string, appendTo: HTMLElement): { btn: HTMLButtonElement, img: HTMLImageElement } {
-		const button = document.createElement("button");
-		button.className = "imgBtn";
-		const btnImg = document.createElement("img");
-		btnImg.draggable = false;
-		btnImg.src = defaultSrc;
-		button.appendChild(btnImg);
-		appendTo.appendChild(button);
-		return { btn: button, img: btnImg };
 	}
 
 	showControls() {

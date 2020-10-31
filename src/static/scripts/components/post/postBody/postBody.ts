@@ -51,7 +51,7 @@ export default class Ph_PostBody extends HTMLElement {
 		if (postData["is_self"])
 			return PostType.Text;
 		else if (postData["url"].match(new RegExp(
-			"(https?://i?\.?imgur\\.com\/[\\w-]+.(gifv|mp4))|" + 
+			"(https?://(i|m)?\.?imgur\\.com\/[\\w-]+.(gifv|mp4))|" +
 			"(https?://gfycat.com\/[\\w-]+)|" + 
 			"(https?://v.redd.it\/[\\w-]+)|" +
 			"(https?://clips.twitch.tv\/[\\w-]+)|" +

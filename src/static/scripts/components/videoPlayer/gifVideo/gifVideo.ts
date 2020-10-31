@@ -20,6 +20,7 @@ export default class Ph_GifVideo extends Ph_VideoWrapper {
 			this.gifCanvas.height = this.gifImg.naturalHeight;
 			this.gifCanvas.getContext("2d").drawImage(this.gifImg, 0, 0, this.gifCanvas.width, this.gifCanvas.height);
 			this.pause();
+			this.dispatchEvent(new Event("ph-ready"));
 		}, { once: true });
 
 		this.canvasWrapper = document.createElement("div");
@@ -56,6 +57,7 @@ export default class Ph_GifVideo extends Ph_VideoWrapper {
 		this.gifImg.src = this.gifSrc;
 		this.canvasWrapper.classList.add("hide");
 		this.dispatchEvent(new Event("ph-play"));
+		this.dispatchEvent(new Event("ph-playing"));
 	}
 
 	seekTo(time: number): void {

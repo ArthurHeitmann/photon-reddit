@@ -23,6 +23,9 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 		this.audio.innerHTML = `<source src="${audioMp4Url}" type="video/mp4">`;
 		this.appendChild(this.audio);
 
+		this.video.addEventListener("waiting", () => this.dispatchEvent(new Event("ph-buffering")));
+		this.video.addEventListener("playing", () => this.dispatchEvent(new Event("ph-playing")));
+		this.video.addEventListener("loadeddata", () => this.dispatchEvent(new Event("ph-ready")));
 		this.video.addEventListener("play", () => this.audio.play()
 			.catch(() => undefined /* the pause() call from the line below will cause a weird exception */));
 		this.video.addEventListener("pause", () => this.audio.pause());
