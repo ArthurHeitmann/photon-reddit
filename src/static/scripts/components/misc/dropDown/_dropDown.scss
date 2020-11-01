@@ -1,0 +1,151 @@
+@use '../../../../style/vars';
+@use '../../../../style/shadow';
+
+.dropDown {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+
+	.show {
+		.dropDownEntry {
+			opacity: 1;
+			transform: scale(1) translateY(0);
+			visibility: visible;
+		}
+	}
+
+	.remove {
+		visibility: hidden;
+
+		.dropDownEntry {
+			opacity: 0;
+			transform: scale(.75) translateY(-50%);
+			visibility: hidden;
+		}
+	}
+
+	.dropDownButton {
+		width: fit-content;
+		padding: 0 1.2rem;
+	}
+
+	.areaWrapper {
+		position: absolute;
+		&.dirTop {
+			top: 0;
+
+			&.sameLine {
+				top: initial;
+				bottom: 0;
+			}
+
+			.dropDownArea {
+				top: initial;
+				bottom: 0;
+			}
+		}
+
+		&.dirBottom {
+			bottom: 0;
+
+			&.sameLine {
+				bottom: initial;
+				top: 0;
+			}
+
+			.dropDownArea {
+				bottom: initial;
+				top: 0;
+			}
+		}
+
+		&.dirLeft {
+			left: 0;
+
+			&.sameLine {
+				left: initial;
+				right: 0;
+			}
+
+			.dropDownArea {
+				left: 0;
+			}
+		}
+
+		&.dirRight {
+			right: 0;
+
+			&.sameLine {
+				right: initial;
+				left: 0;
+			}
+
+			.dropDownArea {
+				right: 0;
+			}
+		}
+
+		.dropDownArea {
+			visibility: hidden;
+			position: absolute;
+			z-index: 1;
+			top: 100%;
+			margin-top: 0.5rem;
+			width: max-content;
+		}
+	}
+
+	.dropDownEntry {
+		display: flex;
+		gap: 1rem;
+		justify-content: space-between;
+		border: 1px solid vars.$text;
+		padding: 0 .65rem;
+		cursor: pointer;
+		width: 100%;
+		height: 2.4rem;
+		line-height: 2.4rem;
+		background-color: vars.$background-el1;
+		@extend %shadow-diffuse;
+
+		opacity: 0;
+		transform: scale(.5);
+		visibility: hidden;
+		transition: all .15s ease, color .25s ease, padding .25s ease, border .25s ease;
+
+		@for $i from 1 through 15 {
+			&:nth-child(#{$i}n) {
+				transition-delay: #{$i * 0.03 - .03}s;
+			}
+		}
+
+		&:first-child {
+			border-top: 1px solid vars.$text;
+			border-top-left-radius: 1.2rem;
+			border-top-right-radius: 1.2rem;
+		}
+
+		&:last-child {
+			border-bottom-left-radius: 1.2rem;
+			border-bottom-right-radius: 1.2rem;
+		}
+
+		&:hover {
+			padding-left: .75rem;
+
+			* {
+				color: lightcoral;
+			}
+		}
+
+		&:active {
+			border: 1px solid lightcoral;
+		}
+
+		img.nextMenu {
+			height: 2rem;
+			margin-top: .2rem;
+			margin-right: -.6rem;
+		}
+	}
+}

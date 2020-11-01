@@ -1,0 +1,76 @@
+@use '../../../../style/vars';
+@use '../../../../style/shadow';
+
+.user {
+	&.mod * {
+		color: lightgreen;
+	}
+
+	&.op {
+		margin-right: .75rem;
+
+		::before {
+			content: "";
+			position: absolute;
+			z-index: -1;
+			width: 100%;
+			height: 100%;
+			background: #e65d5d;
+			padding: .125rem 0.6rem;
+			margin-top: -.125rem;
+			margin-left: -.6rem;
+			border-radius: 1rem;
+		}
+
+		&.mod {
+			::before {
+				background: green;
+			}
+		}
+
+		* {
+			color: vars.$text;
+		}
+	}
+}
+
+.feedItem {
+	display: flex;
+	position: relative;
+
+	&.isInFeed {
+		background: vars.$background-el1;
+		border-radius: vars.$b-r;
+		@extend %shadow-diffuse;
+
+		.backgroundLink {
+			position: absolute;
+			z-index: 0;
+			width: 100%;
+			height: 100%;
+		}
+
+		a:not(.backgroundLink), .content > * {
+			position: relative;
+		}
+	}
+
+	ol, ul {
+		list-style-position: inside;
+	}
+
+	.actions {
+		margin-right: 1rem;
+		width: vars.$postActionsWidth;
+		max-width: vars.$postActionsWidth;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.content {
+		word-break: break-word;
+		overflow-wrap: anywhere;
+		max-width: 100%;
+	}
+}

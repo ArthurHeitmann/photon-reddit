@@ -1,0 +1,21 @@
+@use '../../../../style/vars';
+
+.progressBar {
+	--progress: 0;
+	position: relative;
+	transition: all .25s ease;
+
+	> .progress {
+		height: 100%;
+		width: calc(100% * var(--progress));
+		background: lightcoral;
+	}
+
+	.accessibilitySpacer {
+		position: absolute;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		transform: scaleY(2.5);
+	}
+}

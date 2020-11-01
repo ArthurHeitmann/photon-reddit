@@ -1,0 +1,9 @@
+@use '../../../../style/vars';
+
+@keyframes fadeIn {
+	from { opacity: 0 } to { opacity: 1 }
+}
+
+.loadingIcon {
+	animation: fadeIn 1s ease;
+}
