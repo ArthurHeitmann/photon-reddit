@@ -1,11 +1,12 @@
-import {save, vote, VoteDirection, voteDirectionFromLikes} from "../../api/api.js";
-import {mainURL} from "../../utils/consts.js";
-import {numberToShort as numberToShort, numberToShortStr, timePassedSinceStr} from "../../utils/conv.js";
-import {linksToSpa} from "../../utils/htmlStuff.js";
-import {RedditApiType} from "../../utils/types.js";
+import { save, vote, VoteDirection, voteDirectionFromLikes } from "../../api/api.js";
+import { mainURL } from "../../utils/consts.js";
+import { numberToShort as numberToShort, numberToShortStr, timePassedSinceStr } from "../../utils/conv.js";
+import { linksToSpa } from "../../utils/htmlStuff.js";
+import { RedditApiType } from "../../utils/types.js";
 import Ph_FeedItem from "../feed/feedItem/feedItem.js";
-import Ph_DropDown, {DirectionX, DirectionY} from "../misc/dropDown/dropDown.js";
+import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
 import Ph_DropDownEntry from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
+import Ph_Toast, { Level } from "../misc/toast/toast.js";
 import Votable from "../misc/votable/votable.js";
 import Ph_PostBody from "./postBody/postBody.js";
 
@@ -125,7 +126,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			console.error("Error voting on post");
 			this.currentVoteDirection = prevDir;
 			this.setVotesState();
-			// TODO display error
+			new Ph_Toast(Level.Error, "Error occurred while voting");
 		}
 	};
 
@@ -160,7 +161,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 					navigator.clipboard.writeText(this.url);
 				break;
 			default:
-				throw new Error("Invalid share type");
+				throw "Invalid share type";
 				
 		}
 	}

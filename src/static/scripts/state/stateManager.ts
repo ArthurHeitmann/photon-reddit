@@ -1,5 +1,6 @@
-import {redditApiRequest} from "../api/api.js";
+import { redditApiRequest } from "../api/api.js";
 import Ph_UniversalFeed from "../components/feed/universalFeed/universalFeed.js";
+import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
 import Ph_PostAndComments from "../components/postAndComments/postAndComments.js";
 import Ph_ViewStateLoader from "../components/viewState/viewStateLoader/viewStateLoader.js";
 import { splitPathQuery } from "../utils/conv.js";
@@ -17,8 +18,10 @@ window.addEventListener("popstate", (e: PopStateEvent) => {
 		for(let i = viewsStack.position() - e.state.index; i > 0; --i) 
 			viewsStack.back();
 	}
-	else
-		throw new Error("Equal state");
+	else {
+		new Ph_Toast(Level.Error, "Weird navigation error");
+		throw "Equal state";
+	}
 });
 
 export enum PushType {
@@ -53,8 +56,10 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 		params.push(param);
 
 	const requestData = await redditApiRequest(path, params, false);
-	if (requestData["error"])
-		throw new Error("Error making request to reddit");
+	if (requestData["error"]) {
+		new Ph_Toast(Level.Error, "Error making request to reddit");
+		throw `Error making request to reddit (${path}, ${JSON.stringify(params)})`;
+	}
 
 	if (requestData instanceof Array) {		// --> [0]: post [1]: comments
 		stateLoader.finishWith(new Ph_PostAndComments(requestData));

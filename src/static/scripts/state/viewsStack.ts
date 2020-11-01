@@ -46,9 +46,9 @@ export default class ViewsStack {
 
 	pushBefore(state: Ph_ViewState) {
 		if (this.pos == null)
-			throw new Error("First cannot be inserted using insertBefore");
+			throw "First cannot be inserted using insertBefore";
 		if (this.views[this.pos - 1] !== undefined)
-			throw new Error("inserting before element! An element already exists at that position");
+			throw "inserting before element! An element already exists at that position";
 
 		this.views[this.pos].insertAdjacentElement("beforebegin", state);
 		this.views[this.pos].classList.add("hide");
@@ -58,7 +58,7 @@ export default class ViewsStack {
 
 	changeCurrentUrl(newUrl: string) {
 		if (this.pos === null || !this.views[this.pos])
-			throw new Error("Trying to update state, but there is currently no state");
+			throw "Trying to update state, but there is currently no state";
 			
 		this.views[this.pos].state.url = newUrl;
 		history.replaceState(

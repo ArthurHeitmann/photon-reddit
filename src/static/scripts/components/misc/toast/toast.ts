@@ -21,7 +21,7 @@ export default class Ph_Toast extends HTMLElement {
 			this.classList.add("remove")
 			setTimeout(() => {
 				this.remove();
-			}, 1100);
+			}, 300);
 		});
 
 		document.body.appendChild(this);

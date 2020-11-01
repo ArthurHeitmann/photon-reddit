@@ -1,7 +1,8 @@
-import { replaceRedditLinks, timePassedSince, timePassedSinceStr, numberToShortStr } from "../../utils/conv.js";
+import { numberToShortStr, replaceRedditLinks, timePassedSinceStr } from "../../utils/conv.js";
 import { linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
 import Ph_FeedItem from "../feed/feedItem/feedItem.js";
+import Ph_Toast, { Level } from "../misc/toast/toast.js";
 
 export default class Ph_Comment extends Ph_FeedItem {
 	constructor(commentData: RedditApiType, isChild: boolean, isInFeed: boolean) {
@@ -13,8 +14,10 @@ export default class Ph_Comment extends Ph_FeedItem {
 			this.appendChild(loadMoreButton);
 			return;
 		}
-		else if (commentData.kind !== "t1")
-			throw new Error("Invalid comment data type");
+		else if (commentData.kind !== "t1") {
+			new Ph_Toast(Level.Error, "Error occurred while making comment");
+			throw "Invalid comment data type";
+		}
 
 		this.classList.add("comment");
 		if (!isChild)

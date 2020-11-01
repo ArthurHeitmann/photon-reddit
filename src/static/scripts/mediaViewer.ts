@@ -1,3 +1,4 @@
+import Ph_Toast, { Level } from "./components/misc/toast/toast.js";
 import Ph_PostBody from "./components/post/postBody/postBody.js";
 import { splitPathQuery } from "./utils/conv.js";
 import { RedditApiType } from "./utils/types.js";
@@ -11,8 +12,12 @@ window.addEventListener("load", async () => {
 	let [path, query] = splitPathQuery(fetchUrl);
 	path = path.replace(/\/?.?j?s?o?n?$/, "/.json");
 	fetchUrl = "https://www.reddit.com" + path + query;
-	// TODO error handling
-	const resp = await fetch(fetchUrl);
-	const data: RedditApiType[] = await resp.json();
-	document.body.appendChild(new Ph_PostBody(data[0].data.children[0]));
+	try {
+		const resp = await fetch(fetchUrl);
+		const data: RedditApiType[] = await resp.json();
+		document.body.appendChild(new Ph_PostBody(data[0].data.children[0]));
+	}
+	catch (e) {
+		new Ph_Toast(Level.Error, `Error making request to reddit (${fetchUrl})`);
+	}
 });

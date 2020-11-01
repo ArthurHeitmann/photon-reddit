@@ -1,9 +1,10 @@
-import {redditApiRequest} from "../../../api/api.js";
+import { redditApiRequest } from "../../../api/api.js";
 import { viewsStack } from "../../../state/stateManager.js";
 import { splitPathQuery } from "../../../utils/conv.js";
 import { PostSorting, RedditApiType, SortPostsOrder } from "../../../utils/types.js";
 import Ph_Comment from "../../comment/comment.js";
 import { LoadPosition, Ph_Feed } from "../../feed/feed.js";
+import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Ph_Post from "../../post/post.js";
 import Ph_PostsSorter from "../sorting/postsSorter/postsSorter.js";
 
@@ -33,7 +34,8 @@ export default class Ph_UniversalFeed extends Ph_Feed {
 			case "t1":
 				return new Ph_Comment(itemData, false, true);
 			default:
-				throw new Error(`What is this feed item? ${JSON.stringify(itemData, null, 4)}`);
+				new Ph_Toast(Level.Error, `Unknown feed item "${itemData.kind}"`);
+				throw `What is this feed item? ${JSON.stringify(itemData, null, 4)}`;
 		}
 	}
 
@@ -95,7 +97,8 @@ export default class Ph_UniversalFeed extends Ph_Feed {
 		
         const request: RedditApiType = await redditApiRequest(newUrl, [], false);
         if (request["error"]) {
-            throw new Error(`Error making sort request: ${JSON.stringify(request)}`);
+        	new Ph_Toast(Level.Error, "Error making request to reddit");
+            throw `Error making sort request: ${JSON.stringify(request)}`;
         }
 		
         

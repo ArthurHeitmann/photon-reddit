@@ -1,5 +1,15 @@
 @use "../../../../style/shadow";
 
+@keyframes show {
+	from { transform: translateY(calc(100% + 1rem)) translateX(-50%); }
+	to { transform: translateY(0) translateX(-50%); }
+}
+
+@keyframes remove {
+	from { transform: translateY(0) translateX(-50%); }
+	to { transform: translateY(calc(100% + 1rem)) translateX(-50%); }
+}
+
 .toast {
 	position: absolute;
 	bottom: 0.5rem;
@@ -14,6 +24,7 @@
 	border-radius: 1rem;
 	@extend %shadow-diffuse;
 	transition: transform 1s ease;
+	animation: show .25s ease forwards;
 
 	> .levelImg {
 		width: 2rem;
@@ -43,6 +54,6 @@
 	}
 
 	&.remove {
-		transform: translateY(calc(100% + 1rem)) translateX(-50%);
+		animation: remove .25s ease forwards;
 	}
 }

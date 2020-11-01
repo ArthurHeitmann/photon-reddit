@@ -1,5 +1,6 @@
+import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
 import { appId, redirectURI } from "../utils/consts.js";
-import {isLoggedIn, setIsLoggedIn} from "../utils/globals.js";
+import { isLoggedIn, setIsLoggedIn } from "../utils/globals.js";
 
 const tokenDuration = "permanent";
 const scope = ["identity", "edit", "flair", "history", "modconfig", "modflair", "modlog", "modposts", "modwiki", "mysubreddits", "privatemessages", "read", "report", "save", "submit", "subscribe", "vote", "wikiedit", "wikiread"];
@@ -45,7 +46,8 @@ export async function checkTokenExpiry(): Promise<boolean> {
 		return setIsLoggedIn(true);
 	}
 	else {
-		console.error("error getting new token");	// TODO display error in UI
+		console.error(`error getting new token (${newTokenText})`);
+		new Ph_Toast(Level.Error, "Error updating access token");
 		return setIsLoggedIn(false);
 	}
 }

@@ -86,7 +86,7 @@ export function voteDirectionFromLikes(likes: boolean) {
 		case false:
 			return VoteDirection.down;
 		default:
-			throw new Error("Invalid likes value");
+			throw "Invalid likes value";
 	}
 }
 
