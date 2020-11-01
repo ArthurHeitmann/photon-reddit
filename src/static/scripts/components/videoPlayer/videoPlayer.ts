@@ -97,6 +97,10 @@ export default class Ph_VideoPlayer extends HTMLElement {
 					this.appendChild(this.video = new Ph_GifVideo(this.url));
 					break;
 				}
+				else if (/\.mp4$/.test(this.url)) {
+					this.appendChild(this.video = new Ph_SimpleVideo([{ src: this.url, type: "video/mp4" }]));
+					break;
+				}
 				this.innerText = `Unknown video provider for ${postData.data["url"]}`;
 				break;
 		}

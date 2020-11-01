@@ -50,18 +50,16 @@ export default class Ph_PostBody extends HTMLElement {
 	private getPostType(postData: RedditApiData): PostType {
 		if (postData["is_self"])
 			return PostType.Text;
-		else if (postData["url"].match(new RegExp(
+		else if (new RegExp(
 			"(https?://(i|m)?\.?imgur\\.com\/[\\w-]+.(gifv|mp4))|" +
 			"(https?://gfycat.com\/[\\w-]+)|" + 
 			"(https?://v.redd.it\/[\\w-]+)|" +
 			"(https?://clips.twitch.tv\/[\\w-]+)|" +
 			"(https?://w?w?w?\.?redgifs.com\/watch\/\\w+)|" +
-			"(\.gif$)"
-		)))
+			"(\.(gif|mp4)$)"
+		).test(postData["url"]))
 			return PostType.Video;
-		else if (postData["post_hint"] == "link")
-			return PostType.Link;
-		else if (postData["post_hint"] == "image")
+		else if (postData["post_hint"] == "image" || /\.(png|jpg|jpeg|svg)$/.test(postData["url"]))
 			return PostType.Image;
 		else if (postData["post_hint"] == "hosted:video")
 			return PostType.Video;
