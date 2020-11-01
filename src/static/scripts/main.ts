@@ -1,7 +1,7 @@
-import { $class, $id, $tag, linksToSpa } from "./utils/htmlStuff.js";
 import { checkTokenExpiry, initiateLogin, isAccessTokenValid } from "./login/login.js";
 import { pushLinkToHistorySep } from "./state/stateManager.js";
-import { SVGAnimateElement } from "./utils/types.js"
+import { $class, $id, $tag, linksToSpa } from "./utils/htmlStuff.js";
+import { SVGAnimateElement } from "./utils/types.js";
 
 const header: HTMLElement = $tag("header")[0]; 
 function init(): void {

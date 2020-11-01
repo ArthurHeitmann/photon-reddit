@@ -1,0 +1,48 @@
+@use "../../../../style/shadow";
+
+.toast {
+	position: absolute;
+	bottom: 0.5rem;
+	z-index: 99999;
+	margin-left: 50%;
+	transform: translateX(-50%);
+	display: flex;
+	background: var(--theme);
+	padding: 0.7rem;
+	width: min(27rem, 70vw);
+	background: var(--theme);
+	border-radius: 1rem;
+	@extend %shadow-diffuse;
+	transition: transform 1s ease;
+
+	> .levelImg {
+		width: 2rem;
+		margin-right: .7rem;
+	}
+
+	> .closeButton {
+		display: flex;
+		align-items: center;
+		transition: transform .25s ease;
+
+		> img {
+			width: 2rem;
+		}
+
+		&:hover {
+			transform: scale(1.1);
+		}
+	}
+
+	.title {
+		font-size: 1.1rem;
+	}
+
+	.text {
+		font-size: .9rem;
+	}
+
+	&.remove {
+		transform: translateY(calc(100% + 1rem)) translateX(-50%);
+	}
+}
