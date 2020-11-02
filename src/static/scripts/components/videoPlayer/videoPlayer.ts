@@ -217,7 +217,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		)
 		volumeWrapper.addEventListener("wheel", e => {
 			e.preventDefault();
-			this.video.setVolume(this.video.getVolume() + (-e.deltaY || e.deltaX) / 1000)
+			this.video.setVolume(this.video.getVolume() + (-e.deltaY || e.deltaX) / 3000)
 		}, { passive: false });
 		this.video.addEventListener("ph-noaudio", () => volumeWrapper.classList.add("remove"));
 

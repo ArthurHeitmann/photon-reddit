@@ -20,7 +20,7 @@ export default class Ph_PostsSorter extends HTMLElement {
 				{ displayHTML: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.handleOnSelect.bind(this) },
 				{ displayHTML: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.handleOnSelect.bind(this) },
 				{ displayHTML: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.handleOnSelect.bind(this) },
-				{ displayHTML: "Moth", value: SortPostsTimeFrame.month, onSelectCallback: this.handleOnSelect.bind(this) },
+				{ displayHTML: "Month", value: SortPostsTimeFrame.month, onSelectCallback: this.handleOnSelect.bind(this) },
 				{ displayHTML: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.handleOnSelect.bind(this) },
 				{ displayHTML: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.handleOnSelect.bind(this) }
 			] },

@@ -23,7 +23,13 @@ export default class Ph_UniversalFeed extends Ph_Feed {
 		this.header.appendChild(new Ph_PostsSorter(this));
 
 		for (const postData of posts.data.children) {
-			this.appendChild(this.makeFeedItem(postData));
+			try {													// TODO when no more errors happen, remove all try & catches
+				this.appendChild(this.makeFeedItem(postData));
+			}
+			catch (e) {
+				console.error(e);
+				new Ph_Toast(Level.Error, `Error making feed item`);
+			}
 		}
 	}
 
@@ -47,7 +53,13 @@ export default class Ph_UniversalFeed extends Ph_Feed {
 
 		if (loadPosition === LoadPosition.After) {
 			for (const postData of posts.data.children) {
-				this.appendChild(this.makeFeedItem(postData));
+				try {
+					this.appendChild(this.makeFeedItem(postData));
+				}
+				catch (e) {
+					console.error(e);
+					new Ph_Toast(Level.Error, `Error making feed item`);
+				}
 			}
 			this.afterData = this.children[this.childElementCount - 1]["itemId"];
 			if (this.afterData === null)
@@ -55,8 +67,14 @@ export default class Ph_UniversalFeed extends Ph_Feed {
 		}
 		else {
 			for (const postData of posts.data.children.reverse()) {
-				const newPost = this.makeFeedItem(postData);
-				this.header.insertAdjacentElement("afterend", newPost);
+				try {
+					const newPost = this.appendChild(this.makeFeedItem(postData));
+					this.header.insertAdjacentElement("afterend", newPost);
+				}
+				catch (e) {
+					console.error(e);
+					new Ph_Toast(Level.Error, `Error making feed item`);
+				}
 			}
 
 			this.beforeData = this.children[1]["itemId"];
@@ -102,8 +120,15 @@ export default class Ph_UniversalFeed extends Ph_Feed {
         }
 		
         
-		for (const item of request.data.children)
-			this.appendChild(this.makeFeedItem(item));
+		for (const item of request.data.children) {
+			try {
+				this.appendChild(this.makeFeedItem(item));
+			}
+			catch (e) {
+				console.error(e);
+				new Ph_Toast(Level.Error, `Error making feed item`);
+			}
+		}
 		
 	}
 }

@@ -46,7 +46,7 @@ export default class Ph_Comment extends Ph_FeedItem {
 			userAdditionClasses += " mod";
 		mainPart.innerHTML = `
 			<div class="header flex">
-				<a href="/u/${commentData.data["author"]}" class="user${userAdditionClasses}">
+				<a href="/user/${commentData.data["author"]}" class="user${userAdditionClasses}">
 					<span>u/${commentData.data["author"]}</span>
 				</a>
 				<div class="dropdown">${ new Date(parseInt(commentData.data["created_utc"])).toTimeString() }</div>

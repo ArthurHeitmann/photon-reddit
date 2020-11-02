@@ -62,7 +62,7 @@ export function replaceRedditLinks(el: HTMLElement) {
 }
 
 export function splitPathQuery(pathAndQuery: string): string[] {
-	const querySeparation = pathAndQuery.match(/([\w\/+]+)(\?[\w&=]*)?/);
+	const querySeparation = pathAndQuery.match(/([\w\/+-_]+)(\?[\w&=]*)?/);
 	return [querySeparation[1] || "/", querySeparation[2] || ""];
 }
 

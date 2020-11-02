@@ -95,7 +95,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 						<span>${postData.data["subreddit_name_prefixed"]}</span>
 					</a>
 					<span>by</span>
-					<a href="/u/${postData.data["author"]}" class="user">
+					<a href="/user/${postData.data["author"]}" class="user">
 						<span>u/${postData.data["author"]}</span>
 					</a>
 					<div class="dropdown">${new Date(parseInt(postData.data["created_utc"])).toTimeString()}</div>
