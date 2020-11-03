@@ -1,4 +1,4 @@
-import { numberToShortStr, replaceRedditLinks, timePassedSinceStr } from "../../utils/conv.js";
+import { numberToShortStr, replaceRedditLinks, timePassedSinceStr } from "../../utils/utils.js";
 import { linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
 import Ph_FeedItem from "../feed/feedItem/feedItem.js";

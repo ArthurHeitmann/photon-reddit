@@ -1,4 +1,4 @@
-import { secondsToVideoTime } from "../../utils/conv.js";
+import { secondsToVideoTime } from "../../utils/utils.js";
 import { RedditApiType } from "../../utils/types.js";
 import Ph_DropDown, {DirectionX, DirectionY} from "../misc/dropDown/dropDown.js";
 import Ph_DropDownArea from "../misc/dropDown/dropDownArea/dropDownArea.js";

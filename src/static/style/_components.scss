@@ -8,6 +8,8 @@
 @use '../scripts/components/misc/switchableImage/switchableImage';
 @use '../scripts/components/misc/toast/toast';
 @use '../scripts/components/post/post';
+@use '../scripts/components/post/postBody/draggableWrapper/draggableWrapper';
+@use '../scripts/components/post/postBody/postImage/postImage';
 @use '../scripts/components/postAndComments/postAndComment';
 @use '../scripts/components/videoPlayer/gifVideo/gifVideo';
 @use '../scripts/components/videoPlayer/videoPlayer';

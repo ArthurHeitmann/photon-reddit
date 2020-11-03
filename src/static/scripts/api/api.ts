@@ -1,6 +1,6 @@
 import Votable from "../components/misc/votable/votable.js";
 import { checkTokenExpiry } from "../login/login.js";
-import { splitPathQuery } from "../utils/conv.js";
+import { splitPathQuery } from "../utils/utils.js";
 import {isLoggedIn} from "../utils/globals.js";
 
 export async function redditApiRequest(pathAndQuery, params: string[][], requiresLogin: boolean, options = {}) {

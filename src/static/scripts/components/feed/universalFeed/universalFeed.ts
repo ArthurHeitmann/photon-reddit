@@ -1,6 +1,6 @@
 import { redditApiRequest } from "../../../api/api.js";
 import { viewsStack } from "../../../state/stateManager.js";
-import { splitPathQuery } from "../../../utils/conv.js";
+import { splitPathQuery } from "../../../utils/utils.js";
 import { PostSorting, RedditApiType, SortPostsOrder } from "../../../utils/types.js";
 import Ph_Comment from "../../comment/comment.js";
 import { LoadPosition, Ph_Feed } from "../../feed/feed.js";

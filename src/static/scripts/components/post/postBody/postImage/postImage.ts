@@ -1,23 +1,21 @@
 import { $tag } from "../../../../utils/htmlStuff.js";
 import { RedditApiType } from "../../../../utils/types";
+import Ph_DraggableWrapper from "../draggableWrapper/draggableWrapper.js";
 
 export default class Ph_PostImage extends HTMLElement {
 	imagePreview: HTMLImageElement;
-	imageMax: HTMLDivElement;
+	imageMax: Ph_DraggableWrapper;
 	bigImage: HTMLImageElement;
+	controls: HTMLElement;
 	sourceImageUrl: string;
 	isInitialized = false;
-	prevX = 0;
-	prevY = 0;
-	moveX = 0;
-	moveY = 0;
-	scale = 1;
 	removeSelfTimout = null;
 
 	constructor(postData: RedditApiType) {
 		super();
 
 		this.classList.add("w100");
+		this.setAttribute("tabindex", "0");
 
 		// preview image
 		this.imagePreview = document.createElement("img");
@@ -31,27 +29,40 @@ export default class Ph_PostImage extends HTMLElement {
 		
 		// max container
 		this.sourceImageUrl = postData.data["url"];
-		this.imageMax = document.createElement("div");
+		this.imageMax = new Ph_DraggableWrapper();
+		this.imageMax.classList.add("imageMax")
+		this.imageMax.classList.add("hide")
 		this.appendChild(this.imageMax);
-		this.imageMax.className = "imageMax hide";
-		this.imageMax.setAttribute("tabindex", "0");
-		this.imageMax.addEventListener("mousedown", e => this.beginDrag(e));
-		this.imageMax.addEventListener("mouseup", e => this.endDrag(e));
-		this.imageMax.addEventListener("mouseleave", e => this.endDrag(e));
-		this.imageMax.addEventListener("wheel", e => this.onZoom(e), { passive: true });
+		// controls bar
+		this.controls = document.createElement("div");
+		this.imageMax.appendChild(this.controls);
+		this.controls.className = "controls";
+		this.controls.insertAdjacentHTML("beforeend", `<div class="accessibilitySpacer dragThrough"></div>`);
+		const title = document.createElement("div");
+		title.innerText = postData.data["title"];
+		title.className = "title";
+		this.controls.appendChild(title);
+		const resetViewBtn = document.createElement("button");
+		resetViewBtn.innerHTML = `<img src="/img/reset.svg" alt="minimize" draggable="false" class="padded">`;
+		resetViewBtn.addEventListener("click", () => {
+			this.imageMax.setMoveXY(0, 0);
+			this.imageMax.setZoom(1);
+		})
+		this.controls.appendChild(resetViewBtn);
+		const closeBtn = document.createElement("button");
+		closeBtn.innerHTML = `<img src="/img/minimize.svg" alt="minimize" draggable="false">`;
+		closeBtn.addEventListener("click", this.onClose.bind(this));
+		this.controls.appendChild(closeBtn);
+		const downloadBtn = document.createElement("button");
+
 
 		// acutal max image
 		this.bigImage = document.createElement("img");
 		this.imageMax.appendChild(this.bigImage);
-		this.bigImage.className = "bigImage";
+		this.imageMax.activateWith(this.bigImage);
+		this.bigImage.className = "bigImage draggable";
 		this.bigImage.draggable = false;
 
-		// close button
-		const closeButton = document.createElement("button");
-		this.imageMax.appendChild(closeButton);
-		closeButton.className = "closeButton";
-
-		closeButton.onclick = e => this.onClose(e);
 		this.addEventListener("keyup", (e: KeyboardEvent) => {
 			if (e.key === "Escape")
 				this.onClose(e);
@@ -60,37 +71,16 @@ export default class Ph_PostImage extends HTMLElement {
 
 	onShow(e) {
 		this.imageMax.classList.remove("hide");
-		this.imageMax.focus();
+		this.focus();
 		if (!this.isInitialized)
 			this.makePreview();
-		this.setMoveXY(0, 0);
-		this.setZoom(1);
+		this.imageMax.setMoveXY(0, 0);
+		this.imageMax.setZoom(1);
 
 		if (this.removeSelfTimout !== null) {
 			clearTimeout(this.removeSelfTimout);
 			this.removeSelfTimout = null;
 		}
-	}
-
-	beginDrag(e: MouseEvent) {
-		this.imageMax.onmousemove = e => this.moveImage(e);
-		this.prevX = e.screenX;
-		this.prevY = e.screenY;
-	}
-
-	endDrag(e: MouseEvent) {
-		this.imageMax.onmousemove = null;
-	}
-
-	moveImage(e: MouseEvent) {
-		this.addMoveXY(e.screenX - this.prevX, e.screenY - this.prevY)
-		this.prevX = e.screenX;
-		this.prevY = e.screenY;
-	}
-
-	onZoom(e: WheelEvent) {
-		this.addZoom(e.deltaY / -1000);
-		this.addMoveXY(-e.deltaX, 0);
 	}
 
 	makePreview() {
@@ -99,7 +89,8 @@ export default class Ph_PostImage extends HTMLElement {
 
 		// preview image to show while possible waiting for big image to load
 		const intermediateImage = document.createElement("img");
-		this.imageMax.appendChild(intermediateImage);
+		intermediateImage.className = "draggable";
+		this.bigImage.insertAdjacentElement("beforebegin", intermediateImage);
 		intermediateImage.src = this.imagePreview.src;
 		intermediateImage.draggable = false;
 
@@ -120,31 +111,6 @@ export default class Ph_PostImage extends HTMLElement {
 			while (this.imageMax.childElementCount)
 				this.imageMax.lastChild.remove();
 		}, 1000 * 60 * 5);
-	}
-
-	setZoom(val: number) {
-		this.scale = val;
-		this.imageMax.style.setProperty("--img-zoom", this.scale.toString());
-	}
-
-	addZoom(val: number) {
-		this.scale += val * this.scale;
-		this.scale = Math.max(1, this.scale);
-		this.imageMax.style.setProperty("--img-zoom", this.scale.toString());
-	}
-
-	setMoveXY(x: number, y: number) {
-		this.moveX = x;
-		this.moveY = y;
-		this.imageMax.style.setProperty("--img-move-x", `${this.moveX}px`);
-		this.imageMax.style.setProperty("--img-move-y", `${this.moveY}px`);
-	}
-
-	addMoveXY(x: number, y: number) {
-		this.moveX += x / this.scale;
-		this.moveY += y / this.scale;
-		this.imageMax.style.setProperty("--img-move-x", `${this.moveX}px`);
-		this.imageMax.style.setProperty("--img-move-y", `${this.moveY}px`);
 	}
 }
 

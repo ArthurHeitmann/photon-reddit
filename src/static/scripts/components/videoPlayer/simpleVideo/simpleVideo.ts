@@ -1,4 +1,4 @@
-import { clamp } from "../../../utils/conv.js";
+import { clamp } from "../../../utils/utils.js";
 import Ph_VideoWrapper from "../videoWrapper.js";
 
 export default class Ph_SimpleVideo extends Ph_VideoWrapper {

@@ -3,7 +3,7 @@ import Ph_UniversalFeed from "../components/feed/universalFeed/universalFeed.js"
 import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
 import Ph_PostAndComments from "../components/postAndComments/postAndComments.js";
 import Ph_ViewStateLoader from "../components/viewState/viewStateLoader/viewStateLoader.js";
-import { splitPathQuery } from "../utils/conv.js";
+import { splitPathQuery } from "../utils/utils.js";
 import ViewsStack from "./viewsStack.js";
 
 export const viewsStack: ViewsStack = new ViewsStack();

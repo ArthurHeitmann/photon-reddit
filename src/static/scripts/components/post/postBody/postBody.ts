@@ -1,4 +1,4 @@
-import { replaceRedditLinks } from "../../../utils/conv.js";
+import { replaceRedditLinks } from "../../../utils/utils.js";
 import { linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiData, RedditApiType } from "../../../utils/types.js";
 import Ph_VideoPlayer from "../../videoPlayer/videoPlayer.js";

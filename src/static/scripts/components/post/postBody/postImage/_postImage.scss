@@ -1,0 +1,80 @@
+@use "../../../../../style/vars";
+@use "../../../../../style/shadow";
+
+@keyframes fadeOut {
+	from { opacity: 1 }
+	to { opacity: 0 }
+}
+
+.imageMax {
+	position: fixed;
+	z-index: 10;
+	top: 0;
+	left: 0;
+
+	> img {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+	}
+
+	.controls {
+		position: fixed;
+		bottom: 0;
+		right: 0;
+		height: vars.$controls-height;
+		display: flex;
+		z-index: 100;
+		animation: fadeOut 1s ease;
+		transition: opacity .25s ease;
+		opacity: 0;
+
+		> * {
+			filter: drop-shadow(0 0 3px black) drop-shadow(0 0 6px rgba(0,0,0,0.5));
+		}
+
+		&:hover {
+			opacity: 1;
+			animation-duration: 0s;
+		}
+
+		button {
+			transition: filter .25s ease;
+
+			img {
+				width: 2.5rem;
+				height: 2.5rem;
+
+				&.padded {
+					padding: 10%;
+				}
+			}
+
+			&:hover {
+				filter: drop-shadow(0px 0px 3px lightcoral) drop-shadow(0px 0px 0px lightcoral);
+			}
+			&:active {
+				filter: drop-shadow(0px 0px 3px lightcoral) drop-shadow(0px 0px 7px lightcoral);
+			}
+		}
+
+		.accessibilitySpacer {
+			position: absolute;
+			z-index: -1;
+			bottom: 0;
+			right: 0;
+
+			width: min(15rem, 25vw);
+			height: min(10rem, 25vw);
+		}
+
+		.title {
+			line-height: vars.$controls-height;
+			max-width: 80vw;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+	}
+}
