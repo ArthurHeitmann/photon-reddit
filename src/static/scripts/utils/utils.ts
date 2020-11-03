@@ -67,6 +67,7 @@ export function splitPathQuery(pathAndQuery: string): string[] {
 }
 
 export function secondsToVideoTime(seconds: number): string {
+	if (isNaN(seconds)) seconds = 0;
 	return `${padWith0(Math.floor(seconds / 60), 2)}:${padWith0(Math.floor(seconds % 60), 2)}`;
 }
 

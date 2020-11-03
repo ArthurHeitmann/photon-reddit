@@ -2,79 +2,103 @@
 @use "../../../../../style/shadow";
 
 @keyframes fadeOut {
-	from { opacity: 1 }
-	to { opacity: 0 }
+	from {
+		opacity: 1
+	}
+	to {
+		opacity: 0
+	}
 }
 
-.imageMax {
-	position: fixed;
-	z-index: 10;
-	top: 0;
-	left: 0;
+.postImage {
+	position: relative;
+	overflow: hidden;
 
-	> img {
-		position: absolute;
-		width: 100%;
+	&.fullscreen .imageMax {
+		position: fixed;
+		top: 0;
+		left: 0;
 		height: 100%;
-		object-fit: contain;
+		width: 100%;
+		z-index: 100;
+
+		.galleryWrapper img {
+			max-height: 100vh;
+			object-fit: contain;
+		}
 	}
 
-	.controls {
-		position: fixed;
-		bottom: 0;
-		right: 0;
-		height: vars.$controls-height;
-		display: flex;
-		z-index: 100;
-		animation: fadeOut 1s ease;
-		transition: opacity .25s ease;
-		opacity: 0;
+	.imageMax {
 
-		> * {
-			filter: drop-shadow(0 0 3px black) drop-shadow(0 0 6px rgba(0,0,0,0.5));
-		}
-
-		&:hover {
-			opacity: 1;
-			animation-duration: 0s;
-		}
-
-		button {
-			transition: filter .25s ease;
-
+		.galleryWrapper {
 			img {
-				width: 2.5rem;
-				height: 2.5rem;
+				width: 100%;
+				max-height: 95vh;
+				display: block;
+				object-fit: contain;
 
-				&.padded {
-					padding: 10%;
+				&:not(:first-child) {
+					position: absolute;
 				}
 			}
 
+		}
+
+		&.controlsVisible .controls {
+			transform: translateY(0);
+		}
+
+		.controls {
+			//position: absolute;
+			//bottom: 0;
+			//left: 0;
+			//width: 100%;
+			//height: vars.$controls-height;
+			//display: flex;
+			//z-index: 100;
+			//background: vars.$controls-bg;
+			//animation: fadeOut 1s ease;
+			//transition: opacity .25s ease;
+			//opacity: 0;
+
+			> * {
+				filter: drop-shadow(0 0 3px black) drop-shadow(0 0 6px rgba(0, 0, 0, 0.5));
+			}
+
 			&:hover {
-				filter: drop-shadow(0px 0px 3px lightcoral) drop-shadow(0px 0px 0px lightcoral);
+				//opacity: 1;
+				//animation-duration: 0s;
 			}
-			&:active {
-				filter: drop-shadow(0px 0px 3px lightcoral) drop-shadow(0px 0px 7px lightcoral);
+
+			button {
+				transition: filter .25s ease;
+
+				img {
+					width: 2.5rem;
+					height: 2.5rem;
+
+					&.padded {
+						padding: 10%;
+					}
+				}
+
+				&:hover {
+					filter: drop-shadow(0px 0px 3px lightcoral) drop-shadow(0px 0px 0px lightcoral);
+				}
+
+				&:active {
+					filter: drop-shadow(0px 0px 3px lightcoral) drop-shadow(0px 0px 7px lightcoral);
+				}
 			}
-		}
 
-		.accessibilitySpacer {
-			position: absolute;
-			z-index: -1;
-			bottom: 0;
-			right: 0;
-
-			width: min(15rem, 25vw);
-			height: min(10rem, 25vw);
-		}
-
-		.title {
-			line-height: vars.$controls-height;
-			max-width: 80vw;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			white-space: nowrap;
+			.title {
+				line-height: vars.$controls-height;
+				max-width: 60%;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
 		}
 	}
+
 }

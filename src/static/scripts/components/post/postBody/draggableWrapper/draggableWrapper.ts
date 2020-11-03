@@ -37,9 +37,6 @@ export default class Ph_DraggableWrapper extends HTMLElement {
 	}
 
 	beginDrag(e: MouseEvent) {
-		if (!classInElementTree(e.target as HTMLElement, "draggable") && !classInElementTree(e.target as HTMLElement, "dragThrough"))
-			return
-
 		this.onmousemove = e => this.moveImage(e);
 		this.prevX = e.screenX;
 		this.prevY = e.screenY;
@@ -68,7 +65,7 @@ export default class Ph_DraggableWrapper extends HTMLElement {
 
 	addZoom(val: number) {
 		this.scale += val * this.scale;
-		this.scale = Math.max(1, this.scale);
+		this.scale = Math.max(0.1, this.scale);
 		this.style.setProperty("--img-zoom", this.scale.toString());
 	}
 

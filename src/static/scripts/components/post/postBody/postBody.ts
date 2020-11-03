@@ -59,7 +59,9 @@ export default class Ph_PostBody extends HTMLElement {
 			"(\.(gif|mp4)$)"
 		).test(postData["url"]))
 			return PostType.Video;
-		else if (postData["post_hint"] == "image" || /\.(png|jpg|jpeg|svg)$/.test(postData["url"]))
+		else if (postData["post_hint"] == "image" ||
+			/\.(png|jpg|jpeg|svg)$/.test(postData["url"]) ||
+			postData["gallery_data"])
 			return PostType.Image;
 		else if (postData["post_hint"] == "hosted:video")
 			return PostType.Video;

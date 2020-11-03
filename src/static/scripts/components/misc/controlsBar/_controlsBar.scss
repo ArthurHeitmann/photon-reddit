@@ -1,0 +1,35 @@
+@use "../../../../style/vars";
+
+.controls {
+	position: absolute;
+	bottom: 0;
+	display: flex;
+	align-items: center;
+	width: 100%;
+	height: vars.$controls-height;
+	background-color: vars.$controls-bg;
+	user-select: none;
+	transform: translateY(101%);
+	transition: all .25s ease;
+
+	img.padded {
+		padding: 10%;
+	}
+
+	> .morphingImage, > .morphingImage > svg, > .volumeWrapper .imgBtn > .switchableImg, > .switchableImg > img, > .settings > .dropDownButton, > .imgBtn, > .imgBtn > .switchableImg, > button, > button > img  {
+		height: 2.5rem;
+		width: 2.5rem;
+	}
+
+	> .morphingImage, > .volumeWrapper .imgBtn, > .switchableImg, > .settings > .dropDownButton, > .imgBtn, > button {
+		transition: filter .25s ease;
+		cursor: pointer;
+
+		&:hover {
+			filter: drop-shadow(0px 0px 3px lightcoral) drop-shadow(0px 0px 0px lightcoral);
+		}
+		&:active {
+			filter: drop-shadow(0px 0px 3px lightcoral) drop-shadow(0px 0px 7px lightcoral);
+		}
+	}
+}

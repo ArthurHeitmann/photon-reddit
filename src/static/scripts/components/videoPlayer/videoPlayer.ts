@@ -1,5 +1,6 @@
 import { secondsToVideoTime } from "../../utils/utils.js";
 import { RedditApiType } from "../../utils/types.js";
+import Ph_ControlsBar from "../misc/controlsBar/controlsBar.js";
 import Ph_DropDown, {DirectionX, DirectionY} from "../misc/dropDown/dropDown.js";
 import Ph_DropDownArea from "../misc/dropDown/dropDownArea/dropDownArea.js";
 import Ph_DropDownEntry from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
@@ -17,7 +18,6 @@ export default class Ph_VideoPlayer extends HTMLElement {
 	postData: RedditApiType;
 	video: Ph_VideoWrapper;
 	overlayIcon: Ph_SwitchingImage;
-	hideTimeout = null;
 	url: string;
 	videoProgressInterval = null;
 	controlsDropDown: Ph_DropDown;
@@ -120,15 +120,10 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		this.draggableWrapper.appendChild(this.video);
 		this.appendChild(this.draggableWrapper);
 
-		const controls = document.createElement("div");
+		const controls = new Ph_ControlsBar(true);
+		controls.addShowHideListeners(this.video);
 		this.appendChild(controls);
-		controls.className = "controls";
-		this.classList.add("controlsVisible");
 
-		this.video.addEventListener("mouseenter", this.showControls.bind(this));
-		this.video.addEventListener("mousemove", this.restartHideTimeout.bind(this));
-		controls.addEventListener("mouseenter", this.clearHideTimeout.bind(this))
-		controls.addEventListener("mouseleave", e => this.video.contains(e.relatedTarget as HTMLElement) || this.restartHideTimeout());
 		this.video.addEventListener("click", () => this.video.togglePlay());
 		this.video.addEventListener("dblclick", () => this.toggleFullscreen());
 		this.addEventListener("keydown", e => {
@@ -173,7 +168,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 			}
 			if (actionExecuted) {
 				e.preventDefault();
-				this.restartHideTimeout();
+				controls.restartHideTimeout();
 			}
 		});
 		this.video.addEventListener("ph-ready", () => this.overlayIcon.activate("ready"));
@@ -182,7 +177,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 
 		// play, pause, progress bar
 		const playButton = new Ph_PlayImage();
-		controls.appendChild(playButton);
+		controls.appendMorphingImage(playButton);
 		playButton.addEventListener("click", () => this.video.togglePlay());
 		this.video.addEventListener("ph-play", () => {
 			playButton.toPause();
@@ -230,9 +225,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		this.video.addEventListener("ph-noaudio", () => volumeWrapper.classList.add("remove"));
 
 		// left right divider
-		const divider = document.createElement("div");
-		divider.className = "mla";
-		controls.appendChild(divider);
+		controls.appendSpacer();
 
 		// video src
 		const srcText = document.createElement("div");
@@ -240,8 +233,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		srcText.innerHTML = `<a href="${this.url}" target="_blank">${this.url.match(/([\w.\.]+)\//)[1]}</a>`;
 
 		// reset view
-		this.resetViewBtn = document.createElement("button");
-		this.resetViewBtn.innerHTML = `<img src="/img/reset.svg" draggable="false" class="padded">`;
+		this.resetViewBtn = controls.appendMakeImageButton("/img/reset.svg");
 		this.resetViewBtn.classList.add("hide");
 		this.resetViewBtn.addEventListener("click", () => {
 			this.draggableWrapper.setZoom(1);
@@ -266,6 +258,10 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		this.controlsDropDown.classList.add("settings");
 		this.controlsDropDown.getElementsByClassName("dropDownButton")[0].classList.add("imgBtn");
 		controls.appendChild(this.controlsDropDown);
+		controls.addEventListener("ph-hidecontrols", () => {
+			for (let area of this.controlsDropDown.getElementsByClassName("dropDownArea"))
+				(area as Ph_DropDownArea).closeMenu(true);
+		})
 
 		// fullscreen
 		const fullscreenButton = this.makeImgBtn(new Ph_SwitchingImage([
@@ -307,41 +303,6 @@ export default class Ph_VideoPlayer extends HTMLElement {
 			"_blank",
 			`location=no,status=no,menubar=no,width=${this.video.getDimensions()[0]},height=${this.video.getDimensions()[1]}`
 		);
-	}
-
-	showControls() {
-		this.classList.add("controlsVisible");
-
-		this.hideTimeout = setTimeout(() => this.hideControls(), 2000);
-	}
-
-	restartHideTimeout() {
-		if (!this.classList.contains("controlsVisible")) {
-			this.clearHideTimeout();
-			this.showControls();
-			return;
-		}
-
-		this.clearHideTimeout();
-
-		this.hideTimeout = setTimeout(() => this.hideControls(), 2000);
-	}
-
-	clearHideTimeout() {
-		if (this.hideTimeout !== null) {
-			clearTimeout(this.hideTimeout);
-			this.hideTimeout = null;
-		}
-	}
-
-	hideControls() {
-		this.classList.remove("controlsVisible");
-
-		for (let area of this.controlsDropDown.getElementsByClassName("dropDownArea")) {
-			(area as Ph_DropDownArea).closeMenu(true);
-		}
-
-		this.clearHideTimeout();
 	}
 
 	toggleFullscreen(): boolean {
