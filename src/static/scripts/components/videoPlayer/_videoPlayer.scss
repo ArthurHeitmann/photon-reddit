@@ -36,12 +36,16 @@
 		transform: translateY(101%);
 		transition: all .25s ease;
 
-		> .morphingImage, > .morphingImage > svg, > .volumeWrapper .imgBtn > .switchableImg, > .switchableImg > img, > .settings > .dropDownButton, > .imgBtn, > .imgBtn > .switchableImg  {
+		img.padded {
+			padding: 10%;
+		}
+
+		> .morphingImage, > .morphingImage > svg, > .volumeWrapper .imgBtn > .switchableImg, > .switchableImg > img, > .settings > .dropDownButton, > .imgBtn, > .imgBtn > .switchableImg, > button, > button > img  {
 			height: 2.5rem;
 			width: 2.5rem;
 		}
 
-		> .morphingImage, > .volumeWrapper .imgBtn, > .switchableImg, > .settings > .dropDownButton, > .imgBtn {
+		> .morphingImage, > .volumeWrapper .imgBtn, > .switchableImg, > .settings > .dropDownButton, > .imgBtn, > button {
 			transition: filter .25s ease;
 			cursor: pointer;
 
@@ -120,7 +124,7 @@
 
 	&.fullscreen {
 		video {
-			max-height: 100%;
+			max-height: 100vh;
 			height: 100%;
 		}
 	}

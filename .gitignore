@@ -122,3 +122,5 @@ src/**/*.css.map
 
 .vscode/**
 .idea/**
+
+src/static/img/not_neded/**/*

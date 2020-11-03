@@ -1,3 +1,4 @@
+import { classInElementTree } from "../../../../utils/htmlStuff.js";
 
 export default class Ph_DraggableWrapper extends HTMLElement {
 	prevX = 0;
@@ -5,6 +6,11 @@ export default class Ph_DraggableWrapper extends HTMLElement {
 	moveX = 0;
 	moveY = 0;
 	scale = 1;
+	mouseUpRef;
+	mouseDownRef;
+	mouseLeaveRef;
+	wheelRef;
+	activatedElem: HTMLElement = null;
 
 	constructor() {
 		super();
@@ -12,14 +18,26 @@ export default class Ph_DraggableWrapper extends HTMLElement {
 	}
 
 	activateWith(elem: HTMLElement) {
-		this.addEventListener("mousedown", e => this.beginDrag(e));
-		this.addEventListener("mouseup", e => this.endDrag(e));
-		this.addEventListener("mouseleave", e => this.endDrag(e));
-		this.addEventListener("wheel", e => this.onZoom(e), { passive: true });
+		elem.addEventListener("mousedown", this.mouseDownRef = e => this.beginDrag(e));
+		elem.addEventListener("mouseup", this.mouseUpRef = e => this.endDrag(e));
+		elem.addEventListener("mouseleave", this.mouseLeaveRef = e => this.endDrag(e));
+		elem.addEventListener("wheel", this.wheelRef = e => this.onZoom(e), { passive: false });
+		this.activatedElem = elem;
+	}
+
+	deactivate() {
+		if (this.activatedElem === null)
+			throw "no dragging element active";
+
+		this.activatedElem.removeEventListener("mousedown", this.mouseDownRef);
+		this.activatedElem.removeEventListener("mouseup", this.mouseUpRef);
+		this.activatedElem.removeEventListener("mouseleave", this.mouseLeaveRef);
+		this.activatedElem.removeEventListener("wheel", this.wheelRef);
+		this.activatedElem = null;
 	}
 
 	beginDrag(e: MouseEvent) {
-		if (!(e.target as HTMLElement).classList.contains("draggable") && !(e.target as HTMLElement).classList.contains("dragThrough") )
+		if (!classInElementTree(e.target as HTMLElement, "draggable") && !classInElementTree(e.target as HTMLElement, "dragThrough"))
 			return
 
 		this.onmousemove = e => this.moveImage(e);
@@ -40,6 +58,7 @@ export default class Ph_DraggableWrapper extends HTMLElement {
 	onZoom(e: WheelEvent) {
 		this.addZoom(e.deltaY / -1000);
 		this.addMoveXY(-e.deltaX, 0);
+		e.preventDefault();
 	}
 
 	setZoom(val: number) {

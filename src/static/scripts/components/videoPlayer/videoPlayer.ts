@@ -5,7 +5,8 @@ import Ph_DropDownArea from "../misc/dropDown/dropDownArea/dropDownArea.js";
 import Ph_DropDownEntry from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_ProgressBar from "../misc/progressBar/progressBar.js";
 import Ph_SwitchingImage from "../misc/switchableImage/switchableImage.js";
-import switchableImage from "../misc/switchableImage/switchableImage.js";
+import Ph_DraggableWrapper from "../post/postBody/draggableWrapper/draggableWrapper.js";
+
 import Ph_GifVideo from "./gifVideo/gifVideo.js";
 import Ph_PlayImage from "./icons/playImage.js";
 import Ph_SimpleVideo from "./simpleVideo/simpleVideo.js";
@@ -20,6 +21,8 @@ export default class Ph_VideoPlayer extends HTMLElement {
 	url: string;
 	videoProgressInterval = null;
 	controlsDropDown: Ph_DropDown;
+	draggableWrapper: Ph_DraggableWrapper;
+	resetViewBtn: HTMLButtonElement;
 
 	constructor(postData: RedditApiType) {
 		super();
@@ -41,23 +44,23 @@ export default class Ph_VideoPlayer extends HTMLElement {
 			case "imgur.com":
 			case "m.imgur.com":
 			case "i.imgur.com":
-				const typelessUrl = this.url.match(/^https?:\/\/(i|m)?\.?imgur\.com\/\w+/)[0];
-				this.appendChild(this.video = new Ph_SimpleVideo([
+				const typelessUrl = this.url.match(/^https?:\/\/([im])?\.?imgur\.com\/\w+/)[0];
+				this.video = new Ph_SimpleVideo([
 					{ src: typelessUrl + ".mp4", type: "video/mp4" },
-				]));
+				]);
 				break;
 			case "gfycat.com":
 				const capitalizedPath = postData.data["media"]["oembed"]["thumbnail_url"].match(/^https?:\/\/thumbs\.gfycat\.com\/(\w+)/)[1];
-				this.appendChild(this.video = new Ph_SimpleVideo([
+				this.video = new Ph_SimpleVideo([
 					{ src: `https://thumbs.gfycat.com/${capitalizedPath}-mobile.mp4`, type: "video/mp4" },
 					{ src: `https://giant.gfycat.com/${capitalizedPath}.webm`, type: "video/webm" },
 					{ src: `https://giant.gfycat.com/${capitalizedPath}.mp4`, type: "video/mp4" },
 					{ src: `https://thumbs.gfycat.com/${capitalizedPath}-mobile.mp4`, type: "video/mp4" },
-				]));
+				]);
 				break;
 			case "v.redd.it":
 				// wtf is this inconsistency v.redd.it ??????!
-				this.appendChild(this.video = new Ph_VideoAudio([
+				this.video = new Ph_VideoAudio([
 					{ src: postData.data["url"] + "/DASH_1080.mp4", type: "video/mp4" },
 					{ src: postData.data["url"] + "/DASH_1080", type: "video/mp4" },
 					{ src: postData.data["url"] + "/DASH_720.mp4", type: "video/mp4" },
@@ -79,26 +82,26 @@ export default class Ph_VideoPlayer extends HTMLElement {
 					{ src: postData.data["url"] + "/DASH_audio", type: "video/mp4" },
 					{ src: postData.data["url"] + "/audio.mp4", type: "video/mp4" },
 					{ src: postData.data["url"] + "/audio", type: "video/mp4" },
-				]));
+				]);
 				break;
 			case "clips.twitch.tv":
 				const twitchUrl = postData.data["media"]["oembed"]["thumbnail_url"].match(/(.*)-social-preview.jpg$/)[1];
-				this.appendChild(this. video = new Ph_SimpleVideo([{ src: twitchUrl + ".mp4", type: "video/mp4" }]));
+				this. video = new Ph_SimpleVideo([{ src: twitchUrl + ".mp4", type: "video/mp4" }]);
 				break;
 			case "redgifs.com":
 				const iframeUrl = this.url.replace(/\/watch\//, "/ifr/");
 				fetch(`/getIframeSrc?url=${encodeURIComponent(iframeUrl)}`).then(res => res.json().then(src => {
-					this.appendChild(this.video = new Ph_SimpleVideo(null, src["src"]));
+					this.video = new Ph_SimpleVideo(null, src["src"]);
 					this.makeControls();
 				}));
 				break;
 			default:
 				if (/\.gif$/.test(this.url)) {
-					this.appendChild(this.video = new Ph_GifVideo(this.url));
+					this.video = new Ph_GifVideo(this.url);
 					break;
 				}
 				else if (/\.mp4$/.test(this.url)) {
-					this.appendChild(this.video = new Ph_SimpleVideo([{ src: this.url, type: "video/mp4" }]));
+					this.video = new Ph_SimpleVideo([{ src: this.url, type: "video/mp4" }]);
 					break;
 				}
 				this.innerText = `Unknown video provider for ${postData.data["url"]}`;
@@ -111,6 +114,11 @@ export default class Ph_VideoPlayer extends HTMLElement {
 
 	makeControls() {
 		window.addEventListener("viewChange", () => this.video.pause());
+
+		this.draggableWrapper = new Ph_DraggableWrapper();
+		this.video.classList.add("draggable");
+		this.draggableWrapper.appendChild(this.video);
+		this.appendChild(this.draggableWrapper);
 
 		const controls = document.createElement("div");
 		this.appendChild(controls);
@@ -231,6 +239,16 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		controls.appendChild(srcText);
 		srcText.innerHTML = `<a href="${this.url}" target="_blank">${this.url.match(/([\w.\.]+)\//)[1]}</a>`;
 
+		// reset view
+		this.resetViewBtn = document.createElement("button");
+		this.resetViewBtn.innerHTML = `<img src="/img/reset.svg" draggable="false" class="padded">`;
+		this.resetViewBtn.classList.add("hide");
+		this.resetViewBtn.addEventListener("click", () => {
+			this.draggableWrapper.setZoom(1);
+			this.draggableWrapper.setMoveXY(0, 0);
+		})
+		controls.appendChild(this.resetViewBtn);
+
 		// settings
 		this.controlsDropDown = new Ph_DropDown([
 			{ displayHTML: "Speed", nestedEntries: [
@@ -330,10 +348,15 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		this.classList.toggle("fullscreen");
 		if (document.fullscreenElement) {
 			document.exitFullscreen();
+			this.resetViewBtn.click();
+			this.draggableWrapper.deactivate();
+			this.resetViewBtn.classList.add("hide");
 			return false;
 		}
 		else if (this.requestFullscreen) {
 			this.requestFullscreen();
+			this.draggableWrapper.activateWith(this.video);
+			this.resetViewBtn.classList.remove("hide");
 			return  true
 		}
 		throw "can't enter fullscreen";
