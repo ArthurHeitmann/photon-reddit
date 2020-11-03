@@ -49,29 +49,12 @@
 		}
 
 		.controls {
-			//position: absolute;
-			//bottom: 0;
-			//left: 0;
-			//width: 100%;
-			//height: vars.$controls-height;
-			//display: flex;
-			//z-index: 100;
-			//background: vars.$controls-bg;
-			//animation: fadeOut 1s ease;
-			//transition: opacity .25s ease;
-			//opacity: 0;
-
 			> * {
 				filter: drop-shadow(0 0 3px black) drop-shadow(0 0 6px rgba(0, 0, 0, 0.5));
 			}
 
-			&:hover {
-				//opacity: 1;
-				//animation-duration: 0s;
-			}
-
 			button {
-				transition: filter .25s ease;
+				transition: all .25s ease;
 
 				img {
 					width: 2.5rem;
@@ -88,6 +71,11 @@
 
 				&:active {
 					filter: drop-shadow(0px 0px 3px lightcoral) drop-shadow(0px 0px 7px lightcoral);
+				}
+
+				&:disabled {
+					visibility: collapse;
+					opacity: 0;
 				}
 			}
 

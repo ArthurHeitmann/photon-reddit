@@ -7,8 +7,8 @@ export default class Ph_PostImage extends HTMLElement {
 	imageMax: Ph_DraggableWrapper;
 	controls: Ph_ControlsBar;
 	galleryWrapper: HTMLElement;
-	sourceImageUrl: string;
-	isInitialized = false;
+	prevImageButton: HTMLButtonElement;
+	nextImageButton: HTMLButtonElement;
 	removeSelfTimout = null;
 	galleryData: {
 		previewImg: HTMLImageElement,
@@ -77,7 +77,6 @@ export default class Ph_PostImage extends HTMLElement {
 		this.galleryWrapper.addEventListener("dblclick", this.toggleFullscreen.bind(this));
 
 		// draggable
-		this.sourceImageUrl = postData.data["url"];
 		this.imageMax = new Ph_DraggableWrapper();
 		this.imageMax.classList.add("imageMax");
 		this.appendChild(this.imageMax);
@@ -90,11 +89,12 @@ export default class Ph_PostImage extends HTMLElement {
 		this.controls.className = "controls";
 		if (this.galleryData.length > 1) {
 			// prev img
-			const prevImgBtn = this.controls.appendMakeImageButton("/img/playBack.svg");
-			prevImgBtn.addEventListener("click", this.previousImage.bind(this));
+			this.prevImageButton = this.controls.appendMakeImageButton("/img/playBack.svg");
+			this.prevImageButton.addEventListener("click", this.previousImage.bind(this));
+			this.prevImageButton.disabled = true;
 			// next img
-			const nextImgBtn = this.controls.appendMakeImageButton("/img/playNext.svg");
-			nextImgBtn.addEventListener("click", this.nextImage.bind(this));
+			this.nextImageButton = this.controls.appendMakeImageButton("/img/playNext.svg");
+			this.nextImageButton.addEventListener("click", this.nextImage.bind(this));
 		}
 		// spacer
 		this.controls.appendSpacer();
@@ -135,18 +135,26 @@ export default class Ph_PostImage extends HTMLElement {
 	}
 
 	nextImage() {
-		if (this.currentImageIndex + 1 === this.galleryData.length)
+		if (this.currentImageIndex === 0)
+			this.prevImageButton.disabled = false;
+		else if (this.currentImageIndex + 1 === this.galleryData.length)
 			return;
 		++this.currentImageIndex;
+		if (this.currentImageIndex + 1 === this.galleryData.length)
+			this.nextImageButton.disabled = true;
 		for (let img of this.galleryWrapper.children)
 			img.remove()
 		this.galleryWrapper.appendChild(this.galleryData[this.currentImageIndex].previewImg);
 	}
 
 	previousImage() {
-		if (this.currentImageIndex === 0)
+		if (this.currentImageIndex + 1 === this.galleryData.length)
+			this.nextImageButton.disabled = false;
+		else if (this.currentImageIndex === 0)
 			return;
 		--this.currentImageIndex;
+		if (this.currentImageIndex === 0)
+			this.prevImageButton.disabled = true;
 		for (let img of this.galleryWrapper.children)
 			img.remove()
 		this.galleryWrapper.appendChild(this.galleryData[this.currentImageIndex].previewImg);
