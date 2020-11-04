@@ -26,6 +26,10 @@
 			max-height: 100vh;
 			object-fit: contain;
 		}
+
+		.controls .resetView {
+			display: initial;
+		}
 	}
 
 	.imageMax {
@@ -87,6 +91,10 @@
 				text-overflow: ellipsis;
 				white-space: nowrap;
 			}
+		}
+
+		.resetView {
+			display: none;
 		}
 	}
 

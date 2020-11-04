@@ -10,11 +10,13 @@ export default class Ph_PostImage extends HTMLElement {
 	prevImageButton: HTMLButtonElement;
 	nextImageButton: HTMLButtonElement;
 	imageIndexText: HTMLDivElement;
+	caption: HTMLDivElement;
 	removeSelfTimout = null;
 	galleryData: {
+		caption: string,
 		previewImg: HTMLImageElement,
 		originalImg: HTMLImageElement,
-		originalSrc: string
+		originalSrc: string,
 	}[] = [];
 	currentImageIndex: number = 0;
 
@@ -26,14 +28,15 @@ export default class Ph_PostImage extends HTMLElement {
 
 		// is gallery
 		if (postData.data["gallery_data"]) {
-			const ids: string[] = postData.data["gallery_data"]["items"].map(item => item.media_id);
-			for (const id of ids) {
-				const imgData = postData.data["media_metadata"][id];
+			const items: {}[] = postData.data["gallery_data"]["items"];
+			for (const item of items) {
+				const imgData = postData.data["media_metadata"][item["media_id"]];
 				const previews: {}[] = imgData["p"];
 				const prevImg = document.createElement("img");
 				prevImg.draggable = false;
 				prevImg.src = previews[previews.length - 1]["u"];
 				this.galleryData.push({
+					caption: item["caption"] || postData.data["title"],
 					previewImg: prevImg,
 					originalImg: null,
 					originalSrc: imgData["s"]["u"],
@@ -49,6 +52,7 @@ export default class Ph_PostImage extends HTMLElement {
 				prevImg.src = previews[previews.length - 1]["url"];
 				prevImg.draggable = false
 				this.galleryData = [{
+					caption: postData.data["title"],
 					previewImg: prevImg,
 					originalImg: null,
 					originalSrc: prevImg.src,
@@ -63,6 +67,7 @@ export default class Ph_PostImage extends HTMLElement {
 				origImg.src = postData.data["url"];
 				origImg.draggable = false;
 				this.galleryData = [{
+					caption: postData.data["title"],
 					previewImg: prevImg,
 					originalImg: origImg,
 					originalSrc: null,
@@ -99,17 +104,16 @@ export default class Ph_PostImage extends HTMLElement {
 			// current image text
 			this.imageIndexText = document.createElement("div");
 			this.controls.appendChild(this.imageIndexText);
-			this.updateCurrentImageText();
 		}
 		// spacer
 		this.controls.appendSpacer();
-		// title			TODO add tooltip for overflows
-		const title = document.createElement("div");
-		title.innerText = postData.data["title"];
-		title.className = "title";
-		this.controls.appendChild(title);
+		// caption			TODO add tooltip for overflows
+		this.caption = document.createElement("div");
+		this.caption.className = "title";
+		this.controls.appendChild(this.caption);
 		// reset view
 		const resetViewBtn = this.controls.appendMakeImageButton("/img/reset.svg", true);
+		resetViewBtn.classList.add("resetView");
 		resetViewBtn.addEventListener("click", () => {
 			this.imageMax.setMoveXY(0, 0);
 			this.imageMax.setZoom(1);
@@ -141,10 +145,14 @@ export default class Ph_PostImage extends HTMLElement {
 					break;
 			}
 		});
+
+		this.updateTexts();
 	}
 
-	updateCurrentImageText() {
-		this.imageIndexText.innerText = `${this.currentImageIndex + 1} / ${this.galleryData.length}`;
+	updateTexts() {
+		if (this.imageIndexText)
+			this.imageIndexText.innerText = `${this.currentImageIndex + 1} / ${this.galleryData.length}`;
+		this.caption.innerText = this.galleryData[this.currentImageIndex].caption;
 	}
 
 	nextImage() {
@@ -156,9 +164,9 @@ export default class Ph_PostImage extends HTMLElement {
 		if (this.currentImageIndex + 1 === this.galleryData.length)
 			this.nextImageButton.disabled = true;
 		for (let img of this.galleryWrapper.children)
-			img.remove()
+			img.remove();
 		this.replaceCurrentImage();
-		this.updateCurrentImageText();
+		this.updateTexts();
 	}
 
 	previousImage() {
@@ -170,9 +178,9 @@ export default class Ph_PostImage extends HTMLElement {
 		if (this.currentImageIndex === 0)
 			this.prevImageButton.disabled = true;
 		for (let img of this.galleryWrapper.children)
-			img.remove()
+			img.remove();
 		this.replaceCurrentImage();
-		this.updateCurrentImageText();
+		this.updateTexts();
 	}
 
 	isFullscreen(): boolean {
