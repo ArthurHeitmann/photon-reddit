@@ -118,11 +118,12 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		const intersectionObserver = new IntersectionObserver((entries, obs) => {
 			if (entries[0].intersectionRatio > .4) {
 				this.video.play();
+				this.focus({ preventScroll: true });
 			}
 			else {
 				this.video.pause();
+				this.blur();
 			}
-
 		}, {
 			threshold: .4,
 		});
@@ -176,6 +177,11 @@ export default class Ph_VideoPlayer extends HTMLElement {
 					break;
 				case "KeyI":
 					this.popoutVideo();
+					actionExecuted = true;
+					break;
+				case "KeyR":
+					this.draggableWrapper.setMoveXY(0, 0);
+					this.draggableWrapper.setZoom(1);
 					actionExecuted = true;
 					break;
 			}

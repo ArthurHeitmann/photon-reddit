@@ -11,6 +11,7 @@ export default class Ph_PostImage extends HTMLElement {
 	nextImageButton: HTMLButtonElement;
 	imageIndexText: HTMLDivElement;
 	caption: HTMLDivElement;
+	loadingIcon: HTMLImageElement;
 	removeSelfTimout = null;
 	galleryData: {
 		caption: string,
@@ -55,7 +56,7 @@ export default class Ph_PostImage extends HTMLElement {
 					caption: postData.data["title"],
 					previewImg: prevImg,
 					originalImg: null,
-					originalSrc: prevImg.src,
+					originalSrc: postData.data["url"],
 				}];
 			}
 			// just a raw image url
@@ -107,6 +108,13 @@ export default class Ph_PostImage extends HTMLElement {
 		}
 		// spacer
 		this.controls.appendSpacer();
+		// loading icon
+		this.loadingIcon = document.createElement("img");
+		this.loadingIcon.src = "/img/loading.svg";
+		this.loadingIcon.draggable = false;
+		this.loadingIcon.className = "loading";
+		this.loadingIcon.hidden = true;
+		this.controls.appendChild(this.loadingIcon);
 		// caption			TODO add tooltip for overflows
 		this.caption = document.createElement("div");
 		this.caption.className = "title";
@@ -121,6 +129,7 @@ export default class Ph_PostImage extends HTMLElement {
 		// fullscreen
 		const fullscreenBtn = this.controls.appendMakeImageButton("/img/minimize.svg");
 		fullscreenBtn.addEventListener("click", this.toggleFullscreen.bind(this));
+		this.addEventListener("fullscreenchange", e => document.fullscreenElement || this.onClose(e));
 
 		this.addEventListener("keydown", (e: KeyboardEvent) => {
 			if (e.code == "ArrowUp" || e.code == "ArrowRight" || e.code == "ArrowDown" || e.code == "ArrowLeft")
@@ -128,6 +137,9 @@ export default class Ph_PostImage extends HTMLElement {
 		});
 		this.addEventListener("keyup", (e: KeyboardEvent) => {
 			switch (e.code) {
+				case "KeyF":
+					this.toggleFullscreen(e);
+					break;
 				case "Escape":
 					this.onClose(e);
 					break;
@@ -145,6 +157,18 @@ export default class Ph_PostImage extends HTMLElement {
 					break;
 			}
 		});
+
+		const intersectionObserver = new IntersectionObserver((entries, obs) => {
+			if (entries[0].intersectionRatio > .4) {
+				this.focus({ preventScroll: true });
+			}
+			else {
+				this.blur();
+			}
+		}, {
+			threshold: .4,
+		});
+		intersectionObserver.observe(this);
 
 		this.updateTexts();
 	}
@@ -194,9 +218,9 @@ export default class Ph_PostImage extends HTMLElement {
 			origImg.src = this.galleryData[this.currentImageIndex].originalSrc;
 			this.galleryData[this.currentImageIndex].originalImg = origImg;
 			const currIndex = this.currentImageIndex;
-			$tag("header")[0].classList.add("contentIsLoading");
+			this.loadingIcon.hidden = false;
 			origImg.addEventListener("load", () => {
-				$tag("header")[0].classList.remove("contentIsLoading");
+				this.loadingIcon.hidden = true;
 				this.galleryData[currIndex].previewImg.remove();
 				this.galleryData[currIndex].previewImg = null
 			});
@@ -216,6 +240,7 @@ export default class Ph_PostImage extends HTMLElement {
 
 	onShow(e) {
 		this.classList.add("fullscreen");
+		this.requestFullscreen();
 		if (this.galleryData[this.currentImageIndex].originalImg === null)
 			this.replaceCurrentImage();
 		this.focus();
@@ -228,7 +253,10 @@ export default class Ph_PostImage extends HTMLElement {
 	}
 
 	onClose(e) {
+		if (!this.classList.contains("fullscreen"))
+			return;											// was already called by fullscreenchange event
 		this.classList.remove("fullscreen");
+		document.exitFullscreen().catch(() => undefined);
 		this.imageMax.deactivate();
 		this.imageMax.setMoveXY(0, 0);
 		this.imageMax.setZoom(1);

@@ -24,15 +24,21 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 			this.audio.insertAdjacentHTML("beforeend", `<source src="${source.src}" type="${source.type}">`);
 		this.appendChild(this.audio);
 
-		this.video.addEventListener("waiting", () => this.dispatchEvent(new Event("ph-buffering")));
-		this.video.addEventListener("playing", () => this.dispatchEvent(new Event("ph-playing")));
+		// pause (and play again) audio when video is buffering (and pray that the audio will never buffer)
+		this.video.addEventListener("waiting", () => {
+			this.dispatchEvent(new Event("ph-buffering"));
+			this.audio.pause();
+		});
+		this.video.addEventListener("playing", () => {
+			this.dispatchEvent(new Event("ph-playing"));
+			this.audio.play();
+		});
 		this.video.addEventListener("loadeddata", () => this.dispatchEvent(new Event("ph-ready")));
 		this.video.addEventListener("play", () => this.audio.play()
 			.catch(() => undefined /* the pause() call from the line below will cause a weird exception */));
 		this.video.addEventListener("pause", () => this.audio.pause());
 		this.video.addEventListener("seeking", () => this.audio.currentTime = this.video.currentTime);
 		this.audio.addEventListener("play", () => this.video.play());
-		this.audio.addEventListener("pause", () => this.video.pause());
 
 		// this mess is needed in order to know if the video has audio
 		this.video.addEventListener("timeupdate", this.noAudioProgressCallback = () => {
