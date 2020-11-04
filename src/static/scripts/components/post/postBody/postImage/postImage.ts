@@ -9,6 +9,7 @@ export default class Ph_PostImage extends HTMLElement {
 	galleryWrapper: HTMLElement;
 	prevImageButton: HTMLButtonElement;
 	nextImageButton: HTMLButtonElement;
+	imageIndexText: HTMLDivElement;
 	removeSelfTimout = null;
 	galleryData: {
 		previewImg: HTMLImageElement,
@@ -95,6 +96,10 @@ export default class Ph_PostImage extends HTMLElement {
 			// next img
 			this.nextImageButton = this.controls.appendMakeImageButton("/img/playNext.svg");
 			this.nextImageButton.addEventListener("click", this.nextImage.bind(this));
+			// current image text
+			this.imageIndexText = document.createElement("div");
+			this.controls.appendChild(this.imageIndexText);
+			this.updateCurrentImageText();
 		}
 		// spacer
 		this.controls.appendSpacer();
@@ -113,6 +118,10 @@ export default class Ph_PostImage extends HTMLElement {
 		const fullscreenBtn = this.controls.appendMakeImageButton("/img/minimize.svg");
 		fullscreenBtn.addEventListener("click", this.toggleFullscreen.bind(this));
 
+		this.addEventListener("keydown", (e: KeyboardEvent) => {
+			if (e.code == "ArrowUp" || e.code == "ArrowRight" || e.code == "ArrowDown" || e.code == "ArrowLeft")
+				e.preventDefault();
+		});
 		this.addEventListener("keyup", (e: KeyboardEvent) => {
 			switch (e.code) {
 				case "Escape":
@@ -122,16 +131,20 @@ export default class Ph_PostImage extends HTMLElement {
 					this.imageMax.setMoveXY(0, 0);
 					this.imageMax.setZoom(1);
 					break;
-				case "ArrowRight:":
-				case "ArrowDown:":
+				case "ArrowRight":
+				case "ArrowDown":
 					this.nextImage();
 					break;
-				case "ArrowLeft:":
-				case "ArrowUp:":
+				case "ArrowLeft":
+				case "ArrowUp":
 					this.previousImage();
 					break;
 			}
 		});
+	}
+
+	updateCurrentImageText() {
+		this.imageIndexText.innerText = `${this.currentImageIndex + 1} / ${this.galleryData.length}`;
 	}
 
 	nextImage() {
@@ -144,7 +157,8 @@ export default class Ph_PostImage extends HTMLElement {
 			this.nextImageButton.disabled = true;
 		for (let img of this.galleryWrapper.children)
 			img.remove()
-		this.galleryWrapper.appendChild(this.galleryData[this.currentImageIndex].previewImg);
+		this.replaceCurrentImage();
+		this.updateCurrentImageText();
 	}
 
 	previousImage() {
@@ -157,11 +171,36 @@ export default class Ph_PostImage extends HTMLElement {
 			this.prevImageButton.disabled = true;
 		for (let img of this.galleryWrapper.children)
 			img.remove()
-		this.galleryWrapper.appendChild(this.galleryData[this.currentImageIndex].previewImg);
+		this.replaceCurrentImage();
+		this.updateCurrentImageText();
+	}
+
+	isFullscreen(): boolean {
+		return this.classList.contains("fullscreen");
+	}
+
+	replaceCurrentImage() {
+		if (this.isFullscreen() && this.galleryData[this.currentImageIndex].originalImg === null) {
+			const origImg = document.createElement("img");
+			origImg.draggable = false;
+			origImg.src = this.galleryData[this.currentImageIndex].originalSrc;
+			this.galleryData[this.currentImageIndex].originalImg = origImg;
+			const currIndex = this.currentImageIndex;
+			$tag("header")[0].classList.add("contentIsLoading");
+			origImg.addEventListener("load", () => {
+				$tag("header")[0].classList.remove("contentIsLoading");
+				this.galleryData[currIndex].previewImg.remove();
+				this.galleryData[currIndex].previewImg = null
+			});
+		}
+		if (this.galleryData[this.currentImageIndex].previewImg)
+			this.galleryWrapper.appendChild(this.galleryData[this.currentImageIndex].previewImg);
+		if (this.galleryData[this.currentImageIndex].originalImg)
+			this.galleryWrapper.appendChild(this.galleryData[this.currentImageIndex].originalImg);
 	}
 
 	toggleFullscreen(e) {
-		if (this.classList.contains("fullscreen"))
+		if (this.isFullscreen())
 			this.onClose(e);
 		else
 			this.onShow(e);
@@ -169,6 +208,8 @@ export default class Ph_PostImage extends HTMLElement {
 
 	onShow(e) {
 		this.classList.add("fullscreen");
+		if (this.galleryData[this.currentImageIndex].originalImg === null)
+			this.replaceCurrentImage();
 		this.focus();
 		this.imageMax.activateWith(this.galleryWrapper);
 

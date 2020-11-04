@@ -1,5 +1,4 @@
 import Ph_DropDown from "../dropDown/dropDown.js";
-import Ph_DropDownArea from "../dropDown/dropDownArea/dropDownArea.js";
 import Ph_MorphingImage from "../morphingImage/morphingImage.js";
 
 export default class Ph_ControlsBar extends HTMLElement {
