@@ -115,6 +115,19 @@ export default class Ph_VideoPlayer extends HTMLElement {
 	makeControls() {
 		window.addEventListener("viewChange", () => this.video.pause());
 
+		const intersectionObserver = new IntersectionObserver((entries, obs) => {
+			if (entries[0].intersectionRatio > .4) {
+				this.video.play();
+			}
+			else {
+				this.video.pause();
+			}
+
+		}, {
+			threshold: .4,
+		});
+		intersectionObserver.observe(this);
+
 		this.draggableWrapper = new Ph_DraggableWrapper();
 		this.video.classList.add("draggable");
 		this.draggableWrapper.appendChild(this.video);
