@@ -1,4 +1,4 @@
-import { $tag } from "../../../../utils/htmlStuff.js";
+import { elementWithClassInTree } from "../../../../utils/htmlStuff.js";
 import { RedditApiType } from "../../../../utils/types";
 import Ph_ControlsBar from "../../../misc/controlsBar/controlsBar.js";
 import Ph_DraggableWrapper from "../draggableWrapper/draggableWrapper.js";
@@ -20,6 +20,7 @@ export default class Ph_PostImage extends HTMLElement {
 		originalSrc: string,
 	}[] = [];
 	currentImageIndex: number = 0;
+	beforeFsScrollTop = 0;
 
 	constructor(postData: RedditApiType) {
 		super();
@@ -129,7 +130,7 @@ export default class Ph_PostImage extends HTMLElement {
 		// fullscreen
 		const fullscreenBtn = this.controls.appendMakeImageButton("/img/minimize.svg");
 		fullscreenBtn.addEventListener("click", this.toggleFullscreen.bind(this));
-		this.addEventListener("fullscreenchange", e => document.fullscreenElement || this.onClose(e));
+		this.addEventListener("fullscreenchange", e => document.fullscreenElement || this.onClose());
 
 		this.addEventListener("keydown", (e: KeyboardEvent) => {
 			if (e.code == "ArrowUp" || e.code == "ArrowRight" || e.code == "ArrowDown" || e.code == "ArrowLeft")
@@ -138,10 +139,7 @@ export default class Ph_PostImage extends HTMLElement {
 		this.addEventListener("keyup", (e: KeyboardEvent) => {
 			switch (e.code) {
 				case "KeyF":
-					this.toggleFullscreen(e);
-					break;
-				case "Escape":
-					this.onClose(e);
+					this.toggleFullscreen();
 					break;
 				case "KeyR":
 					this.imageMax.setMoveXY(0, 0);
@@ -208,7 +206,7 @@ export default class Ph_PostImage extends HTMLElement {
 	}
 
 	isFullscreen(): boolean {
-		return this.classList.contains("fullscreen");
+		return Boolean(document.fullscreenElement);
 	}
 
 	replaceCurrentImage() {
@@ -231,14 +229,18 @@ export default class Ph_PostImage extends HTMLElement {
 			this.galleryWrapper.appendChild(this.galleryData[this.currentImageIndex].originalImg);
 	}
 
-	toggleFullscreen(e) {
+	toggleFullscreen() {
 		if (this.isFullscreen())
-			this.onClose(e);
+			document.exitFullscreen();
 		else
-			this.onShow(e);
+			this.onShow();
 	}
 
-	onShow(e) {
+	onShow() {
+		const viewState = elementWithClassInTree(this.parentElement, "viewState");
+		if (viewState)
+			this.beforeFsScrollTop = viewState.scrollTop;
+
 		this.classList.add("fullscreen");
 		this.requestFullscreen();
 		if (this.galleryData[this.currentImageIndex].originalImg === null)
@@ -252,11 +254,8 @@ export default class Ph_PostImage extends HTMLElement {
 		}
 	}
 
-	onClose(e) {
-		if (!this.classList.contains("fullscreen"))
-			return;											// was already called by fullscreenchange event
+	onClose() {
 		this.classList.remove("fullscreen");
-		document.exitFullscreen().catch(() => undefined);
 		this.imageMax.deactivate();
 		this.imageMax.setMoveXY(0, 0);
 		this.imageMax.setZoom(1);
@@ -264,6 +263,10 @@ export default class Ph_PostImage extends HTMLElement {
 			while (this.imageMax.childElementCount)
 				this.imageMax.lastChild.remove();
 		}, 1000 * 60 * 5);
+
+		if (this.beforeFsScrollTop) {
+			setTimeout(() => elementWithClassInTree(this.parentElement, "viewState").scrollTop = this.beforeFsScrollTop, 0);
+		}
 	}
 }
 

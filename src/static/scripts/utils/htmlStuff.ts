@@ -26,6 +26,10 @@ function linkOnClick(e) {
 	return false;
 }
 
-export function classInElementTree(elem: HTMLElement, className: string) {
+export function classInElementTree(elem: HTMLElement, className: string): boolean {
 	return Boolean(elem) && (elem.classList.contains(className) || classInElementTree(elem.parentElement, className));
+}
+
+export function elementWithClassInTree(elem: HTMLElement, className: string): HTMLElement {
+	return elem && (elem.classList.contains(className) && elem || elementWithClassInTree(elem.parentElement, className));
 }
