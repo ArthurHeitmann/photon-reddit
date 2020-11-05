@@ -190,7 +190,10 @@ export default class Ph_VideoPlayer extends HTMLElement {
 				controls.restartHideTimeout();
 			}
 		});
-		this.video.addEventListener("ph-ready", () => this.overlayIcon.activate("ready"));
+		this.video.addEventListener("ph-ready", () => {
+			this.overlayIcon.activate("ready");
+			timeText.innerText = `${secondsToVideoTime(this.video.getCurrentTime())} / ${secondsToVideoTime(this.video.getMaxTime())}`;
+		});
 		this.video.addEventListener("ph-buffering", () => this.overlayIcon.activate("loading"));
 		this.video.addEventListener("ph-playing", () => this.overlayIcon.activate("none"));
 
@@ -302,6 +305,22 @@ export default class Ph_VideoPlayer extends HTMLElement {
 			e.preventDefault();
 			this.video.seekTo(this.video.getCurrentTime() + (-e.deltaY || e.deltaX) / 20);
 		}, { passive: false });
+		const timeTextHover = document.createElement("div");
+		timeTextHover.className = "timeTextHover";
+		controls.appendChild(timeTextHover);
+		progressBar.addEventListener("mousemove", e => {
+			timeTextHover.innerText = secondsToVideoTime(e.offsetX / progressBar.offsetWidth * this.video.getMaxTime());
+			timeTextHover.style.left = e.offsetX + "px";
+			console.log(timeTextHover.style.left);
+		});
+		progressBar.addEventListener("mouseenter", () => {
+			timeTextHover.hidden = false;
+			console.log("enter");
+		});
+		progressBar.addEventListener("mouseleave", () => {
+			timeTextHover.hidden = true;
+			console.log("leave");
+		});
 	}
 
 	makeImgBtn(img: Ph_SwitchingImage, appendTo: HTMLElement): Ph_SwitchingImage {

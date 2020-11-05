@@ -78,3 +78,16 @@ export function padWith0(num: number, minLength: number): string {
 export function clamp(val: number, min: number, max: number): number {
 	return Math.min(max, Math.max(min, val));
 }
+
+export function throttle(callback, limit) {
+	let wait = false;
+	return function() {
+		if (!wait) {
+			callback.apply(null, arguments);
+			wait = true;
+			setTimeout(function() {
+				wait = false;
+			}, limit);
+		}
+	};
+}

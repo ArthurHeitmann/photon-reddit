@@ -1,3 +1,5 @@
+import { throttle } from "../../../utils/utils.js";
+
 export default class Ph_ProgressBar extends HTMLElement {
 	private dragMoveRef: (e: MouseEvent) => void;
 	private dragEndRef: (e: MouseEvent) => void;
@@ -16,7 +18,7 @@ export default class Ph_ProgressBar extends HTMLElement {
 
 		if (draggable) {
 			this.addEventListener("mousedown", this.dragStart.bind(this));
-			this.dragMoveRef = throttleMs > 0 ? this.throttle(this.dragMove.bind(this), throttleMs) : this.dragMove.bind(this);
+			this.dragMoveRef = throttleMs > 0 ? throttle(this.dragMove.bind(this), throttleMs) : this.dragMove.bind(this);
 			this.dragEndRef = this.endDrag.bind(this);
 		}
 	}
@@ -50,19 +52,6 @@ export default class Ph_ProgressBar extends HTMLElement {
 
 	getProgress(): number {
 		return parseFloat(this.style.getPropertyValue("--progress"));
-	}
-
-	private throttle(callback, limit) {
-		let wait = false;
-		return function() {
-			if (!wait) {
-				callback.apply(null, arguments);
-				wait = true;
-				setTimeout(function() {
-					wait = false;
-				}, limit);
-			}
-		};
 	}
 }
 

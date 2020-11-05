@@ -73,6 +73,7 @@
 			left: 0;
 			width: 100%;
 			height: .25rem;
+			cursor: pointer;
 
 			&:hover {
 				background: #f07f7f80;
@@ -87,6 +88,17 @@
 				transition: width .1s linear;
 				border-right: .25rem solid white;
 			}
+		}
+
+		.timeTextHover {
+			position: absolute;
+			top: -2.5rem;
+			padding: 0 0.6rem;
+			line-height: 2rem;
+			width: max-content;
+			transform: translateX(-50%);
+			background: #121212ad;
+			border-radius: 1rem;
 		}
 	}
 

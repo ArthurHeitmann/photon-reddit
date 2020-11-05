@@ -1,4 +1,5 @@
 import { RedditApiType } from "../../utils/types.js";
+import { throttle } from "../../utils/utils.js";
 
 export abstract class Ph_Feed extends HTMLElement {
 	absoluteFirst: string = null;
@@ -25,7 +26,7 @@ export abstract class Ph_Feed extends HTMLElement {
 			while (!scrollElement.classList.contains("overflow-y-auto"))
 				scrollElement = this.parentElement;
 
-			scrollElement.addEventListener("scroll", e => this.onScroll(e), { passive: true });
+			scrollElement.addEventListener("scroll", throttle(this.onScroll.bind(this), 500), { passive: true });
 		}, 0);
 
 		// find first FeedItem, once it has been added
@@ -49,9 +50,10 @@ export abstract class Ph_Feed extends HTMLElement {
 	 * @param e 
 	 */
 	onScroll(e) {
+		console.log("scroll");
 		if (this.children.length <= 0 || this.isLoading)
 			return;
-
+		console.log(".");
 		const last = this.children[this.childElementCount - 1];
 		if (last.getBoundingClientRect().y < window.innerHeight * 2.5 && !this.hasReachedEndOfFeed)
 			this.scrollAction(LoadPosition.After)
