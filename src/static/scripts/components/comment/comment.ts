@@ -8,11 +8,13 @@ import Ph_DropDownEntry from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_Toast, { Level } from "../misc/toast/toast.js";
 import Votable from "../misc/votable/votable.js";
 import { save, vote, VoteDirection, voteDirectionFromLikes } from "../../api/api.js";
+import Ph_CommentForm from "./commentForm/commentForm.js";
 
 export default class Ph_Comment extends Ph_FeedItem implements Votable {
 	voteUpButton: HTMLButtonElement;
 	currentUpvotes: HTMLDivElement;
 	voteDownButton: HTMLButtonElement;
+	replyForm: Ph_CommentForm;
 	// Votable implementation
 	totalVotes: number;
 	votableId: string;
@@ -65,6 +67,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 		actionBar.appendChild(this.voteDownButton);
 		// additional actions drop down
 		const moreDropDown = new Ph_DropDown([
+			{ displayHTML: "Reply", onSelectCallback: this.showReplyForm.bind(this) },
 			{ displayHTML: this.isSaved ? "Unsave" : "Save", onSelectCallback: this.toggleSave.bind(this) },
 			{ displayHTML: "Share", nestedEntries: [
 					{ displayHTML: "Copy Comment Link", value: "comment link", onSelectCallback: this.share.bind(this) },
@@ -80,6 +83,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 		this.appendChild(actionBar);
 
 		const mainPart = document.createElement("div");
+		mainPart.className = "w100"
 		let userAdditionClasses = "";
 		if (commentData.data["is_submitter"]) {
 			userAdditionClasses += " op";
@@ -105,13 +109,20 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 			a.target = "_blank";
 		}
 
+		const childComments = document.createElement("div");
+		childComments.className = "replies";
+		mainPart.appendChild(childComments);
+
+		this.replyForm = new Ph_CommentForm(this);
+		this.replyForm.hidden = true;
+		this.replyForm.addEventListener("ph-comment-submitted",
+			(e: CustomEvent) => this.replyForm.insertAdjacentElement("afterend", new Ph_Comment(e.detail, true, false)));
+
+		childComments.appendChild(this.replyForm);
 		if (commentData.data["replies"] && commentData.data["replies"]["data"]["children"]) {
-			const childComments = document.createElement("div");
-			childComments.className = "replies";
 			for (const comment of commentData.data["replies"]["data"]["children"]) {
 				childComments.appendChild(new Ph_Comment(comment, true, false));
 			}
-			mainPart.appendChild(childComments);
 		}
 
 		this.appendChild(mainPart);
@@ -122,6 +133,10 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 
 	collapse(e: MouseEvent) {
 		this.classList.toggle("isCollapsed");
+	}
+
+	showReplyForm() {
+		this.replyForm.hidden = false;
 	}
 
 	async vote(dir: VoteDirection): Promise<void> {
