@@ -4,5 +4,5 @@ export default interface Votable {
 	totalVotes: number;
 	votableId: string,
 	currentVoteDirection: VoteDirection,
-	vote: (dir: VoteDirection) => void
+	isSaved: boolean,
 }

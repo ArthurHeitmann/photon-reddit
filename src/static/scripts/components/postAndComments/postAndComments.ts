@@ -1,7 +1,7 @@
 import { RedditApiType } from "../../utils/types.js";
 import Ph_CommentsFeed from "../feed/commentsFeed/commentsFeed.js";
 import Ph_Toast, { Level } from "../misc/toast/toast.js";
-import Ph_Post from "../post/post.js";
+import Ph_Post from "../post/ph_Post.js";
 
 export default class Ph_PostAndComments extends HTMLElement {
 	constructor(data: RedditApiType[]) {

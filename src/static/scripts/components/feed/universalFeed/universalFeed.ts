@@ -5,7 +5,7 @@ import { PostSorting, RedditApiType, SortPostsOrder } from "../../../utils/types
 import Ph_Comment from "../../comment/comment.js";
 import { LoadPosition, Ph_Feed } from "../../feed/feed.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
-import Ph_Post from "../../post/post.js";
+import Ph_Post from "../../post/ph_Post.js";
 import Ph_PostsSorter from "../sorting/postsSorter/postsSorter.js";
 
 export default class Ph_UniversalFeed extends Ph_Feed {

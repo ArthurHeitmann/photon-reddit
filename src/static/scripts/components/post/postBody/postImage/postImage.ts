@@ -147,11 +147,13 @@ export default class Ph_PostImage extends HTMLElement {
 					break;
 				case "ArrowRight":
 				case "ArrowDown":
-					this.nextImage();
+					if (this.galleryData.length > 1)
+						this.nextImage();
 					break;
 				case "ArrowLeft":
 				case "ArrowUp":
-					this.previousImage();
+					if (this.galleryData.length > 1)
+						this.previousImage();
 					break;
 			}
 		});

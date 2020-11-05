@@ -1,11 +1,14 @@
+import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
 import Votable from "../components/misc/votable/votable.js";
 import { checkTokenExpiry } from "../login/login.js";
+import { isLoggedIn } from "../utils/globals.js";
 import { splitPathQuery } from "../utils/utils.js";
-import {isLoggedIn} from "../utils/globals.js";
 
 export async function redditApiRequest(pathAndQuery, params: string[][], requiresLogin: boolean, options = {}) {
-	if (requiresLogin && !isLoggedIn)
+	if (requiresLogin && !isLoggedIn) {
+		new Ph_Toast(Level.Error, "You need to be logged in tu use this feature");
 		throw "This feature requires te be logged in";
+	}
 
 	if (requiresLogin || isLoggedIn)
 		return  await oath2Request(pathAndQuery, params, options);
@@ -97,19 +100,19 @@ export async function vote(votable: Votable): Promise<boolean> {
 			["id", votable.votableId]
 		],
 		true, { method: "POST" });
-		return Object.keys(resp).length === 0 && resp.constructor === Object;		// basic does what resp === {} should (but doesn't) do
+		return Object.keys(resp).length === 0 && resp.constructor === Object;		// basically does what resp === {} should (but doesn't) do
 	} catch (error) {
 		return false	
 	}
 }
 
-export async function save(id: string, isSaved: boolean): Promise<boolean> {
+export async function save(votable: Votable): Promise<boolean> {
 	try {
-		const resp = await redditApiRequest(isSaved ? "/api/save" : "/api/unsave", [
-			["id", id]
+		const resp = await redditApiRequest(votable.isSaved ? "/api/save" : "/api/unsave", [
+			["id", votable.votableId]
 		],
 		true, { method: "POST" });
-		return Object.keys(resp).length === 0 && resp.constructor === Object;		// basic does what resp === {} should (but doesn't) do
+		return Object.keys(resp).length === 0 && resp.constructor === Object;		// basically does what resp === {} should (but doesn't) do
 	} catch (error) {
 		return false	
 	}
