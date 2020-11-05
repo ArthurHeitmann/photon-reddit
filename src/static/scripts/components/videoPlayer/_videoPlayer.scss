@@ -99,6 +99,14 @@
 			transform: translateX(-50%);
 			background: #121212ad;
 			border-radius: 1rem;
+			opacity: 0;
+			visibility: collapse;
+			transition: visibility .25s ease, opacity .25s ease;
+
+			&.show {
+				visibility: visible;
+				opacity: 1;
+			}
 		}
 	}
 

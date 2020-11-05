@@ -311,15 +311,12 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		progressBar.addEventListener("mousemove", e => {
 			timeTextHover.innerText = secondsToVideoTime(e.offsetX / progressBar.offsetWidth * this.video.getMaxTime());
 			timeTextHover.style.left = e.offsetX + "px";
-			console.log(timeTextHover.style.left);
 		});
 		progressBar.addEventListener("mouseenter", () => {
-			timeTextHover.hidden = false;
-			console.log("enter");
+			timeTextHover.classList.add("show")
 		});
 		progressBar.addEventListener("mouseleave", () => {
-			timeTextHover.hidden = true;
-			console.log("leave");
+			timeTextHover.classList.remove("show")
 		});
 	}
 
