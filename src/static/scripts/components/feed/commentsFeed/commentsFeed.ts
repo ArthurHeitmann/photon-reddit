@@ -19,6 +19,10 @@ export default class Ph_CommentsFeed extends HTMLElement {
 			}
 		}
 	}
+
+	insertFirstComment(commentData: RedditApiType) {
+		this.insertAdjacentElement("afterbegin", new Ph_Comment(commentData, false, false));
+	}
 }
 
 customElements.define("ph-comments-feed", Ph_CommentsFeed);

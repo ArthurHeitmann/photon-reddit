@@ -31,7 +31,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 
 		this.votableId = postData.data["name"];
 		this.currentVoteDirection = voteDirectionFromLikes(postData.data["likes"]);
-		this.totalVotes = parseInt(postData.data["ups"]);
+		this.totalVotes = parseInt(postData.data["ups"]) + -parseInt(this.currentVoteDirection);
 		this.isSaved = postData.data["saved"];
 		this.url = postData.data["url"];
 		this.classList.add("post");

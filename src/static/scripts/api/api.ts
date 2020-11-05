@@ -2,6 +2,7 @@ import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
 import Votable from "../components/misc/votable/votable.js";
 import { checkTokenExpiry } from "../login/login.js";
 import { isLoggedIn } from "../utils/globals.js";
+import { RedditApiType } from "../utils/types.js";
 import { splitPathQuery } from "../utils/utils.js";
 
 export async function redditApiRequest(pathAndQuery, params: string[][], requiresLogin: boolean, options = {}) {
@@ -50,8 +51,14 @@ async function oath2Request(pathAndQuery, params: string[][], options: Object, a
 			Authorization: `Bearer ${ localStorage["accessToken"] }`,
 		}),
 	};
+	let parametersStr = parameters.toString();
+	if (fetchOptions.method?.toUpperCase() === "POST") {
+		fetchOptions.body = parameters;
+		parametersStr = "";
+	}
+
 	try {
-		const response = await fetch(`https://oauth.reddit.com${ path }?${ parameters.toString() }`, fetchOptions);
+		const response = await fetch(`https://oauth.reddit.com${ path }?${ parametersStr }`, fetchOptions);
 		return await response.json();
 	} catch (e) {
 		// maybe the token has expired, try to refresh it; try again up to 3 times
@@ -116,4 +123,20 @@ export async function save(votable: Votable): Promise<boolean> {
 	} catch (error) {
 		return false	
 	}
+}
+
+export async function comment(votable: Votable, text: string): Promise<{
+	json: {
+		data: {
+			things: RedditApiType[]
+		},
+		errors: any[][]
+	}
+}> {
+	const response = await redditApiRequest("/api/comment", [
+		["api_type", "json"],
+		["text", text],
+		["thing_id", votable.votableId]
+	], true, { method: "POST" });
+	return response;
 }

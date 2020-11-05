@@ -40,6 +40,7 @@
 
 	&.isInFeed {
 		background: vars.$background-el1;
+		border: 1px solid #383838;
 		border-radius: vars.$b-r;
 		@extend %shadow-diffuse;
 

@@ -34,7 +34,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 
 		this.votableId = commentData.data["name"];
 		this.currentVoteDirection = voteDirectionFromLikes(commentData.data["likes"]);
-		this.totalVotes = parseInt(commentData.data["ups"]);
+		this.totalVotes = parseInt(commentData.data["ups"]) + -parseInt(this.currentVoteDirection);
 		this.isSaved = commentData.data["saved"];
 
 		this.classList.add("comment");

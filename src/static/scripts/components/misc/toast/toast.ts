@@ -1,6 +1,6 @@
 
 export default class Ph_Toast extends HTMLElement {
-	constructor(level: Level, displayHtml: string) {
+	constructor(level: Level, displayHtml: string, timeout = -1) {
 		super();
 
 		this.className = "toast";
@@ -17,14 +17,18 @@ export default class Ph_Toast extends HTMLElement {
 			</button>
 		`;
 
-		this.getElementsByClassName("closeButton")[0].addEventListener("click", () => {
-			this.classList.add("remove")
-			setTimeout(() => {
-				this.remove();
-			}, 300);
-		});
+		this.getElementsByClassName("closeButton")[0].addEventListener("click", this.removeSelf.bind(this));
+		if (timeout > 0)
+			setTimeout(this.removeSelf.bind(this), timeout);
 
 		document.body.appendChild(this);
+	}
+
+	removeSelf() {
+		this.classList.add("remove")
+		setTimeout(() => {
+			this.remove();
+		}, 300);
 	}
 }
 
