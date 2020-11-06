@@ -58,6 +58,16 @@
 
 	ol, ul {
 		list-style-position: inside;
+
+		li {
+			> ul, > ol {
+				margin-left: 1rem;
+			}
+		}
+
+		p {
+			display: inline;
+		}
 	}
 
 	.actions {

@@ -11,14 +11,88 @@
 	background: none;
 	color: vars.$text;
 	box-sizing: border-box;
-	font-size: 1rem;
 	font-family: "Nunito", sans-serif;
+}
+
+div, span, a, button {
+	font-size: 1rem;
 	font-weight: 600;
+}
+
+code {
+	font-family: 'Roboto Mono', monospace;
+	font-weight: 500;
+	display: inline-block;
+	background: #ffffff1a;
+	padding: .1rem .2rem;
+	border-radius: .25rem;
+	margin: 0 .25rem;
+}
+
+pre > code {
+	padding: .5rem .75rem;
+	border-radius: .5rem;
+	margin: .5rem 0;
+}
+
+table {
+	border-collapse: collapse;
+	margin: .75rem 0;
+}
+
+td, th {
+	padding: .3rem;
+}
+
+thead {
+	> tr {
+		background: #4e4e4e;
+	}
+
+	th {
+		border: 1px solid #2d2d2d;
+		border-top-width: 0;
+		border-bottom-width: 0;
+		padding: .6rem .4rem;
+
+		&:first-child {
+			border-left-width: 0;
+			border-top-left-radius: .5rem;
+		}
+
+		&:last-child {
+			border-right-width: 0;
+			border-top-right-radius: .5rem;
+		}
+	}
+}
+
+tbody {
+	> tr {
+		transition: background-color .1s ease;
+
+		&:nth-child(even) {
+			background: #313131;
+		}
+
+		&:last-child {
+			td:first-child {
+				border-bottom-left-radius: .5rem;
+			}
+
+			td:last-child {
+				border-bottom-right-radius: .5rem;
+			}
+		}
+
+		&:hover {
+			background: #3e3e3e;
+		}
+	}
 }
 
 strong {
 	font-weight: 800;
-	font-size: inherit;
 }
 
 a {
@@ -53,7 +127,7 @@ blockquote {
 	background: vars.$text;
 	transition: background-color .5s ease;
 	transition-duration: 2.5s;
-	
+
 	&:hover {
 		background: inherit;
 		transition-duration: .5s;
