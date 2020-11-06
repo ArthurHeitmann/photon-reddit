@@ -12,7 +12,6 @@ export default class Ph_PostImage extends HTMLElement {
 	imageIndexText: HTMLDivElement;
 	caption: HTMLDivElement;
 	loadingIcon: HTMLImageElement;
-	removeSelfTimout = null;
 	galleryData: {
 		caption: string,
 		previewImg: HTMLImageElement,
@@ -177,6 +176,7 @@ export default class Ph_PostImage extends HTMLElement {
 		if (this.imageIndexText)
 			this.imageIndexText.innerText = `${this.currentImageIndex + 1} / ${this.galleryData.length}`;
 		this.caption.innerText = this.galleryData[this.currentImageIndex].caption;
+		this.caption.title = this.galleryData[this.currentImageIndex].caption;
 	}
 
 	nextImage() {
@@ -187,8 +187,6 @@ export default class Ph_PostImage extends HTMLElement {
 		++this.currentImageIndex;
 		if (this.currentImageIndex + 1 === this.galleryData.length)
 			this.nextImageButton.disabled = true;
-		for (let img of this.galleryWrapper.children)
-			img.remove();
 		this.replaceCurrentImage();
 		this.updateTexts();
 	}
@@ -201,8 +199,6 @@ export default class Ph_PostImage extends HTMLElement {
 		--this.currentImageIndex;
 		if (this.currentImageIndex === 0)
 			this.prevImageButton.disabled = true;
-		for (let img of this.galleryWrapper.children)
-			img.remove();
 		this.replaceCurrentImage();
 		this.updateTexts();
 	}
@@ -212,6 +208,9 @@ export default class Ph_PostImage extends HTMLElement {
 	}
 
 	replaceCurrentImage() {
+		for (let img of this.galleryWrapper.children)
+			img.remove();
+
 		if (this.isFullscreen() && this.galleryData[this.currentImageIndex].originalImg === null) {
 			const origImg = document.createElement("img");
 			origImg.draggable = false;
@@ -225,6 +224,7 @@ export default class Ph_PostImage extends HTMLElement {
 				this.galleryData[currIndex].previewImg = null
 			});
 		}
+
 		if (this.galleryData[this.currentImageIndex].previewImg)
 			this.galleryWrapper.appendChild(this.galleryData[this.currentImageIndex].previewImg);
 		if (this.galleryData[this.currentImageIndex].originalImg)
@@ -238,22 +238,17 @@ export default class Ph_PostImage extends HTMLElement {
 			this.onShow();
 	}
 
-	onShow() {
+	async onShow() {
 		const viewState = elementWithClassInTree(this.parentElement, "viewState");
 		if (viewState)
 			this.beforeFsScrollTop = viewState.scrollTop;
 
 		this.classList.add("fullscreen");
-		this.requestFullscreen();
+		await this.requestFullscreen();
 		if (this.galleryData[this.currentImageIndex].originalImg === null)
 			this.replaceCurrentImage();
 		this.focus();
 		this.imageMax.activateWith(this.galleryWrapper);
-
-		if (this.removeSelfTimout !== null) {
-			clearTimeout(this.removeSelfTimout);
-			this.removeSelfTimout = null;
-		}
 	}
 
 	onClose() {
@@ -261,10 +256,6 @@ export default class Ph_PostImage extends HTMLElement {
 		this.imageMax.deactivate();
 		this.imageMax.setMoveXY(0, 0);
 		this.imageMax.setZoom(1);
-		this.removeSelfTimout = setTimeout(() => {
-			while (this.imageMax.childElementCount)
-				this.imageMax.lastChild.remove();
-		}, 1000 * 60 * 5);
 
 		if (this.beforeFsScrollTop) {
 			setTimeout(() => elementWithClassInTree(this.parentElement, "viewState").scrollTop = this.beforeFsScrollTop, 0);
