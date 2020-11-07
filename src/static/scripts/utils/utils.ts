@@ -91,3 +91,8 @@ export function throttle(callback, limit) {
 		}
 	};
 }
+
+export function isObjectEmpty(obj: {}) {
+	// basically does what resp === {} should (but doesn't) do
+	return Object.keys(obj).length === 0 && obj.constructor === Object;
+}

@@ -1,26 +1,13 @@
-import { comment } from "../../../api/api.js";
-import Ph_Toast, { Level } from "../../misc/toast/toast.js";
-import Votable from "../../misc/votable/votable.js";
+import { comment } from "../../../../api/api.js";
+import Ph_Toast, { Level } from "../../toast/toast.js";
+import Votable from "../../votable/votable.js";
+import Ph_MarkdownForm from "../markdownForm.js";
 
-export default class Ph_CommentForm extends HTMLElement {
-	commentTextField: HTMLTextAreaElement;
-	submitCommentBtn: HTMLButtonElement;
+export default class Ph_CommentForm extends Ph_MarkdownForm {
+	constructor(votable: Votable, hasCancelBtn: boolean) {
+		super("Submit comment", hasCancelBtn);
 
-	constructor(votable: Votable) {
-		super();
-
-		this.classList.add("commentForm")
-
-		this.commentTextField = document.createElement("textarea");
-		this.commentTextField.className = "rawTextEditor";
-		this.appendChild(this.commentTextField);
-
-		this.submitCommentBtn = document.createElement("button");
-		this.appendChild(this.submitCommentBtn);
-		this.submitCommentBtn.className = "submitBtn";
-		this.submitCommentBtn.innerText = "Post Comment";
-
-		this.submitCommentBtn.addEventListener("click", async () => {
+		this.addEventListener("ph-submit", async () => {
 			this.submitCommentBtn.disabled = true;
 			let response;
 			try {
@@ -43,7 +30,7 @@ export default class Ph_CommentForm extends HTMLElement {
 
 			this.commentTextField.value = "";
 			this.dispatchEvent(new CustomEvent("ph-comment-submitted", { detail: response.json.data.things[0] }))
-		});
+		})
 	}
 }
 

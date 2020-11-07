@@ -17,12 +17,24 @@
 		}
 	}
 
+	&.isEditing {
+		> div >.content {
+			display: none;
+		}
+	}
+
 	.header {
 		flex-wrap: wrap;
 		margin-bottom: .6rem;
 
 		> * {
 			margin: 0 .25rem;
+		}
+	}
+
+	.actions {
+		.dropDownArea {
+			margin: 0 0 0 .5rem;
 		}
 	}
 

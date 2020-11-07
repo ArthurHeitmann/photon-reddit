@@ -1,9 +1,9 @@
 import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
 import Votable from "../components/misc/votable/votable.js";
 import { checkTokenExpiry } from "../login/login.js";
-import { isLoggedIn } from "../utils/globals.js";
+import { isLoggedIn, setThisUserName } from "../utils/globals.js";
 import { RedditApiType } from "../utils/types.js";
-import { splitPathQuery } from "../utils/utils.js";
+import { isObjectEmpty, splitPathQuery } from "../utils/utils.js";
 
 export async function redditApiRequest(pathAndQuery, params: string[][], requiresLogin: boolean, options = {}) {
 	if (requiresLogin && !isLoggedIn) {
@@ -107,7 +107,7 @@ export async function vote(votable: Votable): Promise<boolean> {
 			["id", votable.votableId]
 		],
 		true, { method: "POST" });
-		return Object.keys(resp).length === 0 && resp.constructor === Object;		// basically does what resp === {} should (but doesn't) do
+		return isObjectEmpty(resp);
 	} catch (error) {
 		return false	
 	}
@@ -119,9 +119,9 @@ export async function save(votable: Votable): Promise<boolean> {
 			["id", votable.votableId]
 		],
 		true, { method: "POST" });
-		return Object.keys(resp).length === 0 && resp.constructor === Object;		// basically does what resp === {} should (but doesn't) do
+		return isObjectEmpty(resp);
 	} catch (error) {
-		return false	
+		return false
 	}
 }
 
@@ -133,10 +133,27 @@ export async function comment(votable: Votable, text: string): Promise<{
 		errors: any[][]
 	}
 }> {
-	const response = await redditApiRequest("/api/comment", [
+	return await redditApiRequest("/api/comment", [
 		["api_type", "json"],
 		["text", text],
 		["thing_id", votable.votableId]
 	], true, { method: "POST" });
-	return response;
+}
+
+export async function edit(votable: Votable, bodyMd: string) {
+	return await redditApiRequest("/api/editusertext", [
+		["api_type", "json"],
+		["return_rtjson", "trie"],
+		["text", bodyMd],
+		["thing_id", votable.votableId],
+	], true, { method: "POST" })
+}
+
+export async function deleteThing(votable: Votable) {
+	return await redditApiRequest("/api/del", [["id", votable.votableId]], true, { method: "POST" });
+}
+
+export async function fetchThisUserName() {
+	const userInfo = await redditApiRequest("/api/v1/me", [], true);
+	setThisUserName(userInfo["name"]);
 }

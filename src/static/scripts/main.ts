@@ -1,10 +1,11 @@
+import { fetchThisUserName } from "./api/api.js";
 import { checkTokenExpiry, initiateLogin, isAccessTokenValid } from "./login/login.js";
 import { pushLinkToHistorySep } from "./state/stateManager.js";
 import { $class, $id, $tag, linksToSpa } from "./utils/htmlStuff.js";
 import { SVGAnimateElement } from "./utils/types.js";
 
 const header: HTMLElement = $tag("header")[0]; 
-function init(): void {
+async function init(): Promise<void> {
 	linksToSpa(document.body);
 	const loginBtn = $id("loginButton");
 	loginBtn.addEventListener("click", initiateLogin);
@@ -13,14 +14,16 @@ function init(): void {
 	header.addEventListener("mouseleave", headerMouseLeave);
 
 	if (isAccessTokenValid()) {
+		await fetchThisUserName()
 		loadPosts();
 	}
 	else {
-		checkTokenExpiry().then(isValid => {
-			if (!isValid)
-				loginBtn.hidden = false;
-			loadPosts();
-		})
+		const isValid = await checkTokenExpiry()
+		if (!isValid)
+			loginBtn.hidden = false;
+		else
+			await fetchThisUserName();
+		loadPosts();
 	}
 }
 

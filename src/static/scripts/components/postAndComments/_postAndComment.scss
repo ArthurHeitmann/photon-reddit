@@ -10,6 +10,10 @@
 	border-radius: vars.$b-r;
 	border: 1px solid #383838;
 	@extend %shadow-diffuse;
+
+	> .markdownForm {
+		margin-left: 4rem;
+	}
 }
 
 @media (orientation: landscape) {
