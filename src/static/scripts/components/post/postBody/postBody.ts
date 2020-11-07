@@ -28,7 +28,14 @@ export default class Ph_PostBody extends HTMLElement {
 				break;
 			case PostType.Link:
 				this.classList.add("padded");
-				this.innerHTML = `<a href="${postData.data["url"]}" target="_blank">${postData.data["url"]}</a>`
+				if (postData.data["preview"])
+					this.innerHTML = `
+						<div class="linkPreviewWrapper">
+							<a href="${postData.data["url"]}" target="_blank">${postData.data["url"]}</a>
+							<img src="${postData.data["preview"]["images"][0]["source"]["url"]}">
+						</div>`;
+				else
+					this.innerHTML = `<a href="${postData.data["url"]}" target="_blank">${postData.data["url"]}</a>`
 				break;
 			case PostType.Video:
 				this.classList.add("fullScale");

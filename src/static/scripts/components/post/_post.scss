@@ -44,6 +44,28 @@
 		}
 	}
 
+	.linkPreviewWrapper {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: .5rem;
+		width: 100%;
+		max-height: 7rem;
+
+		> a {
+			max-width: 75%;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		> img {
+			max-width: 25%;
+			max-height: 7rem;
+			border-radius: 1rem;
+		}
+	}
+
 	.actions {
 		z-index: 1;
 		min-height: 100%;
