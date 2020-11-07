@@ -1,5 +1,6 @@
 import { comment } from "../../api/api.js";
 import { RedditApiType } from "../../utils/types.js";
+import Ph_Comment from "../comment/comment.js";
 import Ph_CommentForm from "../misc/markdownForm/commentForm/commentForm.js";
 import Ph_CommentsFeed from "../feed/commentsFeed/commentsFeed.js";
 import Ph_Toast, { Level } from "../misc/toast/toast.js";
@@ -24,9 +25,9 @@ export default class Ph_PostAndComments extends HTMLElement {
 		const commentForm = new Ph_CommentForm(post, false);
 		this.appendChild(commentForm);
 		commentForm.addEventListener("ph-comment-submitted",
-			(e: CustomEvent) => comments.insertFirstComment(e.detail));
+			(e: CustomEvent) => comments.insertAdjacentElement("afterbegin", new Ph_Comment(e.detail, false, false, post)));
 
-		const comments = new Ph_CommentsFeed(data[1], data[0].data.children[0].data["name"]);
+		const comments = new Ph_CommentsFeed(data[1], post);
 		this.appendChild(comments);
 	}
 }

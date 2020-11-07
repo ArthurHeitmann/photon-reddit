@@ -19,6 +19,7 @@ import Ph_CommentForm from "../misc/markdownForm/commentForm/commentForm.js";
 import Ph_MarkdownForm from "../misc/markdownForm/markdownForm.js";
 import Ph_Toast, { Level } from "../misc/toast/toast.js";
 import Votable from "../misc/votable/votable.js";
+import Ph_Post from "../post/ph_Post.js";
 
 export default class Ph_Comment extends Ph_FeedItem implements Votable {
 	voteUpButton: HTMLButtonElement;
@@ -34,7 +35,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 	postFullName: string;
 	bodyMarkdown: string;
 
-	constructor(commentData: RedditApiType, isChild: boolean, isInFeed: boolean, postFullName: string) {
+	constructor(commentData: RedditApiType, isChild: boolean, isInFeed: boolean, post: Ph_Post) {
 		super(commentData, isInFeed);
 
 		this.classList.add("comment");
@@ -43,27 +44,35 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 		}
 
 		if (commentData.kind === "more") {
-			this.postFullName = postFullName;
 			const loadMoreButton = document.createElement("button");
-			loadMoreButton.innerText = `Load more (${commentData.data["count"]})`;
-			let nextChildren = commentData.data["children"] as unknown as string[];
-			loadMoreButton.addEventListener("click", async () => {
-				loadMoreButton.disabled = true;
-				try {
-					const loadedComments = await this.loadMoreComments(nextChildren);
-
-					for (const comment of loadedComments) {
-						this.insertAdjacentElement("beforebegin",
-							new Ph_Comment(comment, isChild, isInFeed, postFullName));
-					}
-				} catch (e) {
-					console.error("Error loading more comments");
-					console.error(e);
-					new Ph_Toast(Level.Error, "Error loading more comments");
-				}
-				loadMoreButton.remove();
-			});
+			loadMoreButton.className = "loadMoreButton";
 			this.appendChild(loadMoreButton);
+
+			if (commentData.data["children"].length === 0) {
+				loadMoreButton.innerHTML = `<a href="${post.permalink}${commentData.data["parent_id"].slice(3)}">Continue thread</a>`;
+				linksToSpa(loadMoreButton);
+			}
+			else {
+				this.postFullName = post.votableId;
+				loadMoreButton.innerText = `Load more (${commentData.data["count"]})`;
+				let nextChildren = commentData.data["children"] as unknown as string[];
+				loadMoreButton.addEventListener("click", async () => {
+					loadMoreButton.disabled = true;
+					try {
+						const loadedComments = await this.loadMoreComments(nextChildren);
+
+						for (const comment of loadedComments) {
+							this.insertAdjacentElement("beforebegin",
+								new Ph_Comment(comment, isChild, isInFeed, post));
+						}
+					} catch (e) {
+						console.error("Error loading more comments");
+						console.error(e);
+						new Ph_Toast(Level.Error, "Error loading more comments");
+					}
+					loadMoreButton.remove();
+				});
+			}
 			return;
 		} else if (commentData.kind !== "t1") {
 			new Ph_Toast(Level.Error, "Error occurred while making comment");
@@ -158,7 +167,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 		this.replyForm.classList.add("hide");
 		this.replyForm.addEventListener("ph-comment-submitted", (e: CustomEvent) => {
 			this.replyForm.insertAdjacentElement("afterend",
-				new Ph_Comment(e.detail, true, false, postFullName));
+				new Ph_Comment(e.detail, true, false, post));
 			this.replyForm.classList.add("hide");
 		});
 		this.replyForm.addEventListener("ph-cancel", () => this.replyForm.classList.add("hide"));
@@ -166,7 +175,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 		this.childComments.appendChild(this.replyForm);
 		if (commentData.data["replies"] && commentData.data["replies"]["data"]["children"]) {
 			for (const comment of commentData.data["replies"]["data"]["children"]) {
-				this.childComments.appendChild(new Ph_Comment(comment, true, false, postFullName));
+				this.childComments.appendChild(new Ph_Comment(comment, true, false, post));
 			}
 		}
 

@@ -15,13 +15,14 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 	voteUpButton: HTMLButtonElement;
 	currentUpvotes: HTMLDivElement;
 	voteDownButton: HTMLButtonElement;
+	url: string;
+	permalink: string;
 	// Votable implementation
 	totalVotes: number;
 	votableId: string;
 	currentVoteDirection: VoteDirection;
 	isSaved: boolean;
 
-	url: string;
 
 	constructor(postData: RedditApiType, isInFeed: boolean) {
 		super(postData, isInFeed);
@@ -34,6 +35,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		this.totalVotes = parseInt(postData.data["ups"]) + -parseInt(this.currentVoteDirection);
 		this.isSaved = postData.data["saved"];
 		this.url = postData.data["url"];
+		this.permalink = postData.data["permalink"];
 		this.classList.add("post");
 
 		// actions bar
