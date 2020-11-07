@@ -26,7 +26,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 		commentForm.addEventListener("ph-comment-submitted",
 			(e: CustomEvent) => comments.insertFirstComment(e.detail));
 
-		const comments = new Ph_CommentsFeed(data[1]);
+		const comments = new Ph_CommentsFeed(data[1], data[0].data.children[0].data["name"]);
 		this.appendChild(comments);
 	}
 }

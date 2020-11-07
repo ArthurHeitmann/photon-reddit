@@ -3,14 +3,17 @@ import Ph_Comment from "../../comment/comment.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 
 export default class Ph_CommentsFeed extends HTMLElement {
-	constructor(comments: RedditApiType) {
+	postFullName: string;
+
+	constructor(comments: RedditApiType, postFullName: string) {
 		super();
 
 		this.classList.add("commentsFeed");
-		
+		this.postFullName = postFullName;
+
 		for (const commentData of comments.data.children) {
 			try {
-				this.appendChild(new Ph_Comment(commentData, false, false));
+				this.appendChild(new Ph_Comment(commentData, false, false, postFullName));
 			}
 			catch (e) {
 				console.error("Error making root comment");
@@ -21,7 +24,7 @@ export default class Ph_CommentsFeed extends HTMLElement {
 	}
 
 	insertFirstComment(commentData: RedditApiType) {
-		this.insertAdjacentElement("afterbegin", new Ph_Comment(commentData, false, false));
+		this.insertAdjacentElement("afterbegin", new Ph_Comment(commentData, false, false, this.postFullName));
 	}
 }
 

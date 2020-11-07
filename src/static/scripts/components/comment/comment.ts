@@ -1,13 +1,13 @@
+import { redditApiRequest, save, vote, VoteDirection, voteDirectionFromLikes } from "../../api/api.js";
 import { mainURL } from "../../utils/consts.js";
-import { numberToShort, numberToShortStr, replaceRedditLinks, timePassedSinceStr } from "../../utils/utils.js";
 import { linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
+import { numberToShort, replaceRedditLinks, timePassedSinceStr } from "../../utils/utils.js";
 import Ph_FeedItem from "../feed/feedItem/feedItem.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
 import Ph_DropDownEntry from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_Toast, { Level } from "../misc/toast/toast.js";
 import Votable from "../misc/votable/votable.js";
-import { save, vote, VoteDirection, voteDirectionFromLikes } from "../../api/api.js";
 import Ph_CommentForm from "./commentForm/commentForm.js";
 
 export default class Ph_Comment extends Ph_FeedItem implements Votable {
@@ -20,13 +20,37 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 	votableId: string;
 	currentVoteDirection: VoteDirection;
 	isSaved: boolean;
+	postFullName: string;
 
-	constructor(commentData: RedditApiType, isChild: boolean, isInFeed: boolean) {
+	constructor(commentData: RedditApiType, isChild: boolean, isInFeed: boolean, postFullName: string) {
 		super(commentData, isInFeed);
 
+		this.classList.add("comment");
+		if (!isChild)
+			this.classList.add("rootComment");
+
 		if (commentData.kind === "more") {
+			this.postFullName = postFullName;
 			const loadMoreButton = document.createElement("button");
 			loadMoreButton.innerText = `Load more (${commentData.data["count"]})`;
+			let nextChildren = commentData.data["children"] as unknown as string[];
+			loadMoreButton.addEventListener("click", async () => {
+				loadMoreButton.disabled = true;
+				try {
+					const loadedComments = await this.loadMoreComments(nextChildren);
+
+					for (const comment of loadedComments) {
+						this.insertAdjacentElement("beforebegin",
+							new Ph_Comment(comment, isChild, isInFeed, postFullName));
+					}
+				}
+				catch (e) {
+					console.error("Error loading more comments");
+					console.error(e);
+					new Ph_Toast(Level.Error, "Error loading more comments");
+				}
+				loadMoreButton.remove();
+			})
 			this.appendChild(loadMoreButton);
 			return;
 		} else if (commentData.kind !== "t1") {
@@ -38,11 +62,6 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 		this.currentVoteDirection = voteDirectionFromLikes(commentData.data["likes"]);
 		this.totalVotes = parseInt(commentData.data["ups"]) + -parseInt(this.currentVoteDirection);
 		this.isSaved = commentData.data["saved"];
-
-		this.classList.add("comment");
-		if (!isChild) {
-			this.classList.add("rootComment");
-		}
 
 
 		// actions bar
@@ -116,12 +135,13 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 		this.replyForm = new Ph_CommentForm(this);
 		this.replyForm.hidden = true;
 		this.replyForm.addEventListener("ph-comment-submitted",
-			(e: CustomEvent) => this.replyForm.insertAdjacentElement("afterend", new Ph_Comment(e.detail, true, false)));
+			(e: CustomEvent) => this.replyForm.insertAdjacentElement("afterend",
+				new Ph_Comment(e.detail, true, false, postFullName)));
 
 		childComments.appendChild(this.replyForm);
 		if (commentData.data["replies"] && commentData.data["replies"]["data"]["children"]) {
 			for (const comment of commentData.data["replies"]["data"]["children"]) {
-				childComments.appendChild(new Ph_Comment(comment, true, false));
+				childComments.appendChild(new Ph_Comment(comment, true, false, postFullName));
 			}
 		}
 
@@ -137,6 +157,48 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 
 	showReplyForm() {
 		this.replyForm.hidden = false;
+	}
+
+	async loadMoreComments(children: string[]): Promise<RedditApiType[]> {
+		const childData = await redditApiRequest("/api/morechildren", [
+			["api_type", "json"],
+			["children", children.join(",")],
+			["link_id", this.postFullName],
+			["sort", "confidence"],
+			["limit_children", "false"],
+		], false, { method: "POST" });
+
+		let commentTree: RedditApiType[] = [];
+		for (const comment of childData["json"]["data"]["things"] as RedditApiType[]) {
+			if (!this.tryAttachToCommentTree(commentTree, comment))
+				commentTree.push(comment);
+
+		}
+
+		return commentTree;
+	}
+
+	private tryAttachToCommentTree(tree: RedditApiType[], commentData): boolean {
+		for (let elem of tree) {
+			if (elem.data["name"] === commentData.data["parent_id"]) {
+				if (!elem.data["replies"] || elem.data["replies"]["kind"] !== "Listing") {
+					elem.data["replies"] = <RedditApiType> {
+						kind: "Listing",
+						data: {
+							children: []
+						}
+					};
+				}
+				elem.data["replies"]["data"]["children"].push(commentData);
+				return true;
+			}
+			else if (elem.data["replies"] && elem.data["replies"]["kind"] === "Listing") {
+				if (this.tryAttachToCommentTree(elem.data["replies"]["data"]["children"], commentData))
+					return true;
+			}
+		}
+
+		return false;
 	}
 
 	async vote(dir: VoteDirection): Promise<void> {

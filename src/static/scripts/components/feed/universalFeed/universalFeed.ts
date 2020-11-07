@@ -38,7 +38,7 @@ export default class Ph_UniversalFeed extends Ph_Feed {
 			case "t3":
 				return new Ph_Post(itemData, true);
 			case "t1":
-				return new Ph_Comment(itemData, false, true);
+				return new Ph_Comment(itemData, false, true, null);
 			default:
 				new Ph_Toast(Level.Error, `Unknown feed item "${itemData.kind}"`);
 				throw `What is this feed item? ${JSON.stringify(itemData, null, 4)}`;
