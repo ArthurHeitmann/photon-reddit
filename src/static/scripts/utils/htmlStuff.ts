@@ -37,9 +37,9 @@ export function elementWithClassInTree(elem: HTMLElement, className: string): HT
 export function linksToInlineImages(elem: HTMLElement) {
 	const links = elem.getElementsByTagName("a");
 	for (let link of links) {
-		if (!(/^[^?]+(png|jpg|jpeg|gif)/).test(link.href))
+		if (!(/^[^?]+\.(png|jpg|jpeg|gif)(\?.*)?$/).test(link.href))
 			continue;
 
-		link.innerHTML = `<img src="${link.href}" alt="${link.innerText}">`;
+		link.innerHTML = `<img src="${link.href}" alt="${link.innerText}" class="inlineImage">`;
 	}
 }
