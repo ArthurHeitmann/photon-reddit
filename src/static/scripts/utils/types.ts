@@ -58,4 +58,5 @@ export enum SortCommentsOrder {
 	controversial = "controversial",
 	old = "old",
 	qa = "qa",
+	random = "random",
 }

@@ -1,7 +1,13 @@
 
 .commentsFeed {
+	display: flex;
+	flex-direction: column;
 	overflow-x: auto;		// TODO fix to uch nested comments causing an overflow
 	overflow-y: hidden;		// TODO why is it overflowing here though?
+
+	.commentsSorter {
+		margin-left: auto;
+	}
 
 	.parentCommentsLink {
 		display: block;

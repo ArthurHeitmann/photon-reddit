@@ -55,6 +55,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 			}
 			else {
 				this.postFullName = post.votableId;
+				const moreId = commentData.data["name"];
 				const loadMoreBtnText: string = `Load more (${commentData.data["count"]})`;
 				loadMoreButton.innerText = loadMoreBtnText;
 				let nextChildren = commentData.data["children"] as unknown as string[];
@@ -62,7 +63,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 					loadMoreButton.disabled = true;
 					loadMoreButton.innerHTML = `<img src="/img/loading.svg">`;
 					try {
-						const loadedComments = await this.loadMoreComments(nextChildren);
+						const loadedComments = await this.loadMoreComments(nextChildren, moreId);
 
 						for (const comment of loadedComments) {
 							this.insertAdjacentElement("beforebegin",
@@ -201,19 +202,24 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 
 	collapse(e: MouseEvent) {
 		this.classList.toggle("isCollapsed");
+
+		const top = this.getBoundingClientRect().top;
+		if (top < 0)
+			elementWithClassInTree(this.parentElement, "viewState").scrollBy(0, top);
 	}
 
 	showReplyForm() {
 		this.replyForm.classList.remove("hide");
 	}
 
-	async loadMoreComments(children: string[]): Promise<RedditApiType[]> {
+	async loadMoreComments(children: string[], id: string): Promise<RedditApiType[]> {
 		const childData = await redditApiRequest("/api/morechildren", [
 			["api_type", "json"],
 			["children", children.join(",")],
 			["link_id", this.postFullName],
-			["sort", "confidence"],
+			["sort", (elementWithClassInTree(this.parentElement, "commentsFeed") as Ph_CommentsFeed).sort],
 			["limit_children", "false"],
+			["id", id]
 		], false, {method: "POST"});
 
 		let commentTree: RedditApiType[] = [];
