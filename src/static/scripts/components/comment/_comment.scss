@@ -64,4 +64,20 @@
 	.content {
 		margin-right: 2rem;
 	}
+
+	.loadMoreButton {
+		border: 1px solid #e4e4e4;
+		border-radius: 1rem;
+		padding: .3rem .75rem;
+		transition: all .125s ease;
+
+		&:hover {
+			border-color: lightcoral;
+			color: lightcoral;
+		}
+
+		&:active {
+			background: #3e3e3e;
+		}
+	}
 }
