@@ -54,10 +54,12 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 			}
 			else {
 				this.postFullName = post.votableId;
-				loadMoreButton.innerText = `Load more (${commentData.data["count"]})`;
+				const loadMoreBtnText: string = `Load more (${commentData.data["count"]})`;
+				loadMoreButton.innerText = loadMoreBtnText;
 				let nextChildren = commentData.data["children"] as unknown as string[];
 				loadMoreButton.addEventListener("click", async () => {
 					loadMoreButton.disabled = true;
+					loadMoreButton.innerHTML = `<img src="/img/loading.svg">`;
 					try {
 						const loadedComments = await this.loadMoreComments(nextChildren);
 
@@ -65,12 +67,14 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 							this.insertAdjacentElement("beforebegin",
 								new Ph_Comment(comment, isChild, isInFeed, post));
 						}
+						loadMoreButton.remove();
 					} catch (e) {
 						console.error("Error loading more comments");
 						console.error(e);
 						new Ph_Toast(Level.Error, "Error loading more comments");
+						loadMoreButton.disabled = false;
+						loadMoreButton.innerText = loadMoreBtnText;
 					}
-					loadMoreButton.remove();
 				});
 			}
 			return;
@@ -79,6 +83,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 			throw "Invalid comment data type";
 		}
 
+		this.setAttribute("data-id", commentData.data["name"].slice(3));
 		this.bodyMarkdown = commentData.data["body"];
 
 		this.votableId = commentData.data["name"];

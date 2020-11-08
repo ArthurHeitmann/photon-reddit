@@ -29,6 +29,11 @@ export default class Ph_PostAndComments extends HTMLElement {
 
 		const comments = new Ph_CommentsFeed(data[1], post);
 		this.appendChild(comments);
+
+		const commentLink: string =  location.pathname.match(new RegExp(post.permalink + "(\\w*)"))[1];
+		if (commentLink) {
+			comments.querySelector(`[data-id=${commentLink}]`).classList.add("highlight");
+		}
 	}
 }
 

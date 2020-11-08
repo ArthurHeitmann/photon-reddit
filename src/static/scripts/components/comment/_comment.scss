@@ -3,6 +3,11 @@
 .comment {
 	padding: 1rem 0 1rem 1rem;
 
+	&.highlight {
+		border: 1px solid #f080807d;
+		border-radius: 1rem;
+	}
+
 	&.isCollapsed {
 		&.rootComment {
 			padding-bottom: 0;
@@ -70,8 +75,21 @@
 		border-radius: 1rem;
 		padding: .3rem .75rem;
 		transition: all .125s ease;
+		display: flex;
+		align-items: center;
 
-		&:hover {
+		img {
+			height: calc(1em + 0.3rem);
+			transform: scale(1.7);
+			margin: 0 1.5rem;
+		}
+
+		&:disabled {
+			border-color: grey;
+			color: grey;
+		}
+
+		&:hover:not(:disabled) {
 			border-color: lightcoral;
 			color: lightcoral;
 		}

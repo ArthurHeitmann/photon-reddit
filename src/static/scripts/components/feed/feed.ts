@@ -10,7 +10,7 @@ export abstract class Ph_Feed extends HTMLElement {
 	requestUrl: string;
 	hasReachedEndOfFeed = false;
 
-	constructor(feedData: RedditApiType, clearPreviousAfterLoad: boolean, requestUrl: string) {
+	protected constructor(feedData: RedditApiType, clearPreviousAfterLoad: boolean, requestUrl: string) {
 		super();
 
 		this.beforeData = feedData.data.before;
