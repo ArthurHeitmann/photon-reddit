@@ -33,6 +33,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 		const commentLink: string =  location.pathname.match(new RegExp(post.permalink + "(\\w*)"))[1];
 		if (commentLink) {
 			comments.querySelector(`[data-id=${commentLink}]`).classList.add("highlight");
+			comments.insertParentLink(post.permalink, "Load all comments");
 		}
 	}
 }

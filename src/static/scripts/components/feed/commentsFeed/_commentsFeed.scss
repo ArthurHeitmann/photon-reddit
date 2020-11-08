@@ -2,4 +2,21 @@
 .commentsFeed {
 	overflow-x: auto;		// TODO fix to uch nested comments causing an overflow
 	overflow-y: hidden;		// TODO why is it overflowing here though?
+
+	.parentCommentsLink {
+		display: block;
+		width: max-content;
+		margin: 1rem 4rem;
+		padding: .2rem 0.75rem;
+		border: 1px solid;
+		border-radius: 1rem;
+
+		&:first-child {
+			margin-top: 0;
+		}
+
+		&:last-child {
+			margin-bottom: 0;
+		}
+	}
 }

@@ -9,9 +9,10 @@ import {
 } from "../../api/api.js";
 import { mainURL } from "../../utils/consts.js";
 import { thisUserName } from "../../utils/globals.js";
-import { linksToSpa } from "../../utils/htmlStuff.js";
+import { elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
 import { isObjectEmpty, numberToShort, replaceRedditLinks, timePassedSinceStr } from "../../utils/utils.js";
+import Ph_CommentsFeed from "../feed/commentsFeed/commentsFeed.js";
 import Ph_FeedItem from "../feed/feedItem/feedItem.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
 import Ph_DropDownEntry, { DropDownEntryParam } from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
@@ -78,7 +79,8 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 				});
 			}
 			return;
-		} else if (commentData.kind !== "t1") {
+		}
+		else if (commentData.kind !== "t1") {
 			new Ph_Toast(Level.Error, "Error occurred while making comment");
 			throw "Invalid comment data type";
 		}
@@ -90,6 +92,13 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 		this.currentVoteDirection = voteDirectionFromLikes(commentData.data["likes"]);
 		this.totalVotes = parseInt(commentData.data["ups"]) + -parseInt(this.currentVoteDirection);
 		this.isSaved = commentData.data["saved"];
+
+		if (!isChild && commentData.data["parent_id"] && commentData.data["parent_id"].slice(0, 3) === "t1_") {
+			setTimeout(() =>
+				(elementWithClassInTree(this.parentElement, "commentsFeed") as Ph_CommentsFeed)
+					.insertParentLink(`${post.permalink}${commentData.data["parent_id"].slice(3)}?context=3`, "Load parent comment")
+				, 0)
+		}
 
 		// actions bar
 		const actionBar = document.createElement("div");
@@ -281,10 +290,10 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 	share([_, shareType]) {
 		switch (shareType) {
 			case "comment link":
-				navigator.clipboard.writeText(mainURL + this.link);
+				navigator.clipboard.writeText(`${mainURL + this.link}?context=3`);
 				break;
 			case "reddit link":
-				navigator.clipboard.writeText("reddit.com" + this.link);
+				navigator.clipboard.writeText(`reddit.com${this.link}?context=3`);
 				break;
 			default:
 				throw "Invalid share type";

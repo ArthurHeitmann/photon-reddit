@@ -1,3 +1,4 @@
+import { linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiType } from "../../../utils/types.js";
 import Ph_Comment from "../../comment/comment.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
@@ -21,6 +22,15 @@ export default class Ph_CommentsFeed extends HTMLElement {
 				new Ph_Toast(Level.Error, "Error making comment");
 			}
 		}
+	}
+
+	insertParentLink(link: string, displayText: string) {
+		const linkA = document.createElement("a");
+		linkA.href = link;
+		linkA.innerHTML = displayText;
+		linkA.className = "parentCommentsLink";
+		linksToSpa(linkA);
+		this.insertAdjacentElement("afterbegin", linkA);
 	}
 }
 
