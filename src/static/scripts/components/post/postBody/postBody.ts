@@ -3,6 +3,7 @@ import { linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiData, RedditApiType } from "../../../utils/types.js";
 import Ph_VideoPlayer from "../../videoPlayer/videoPlayer.js";
 import Ph_PostImage from "./postImage/postImage.js";
+import Ph_PostText from "./postText/postText.js";
 
 export default class Ph_PostBody extends HTMLElement {
 	constructor(postData: RedditApiType) {
@@ -19,7 +20,7 @@ export default class Ph_PostBody extends HTMLElement {
 				break;
 			case PostType.Text:
 				this.classList.add("padded");
-				this.innerHTML = `<div class="postText">${postData.data["selftext_html"] || ""}</div>`;
+				this.appendChild(new Ph_PostText(postData.data["selftext_html"] || ""));
 				break;
 			case PostType.EmbeddedVideo:
 				this.classList.add("fullScale");

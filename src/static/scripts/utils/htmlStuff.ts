@@ -33,3 +33,13 @@ export function classInElementTree(elem: HTMLElement, className: string): boolea
 export function elementWithClassInTree(elem: HTMLElement, className: string): HTMLElement {
 	return elem && (elem.classList.contains(className) && elem || elementWithClassInTree(elem.parentElement, className));
 }
+
+export function linksToInlineImages(elem: HTMLElement) {
+	const links = elem.getElementsByTagName("a");
+	for (let link of links) {
+		if (!(/^[^?]+(png|jpg|jpeg|gif)/).test(link.href))
+			continue;
+
+		link.innerHTML = `<img src="${link.href}" alt="${link.innerText}">`;
+	}
+}

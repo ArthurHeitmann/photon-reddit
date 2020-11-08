@@ -9,7 +9,7 @@ import {
 } from "../../api/api.js";
 import { mainURL } from "../../utils/consts.js";
 import { thisUserName } from "../../utils/globals.js";
-import { elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff.js";
+import { elementWithClassInTree, linksToInlineImages, linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
 import { isObjectEmpty, numberToShort, replaceRedditLinks, timePassedSinceStr } from "../../utils/utils.js";
 import Ph_CommentsFeed from "../feed/commentsFeed/commentsFeed.js";
@@ -169,6 +169,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 				${commentData.data["body_html"]}
 			</div>
 		`;
+		linksToInlineImages(mainPart);
 
 		for (const a of mainPart.getElementsByTagName("a")) {
 			a.target = "_blank";
