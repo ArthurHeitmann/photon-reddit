@@ -97,10 +97,12 @@ export default class Ph_PostImage extends HTMLElement {
 		if (this.galleryData.length > 1) {
 			// prev img
 			this.prevImageButton = this.controls.appendMakeImageButton("/img/playBack.svg");
+			this.prevImageButton.setAttribute("data-tooltip", "Shortcut: Arrow Left");
 			this.prevImageButton.addEventListener("click", this.previousImage.bind(this));
 			this.prevImageButton.disabled = true;
 			// next img
 			this.nextImageButton = this.controls.appendMakeImageButton("/img/playNext.svg");
+			this.nextImageButton.setAttribute("data-tooltip", "Shortcut: Arrow Right");
 			this.nextImageButton.addEventListener("click", this.nextImage.bind(this));
 			// current image text
 			this.imageIndexText = document.createElement("div");
@@ -115,19 +117,21 @@ export default class Ph_PostImage extends HTMLElement {
 		this.loadingIcon.className = "loading";
 		this.loadingIcon.hidden = true;
 		this.controls.appendChild(this.loadingIcon);
-		// caption			TODO add tooltip for overflows
+		// caption
 		this.caption = document.createElement("div");
 		this.caption.className = "title";
 		this.controls.appendChild(this.caption);
 		// reset view
 		const resetViewBtn = this.controls.appendMakeImageButton("/img/reset.svg", true);
 		resetViewBtn.classList.add("resetView");
+		resetViewBtn.setAttribute("data-tooltip", "Shortcut: R");
 		resetViewBtn.addEventListener("click", () => {
 			this.imageMax.setMoveXY(0, 0);
 			this.imageMax.setZoom(1);
 		})
 		// fullscreen
 		const fullscreenBtn = this.controls.appendMakeImageButton("/img/minimize.svg");
+		fullscreenBtn.setAttribute("data-tooltip", "Shortcut: F");
 		fullscreenBtn.addEventListener("click", this.toggleFullscreen.bind(this));
 		this.addEventListener("fullscreenchange", e => document.fullscreenElement || this.onClose());
 
@@ -176,6 +180,7 @@ export default class Ph_PostImage extends HTMLElement {
 		if (this.imageIndexText)
 			this.imageIndexText.innerText = `${this.currentImageIndex + 1} / ${this.galleryData.length}`;
 		this.caption.innerText = this.galleryData[this.currentImageIndex].caption;
+		this.caption.setAttribute("data-tooltip", this.galleryData[this.currentImageIndex].caption);
 		this.caption.title = this.galleryData[this.currentImageIndex].caption;
 	}
 

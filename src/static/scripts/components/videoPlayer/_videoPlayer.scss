@@ -75,6 +75,7 @@
 			height: .25rem;
 			cursor: pointer;
 
+
 			&:hover {
 				background: #f07f7f80;
 				transform: scaleY(3);
@@ -82,6 +83,14 @@
 				.accessibilitySpacer {
 					transform: scaleY(2);
 				}
+
+				&[data-tooltip]::before {
+					transform: translateX(-50%) translateY(-100%) scaleY(0.33333);
+				}
+			}
+
+			&[data-tooltip]::before {
+				transition-duration: .25s;
 			}
 
 			> .progress {

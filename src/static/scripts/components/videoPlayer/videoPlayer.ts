@@ -200,6 +200,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		// play, pause, progress bar
 		const playButton = new Ph_PlayImage();
 		controls.appendMorphingImage(playButton);
+		playButton.setAttribute("data-tooltip", "Shortcut: Space/P/K");
 		playButton.addEventListener("click", () => this.video.togglePlay());
 		this.video.addEventListener("ph-play", () => {
 			playButton.toPause();
@@ -230,8 +231,10 @@ export default class Ph_VideoPlayer extends HTMLElement {
 			{ src: "/img/mute.svg", key: "mute" },
 			{ src: "/img/audio.svg", key: "audio" },
 		]), volumeWrapper);
+		muteButton.setAttribute("data-tooltip", "Shortcut: M");
 		muteButton.parentElement.addEventListener("click", () => this.video.toggleMute());
 		const volumeSlider = new Ph_ProgressBar(true, 20);
+		volumeSlider.setAttribute("data-tooltip", "Shortcut: Arrow Up/Down or Scroll");
 		volumeSlider.addEventListener("ph-drag", (e: CustomEvent) => this.video.setVolume(e.detail));
 		volumeWrapper.appendChild(volumeSlider);
 		this.video.addEventListener("ph-volumechange",
@@ -257,6 +260,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		// reset view
 		this.resetViewBtn = controls.appendMakeImageButton("/img/reset.svg");
 		this.resetViewBtn.classList.add("hide");
+		this.resetViewBtn.setAttribute("data-tooltip", "Shortcut: R");
 		this.resetViewBtn.addEventListener("click", () => {
 			this.draggableWrapper.setZoom(1);
 			this.draggableWrapper.setMoveXY(0, 0);
@@ -275,7 +279,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 					{ displayHTML: "8.00x", value: 8.00, onSelectCallback: this.setVideoSpeed.bind(this) },
 					{ displayHTML: "16.00x", value: 16.00, onSelectCallback: this.setVideoSpeed.bind(this) },
 				] },
-			{ displayHTML: "Popout", onSelectCallback: this.popoutVideo.bind(this) },
+			{ displayHTML: `<span data-tooltip="Shortcut: I">Popout</span>`, onSelectCallback: this.popoutVideo.bind(this) },
 		], `<img src="/img/settings2.svg" draggable="false">`, DirectionX.right, DirectionY.top, false);
 		this.controlsDropDown.classList.add("settings");
 		this.controlsDropDown.getElementsByClassName("dropDownButton")[0].classList.add("imgBtn");
@@ -290,6 +294,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 			{ src: "/img/fullscreen.svg", key: "fullscreen" },
 			{ src: "/img/minimize.svg", key: "minimize" },
 		]), controls);
+		fullscreenButton.setAttribute("data-tooltip", "Shortcut: F");
 		fullscreenButton.parentElement.addEventListener("click", () => this.toggleFullscreen())
 		this.addEventListener("fullscreenchange",
 			() => fullscreenButton.activate(document.fullscreenElement ? "minimize" : "fullscreen")
@@ -298,6 +303,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		// progress bar
 		const progressBar = new Ph_ProgressBar(true);
 		controls.appendChild(progressBar);
+		progressBar.setAttribute("data-tooltip", "Shortcut: Arrow Left/K, Arrow Right/L, or Scroll");
 		progressBar.addEventListener("ph-drag", (e: CustomEvent) => {
 			this.video.seekTo(e.detail * this.video.getMaxTime());
 		});
