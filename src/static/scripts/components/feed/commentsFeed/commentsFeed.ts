@@ -60,6 +60,10 @@ export default class Ph_CommentsFeed extends HTMLElement {
 		const params = new URLSearchParams(query);
 		params.set("sort", valueChain[0]);
 
+		const loadingIcon = document.createElement("img");
+		loadingIcon.src = "/img/loading.svg";
+		this.sorter.toggleButton.appendChild(loadingIcon);
+
 		try {
 			const newUrl = `${path}?${params.toString()}`;
 			const newComments: RedditApiType[] = await redditApiRequest(newUrl, [], false);
@@ -84,6 +88,7 @@ export default class Ph_CommentsFeed extends HTMLElement {
 			new Ph_Toast(Level.Error, "Error sorting comments");
 		}
 
+		loadingIcon.remove();
 	}
 }
 

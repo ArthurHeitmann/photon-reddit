@@ -13,7 +13,7 @@ export default class Ph_PostsSorter extends HTMLElement {
 		this.feed = feed;
 		this.classList.add("dropDown");
 
-		const dropDown = new Ph_DropDown([
+		this.dropDown = new Ph_DropDown([
 			{ displayHTML: "Default", value: SortPostsOrder.default, onSelectCallback: this.handleOnSelect.bind(this) },
 			{ displayHTML: "Hot", value: SortPostsOrder.hot, onSelectCallback: this.handleOnSelect.bind(this) },
 			{ displayHTML: "Top", value: SortPostsOrder.top, onSelectCallback: this.handleOnSelect.bind(this), nestedEntries: [
@@ -37,7 +37,7 @@ export default class Ph_PostsSorter extends HTMLElement {
 			{ displayHTML: "Gilded", value: SortPostsOrder.gilded, onSelectCallback: this.handleOnSelect.bind(this) },
 		], "Sort by", DirectionX.right, DirectionY.bottom, false);
 
-		this.appendChild(dropDown);
+		this.appendChild(this.dropDown);
 	}
 
 	handleOnSelect(valueChain: any[]) {
@@ -46,7 +46,14 @@ export default class Ph_PostsSorter extends HTMLElement {
 			timeFrame: valueChain[1]
 		};
 
-		this.feed.setSorting(selection);
+
+		const loadingIcon = document.createElement("img");
+		loadingIcon.src = "/img/loading.svg";
+		this.dropDown.toggleButton.appendChild(loadingIcon);
+
+		this.feed.setSorting(selection)
+			.then(() => loadingIcon.remove())
+			.catch(() => loadingIcon.remove());
 	}
 }
 
