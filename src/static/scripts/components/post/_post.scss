@@ -77,6 +77,22 @@
 			flex-direction: column;
 			align-items: center;
 
+			.dropDownButton {
+				background-image: url("/img/kebab.svg");
+				background-size: contain;
+				background-color: unset;
+				border: none;
+				padding: 0;
+
+				&:hover {
+					background-color: #ffffff1a;
+				}
+
+				&:active {
+					background-color: #ffffff40;
+				}
+			}
+
 			.dropDownArea {
 				left: calc(100% + .5rem);
 				top: 0;

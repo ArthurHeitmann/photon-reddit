@@ -70,7 +70,7 @@ export default class Post extends Ph_FeedItem implements Votable {
 				{ displayHTML: "Copy Link", value: "link", onSelectCallback: this.share.bind(this) },
 				{ displayHTML: "Crosspost", onSelectCallback: this.crossPost.bind(this) },
 			] }
-		], "...", DirectionX.left, DirectionY.bottom, true);
+		], "", DirectionX.left, DirectionY.bottom, true);
 		actionWrapper.appendChild(moreDropDown);
 		// go to comments link
 		if (isInFeed) {

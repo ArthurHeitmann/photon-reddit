@@ -38,6 +38,23 @@
 	}
 
 	.actions {
+		.dropDownButton {
+			background-image: url("/img/kebab.svg");
+			background-size: contain;
+			background-color: unset;
+			border: none;
+			padding: 0;
+			margin-bottom: .25rem;
+
+			&:hover {
+				background-color: #ffffff1a;
+			}
+
+			&:active {
+				background-color: #ffffff40;
+			}
+		}
+
 		.dropDownArea {
 			margin: 0 0 0 .5rem;
 		}
