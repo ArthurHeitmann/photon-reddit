@@ -4,7 +4,7 @@ import Ph_Comment from "../comment/comment.js";
 import Ph_CommentForm from "../misc/markdownForm/commentForm/commentForm.js";
 import Ph_CommentsFeed from "../feed/commentsFeed/commentsFeed.js";
 import Ph_Toast, { Level } from "../misc/toast/toast.js";
-import Ph_Post from "../post/ph_Post.js";
+import Post from "../post/post.js";
 
 export default class Ph_PostAndComments extends HTMLElement {
 	constructor(data: RedditApiType[]) {
@@ -14,7 +14,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 
 		let post;
 		try {
-			this.appendChild(post = new Ph_Post(data[0].data.children[0], false));
+			this.appendChild(post = new Post(data[0].data.children[0], false));
 		}
 		catch (e) {
 			console.error("Error making post in comments");

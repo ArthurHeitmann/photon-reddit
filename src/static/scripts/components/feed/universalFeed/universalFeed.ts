@@ -5,7 +5,7 @@ import { PostSorting, RedditApiType, SortPostsOrder } from "../../../utils/types
 import Ph_Comment from "../../comment/comment.js";
 import { LoadPosition, Ph_Feed } from "../../feed/feed.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
-import Ph_Post from "../../post/ph_Post.js";
+import Post from "../../post/post.js";
 import Ph_PostsSorter from "../sorting/postsSorter/postsSorter.js";
 
 export default class Ph_UniversalFeed extends Ph_Feed {
@@ -36,7 +36,7 @@ export default class Ph_UniversalFeed extends Ph_Feed {
 	makeFeedItem(itemData: RedditApiType): HTMLElement {
 		switch (itemData.kind) {
 			case "t3":
-				return new Ph_Post(itemData, true);
+				return new Post(itemData, true);
 			case "t1":
 				return new Ph_Comment(itemData, false, true, null);
 			default:

@@ -10,7 +10,7 @@ import Ph_Toast, { Level } from "../misc/toast/toast.js";
 import Votable from "../misc/votable/votable.js";
 import Ph_PostBody from "./postBody/postBody.js";
 
-export default class Ph_Post extends Ph_FeedItem implements Votable {
+export default class Post extends Ph_FeedItem implements Votable {
 	actionBar: HTMLDivElement;
 	voteUpButton: HTMLButtonElement;
 	currentUpvotes: HTMLDivElement;
@@ -84,6 +84,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		const numberOfComments = document.createElement("div");
 		numberOfComments.className = "";
 		numberOfComments.innerText = numberToShortStr(postData.data["num_comments"]);
+		numberOfComments.setAttribute("data-tooltip", postData.data["num_comments"]);
 		actionWrapper.appendChild(numberOfComments);
 
 		const mainPart = document.createElement("div");
@@ -93,16 +94,20 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 				<div class="top flex">
 					<span>Posted in</span>
 					<a href="/${postData.data["subreddit_name_prefixed"]}" class="subreddit">
-						<img src="#" alt="" class="subredditIcon"></img>
+						<img src="#" alt="" class="subredditIcon"/>
 						<span>${postData.data["subreddit_name_prefixed"]}</span>
 					</a>
 					<span>by</span>
 					<a href="/user/${postData.data["author"]}" class="user">
 						<span>u/${postData.data["author"]}</span>
 					</a>
-					<div class="dropdown">${new Date(parseInt(postData.data["created_utc"])).toTimeString()}</div>
-					<div class="time">${timePassedSinceStr(postData.data["created_utc"])}</div>
+					<span>posted</span>
+					<div class="time" data-tooltip="${new Date(postData.data["created_utc"] * 1000).toString()}">${timePassedSinceStr(postData.data["created_utc"])}</div>
 					<span>ago</span>
+					${ postData.data["edited"]
+					? `edited <div class="time" data-tooltip="${new Date(postData.data["edited"] * 1000).toString()}">${timePassedSinceStr(postData.data["edited"])}</div>`
+					: ""
+					}
 				</div>
 				<div class="bottom flex">
 					<div class="title">${postData.data["title"]}</div>
@@ -134,6 +139,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 
 	setVotesState() {
 		this.currentUpvotes.innerText = numberToShort(this.totalVotes + parseInt(this.currentVoteDirection));
+		this.currentUpvotes.setAttribute("data-tooltip", (this.totalVotes + parseInt(this.currentVoteDirection)).toString());
 		switch (this.currentVoteDirection) {
 			case VoteDirection.up:
 				this.currentUpvotes.style.color = "orange"; break;
@@ -176,4 +182,4 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 	}
 }
 
-customElements.define("ph-post", Ph_Post);
+customElements.define("ph-post", Post);

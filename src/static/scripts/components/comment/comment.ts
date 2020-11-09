@@ -20,7 +20,7 @@ import Ph_CommentForm from "../misc/markdownForm/commentForm/commentForm.js";
 import Ph_MarkdownForm from "../misc/markdownForm/markdownForm.js";
 import Ph_Toast, { Level } from "../misc/toast/toast.js";
 import Votable from "../misc/votable/votable.js";
-import Ph_Post from "../post/ph_Post.js";
+import Post from "../post/post.js";
 
 export default class Ph_Comment extends Ph_FeedItem implements Votable {
 	voteUpButton: HTMLButtonElement;
@@ -36,7 +36,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 	postFullName: string;
 	bodyMarkdown: string;
 
-	constructor(commentData: RedditApiType, isChild: boolean, isInFeed: boolean, post: Ph_Post) {
+	constructor(commentData: RedditApiType, isChild: boolean, isInFeed: boolean, post: Post) {
 		super(commentData, isInFeed);
 
 		this.classList.add("comment");
@@ -161,9 +161,17 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 				<a href="/user/${commentData.data["author"]}" class="user${userAdditionClasses}">
 					<span>u/${commentData.data["author"]}</span>
 				</a>
-				<div class="dropdown">${new Date(parseInt(commentData.data["created_utc"])).toTimeString()}</div>
-				<div class="time">${timePassedSinceStr(commentData.data["created_utc"])}</div>
+				<span>commented</span>
+				<div class="time" data-tooltip="${new Date(commentData.data["created_utc"] * 1000).toString()}">
+					${timePassedSinceStr(commentData.data["created_utc"])}
+				</div>
 				<span>ago</span>
+				${ commentData.data["edited"]
+				? `<span>edited</span> 
+					<div class="time" data-tooltip="${new Date(commentData.data["edited"] * 1000).toString()}">${timePassedSinceStr(commentData.data["edited"])}</div> 
+					<span>ago</span>`
+				: ""
+		}
 			</div>
 			<div class="content">
 				${commentData.data["body_html"]}
@@ -272,6 +280,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 
 	setVotesState() {
 		this.currentUpvotes.innerText = numberToShort(this.totalVotes + parseInt(this.currentVoteDirection));
+		this.currentUpvotes.setAttribute("data-tooltip", (this.totalVotes + parseInt(this.currentVoteDirection)).toString());
 		switch (this.currentVoteDirection) {
 			case VoteDirection.up:
 				this.currentUpvotes.style.color = "orange";

@@ -5,15 +5,15 @@ import { RedditApiType, SortCommentsOrder } from "../../../utils/types.js";
 import Ph_Comment from "../../comment/comment.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
-import Ph_Post from "../../post/ph_Post.js";
+import Post from "../../post/post.js";
 
 export default class Ph_CommentsFeed extends HTMLElement {
 	postFullName: string;
 	sorter: Ph_DropDown;
-	post: Ph_Post;
+	post: Post;
 	sort: SortCommentsOrder;
 
-	constructor(comments: RedditApiType, post: Ph_Post) {
+	constructor(comments: RedditApiType, post: Post) {
 		super();
 
 		this.classList.add("commentsFeed");
