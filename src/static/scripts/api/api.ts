@@ -107,8 +107,12 @@ export async function vote(votable: Votable): Promise<boolean> {
 			["id", votable.votableId]
 		],
 		true, { method: "POST" });
+
+		if (resp["error"])
+			console.error(resp["message"])
 		return isObjectEmpty(resp);
 	} catch (error) {
+		console.error(error);
 		return false	
 	}
 }
@@ -119,8 +123,12 @@ export async function save(votable: Votable): Promise<boolean> {
 			["id", votable.votableId]
 		],
 		true, { method: "POST" });
+
+		if (resp["error"])
+			console.error(resp["message"])
 		return isObjectEmpty(resp);
 	} catch (error) {
+		console.error(error);
 		return false
 	}
 }

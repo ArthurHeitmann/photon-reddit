@@ -8,13 +8,14 @@ import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.j
 import Ph_DropDownEntry from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_Toast, { Level } from "../misc/toast/toast.js";
 import Votable from "../misc/votable/votable.js";
+import Ph_VoteButton from "../misc/voteButton/voteButton.js";
 import Ph_PostBody from "./postBody/postBody.js";
 
 export default class Post extends Ph_FeedItem implements Votable {
 	actionBar: HTMLDivElement;
-	voteUpButton: HTMLButtonElement;
+	voteUpButton: Ph_VoteButton;
 	currentUpvotes: HTMLDivElement;
-	voteDownButton: HTMLButtonElement;
+	voteDownButton: Ph_VoteButton;
 	url: string;
 	permalink: string;
 	// Votable implementation
@@ -45,20 +46,16 @@ export default class Post extends Ph_FeedItem implements Votable {
 		this.actionBar.appendChild(actionWrapper);
 		actionWrapper.className = "wrapper";
 		// vote up button
-		this.voteUpButton = document.createElement("button");
-		this.voteUpButton.className = "vote";
-		this.voteUpButton.innerText = "+";
+		this.voteUpButton = new Ph_VoteButton(true);
 		this.voteUpButton.addEventListener("click", e => this.vote(VoteDirection.up));
 		actionWrapper.appendChild(this.voteUpButton);
 		// current votes
 		this.currentUpvotes = document.createElement("div");
 		this.currentUpvotes.className = "upvotes";
-		this.setVotesState();
+		this.setVotesState(this.currentVoteDirection);
 		actionWrapper.appendChild(this.currentUpvotes);
 		// vote down button
-		this.voteDownButton = document.createElement("button");
-		this.voteDownButton.className = "vote";
-		this.voteDownButton.innerText = "-";
+		this.voteDownButton = new Ph_VoteButton(false);
 		this.voteDownButton.addEventListener("click", e => this.vote(VoteDirection.down));
 		actionWrapper.appendChild(this.voteDownButton);
 		// additional actions drop down
@@ -126,27 +123,37 @@ export default class Post extends Ph_FeedItem implements Votable {
 
 	async vote(dir: VoteDirection): Promise<void> {
 		const prevDir = this.currentVoteDirection;
-		this.currentVoteDirection = dir === this.currentVoteDirection ? VoteDirection.none : dir;
-		this.setVotesState();
+		this.setVotesState(dir === this.currentVoteDirection ? VoteDirection.none : dir);
 		const res = await vote(this);
 		if (!res) {
 			console.error("Error voting on post");
-			this.currentVoteDirection = prevDir;
-			this.setVotesState();
+			this.setVotesState(prevDir);
 			new Ph_Toast(Level.Error, "Error occurred while voting");
 		}
 	};
 
-	setVotesState() {
-		this.currentUpvotes.innerText = numberToShort(this.totalVotes + parseInt(this.currentVoteDirection));
-		this.currentUpvotes.setAttribute("data-tooltip", (this.totalVotes + parseInt(this.currentVoteDirection)).toString());
+	setVotesState(voteDirection: VoteDirection) {
+		this.currentUpvotes.innerText = numberToShort(this.totalVotes + parseInt(voteDirection));
+		this.currentUpvotes.setAttribute("data-tooltip", (this.totalVotes + parseInt(voteDirection)).toString());
+
+		const isAnimated = voteDirection !== this.currentVoteDirection;
+
 		switch (this.currentVoteDirection) {
 			case VoteDirection.up:
-				this.currentUpvotes.style.color = "orange"; break;
-			case VoteDirection.none:
-				this.currentUpvotes.style.color = "inherit"; break;
+				this.voteUpButton.unVote();
+				break;
 			case VoteDirection.down:
-				this.currentUpvotes.style.color = "royalblue"; break;
+				this.voteDownButton.unVote();
+				break;
+		}
+		this.currentVoteDirection = voteDirection;
+		switch (this.currentVoteDirection) {
+			case VoteDirection.up:
+				this.voteUpButton.vote(isAnimated);
+				break;
+			case VoteDirection.down:
+				this.voteDownButton.vote(isAnimated);
+				break;
 		}
 	}
 

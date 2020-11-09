@@ -1,0 +1,63 @@
+
+@keyframes vote {
+	0% {
+		//transform: scaleY(1) translateY(0);
+		opacity: 1;
+	}
+
+	66% {
+		//transform: scaleY(5) translateY(0);
+		opacity: 1;
+	}
+
+	90% {
+		opacity: .7;
+	}
+
+	100% {
+		//transform: scaleY(1) translateY(0);
+		opacity: 0;
+	}
+}
+
+.voteButton {
+	width: 2rem;
+	height: 2rem;
+	position: relative;
+
+	> svg {
+		width: 100%;
+		transition: fill .1s ease;
+	}
+
+	> .shadowBtn {
+		position: absolute;
+		transform-origin: center;
+		opacity: .75;
+	}
+
+	&.voted {
+		> .shadowBtn {
+			position: absolute;
+			animation: vote 0.5s linear forwards;
+		}
+
+		&.up {
+			> svg {
+				fill: orange;
+			}
+		}
+
+		&.down {
+			> svg {
+				fill: royalblue;
+			}
+		}
+	}
+
+	&.down {
+		> svg {
+			transform: rotate(180deg);
+		}
+	}
+}

@@ -80,6 +80,7 @@ export default class Ph_PostImage extends HTMLElement {
 		// gallery wrapper
 		this.galleryWrapper = document.createElement("div")
 		this.galleryWrapper.className = "galleryWrapper draggable";
+		this.galleryWrapper.setAttribute("tabindex", "0");
 		this.galleryWrapper.appendChild(this.galleryData[0].previewImg);
 		this.galleryWrapper.addEventListener("dblclick", this.toggleFullscreen.bind(this));
 
@@ -252,7 +253,7 @@ export default class Ph_PostImage extends HTMLElement {
 		await this.requestFullscreen();
 		if (this.galleryData[this.currentImageIndex].originalImg === null)
 			this.replaceCurrentImage();
-		this.focus();
+		this.galleryWrapper.focus();
 		this.imageMax.activateWith(this.galleryWrapper);
 	}
 
