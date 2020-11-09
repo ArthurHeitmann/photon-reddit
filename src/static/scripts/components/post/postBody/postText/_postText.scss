@@ -1,0 +1,42 @@
+
+.isInFeed {
+	.postText {
+		width: 100%;
+		transition: padding-bottom .25s ease;
+		--max-height: 30vh;
+
+		> div {
+			max-height: var(--max-height);
+			overflow: hidden;
+			transition: max-height .25s ease;
+		}
+
+		&.expandableText {
+			padding-bottom: 2rem;
+
+			> .expandButton {
+				height: 2rem;
+				position: absolute;
+				bottom: 0;
+				left: 0;
+				width: 100%;
+
+				> img {
+					transform: scale(1);
+					transition: transform .25s ease;
+					height: 100%;
+					width: 100%;
+					object-fit: contain;
+
+					&:hover {
+						transform: scale(1.125);
+					}
+
+					&:active {
+						transform: scale(1.25);
+					}
+				}
+			}
+		}
+	}
+}
