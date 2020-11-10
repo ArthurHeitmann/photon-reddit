@@ -11,9 +11,11 @@
 	font-size: 0.75rem;
 	display: flex;
 	align-items: center;
+	height: 1.1rem;
+	align-self: center;
 
 	> img {
-		height: .9rem;
+		height: .8rem;
 
 		+ span {
 			margin-left: .25rem;

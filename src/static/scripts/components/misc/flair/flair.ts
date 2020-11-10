@@ -53,7 +53,7 @@ export default class Ph_Flair extends HTMLElement {
 			case "light":
 				return ["var(--text-color)", this.shortColorToCss(secondaryColor) || this.shortColorToCss("dark")];
 			default:
-				return [color || "var(--bg-color)", this.shortColorToCss(secondaryColor) || this.shortColorToCss("light")];
+				return [color || "var(--bg-color)", this.shortColorToCss("light")];
 		}
 	}
 
