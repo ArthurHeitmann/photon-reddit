@@ -115,6 +115,12 @@
 		.title {
 			font-size: 1.75rem;
 		}
+
+		> .flair {
+			width: max-content;
+			margin-left: auto;
+			position: relative;
+		}
 	}
 
 	&:not(.isInFeed) {

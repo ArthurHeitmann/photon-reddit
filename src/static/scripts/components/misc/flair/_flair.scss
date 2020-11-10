@@ -1,0 +1,35 @@
+@use "../../../../style/vars";
+
+.flair {
+	--flair-bg: #{vars.$background};
+	--flair-tc: #{vars.$text};
+
+	background-color: var(--flair-bg);
+	color: var(--flair-tc);
+	padding: 0.1rem 0.4rem;
+	border-radius: 15rem;
+	font-size: 0.75rem;
+	display: flex;
+	align-items: center;
+
+	> img {
+		height: .9rem;
+
+		+ span {
+			margin-left: .25rem;
+		}
+	}
+
+	> span {
+		font-size: inherit;
+
+		+ img {
+			margin-right: .25rem;
+		}
+	}
+
+	&.empty {
+		margin: 0;
+		padding: 0;
+	}
+}

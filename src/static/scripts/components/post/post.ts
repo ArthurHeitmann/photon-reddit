@@ -6,6 +6,7 @@ import { numberToShort as numberToShort, numberToShortStr, timePassedSinceStr } 
 import Ph_FeedItem from "../feed/feedItem/feedItem.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
 import Ph_DropDownEntry from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
+import Ph_Flair from "../misc/flair/flair.js";
 import Ph_Toast, { Level } from "../misc/toast/toast.js";
 import Votable from "../misc/votable/votable.js";
 import Ph_VoteButton from "../misc/voteButton/voteButton.js";
@@ -107,12 +108,14 @@ export default class Post extends Ph_FeedItem implements Votable {
 					}
 				</div>
 				<div class="bottom flex">
-					<div class="title">${postData.data["title"]}</div>
-					<div class="mla flex">
-					</div>
+						<div class="title">${postData.data["title"]}</div>
 				</div>
 			</div>
 		`;
+		mainPart.getElementsByClassName("header")[0]
+			.appendChild(new Ph_Flair(postData.data, "link"));
+		mainPart.getElementsByClassName("user")[0]
+			.insertAdjacentElement("afterend", new Ph_Flair(postData.data, "author"));
 		mainPart.appendChild(new Ph_PostBody(postData));
 		this.appendChild(mainPart);
 

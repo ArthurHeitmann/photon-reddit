@@ -16,6 +16,7 @@ import Ph_CommentsFeed from "../feed/commentsFeed/commentsFeed.js";
 import Ph_FeedItem from "../feed/feedItem/feedItem.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
 import Ph_DropDownEntry, { DropDownEntryParam } from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
+import Ph_Flair from "../misc/flair/flair.js";
 import Ph_CommentForm from "../misc/markdownForm/commentForm/commentForm.js";
 import Ph_MarkdownForm from "../misc/markdownForm/markdownForm.js";
 import Ph_Toast, { Level } from "../misc/toast/toast.js";
@@ -115,7 +116,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 		this.setVotesState(this.currentVoteDirection);
 		actionBar.appendChild(this.currentUpvotes);
 		// vote down button
-		this.voteDownButton = new  Ph_VoteButton(true);
+		this.voteDownButton = new Ph_VoteButton(false);
 		this.voteDownButton.addEventListener("click", e => this.vote(VoteDirection.down));
 		actionBar.appendChild(this.voteDownButton);
 		// additional actions drop down
@@ -174,6 +175,8 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 				${commentData.data["body_html"]}
 			</div>
 		`;
+		mainPart.getElementsByClassName("user")[0]
+			.insertAdjacentElement("afterend", new Ph_Flair(commentData.data, "author"));
 		linksToInlineImages(mainPart);
 
 		for (const a of mainPart.getElementsByTagName("a")) {

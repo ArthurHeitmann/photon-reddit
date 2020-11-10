@@ -1,12 +1,10 @@
 
 @keyframes vote {
 	0% {
-		//transform: scaleY(1) translateY(0);
 		opacity: 1;
 	}
 
 	66% {
-		//transform: scaleY(5) translateY(0);
 		opacity: 1;
 	}
 
@@ -15,14 +13,13 @@
 	}
 
 	100% {
-		//transform: scaleY(1) translateY(0);
 		opacity: 0;
 	}
 }
 
 .voteButton {
-	width: 2rem;
-	height: 2rem;
+	width: 2.5rem;
+	height: 2.5rem;
 	position: relative;
 
 	> svg {
