@@ -154,6 +154,9 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 		if (commentData.data["distinguished"] === "moderator") {
 			userAdditionClasses += " mod";
 		}
+		else if (commentData.data["distinguished"] === "admin") {
+			userAdditionClasses += " admin";
+		}
 		mainPart.innerHTML = `
 			<div class="header flex">
 				<a href="/user/${commentData.data["author"]}" class="user${userAdditionClasses}">

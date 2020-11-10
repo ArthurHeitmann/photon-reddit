@@ -87,6 +87,13 @@ export default class Post extends Ph_FeedItem implements Votable {
 
 		const mainPart = document.createElement("div");
 		mainPart.className = "w100";
+		let userAdditionClasses = "";
+		if (postData.data["distinguished"] === "moderator") {
+			userAdditionClasses += " mod";
+		}
+		else if (postData.data["distinguished"] === "admin") {
+			userAdditionClasses += " admin";
+		}
 		mainPart.innerHTML = `
 			<div class="header">
 				<div class="top flex">
@@ -96,7 +103,7 @@ export default class Post extends Ph_FeedItem implements Votable {
 						<span>${postData.data["subreddit_name_prefixed"]}</span>
 					</a>
 					<span>by</span>
-					<a href="/user/${postData.data["author"]}" class="user">
+					<a href="/user/${postData.data["author"]}" class="user${userAdditionClasses}">
 						<span>u/${postData.data["author"]}</span>
 					</a>
 					<span>posted</span>

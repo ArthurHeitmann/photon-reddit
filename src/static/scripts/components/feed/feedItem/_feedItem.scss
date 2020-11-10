@@ -2,14 +2,46 @@
 @use '../../../../style/shadow';
 
 .user {
-	&.mod * {
-		color: lightgreen;
+	display: flex;
+	align-items: center;
+	gap: .5rem;
+
+
+	&.mod {
+		&::after {
+			content: "";
+			display: inline-block;
+			width: 0;
+			height: 0;
+			border-bottom: 0.6em solid lightgreen;
+			border-left: 0.3em solid transparent;
+			border-right: 0.3em solid transparent;
+		}
+
+		* {
+			color: lightgreen;
+		}
+	}
+
+	&.admin {
+		&::after {
+			content: "";
+			display: inline-block;
+			width: .6em;
+			height: .6em;
+			border-radius: 50%;
+			background: #ff3939;
+		}
+
+		* {
+			color: #ff3939;
+		}
 	}
 
 	&.op {
 		margin-right: .75rem;
 
-		::before {
+		&::before {
 			content: "";
 			position: absolute;
 			z-index: -1;
@@ -22,10 +54,12 @@
 			border-radius: 1rem;
 		}
 
-		&.mod {
-			::before {
-				background: green;
-			}
+		&.mod::before {
+			background: green;
+		}
+
+		&.admin::before {
+			background: darkred;
 		}
 
 		* {
