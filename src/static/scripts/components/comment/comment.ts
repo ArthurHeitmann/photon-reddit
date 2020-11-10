@@ -102,6 +102,8 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 					.insertParentLink(`${post.permalink}${commentData.data["parent_id"].slice(3)}?context=3`, "Load parent comment")
 				, 0)
 		}
+		const isLocked = commentData.data["locked"] || commentData.data["archived"];
+		const lockedReason = commentData.data["locked"] ? "locked" : "archived";
 
 		// actions bar
 		const actionBar = document.createElement("div");
@@ -120,10 +122,9 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 		this.voteDownButton.addEventListener("click", e => this.vote(VoteDirection.down));
 		actionBar.appendChild(this.voteDownButton);
 		// additional actions drop down
-		let dropDownParams: DropDownEntryParam[] = [{
-			displayHTML: "Reply",
-			onSelectCallback: this.showReplyForm.bind(this)
-		}];
+		let dropDownParams: DropDownEntryParam[] = [];
+		if (!isLocked)
+			dropDownParams.push({ displayHTML: "Reply", onSelectCallback: this.showReplyForm.bind(this) });
 		if (commentData.data["author"] === thisUserName) {
 			dropDownParams.push({displayHTML: "Edit", onSelectCallback: this.edit.bind(this)});
 			dropDownParams.push({displayHTML: "Delete", onSelectCallback: this.delete.bind(this)});
@@ -145,8 +146,6 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 		actionBar.appendChild(commentCollapser);
 		this.appendChild(actionBar);
 
-		const mainPart = document.createElement("div");
-		mainPart.className = "w100";
 		let userAdditionClasses = "";
 		if (commentData.data["is_submitter"]) {
 			userAdditionClasses += " op";
@@ -157,6 +156,8 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 		else if (commentData.data["distinguished"] === "admin") {
 			userAdditionClasses += " admin";
 		}
+		const mainPart = document.createElement("div");
+		mainPart.className = "w100";
 		mainPart.innerHTML = `
 			<div class="header flex">
 				<a href="/user/${commentData.data["author"]}" class="user${userAdditionClasses}">
@@ -167,12 +168,16 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 					${timePassedSinceStr(commentData.data["created_utc"])}
 				</div>
 				<span>ago</span>
-				${ commentData.data["edited"]
-				? `<span>edited</span> 
-					<div class="time" data-tooltip="${new Date(commentData.data["edited"] * 1000).toString()}">${timePassedSinceStr(commentData.data["edited"])}</div> 
-					<span>ago</span>`
-				: ""
-		}
+					${ commentData.data["edited"]
+					? `	<span>|</span><span>edited</span>
+						<div class="time" data-tooltip="${new Date(commentData.data["edited"] * 1000).toString()}">${timePassedSinceStr(commentData.data["edited"])}</div> 
+						<span>ago</span>`
+					: ""
+					}
+					${ 	isLocked 
+						? `<span class="locked" data-tooltip="${lockedReason}"><img src="/img/locked.svg"></span>`
+						: ""
+					}
 			</div>
 			<div class="content">
 				${commentData.data["body_html"]}
@@ -190,16 +195,19 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 		this.childComments.className = "replies";
 		mainPart.appendChild(this.childComments);
 
-		this.replyForm = new Ph_CommentForm(this, true);
-		this.replyForm.classList.add("hide");
-		this.replyForm.addEventListener("ph-comment-submitted", (e: CustomEvent) => {
-			this.replyForm.insertAdjacentElement("afterend",
-				new Ph_Comment(e.detail, true, false, post));
+		if (!isLocked) {
+			this.replyForm = new Ph_CommentForm(this, true);
 			this.replyForm.classList.add("hide");
-		});
-		this.replyForm.addEventListener("ph-cancel", () => this.replyForm.classList.add("hide"));
+			this.replyForm.addEventListener("ph-comment-submitted", (e: CustomEvent) => {
+				this.replyForm.insertAdjacentElement("afterend",
+					new Ph_Comment(e.detail, true, false, post));
+				this.replyForm.classList.add("hide");
+			});
+			this.replyForm.addEventListener("ph-cancel", () => this.replyForm.classList.add("hide"));
 
-		this.childComments.appendChild(this.replyForm);
+			this.childComments.appendChild(this.replyForm);
+		}
+
 		if (commentData.data["replies"] && commentData.data["replies"]["data"]["children"]) {
 			for (const comment of commentData.data["replies"]["data"]["children"]) {
 				this.childComments.appendChild(new Ph_Comment(comment, true, false, post));

@@ -4,11 +4,13 @@ export default class Ph_Flair extends HTMLElement {
 	constructor(thingData: RedditApiData, prefix: string) {
 		super();
 
+		if (!thingData[`${prefix}_flair_type`])
+			return;
+
 		this.className = "flair";
-		if (thingData[`${prefix}_flair_background_color`])
-			this.style.setProperty("--flair-bg", thingData[`${prefix}_flair_background_color`])
-		if (thingData[`${prefix}_flair_text_color`])
-			this.style.setProperty("--flair-tc", this.flairTextColor(thingData[`${prefix}_flair_text_color`]))
+		const [bgColor, textColor] = this.makeFlairColorScheme(thingData[`${prefix}_flair_background_color`], thingData[`${prefix}_flair_text_color`]);
+		this.style.setProperty("--flair-bg", bgColor);
+		this.style.setProperty("--flair-tc", textColor);
 
 		if (thingData[`${prefix}_flair_type`] === "richtext") {
 			for (const flairPart of thingData[`${prefix}_flair_richtext`]) {
@@ -44,14 +46,25 @@ export default class Ph_Flair extends HTMLElement {
 			this.classList.add("empty");
 	}
 
-	private flairTextColor(color: string): string {
+	private makeFlairColorScheme(color: string, secondaryColor?: string): string[] {
 		switch (color) {
+			case "dark":
+				return ["var(--bg-color)", this.shortColorToCss(secondaryColor) || this.shortColorToCss("light")];
+			case "light":
+				return ["var(--text-color)", this.shortColorToCss(secondaryColor) || this.shortColorToCss("dark")];
+			default:
+				return [color || "var(--bg-color)", this.shortColorToCss(secondaryColor) || this.shortColorToCss("light")];
+		}
+	}
+
+	private shortColorToCss(colorOrShortColor): string {
+		switch (colorOrShortColor) {
 			case "dark":
 				return "var(--bg-color)";
 			case "light":
 				return "var(--text-color)";
 			default:
-				return color || "var(--text-color)";
+				return colorOrShortColor;
 		}
 	}
 }

@@ -113,6 +113,17 @@
 		align-items: center;
 	}
 
+	.header {
+		.locked {
+			margin-left: auto;
+			margin-right: 1rem;
+
+			> img {
+				height: 1.25em;
+			}
+		}
+	}
+
 	.content {
 		word-break: break-word;
 		overflow-wrap: anywhere;

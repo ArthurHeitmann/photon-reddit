@@ -22,10 +22,12 @@ export default class Ph_PostAndComments extends HTMLElement {
 			new Ph_Toast(Level.Error, "Error making post");
 		}
 
-		const commentForm = new Ph_CommentForm(post, false);
-		this.appendChild(commentForm);
-		commentForm.addEventListener("ph-comment-submitted",
-			(e: CustomEvent) => comments.insertAdjacentElement("afterbegin", new Ph_Comment(e.detail, false, false, post)));
+		if (!post.isLocked) {
+			const commentForm = new Ph_CommentForm(post, false);
+			this.appendChild(commentForm);
+			commentForm.addEventListener("ph-comment-submitted",
+				(e: CustomEvent) => comments.insertAdjacentElement("afterbegin", new Ph_Comment(e.detail, false, false, post)));
+		}
 
 		const comments = new Ph_CommentsFeed(data[1], post);
 		this.appendChild(comments);

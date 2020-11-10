@@ -24,7 +24,7 @@ export default class Post extends Ph_FeedItem implements Votable {
 	votableId: string;
 	currentVoteDirection: VoteDirection;
 	isSaved: boolean;
-
+	isLocked: boolean;
 
 	constructor(postData: RedditApiType, isInFeed: boolean) {
 		super(postData, isInFeed);
@@ -85,8 +85,9 @@ export default class Post extends Ph_FeedItem implements Votable {
 		numberOfComments.setAttribute("data-tooltip", postData.data["num_comments"]);
 		actionWrapper.appendChild(numberOfComments);
 
-		const mainPart = document.createElement("div");
-		mainPart.className = "w100";
+
+		const isLocked = this.isLocked = postData.data["locked"] || postData.data["archived"];
+		const lockedReason = postData.data["locked"] ? "locked" : "archived";
 		let userAdditionClasses = "";
 		if (postData.data["distinguished"] === "moderator") {
 			userAdditionClasses += " mod";
@@ -94,6 +95,8 @@ export default class Post extends Ph_FeedItem implements Votable {
 		else if (postData.data["distinguished"] === "admin") {
 			userAdditionClasses += " admin";
 		}
+		const mainPart = document.createElement("div");
+		mainPart.className = "w100";
 		mainPart.innerHTML = `
 			<div class="header">
 				<div class="top flex">
@@ -110,8 +113,14 @@ export default class Post extends Ph_FeedItem implements Votable {
 					<div class="time" data-tooltip="${new Date(postData.data["created_utc"] * 1000).toString()}">${timePassedSinceStr(postData.data["created_utc"])}</div>
 					<span>ago</span>
 					${ postData.data["edited"]
-					? `edited <div class="time" data-tooltip="${new Date(postData.data["edited"] * 1000).toString()}">${timePassedSinceStr(postData.data["edited"])}</div>`
+					? `	<span>|</span><span>edited</span> 
+						<div class="time" data-tooltip="${new Date(postData.data["edited"] * 1000).toString()}">${timePassedSinceStr(postData.data["edited"])}</div>
+						<span>ago</span>`
 					: ""
+					}
+					${ 	isLocked
+						? `<span data-tooltip="${lockedReason}" class="locked"><img src="/img/locked.svg"</span>`
+						: ""
 					}
 				</div>
 				<div class="bottom flex">
