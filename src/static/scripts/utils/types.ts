@@ -60,3 +60,11 @@ export enum SortCommentsOrder {
 	qa = "qa",
 	random = "random",
 }
+
+export enum SortSearchOrder {
+	relevance = "relevance",
+	hot = "hot",
+	top = "top",
+	new = "new",
+	comments = "comments",
+}

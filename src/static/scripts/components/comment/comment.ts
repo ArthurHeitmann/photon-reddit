@@ -138,6 +138,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 			}
 		]);
 		const moreDropDown = new Ph_DropDown(dropDownParams, "", DirectionX.left, DirectionY.bottom, true);
+		moreDropDown.toggleButton.classList.add("transparentButton");
 		actionBar.appendChild(moreDropDown);
 		const commentCollapser = document.createElement("div");
 		commentCollapser.className = "commentCollapser";

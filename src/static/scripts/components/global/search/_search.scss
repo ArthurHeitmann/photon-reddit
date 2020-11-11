@@ -1,0 +1,60 @@
+@use "../../../../style/vars";
+
+.search {
+	display: flex;
+	align-items: center;
+	position: relative;
+	background: #1f1f1f;
+	border: 1px solid #505050;
+	border-radius: 1.3rem;
+	width: 17rem;
+	height: 2.6rem;
+	padding-left: 1rem;
+
+	> input {
+	}
+
+	> button {
+		width: 2rem;
+		height: 2rem;
+
+		> img {
+			width: 100%;
+			height: 100%;
+			opacity: .5;
+			transition: opacity .25s ease;
+
+			&:hover, &:focus-visible {
+				opacity: 1;
+			}
+		}
+	}
+
+	> .expandedOptions {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		transform: translateY(calc(100% + 0.5rem));
+		padding: 1rem;
+		background: #1f1f1f;
+		border: 1px solid #505050;
+		border-radius: 1.3rem;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+		gap: .5rem;
+
+		> div {
+			width: 100%;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+
+			.checkbox + label {
+				width: 1.3em;
+				height: 1.3em;
+			}
+		}
+	}
+}

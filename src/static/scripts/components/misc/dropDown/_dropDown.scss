@@ -130,8 +130,14 @@
 			border-bottom-right-radius: 1.2rem;
 		}
 
+		> :first-child {
+			transition: transform .25s ease;
+		}
+
 		&:hover {
-			padding-left: .75rem;
+			> :first-child {
+				transform: translateX(.125rem);
+			}
 
 			* {
 				color: lightcoral;
