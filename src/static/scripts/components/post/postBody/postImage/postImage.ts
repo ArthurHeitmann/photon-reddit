@@ -83,6 +83,10 @@ export default class Ph_PostImage extends HTMLElement {
 		this.galleryWrapper.setAttribute("tabindex", "0");
 		this.galleryWrapper.appendChild(this.galleryData[0].previewImg);
 		this.galleryWrapper.addEventListener("dblclick", this.toggleFullscreen.bind(this));
+		this.galleryWrapper.addEventListener("dragstart", e => {
+			e.preventDefault();
+			return false;
+		});
 
 		// draggable
 		this.imageMax = new Ph_DraggableWrapper();

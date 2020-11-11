@@ -74,8 +74,7 @@ export default class Ph_DraggableWrapper extends HTMLElement {
 	}
 
 	onZoom(e: WheelEvent) {
-		this.addZoom(e.deltaY / -1000);
-		this.addMoveXY(-e.deltaX, 0);
+		this.addZoom(e.deltaY > 0 ? -.1 : .1);
 		e.preventDefault();
 	}
 

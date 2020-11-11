@@ -245,9 +245,12 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		)
 		volumeWrapper.addEventListener("wheel", e => {
 			e.preventDefault();
-			this.video.setVolume(this.video.getVolume() + (-e.deltaY || e.deltaX) / 3000)
+			this.video.setVolume(this.video.getVolume() + ((-e.deltaY || e.deltaX) > 0 ? .05 : -.05))
 		}, { passive: false });
-		this.video.addEventListener("ph-noaudio", () => volumeWrapper.classList.add("remove"));
+		this.video.addEventListener("ph-noaudio", () => {
+			volumeWrapper.classList.add("remove");
+			setTimeout(() => volumeWrapper.remove(), 1000)
+		});
 
 		// left right divider
 		controls.appendSpacer();
@@ -309,7 +312,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		});
 		progressBar.addEventListener("wheel", e => {
 			e.preventDefault();
-			this.video.seekTo(this.video.getCurrentTime() + (-e.deltaY || e.deltaX) / 20);
+			this.video.seekTo(this.video.getCurrentTime() + ((-e.deltaY || e.deltaX) > 0 ? 5 : -5));
 		}, { passive: false });
 		const timeTextHover = document.createElement("div");
 		timeTextHover.className = "timeTextHover";
