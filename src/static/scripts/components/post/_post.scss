@@ -103,12 +103,23 @@
 
 	.header {
 		margin: vars.$post-padding 0;
+
 		.top {
 			margin-bottom: vars.$post-padding / 4;
 			flex-wrap: wrap;
+			align-items: center;
 
-			& > * {
-				margin-right: 0.25rem;
+			> * {
+				margin: 0 0.125rem;
+			}
+
+			> span {
+				font-size: .8em;
+				margin: 0 0.1rem;
+			}
+
+			:last-child.flair {
+				margin-left: auto;
 			}
 		}
 
@@ -116,11 +127,12 @@
 			font-size: 1.75rem;
 		}
 
-		> .flair {
-			width: max-content;
-			margin-left: auto;
-			position: relative;
-		}
+		//> .flair {
+		//	width: max-content;
+		//	margin-left: auto;
+		//	position: relative;
+		//	margin-bottom: -1.2rem;
+		//}
 	}
 
 	&:not(.isInFeed) {
@@ -130,6 +142,8 @@
 
 		.actions {
 			margin: 1.5rem 1rem;
+			width: vars.$postActionsWidth;
+			max-width: vars.$postActionsWidth;
 		}
 
 		.backgroundLink {

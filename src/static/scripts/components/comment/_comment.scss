@@ -1,11 +1,15 @@
 @use '../../../style/vars';
 
 .comment {
-	padding: 1rem 0 1rem 1rem;
+	padding: .5rem 0;
 
 	&.highlight {
 		border: 1px solid #f080807d;
 		border-radius: 1rem;
+	}
+
+	&.rootComment {
+		padding: 1rem 0 1rem 1rem;
 	}
 
 	&.isCollapsed {
@@ -31,13 +35,36 @@
 	.header {
 		flex-wrap: wrap;
 		margin-bottom: .6rem;
+		align-items: center;
 
 		> * {
-			margin: 0 .25rem;
+			margin: 0 .125rem;
+		}
+
+		> span {
+			font-size: .8em;
+			margin: 0 0.1rem;
 		}
 	}
 
 	.actions {
+		width: 2rem;
+
+		.upvotes {
+			&.medium {
+				font-size: .9em;
+			}
+
+			&.small {
+				font-size: .7em;
+			}
+		}
+
+		.voteButton {
+			width: 2.3rem;
+			height: 2.3rem;
+		}
+
 		.dropDownButton {
 			background-image: url("/img/kebab.svg");
 			background-size: contain;
@@ -61,7 +88,7 @@
 	}
 
 	.commentCollapser {
-		width: 2rem;
+		width: 100%;
 		height: calc(100% - 1rem);
 		min-height: 2rem;
 		cursor: pointer;
@@ -85,6 +112,15 @@
 
 	.content {
 		margin-right: 2rem;
+		margin-left: .2rem;
+	}
+
+	.markdownForm {
+		margin-left: .2rem;
+	}
+
+	.replies {
+		transform: translateX(-0.2rem);
 	}
 
 	.loadMoreButton {

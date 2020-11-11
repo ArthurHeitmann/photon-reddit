@@ -40,6 +40,7 @@
 
 	&.op {
 		margin-right: .75rem;
+		margin-left: .75rem;
 
 		&::before {
 			content: "";
@@ -105,9 +106,6 @@
 	}
 
 	.actions {
-		margin-right: 1rem;
-		width: vars.$postActionsWidth;
-		max-width: vars.$postActionsWidth;
 		display: flex;
 		flex-direction: column;
 		align-items: center;

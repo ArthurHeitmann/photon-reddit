@@ -96,7 +96,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 		this.totalVotes = parseInt(commentData.data["ups"]) + -parseInt(this.currentVoteDirection);
 		this.isSaved = commentData.data["saved"];
 
-		if (!isChild && commentData.data["parent_id"] && commentData.data["parent_id"].slice(0, 3) === "t1_") {
+		if (!isInFeed && !isChild && commentData.data["parent_id"] && commentData.data["parent_id"].slice(0, 3) === "t1_") {
 			setTimeout(() =>
 				(elementWithClassInTree(this.parentElement, "commentsFeed") as Ph_CommentsFeed)
 					.insertParentLink(`${post.permalink}${commentData.data["parent_id"].slice(3)}?context=3`, "Load parent comment")
@@ -289,6 +289,18 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 
 	setVotesState(voteDirection: VoteDirection) {
 		this.currentUpvotes.innerText = numberToShort(this.totalVotes + parseInt(voteDirection));
+		if (this.currentUpvotes.innerText.length > 3) {
+			this.currentUpvotes.classList.add("small");
+			this.currentUpvotes.classList.remove("medium");
+		}
+		else if (this.currentUpvotes.innerText.length === 3) {
+			this.currentUpvotes.classList.add("medium");
+			this.currentUpvotes.classList.remove("small");
+		}
+		else {
+			this.currentUpvotes.classList.remove("medium");
+			this.currentUpvotes.classList.remove("small");
+		}
 		this.currentUpvotes.setAttribute("data-tooltip", (this.totalVotes + parseInt(voteDirection)).toString());
 
 		const isAnimated = voteDirection !== this.currentVoteDirection;

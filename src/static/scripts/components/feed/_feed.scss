@@ -29,12 +29,6 @@
 	animation: fadeIn .5s ease;
 }
 
-.universalFeed, .commentsFeed {
-	> * {
-		margin: 1.5rem 0;
-	}
-}
-
 @media (orientation: landscape) {
 	.postAndComments, .universalFeed {
 		margin: 0 auto;

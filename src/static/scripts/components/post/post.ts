@@ -109,7 +109,6 @@ export default class Post extends Ph_FeedItem implements Votable {
 					<a href="/user/${postData.data["author"]}" class="user${userAdditionClasses}">
 						<span>u/${postData.data["author"]}</span>
 					</a>
-					<span>posted</span>
 					<div class="time" data-tooltip="${new Date(postData.data["created_utc"] * 1000).toString()}">${timePassedSinceStr(postData.data["created_utc"])}</div>
 					<span>ago</span>
 					${ postData.data["edited"]
@@ -128,7 +127,7 @@ export default class Post extends Ph_FeedItem implements Votable {
 				</div>
 			</div>
 		`;
-		mainPart.getElementsByClassName("header")[0]
+		mainPart.getElementsByClassName("top")[0]
 			.appendChild(new Ph_Flair(postData.data, "link"));
 		mainPart.getElementsByClassName("user")[0]
 			.insertAdjacentElement("afterend", new Ph_Flair(postData.data, "author"));

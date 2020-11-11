@@ -13,9 +13,8 @@ export function numberToShort(upvotes: number): string {
 			return `${(upvotes / 1000).toFixed(0)}k`;
 		case 7:
 			return "a lot";
-	
 		default:
-			break;
+			return "∞";
 	}
 }
 

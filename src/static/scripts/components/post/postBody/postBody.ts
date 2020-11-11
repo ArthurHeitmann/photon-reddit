@@ -19,8 +19,10 @@ export default class Ph_PostBody extends HTMLElement {
 				this.appendChild(new Ph_PostImage(postData));
 				break;
 			case PostType.Text:
-				this.classList.add("padded");
-				this.appendChild(new Ph_PostText(postData.data["selftext_html"] || ""));
+				const text = new Ph_PostText(postData.data["selftext_html"] || "");
+				this.appendChild(text);
+				if (text.innerText)
+					this.classList.add("padded");
 				break;
 			case PostType.EmbeddedVideo:
 				this.classList.add("fullScale");
