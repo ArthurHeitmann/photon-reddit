@@ -165,3 +165,11 @@ export async function fetchThisUserName() {
 	const userInfo = await redditApiRequest("/api/v1/me", [], true);
 	setThisUserName(userInfo["name"]);
 }
+
+export async function searchSubreddits(query: string, limit = 5): Promise<RedditApiType> {
+	return await redditApiRequest("/subreddits/search", [["q", query], ["limit", limit.toString()]], false);
+}
+
+export async function searchUser(query: string, limit = 5): Promise<RedditApiType> {
+	return await redditApiRequest("/users/search", [["q", query], ["limit", limit.toString()]], false);
+}

@@ -1,5 +1,8 @@
-import { SortPostsTimeFrame, SortSearchOrder } from "../../../utils/types.js";
+import { searchSubreddits, searchUser } from "../../../api/api.js";
+import { RedditApiType, SortPostsTimeFrame, SortSearchOrder } from "../../../utils/types.js";
+import { throttle } from "../../../utils/utils.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
+import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 
 class Ph_Search extends HTMLElement {
 	searchBar: HTMLInputElement;
@@ -10,6 +13,9 @@ class Ph_Search extends HTMLElement {
 	includeSubreddits: HTMLInputElement;
 	includeLinks: HTMLInputElement;
 	includeUsers: HTMLInputElement;
+	searchDropdown: HTMLDivElement;
+	resultsWrapper: HTMLDivElement;
+	quickSearchThrottled: () => void;
 
 	constructor() {
 		super();
@@ -18,10 +24,15 @@ class Ph_Search extends HTMLElement {
 	connectedCallback() {
 		this.classList.add("search");
 
+		this.quickSearchThrottled = throttle(this.quickSearch.bind(this), 750, { leading: false, trailing: true });
+
 		this.searchBar = document.createElement("input");
 		this.searchBar.type = "text";
 		this.appendChild(this.searchBar);
 		this.searchBar.addEventListener("keypress", e => e.code === "Enter" && this.search());
+		this.searchBar.addEventListener("input", this.onTextEnter.bind(this));
+		this.searchBar.addEventListener("focus", this.onFocus.bind(this));
+		this.searchBar.addEventListener("blur", this.onBlur.bind(this));
 
 		const toggleDropdownBtn = document.createElement("button")
 		toggleDropdownBtn.className = "toggleDropdownButton transparentButton";
@@ -34,10 +45,18 @@ class Ph_Search extends HTMLElement {
 		this.appendChild(searchButton);
 		searchButton.addEventListener("click", this.search.bind(this));
 
+		this.searchDropdown = document.createElement("div");
+		this.searchDropdown.className = "searchDropdown";
+		this.appendChild(this.searchDropdown)
+
+		this.resultsWrapper = document.createElement("div");
+		this.resultsWrapper.className = "resultsWrapper remove";
+		this.searchDropdown.appendChild(this.resultsWrapper);
 
 		const expandedOptions = document.createElement("div");
-		expandedOptions.className = "expandedOptions hide";
-		toggleDropdownBtn.addEventListener("click", () => expandedOptions.classList.toggle("hide"));
+		expandedOptions.className = "expandedOptions";
+		toggleDropdownBtn.addEventListener("click", this.toggleSearchDropdown.bind(this));
+		this.searchDropdown.appendChild(expandedOptions);
 
 		this.sortBy = new Ph_DropDown([
 			{ displayHTML: "Relevance", value: SortSearchOrder.relevance, nestedEntries: [
@@ -96,13 +115,102 @@ class Ph_Search extends HTMLElement {
 		this.includeLinks = makeLabelCheckboxPair("Include Posts", "includeLink", true, expandedOptions);
 		this.includeSubreddits = makeLabelCheckboxPair("Include Subreddits", "includeSubs", false, expandedOptions);
 		this.includeUsers = makeLabelCheckboxPair("Include Users", "includeUsers", false, expandedOptions);
+	}
 
-		this.appendChild(expandedOptions);
+	onTextEnter() {
+		if (this.searchBar.value) {
+			this.resultsWrapper.classList.remove("remove");
+			this.quickSearchThrottled();
+		}
+		else {
+			this.resultsWrapper.classList.add("remove");
+
+		}
+	}
+
+	onFocus() {
+		this.classList.add("expanded")
+	}
+
+	onBlur() {
+		if (!this.searchBar.value)
+			this.classList.remove("expanded")
+	}
+	
+	toggleSearchDropdown() {
+		this.classList.toggle("expanded");
 	}
 
 	setSortOrder(valueChain: any[]) {
 		this.searchOrder = valueChain[0];
 		this.searchTimeFrame = valueChain.length === 2 ? valueChain[1] : null;
+	}
+
+	async quickSearch() {
+		this.resultsWrapper.innerText = "";
+		if (!this.searchBar.value || /^\/?(r|u|user)\/$/.test(this.searchBar.value)) {
+			return;
+		}
+
+		this.resultsWrapper.classList.add("loading");
+		// TODO take NSFW preferences into consideration
+		let result: RedditApiType;
+		if (/^\/?r\/.*/.test(this.searchBar.value))
+			result = await searchSubreddits(this.searchBar.value, 7);
+		else if (/^\/?(u|user)\/.*/.test(this.searchBar.value))
+			result = await searchUser(this.searchBar.value, 7);
+		else {
+			result = await searchSubreddits(this.searchBar.value, 4);
+			const users = await searchUser(this.searchBar.value, 3);
+			result.data.children.push(...users.data.children);
+		}
+		this.resultsWrapper.classList.remove("loading");
+
+		this.resultsWrapper.innerText = "";
+		for (let entry of result.data.children) {
+			try {
+				this.resultsWrapper.insertAdjacentElement("beforeend", this.makeEntry(entry));
+			}
+			catch (e) {
+				console.error("Error making search result entry");
+				console.error(e);
+				new Ph_Toast(Level.Error, "Error making search result entry");
+			}
+		}
+	}
+
+	private makeEntry(data: RedditApiType): HTMLElement {
+		switch (data.kind) {
+			case "t5":
+				return this.makeSubEntry(data);
+			case "t2":
+				return this.makeUserEntry(data);
+			default:
+				console.error("Invalid search result entry");
+				console.error(data);
+				new Ph_Toast(Level.Error, "Invalid search result entry");
+				const errorElement = document.createElement("div");
+				errorElement.innerText = "ERROR";
+				return errorElement;
+		}
+	}
+
+	private makeSubEntry(data: RedditApiType): HTMLElement {
+		const a = document.createElement("a");
+		a.href = `/r/${data.data["display_name"]}`;
+		a.innerText = `r/${data.data["display_name"]}`;
+		return a;
+	}
+
+	private makeUserEntry(data: RedditApiType): HTMLElement {
+		const a = document.createElement("a");
+		if (data.data["is_suspended"] === true)
+			a.innerText = `u/${data.data["name"]} (suspended)`;
+		else {
+			a.href = `/user/${data.data["name"]}`;
+			a.innerText = `u/${data.data["name"]}`;
+		}
+		return a;
 	}
 
 	search() {
