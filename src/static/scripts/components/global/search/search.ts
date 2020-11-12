@@ -1,4 +1,4 @@
-import { searchSubreddits, searchUser } from "../../../api/api.js";
+import { redditApiRequest, searchSubreddits, searchUser } from "../../../api/api.js";
 import { RedditApiType, SortPostsTimeFrame, SortSearchOrder } from "../../../utils/types.js";
 import { throttle } from "../../../utils/utils.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
@@ -7,8 +7,8 @@ import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 class Ph_Search extends HTMLElement {
 	searchBar: HTMLInputElement;
 	sortBy: Ph_DropDown;
-	searchOrder: SortSearchOrder;
-	searchTimeFrame: SortPostsTimeFrame;
+	searchOrder = SortSearchOrder.relevance;
+	searchTimeFrame = SortPostsTimeFrame.all;
 	limitToSubreddit: HTMLInputElement;
 	includeSubreddits: HTMLInputElement;
 	includeLinks: HTMLInputElement;
@@ -155,14 +155,25 @@ class Ph_Search extends HTMLElement {
 		this.resultsWrapper.classList.add("loading");
 		// TODO take NSFW preferences into consideration
 		let result: RedditApiType;
-		if (/^\/?r\/.*/.test(this.searchBar.value))
-			result = await searchSubreddits(this.searchBar.value, 7);
-		else if (/^\/?(u|user)\/.*/.test(this.searchBar.value))
-			result = await searchUser(this.searchBar.value, 7);
-		else {
-			result = await searchSubreddits(this.searchBar.value, 4);
-			const users = await searchUser(this.searchBar.value, 3);
-			result.data.children.push(...users.data.children);
+		try {
+			if (/^\/?r\/.*/.test(this.searchBar.value)) {
+				result = await searchSubreddits(this.searchBar.value.replace(/^\/?r\//, ""), 7);
+			} else if (/^\/?(u|user)\/.*/.test(this.searchBar.value)) {
+				result = await searchUser(this.searchBar.value.replace(/^\/?(u|user)\//, ""), 7);
+			} else {
+				result = await searchSubreddits(this.searchBar.value, 4);
+				if (result["error"])
+					throw result;
+				const users = await searchUser(this.searchBar.value, 3);
+				result.data.children.push(...users.data.children);
+			}
+			if (result["error"])
+				throw result;
+		} catch (e) {
+			console.error("Error loading quick search");
+			console.error(e);
+			new Ph_Toast(Level.Error, "Error loading quick search");
+			throw e;
 		}
 		this.resultsWrapper.classList.remove("loading");
 
@@ -197,6 +208,7 @@ class Ph_Search extends HTMLElement {
 
 	private makeSubEntry(data: RedditApiType): HTMLElement {
 		const a = document.createElement("a");
+		a.className = "subreddit";
 		a.href = `/r/${data.data["display_name"]}`;
 		a.innerText = `r/${data.data["display_name"]}`;
 		return a;
@@ -204,6 +216,7 @@ class Ph_Search extends HTMLElement {
 
 	private makeUserEntry(data: RedditApiType): HTMLElement {
 		const a = document.createElement("a");
+		a.className = "user";
 		if (data.data["is_suspended"] === true)
 			a.innerText = `u/${data.data["name"]} (suspended)`;
 		else {
@@ -213,8 +226,38 @@ class Ph_Search extends HTMLElement {
 		return a;
 	}
 
-	search() {
+	async search() {
+		if (!this.searchBar.value) {
+			new Ph_Toast(Level.Warning, "Empty search query")
+			return;
+		}
 
+		const includes = [];
+		if (this.includeLinks.checked)
+			includes.push("link");
+		if (this.includeSubreddits.checked)
+			includes.push("sr");
+		if (this.includeUsers.checked)
+			includes.push("user");
+		const type = includes.join(",");
+		if (type === "") {
+			new Ph_Toast(Level.Warning, "Must include at least one from Posts, Subreddits, Users")
+			return;
+		}
+
+		let url = "/search";
+		const currentSubMatches = location.pathname.match(/\/r\/([^/]+)/);
+		if (currentSubMatches && currentSubMatches[1])
+			url = currentSubMatches[1].replace(/\/?$/, "/search");
+
+		const search = await redditApiRequest(url, [
+			["q", this.searchBar.value],
+			["type", type],
+			["restrict_sr", this.limitToSubreddit.checked ? "true" : "false"],
+			["sort", this.searchOrder],
+			["t", this.searchTimeFrame || ""]
+		], false)
+		console.log(search);
 	}
 }
 

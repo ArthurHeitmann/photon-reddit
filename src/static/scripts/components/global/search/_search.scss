@@ -55,8 +55,8 @@
 		> .resultsWrapper {
 			position: relative;
 			width: 60%;
-			padding-right: .5rem;
-			margin-right: .5rem;
+			padding-right: 1rem;
+			margin-right: 1rem;
 			word-break: break-all;
 
 			&.remove {
@@ -82,7 +82,7 @@
 				opacity: 1;
 			}
 
-			&::after {		// serperator
+			&::after {		// separator
 				content: "";
 				position: absolute;
 				top: 0;
@@ -94,6 +94,22 @@
 
 			> * {
 				display: block;
+				line-height: 1.8em;
+			}
+
+			> .subreddit + .user {
+				position: relative;
+				margin-top: .8rem;
+
+				&::before {
+					content: "";
+					position: absolute;
+					top: -.4rem;
+					left: 1rem;
+					width: calc(100% - 2rem);
+					height: 1px;
+					background: #616161;
+				}
 			}
 		}
 
