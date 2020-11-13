@@ -7,18 +7,21 @@
 	background: #1f1f1f;
 	border: 1px solid #505050;
 	border-radius: 1.3rem;
-	width: 17rem;
+	width: 20rem;
 	height: 2.6rem;
 	padding-left: 1rem;
 	transition: width .25s ease;
 
 	> input {
 		flex-grow: 1;
+		margin-left: .125rem;
 	}
 
 	> button {
 		width: 2rem;
+		min-width: 2rem;
 		height: 2rem;
+		min-height: 2rem;
 
 		> img {
 			width: 100%;
@@ -30,9 +33,52 @@
 				opacity: 1;
 			}
 		}
+	}
+
+	> .modeButton {
+		user-select: none;
+		padding: 0 .125rem;
+		position: relative;
+		opacity: .5;
+		transition: all .25s ease;
+
+		&.checked {
+			color: lightcoral;
+			opacity: 1;
+		}
+
+		&::before {
+			content: "";
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 1.5rem;
+			height: 1.5rem;
+			border-radius: 50%;
+			margin-left: 50%;
+			margin-top: 50%;
+			transform: translateX(-50%) translateY(-40%);
+			transition: background-color .25s ease;
+		}
+
+		&:hover {
+			&:not(.checked) {
+				opacity: .75;
+			}
+
+			&::before {
+				background: #ffffff1a;
+			}
+		}
+
+		&:active {
+			&::before {
+				background: #ffffff40;
+			}
+		}
 
 		&:last-of-type {
-			margin-right: .3rem;
+			margin-right: .75rem;
 		}
 	}
 

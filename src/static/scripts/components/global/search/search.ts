@@ -1,4 +1,6 @@
 import { redditApiRequest, searchSubreddits, searchUser } from "../../../api/api.js";
+import { pushLinkToHistorySep } from "../../../state/stateManager.js";
+import { linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiType, SortPostsTimeFrame, SortSearchOrder } from "../../../utils/types.js";
 import { throttle } from "../../../utils/utils.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
@@ -10,12 +12,10 @@ class Ph_Search extends HTMLElement {
 	searchOrder = SortSearchOrder.relevance;
 	searchTimeFrame = SortPostsTimeFrame.all;
 	limitToSubreddit: HTMLInputElement;
-	includeSubreddits: HTMLInputElement;
-	includeLinks: HTMLInputElement;
-	includeUsers: HTMLInputElement;
 	searchDropdown: HTMLDivElement;
 	resultsWrapper: HTMLDivElement;
 	quickSearchThrottled: () => void;
+	searchPrefix: string;	// r/ or u/
 
 	constructor() {
 		super();
@@ -25,6 +25,27 @@ class Ph_Search extends HTMLElement {
 		this.classList.add("search");
 
 		this.quickSearchThrottled = throttle(this.quickSearch.bind(this), 750, { leading: false, trailing: true });
+
+		const subModeBtn = document.createElement("div");
+		subModeBtn.className = "modeButton";
+		subModeBtn.innerText = "r/";
+		this.appendChild(subModeBtn);
+		const userModeBtn = document.createElement("div");
+		userModeBtn.className = "modeButton";
+		userModeBtn.innerText = "u/";
+		this.appendChild(userModeBtn);
+		subModeBtn.addEventListener("click", () => {
+			subModeBtn.classList.toggle("checked");
+			userModeBtn.classList.remove("checked");
+			this.searchPrefix = this.searchPrefix === "r/" ? "" : "r/";
+			this.quickSearch();
+		})
+		userModeBtn.addEventListener("click", () => {
+			userModeBtn.classList.toggle("checked");
+			subModeBtn.classList.remove("checked");
+			this.searchPrefix = this.searchPrefix === "u/" ? "" : "u/";
+			this.quickSearch();
+		})
 
 		this.searchBar = document.createElement("input");
 		this.searchBar.type = "text";
@@ -112,9 +133,6 @@ class Ph_Search extends HTMLElement {
 		}
 
 		this.limitToSubreddit = makeLabelCheckboxPair("Limit to", "limitToSubreddit", true, expandedOptions);
-		this.includeLinks = makeLabelCheckboxPair("Include Posts", "includeLink", true, expandedOptions);
-		this.includeSubreddits = makeLabelCheckboxPair("Include Subreddits", "includeSubs", false, expandedOptions);
-		this.includeUsers = makeLabelCheckboxPair("Include Users", "includeUsers", false, expandedOptions);
 	}
 
 	onTextEnter() {
@@ -156,15 +174,17 @@ class Ph_Search extends HTMLElement {
 		// TODO take NSFW preferences into consideration
 		let result: RedditApiType;
 		try {
-			if (/^\/?r\/.*/.test(this.searchBar.value)) {
-				result = await searchSubreddits(this.searchBar.value.replace(/^\/?r\//, ""), 7);
-			} else if (/^\/?(u|user)\/.*/.test(this.searchBar.value)) {
-				result = await searchUser(this.searchBar.value.replace(/^\/?(u|user)\//, ""), 7);
-			} else {
-				result = await searchSubreddits(this.searchBar.value, 4);
+			if (this.searchPrefix === "r/") {
+				result = await searchSubreddits(this.searchBar.value, 10);
+			}
+			else if (this.searchPrefix === "u/") {
+				result = await searchUser(this.searchBar.value, 10);
+			}
+			else {
+				result = await searchSubreddits(this.searchBar.value, 6);
 				if (result["error"])
 					throw result;
-				const users = await searchUser(this.searchBar.value, 3);
+				const users = await searchUser(this.searchBar.value, 4);
 				result.data.children.push(...users.data.children);
 			}
 			if (result["error"])
@@ -191,19 +211,24 @@ class Ph_Search extends HTMLElement {
 	}
 
 	private makeEntry(data: RedditApiType): HTMLElement {
+		let entry;
 		switch (data.kind) {
 			case "t5":
-				return this.makeSubEntry(data);
+				entry = this.makeSubEntry(data);
+				break;
 			case "t2":
-				return this.makeUserEntry(data);
+				entry = this.makeUserEntry(data);
+				break;
 			default:
 				console.error("Invalid search result entry");
 				console.error(data);
 				new Ph_Toast(Level.Error, "Invalid search result entry");
 				const errorElement = document.createElement("div");
 				errorElement.innerText = "ERROR";
-				return errorElement;
+				entry = errorElement;
 		}
+		linksToSpa(entry);
+		return entry;
 	}
 
 	private makeSubEntry(data: RedditApiType): HTMLElement {
@@ -232,32 +257,27 @@ class Ph_Search extends HTMLElement {
 			return;
 		}
 
-		const includes = [];
-		if (this.includeLinks.checked)
-			includes.push("link");
-		if (this.includeSubreddits.checked)
-			includes.push("sr");
-		if (this.includeUsers.checked)
-			includes.push("user");
-		const type = includes.join(",");
-		if (type === "") {
-			new Ph_Toast(Level.Warning, "Must include at least one from Posts, Subreddits, Users")
-			return;
-		}
-
 		let url = "/search";
 		const currentSubMatches = location.pathname.match(/\/r\/([^/]+)/);
 		if (currentSubMatches && currentSubMatches[1])
 			url = currentSubMatches[1].replace(/\/?$/, "/search");
 
-		const search = await redditApiRequest(url, [
+		pushLinkToHistorySep("/search", new URLSearchParams([
 			["q", this.searchBar.value],
-			["type", type],
+			["type", "link"],
 			["restrict_sr", this.limitToSubreddit.checked ? "true" : "false"],
 			["sort", this.searchOrder],
-			["t", this.searchTimeFrame || ""]
-		], false)
-		console.log(search);
+			["t", this.searchTimeFrame || ""],
+		]).toString());
+
+		// const search = await redditApiRequest(url, [
+		// 	["q", this.searchBar.value],
+		// 	["type", "link"],
+		// 	["restrict_sr", this.limitToSubreddit.checked ? "true" : "false"],
+		// 	["sort", this.searchOrder],
+		// 	["t", this.searchTimeFrame || ""],
+		// ], false)
+		// console.log(search);
 	}
 }
 

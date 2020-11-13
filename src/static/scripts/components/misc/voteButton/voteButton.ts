@@ -29,6 +29,7 @@ export default class Ph_VoteButton extends HTMLButtonElement {
 	vote(isAnimated: boolean) {
 		this.classList.add("voted");
 		if (isAnimated)
+			// @ts-ignore
 			this.animated.beginElement();
 	}
 
