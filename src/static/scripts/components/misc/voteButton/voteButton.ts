@@ -23,7 +23,7 @@ export default class Ph_VoteButton extends HTMLButtonElement {
 			<svg fill="#e4e4e4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="mainBtn">
 				<path d="M34,31a2,2,0,0,1-1.41-.59L24,21.83l-8.59,8.58a2,2,0,0,1-2.82-2.82l10-10a2,2,0,0,1,2.82,0l10,10A2,2,0,0,1,34,31Z"></path>
 			</svg>`;
-		this.animated = this.getElementsByTagName("animate")[0] as SVGAnimateElement;
+		this.animated = this.$tag("animate")[0] as SVGAnimateElement;
 	}
 
 	vote(isAnimated: boolean) {

@@ -6,7 +6,7 @@ import { throttle } from "../../../utils/utils.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 
-class Ph_Search extends HTMLElement {
+export default class Ph_Search extends HTMLElement {
 	searchBar: HTMLInputElement;
 	sortBy: Ph_DropDown;
 	searchOrder = SortSearchOrder.relevance;

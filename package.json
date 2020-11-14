@@ -12,6 +12,11 @@
     "watch": "npm run watch-sass & npm run watch-tsc",
     "watch-wsl2": "npm run watch-sass-wsl2 & npm run watch-tsc"
   },
+  "compilerOption": {
+    "typesRoot": [
+      "src/static/scripts/types"
+    ]
+  },
   "author": "",
   "license": "MIT",
   "devDependencies": {

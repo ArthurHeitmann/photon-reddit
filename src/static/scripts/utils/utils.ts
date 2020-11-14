@@ -53,9 +53,9 @@ export function timePassedSinceStr(time: string): string {
 }
 
 export function replaceRedditLinks(el: HTMLElement) {
-	for (const a of el.getElementsByTagName("a")) {
+	for (const a of el.$tag("a")) {
 		if (a.getAttribute("href")) {
-			a.href = a.getAttribute("href").replaceAll(/(https?:\/\/)?(\w)*\.?reddit\.com/g, "");
+			(a as HTMLAnchorElement).href = a.getAttribute("href").replaceAll(/(https?:\/\/)?(\w)*\.?reddit\.com/g, "");
 		}
 	}
 }

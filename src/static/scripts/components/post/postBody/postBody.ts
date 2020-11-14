@@ -50,8 +50,8 @@ export default class Ph_PostBody extends HTMLElement {
 				break;
 			
 			}
-		for (const a of this.getElementsByTagName("a"))
-			a.target = "_blank";
+		for (const a of this.$tag("a"))
+			(a as HTMLAnchorElement).target = "_blank";
 
 		replaceRedditLinks(this);
 		linksToSpa(this);

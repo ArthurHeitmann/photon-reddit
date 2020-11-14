@@ -17,7 +17,7 @@ export default class Ph_Toast extends HTMLElement {
 			</button>
 		`;
 
-		this.getElementsByClassName("closeButton")[0].addEventListener("click", this.removeSelf.bind(this));
+		this.$class("closeButton")[0].addEventListener("click", this.removeSelf.bind(this));
 		if (timeout > 0)
 			setTimeout(this.removeSelf.bind(this), timeout);
 

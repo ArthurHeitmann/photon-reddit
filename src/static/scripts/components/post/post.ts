@@ -147,12 +147,12 @@ export default class Post extends Ph_FeedItem implements Votable {
 		mainPart.appendChild(postBody);
 		this.appendChild(mainPart);
 
-		mainPart.getElementsByClassName("flairWrapper")[0]
+		mainPart.$class("flairWrapper")[0]
 			.appendChild(Ph_Flair.fromThingData(postData.data, "link"));
-		mainPart.getElementsByClassName("user")[0]
+		mainPart.$class("user")[0]
 			.insertAdjacentElement("afterend", Ph_Flair.fromThingData(postData.data, "author"));
 		if (postData.data["over_18"]) {
-			mainPart.getElementsByClassName("flairWrapper")[0]
+			mainPart.$class("flairWrapper")[0]
 				.appendChild(new Ph_Flair({type: "text", backgroundColor: "darkred", text: "NSFW"}));
 			if (isInFeed) {
 				postBody.classList.add("covered");
@@ -181,7 +181,7 @@ export default class Post extends Ph_FeedItem implements Votable {
 		const removeBtn = document.createElement("div");
 		removeBtn.innerText = "Show Post";
 		cover.addEventListener("click", () => {
-			this.getElementsByClassName("content")[0].classList.remove("covered");
+			this.$class("content")[0].classList.remove("covered");
 			cover.remove();
 		})
 		cover.appendChild(removeBtn);

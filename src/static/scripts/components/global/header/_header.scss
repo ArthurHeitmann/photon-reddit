@@ -1,0 +1,71 @@
+@use "../../../../style/vars";
+
+#mainWrapper > .header {
+	top: 0;
+	width: 100%;
+	height: vars.$headerHeight;
+	position: sticky;
+	z-index: 1;
+	transform: translateY(-100%);
+	transition: transform .25s linear;
+
+	.actions {
+		height: 100%;
+		box-sizing: content-box;
+		position: relative;
+		z-index: 55;
+		transition: height .25s linear;
+
+		& > * {
+			margin: 0 1.5rem;
+		}
+	}
+
+	.expander {
+		z-index: 50;
+		top: 0;
+		pointer-events: none;
+
+		svg {
+			width: 100%;
+			height: calc(#{vars.$headerHeight} * 2);
+			filter: drop-shadow(0 0 1rem var(--shadow-color));
+
+			.filled {
+				fill: var(--bg-color);
+				stroke: none;
+			}
+
+			.stroked {
+				transition: stroke .5s ease;
+				fill: none;
+				stroke: #eeeeee;
+			}
+		}
+	}
+
+	.accessibilitySpacer {
+		width: 25%;
+		height: 50%;
+	}
+
+	&.hover {
+		transform: translateY(0);
+
+		.actions {
+			height: 130%;
+		}
+
+		.accessibilitySpacer {
+			height: 150%;
+			width: 100%;
+			top: vars.$headerHeight;
+		}
+	}
+
+	&.contentIsLoading {
+		.stroked {
+			stroke: lightskyblue !important;
+		}
+	}
+}

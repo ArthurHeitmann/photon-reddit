@@ -184,12 +184,12 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 				${commentData.data["body_html"]}
 			</div>
 		`;
-		mainPart.getElementsByClassName("user")[0]
+		mainPart.$class("user")[0]
 			.insertAdjacentElement("afterend", Ph_Flair.fromThingData(commentData.data, "author"));
 		linksToInlineImages(mainPart);
 
-		for (const a of mainPart.getElementsByTagName("a")) {
-			a.target = "_blank";
+		for (const a of mainPart.$tag("a")) {
+			(a as HTMLAnchorElement).target = "_blank";
 		}
 
 		this.childComments = document.createElement("div");
@@ -390,7 +390,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 				return;
 			}
 
-			this.getElementsByClassName("content")[0].innerHTML = "[deleted]";
+			this.$class("content")[0].innerHTML = "[deleted]";
 			new Ph_Toast(Level.Success, "Deleted comment", 2000);
 		} catch (e) {
 			console.error("Error deleting comment");
