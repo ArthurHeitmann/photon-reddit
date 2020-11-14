@@ -1,3 +1,4 @@
+import Ph_PostImage from "../components/post/postBody/postImage/postImage.js";
 import { pushLinkToHistoryComb } from "../state/stateManager.js";
 
 export function $id(id) { return document.getElementById(id); }
@@ -40,6 +41,11 @@ export function linksToInlineImages(elem: HTMLElement) {
 		if (!(/^[^?]+\.(png|jpg|jpeg|gif)(\?.*)?$/).test(link.href))
 			continue;
 
-		link.innerHTML = `<img src="${link.href}" alt="${link.innerText}" class="inlineImage">`;
+		const image = new Ph_PostImage([{ originalUrl: link.href, caption: "" }]);
+		link.innerHTML = "";
+		link.appendChild(image);
+		link.classList.add("inlineImage");
+
+		link.onclick = (e: MouseEvent) => Boolean(e.ctrlKey);
 	}
 }

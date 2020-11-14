@@ -147,10 +147,38 @@ a {
 	}
 }
 
+a.inlineImage {
+	max-width: 100%;
+	max-height: 95vh;
+
+	&, > .postImage, > .postImage > .draggableWrapper {
+		display: inline-block;
+	}
+
+	*:not(img, .controls) {
+		width: max-content !important;
+		max-width: 100%;
+	}
+
+	.galleryWrapper img {
+		//width: initial !important;
+		//max-width: 100%;
+	}
+
+	.fullscreen {
+		.galleryWrapper img {
+			width: 100% !important;
+		}
+	}
+
+	&:hover {
+		filter: none;
+	}
+}
+
 .inlineImage {
 	max-width: 100%;
 	max-height: 95vh;
-	object-fit: contain;
 }
 
 button.transparentButton {
