@@ -2,19 +2,19 @@ import { RedditApiData } from "../../../utils/types.js";
 import Ph_Toast, { Level } from "../toast/toast.js";
 
 export default class Ph_Flair extends HTMLElement {
-	constructor(thingData: RedditApiData, prefix: string) {
+	constructor(data: { type: string, backgroundColor?: string, textColor?: string, richText?: {}[], text?: string }) {
 		super();
 
-		if (!thingData[`${prefix}_flair_type`])
+		if (!data.type)
 			return;
 
 		this.className = "flair";
-		const [bgColor, textColor] = this.makeFlairColorScheme(thingData[`${prefix}_flair_background_color`], thingData[`${prefix}_flair_text_color`]);
+		const [bgColor, textColor] = this.makeFlairColorScheme(data.backgroundColor, data.textColor);
 		this.style.setProperty("--flair-bg", bgColor);
 		this.style.setProperty("--flair-tc", textColor);
 
-		if (thingData[`${prefix}_flair_type`] === "richtext") {
-			for (const flairPart of thingData[`${prefix}_flair_richtext`]) {
+		if (data.type === "richtext") {
+			for (const flairPart of data.richText) {
 				switch (flairPart["e"]) {
 					case "text":
 						const text = document.createElement("span");
@@ -35,16 +35,26 @@ export default class Ph_Flair extends HTMLElement {
 				}
 			}
 		}
-		else if (thingData[`${prefix}_flair_type`] === "text") {
-			this.innerText = thingData[`${prefix}_flair_text`];
+		else if (data.type === "text") {
+			this.innerText = data.text;
 		}
 		else {
-			this.innerText = `Unknown Flair ${thingData[`${prefix}_flair_text`]}`;
-			console.log(thingData);
+			this.innerText = `Unknown Flair ${data.text}`;
+			console.log(data);
 		}
 
 		if (!this.innerText || /^\s*$/.test(this.innerText))
 			this.classList.add("empty");
+	}
+
+	static fromThingData(thingData: RedditApiData, prefix: string): Ph_Flair {
+		return new Ph_Flair({
+			type: thingData[`${prefix}_flair_type`],
+			backgroundColor: thingData[`${prefix}_flair_background_color`],
+			textColor: thingData[`${prefix}_flair_text_color`],
+			richText: thingData[`${prefix}_flair_richtext`],
+			text: thingData[`${prefix}_flair_text`],
+		})
 	}
 
 	private makeFlairColorScheme(color: string, secondaryColor?: string): string[] {

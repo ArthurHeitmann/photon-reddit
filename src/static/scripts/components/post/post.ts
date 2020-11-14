@@ -10,6 +10,7 @@ import Ph_Flair from "../misc/flair/flair.js";
 import Ph_Toast, { Level } from "../misc/toast/toast.js";
 import Votable from "../misc/votable/votable.js";
 import Ph_VoteButton from "../misc/voteButton/voteButton.js";
+import postBody from "./postBody/postBody.js";
 import Ph_PostBody from "./postBody/postBody.js";
 
 export default class Post extends Ph_FeedItem implements Votable {
@@ -129,23 +130,50 @@ export default class Post extends Ph_FeedItem implements Votable {
 				</div>
 			</div>
 		`;
-		mainPart.getElementsByClassName("flairWrapper")[0]
-			.appendChild(new Ph_Flair(postData.data, "link"));
-		mainPart.getElementsByClassName("user")[0]
-			.insertAdjacentElement("afterend", new Ph_Flair(postData.data, "author"));
-		// if (postData.data["over_18"])
-		// 	mainPart.getElementsByClassName("flairWrapper")[0]
-		// 		.appendChild(new Ph_Flair(postData.data, "link"));
-		// if (postData.data["spoiler"])
-		// 	mainPart.getElementsByClassName("flairWrapper")[0]
-		// 		.appendChild(new Ph_Flair(postData.data, "link"));
 
-		mainPart.appendChild(new Ph_PostBody(postData));
+		const postBody = new Ph_PostBody(postData);
+		mainPart.appendChild(postBody);
 		this.appendChild(mainPart);
+
+		mainPart.getElementsByClassName("flairWrapper")[0]
+			.appendChild(Ph_Flair.fromThingData(postData.data, "link"));
+		mainPart.getElementsByClassName("user")[0]
+			.insertAdjacentElement("afterend", Ph_Flair.fromThingData(postData.data, "author"));
+		if (postData.data["over_18"]) {
+			mainPart.getElementsByClassName("flairWrapper")[0]
+				.appendChild(new Ph_Flair({type: "text", backgroundColor: "darkred", text: "NSFW"}));
+			if (isInFeed) {
+				postBody.classList.add("covered");
+				this.classList.add("nsfw");
+				postBody.appendChild(this.makeContentCover());
+			}
+		}
+		if (postData.data["spoiler"]) {
+			mainPart.getElementsByClassName("flairWrapper")[0]
+				.appendChild(new Ph_Flair({type: "text", backgroundColor: "orange", text: "Spoiler"}));
+			if (isInFeed) {
+				postBody.classList.add("covered");
+				this.classList.add("spoiler");
+				postBody.appendChild(this.makeContentCover());
+			}
+		}
 
 		this.appendChild(this.actionBar);
 
 		linksToSpa(this);
+	}
+
+	makeContentCover(): HTMLElement {
+		const cover = document.createElement("div");
+		cover.className = "cover";
+		const removeBtn = document.createElement("div");
+		removeBtn.innerText = "Show Post";
+		cover.addEventListener("click", () => {
+			this.getElementsByClassName("content")[0].classList.remove("covered");
+			cover.remove();
+		})
+		cover.appendChild(removeBtn);
+		return cover;
 	}
 
 	async vote(dir: VoteDirection): Promise<void> {

@@ -19,6 +19,8 @@
 		}
 
 		.content {
+			position: relative;
+			
 			&.padded {
 				margin: vars.$post-padding;
 			}
@@ -27,6 +29,32 @@
 				border-bottom-left-radius: 1rem;
 				border-bottom-right-radius: 1rem;
 				overflow: hidden;
+			}
+
+			> *:not(.cover) {
+				filter: blur(0);
+				transition: filter .125s ease;
+			}
+			
+			&.covered > *:not(.cover) {
+				filter: blur(100px);
+			}
+
+			.cover {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				display: flex;
+				cursor: pointer;
+
+				> div {
+					margin: auto;
+					padding: .25rem .4rem;
+					background: vars.$background;
+					border: 1px solid vars.$text;
+				}
 			}
 
 			.postImage {
@@ -119,8 +147,10 @@
 				margin: 0 0.1rem;
 			}
 
-			:last-child.flairWrapper {
+			> .flairWrapper {
 				margin-left: auto;
+				display: flex;
+				gap: .125rem;
 			}
 		}
 
