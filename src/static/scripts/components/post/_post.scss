@@ -63,6 +63,7 @@
 			max-width: 25%;
 			max-height: 7rem;
 			border-radius: 1rem;
+			border: 1px solid #5f5f5f;
 		}
 	}
 
@@ -118,7 +119,7 @@
 				margin: 0 0.1rem;
 			}
 
-			:last-child.flair {
+			:last-child.flairWrapper {
 				margin-left: auto;
 			}
 		}

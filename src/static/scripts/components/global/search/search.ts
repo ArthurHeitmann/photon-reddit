@@ -1,6 +1,6 @@
 import { redditApiRequest, searchSubreddits, searchUser } from "../../../api/api.js";
-import { pushLinkToHistorySep } from "../../../state/stateManager.js";
-import { linksToSpa } from "../../../utils/htmlStuff.js";
+import { pushLinkToHistoryComb, pushLinkToHistorySep } from "../../../state/stateManager.js";
+import { elementWithClassInTree, linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiType, SortPostsTimeFrame, SortSearchOrder } from "../../../utils/types.js";
 import { throttle } from "../../../utils/utils.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
@@ -15,7 +15,7 @@ class Ph_Search extends HTMLElement {
 	searchDropdown: HTMLDivElement;
 	resultsWrapper: HTMLDivElement;
 	quickSearchThrottled: () => void;
-	searchPrefix: string;	// r/ or u/
+	searchPrefix: string;	// r/ or user
 
 	constructor() {
 		super();
@@ -37,14 +37,16 @@ class Ph_Search extends HTMLElement {
 		subModeBtn.addEventListener("click", () => {
 			subModeBtn.classList.toggle("checked");
 			userModeBtn.classList.remove("checked");
-			this.searchPrefix = this.searchPrefix === "r/" ? "" : "r/";
+			this.searchPrefix = this.searchPrefix === "/r/" ? "" : "/r/";
 			this.quickSearch();
+			this.searchBar.focus();
 		})
 		userModeBtn.addEventListener("click", () => {
 			userModeBtn.classList.toggle("checked");
 			subModeBtn.classList.remove("checked");
-			this.searchPrefix = this.searchPrefix === "u/" ? "" : "u/";
+			this.searchPrefix = this.searchPrefix === "/user/" ? "" : "/user/";
 			this.quickSearch();
+			this.searchBar.focus();
 		})
 
 		this.searchBar = document.createElement("input");
@@ -150,8 +152,10 @@ class Ph_Search extends HTMLElement {
 		this.classList.add("expanded")
 	}
 
-	onBlur() {
-		if (!this.searchBar.value)
+	onBlur(e) {
+		console.log(e.relatedTarget);
+		console.log(e.target);
+		if (!this.searchBar.value && !elementWithClassInTree(e.relatedTarget, "search"))
 			this.classList.remove("expanded")
 	}
 	
@@ -174,10 +178,10 @@ class Ph_Search extends HTMLElement {
 		// TODO take NSFW preferences into consideration
 		let result: RedditApiType;
 		try {
-			if (this.searchPrefix === "r/") {
+			if (this.searchPrefix === "/r/") {
 				result = await searchSubreddits(this.searchBar.value, 10);
 			}
-			else if (this.searchPrefix === "u/") {
+			else if (this.searchPrefix === "/user/") {
 				result = await searchUser(this.searchBar.value, 10);
 			}
 			else {
@@ -257,6 +261,11 @@ class Ph_Search extends HTMLElement {
 			return;
 		}
 
+		if (this.searchPrefix) {
+			pushLinkToHistoryComb(this.searchPrefix + this.searchBar.value);
+			return;
+		}
+
 		let url = "/search";
 		const currentSubMatches = location.pathname.match(/\/r\/([^/]+)/);
 		if (currentSubMatches && currentSubMatches[1])
@@ -269,15 +278,6 @@ class Ph_Search extends HTMLElement {
 			["sort", this.searchOrder],
 			["t", this.searchTimeFrame || ""],
 		]).toString());
-
-		// const search = await redditApiRequest(url, [
-		// 	["q", this.searchBar.value],
-		// 	["type", "link"],
-		// 	["restrict_sr", this.limitToSubreddit.checked ? "true" : "false"],
-		// 	["sort", this.searchOrder],
-		// 	["t", this.searchTimeFrame || ""],
-		// ], false)
-		// console.log(search);
 	}
 }
 

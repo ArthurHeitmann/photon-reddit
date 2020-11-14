@@ -49,6 +49,7 @@ export default class Ph_GifVideo extends Ph_VideoWrapper {
 
 	pause(): void {
 		this.canvasWrapper.classList.remove("hide");
+		this.gifImg.classList.add("remove");
 		this.dispatchEvent(new Event("ph-pause"));
 	}
 
@@ -56,6 +57,7 @@ export default class Ph_GifVideo extends Ph_VideoWrapper {
 		this.gifImg.src = "";
 		this.gifImg.src = this.gifSrc;
 		this.canvasWrapper.classList.add("hide");
+		this.gifImg.classList.remove("remove");
 		this.dispatchEvent(new Event("ph-play"));
 		this.dispatchEvent(new Event("ph-playing"));
 	}

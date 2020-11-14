@@ -1,4 +1,5 @@
 import { RedditApiData } from "../../../utils/types.js";
+import Ph_Toast, { Level } from "../toast/toast.js";
 
 export default class Ph_Flair extends HTMLElement {
 	constructor(thingData: RedditApiData, prefix: string) {
@@ -42,18 +43,46 @@ export default class Ph_Flair extends HTMLElement {
 			console.log(thingData);
 		}
 
-		if (!this.innerText)
+		if (!this.innerText || /^\s*$/.test(this.innerText))
 			this.classList.add("empty");
 	}
 
 	private makeFlairColorScheme(color: string, secondaryColor?: string): string[] {
 		switch (color) {
 			case "dark":
-				return ["var(--bg-color)", this.shortColorToCss(secondaryColor) || this.shortColorToCss("light")];
+				return [this.shortColorToCss("dark"), this.shortColorToCss(secondaryColor) || this.shortColorToCss("light")];
 			case "light":
-				return ["var(--text-color)", this.shortColorToCss(secondaryColor) || this.shortColorToCss("dark")];
+				return [this.shortColorToCss("light"), this.shortColorToCss(secondaryColor) || this.shortColorToCss("dark")];
 			default:
-				return [color || "var(--bg-color)", this.shortColorToCss("light")];
+				if (color)
+					return [this.shortColorToCss(color), this.shortColorToCss(secondaryColor) || this.contrastColor(color)];
+				else
+					return [this.shortColorToCss("dark"), this.shortColorToCss("light")];
+		}
+	}
+
+	private contrastColor(color: string): string {
+		if (color === "light")
+			return this.shortColorToCss("dark")
+		else if (color === "dark")
+			return this.shortColorToCss("light")
+
+		color = this.shortColorToCss(color);
+		const testElement = document.createElement("div");
+		testElement.className = "hide";
+		testElement.style.color = color;
+		document.body.appendChild(testElement);
+		const cssRgb = getComputedStyle(testElement).color;
+		testElement.remove();
+
+		const rgbValues: string[] = cssRgb.match(/\d+/g);
+		if (rgbValues) {
+			const brightness = rgbValues.reduce((prev, cur) => prev + parseInt(cur), 0) / 3;
+			return  brightness < 128 ? this.shortColorToCss("light") : this.shortColorToCss("dark");
+		}
+		else  {
+			new Ph_Toast(Level.Error, "Invalid flair color");
+			return "red";
 		}
 	}
 

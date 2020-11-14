@@ -33,6 +33,10 @@
 				opacity: 1;
 			}
 		}
+
+		&:last-of-type {
+			margin-right: .3rem;
+		}
 	}
 
 	> .modeButton {
@@ -75,10 +79,6 @@
 			&::before {
 				background: #ffffff40;
 			}
-		}
-
-		&:last-of-type {
-			margin-right: .75rem;
 		}
 	}
 

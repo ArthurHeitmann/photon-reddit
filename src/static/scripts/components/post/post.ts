@@ -117,20 +117,29 @@ export default class Post extends Ph_FeedItem implements Votable {
 						<span>ago</span>`
 					: ""
 					}
-					${ 	isLocked
-						? `<span data-tooltip="${lockedReason}" class="locked"><img src="/img/locked.svg"</span>`
-						: ""
-					}
+					<div class="flairWrapper">					
+						${ 	isLocked
+							? `<span data-tooltip="${lockedReason}" class="locked"><img src="/img/locked.svg"</span>`
+							: ""
+						}
+					</div>
 				</div>
 				<div class="bottom flex">
 						<div class="title">${postData.data["title"]}</div>
 				</div>
 			</div>
 		`;
-		mainPart.getElementsByClassName("top")[0]
+		mainPart.getElementsByClassName("flairWrapper")[0]
 			.appendChild(new Ph_Flair(postData.data, "link"));
 		mainPart.getElementsByClassName("user")[0]
 			.insertAdjacentElement("afterend", new Ph_Flair(postData.data, "author"));
+		// if (postData.data["over_18"])
+		// 	mainPart.getElementsByClassName("flairWrapper")[0]
+		// 		.appendChild(new Ph_Flair(postData.data, "link"));
+		// if (postData.data["spoiler"])
+		// 	mainPart.getElementsByClassName("flairWrapper")[0]
+		// 		.appendChild(new Ph_Flair(postData.data, "link"));
+
 		mainPart.appendChild(new Ph_PostBody(postData));
 		this.appendChild(mainPart);
 

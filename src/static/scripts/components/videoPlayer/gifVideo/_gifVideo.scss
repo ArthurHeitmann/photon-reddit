@@ -8,6 +8,10 @@
 		max-height: 95vh;
 		object-fit: contain;
 		display: block;
+
+		&.remove {
+			opacity: 0;
+		}
 	}
 
 	> div {
