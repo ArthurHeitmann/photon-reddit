@@ -5,7 +5,7 @@ export default class Ph_VoteButton extends HTMLButtonElement {
 	constructor(isUpVote: boolean) {
 		super();
 
-		this.className = `voteButton ${isUpVote ? "up" : "down"}`;
+		this.className = `voteButton transparentButtonAlt ${isUpVote ? "up" : "down"}`;
 
 		this.innerHTML = `
 			<svg fill="#e4e4e4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="shadowBtn">

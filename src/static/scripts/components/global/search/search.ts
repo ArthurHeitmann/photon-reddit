@@ -16,6 +16,8 @@ class Ph_Search extends HTMLElement {
 	resultsWrapper: HTMLDivElement;
 	quickSearchThrottled: () => void;
 	searchPrefix: string;	// r/ or user
+	subModeBtn: HTMLDivElement;
+	userModeBtn: HTMLDivElement;
 
 	constructor() {
 		super();
@@ -26,24 +28,24 @@ class Ph_Search extends HTMLElement {
 
 		this.quickSearchThrottled = throttle(this.quickSearch.bind(this), 750, { leading: false, trailing: true });
 
-		const subModeBtn = document.createElement("div");
-		subModeBtn.className = "modeButton";
-		subModeBtn.innerText = "r/";
-		this.appendChild(subModeBtn);
-		const userModeBtn = document.createElement("div");
-		userModeBtn.className = "modeButton";
-		userModeBtn.innerText = "u/";
-		this.appendChild(userModeBtn);
-		subModeBtn.addEventListener("click", () => {
-			subModeBtn.classList.toggle("checked");
-			userModeBtn.classList.remove("checked");
+		this.subModeBtn = document.createElement("div");
+		this.subModeBtn.className = "modeButton transparentButtonAlt";
+		this.subModeBtn.innerText = "r/";
+		this.appendChild(this.subModeBtn);
+		this.userModeBtn = document.createElement("div");
+		this.userModeBtn.className = "modeButton transparentButtonAlt";
+		this.userModeBtn.innerText = "u/";
+		this.appendChild(this.userModeBtn);
+		this.subModeBtn.addEventListener("click", () => {
+			this.subModeBtn.classList.toggle("checked");
+			this.userModeBtn.classList.remove("checked");
 			this.searchPrefix = this.searchPrefix === "/r/" ? "" : "/r/";
 			this.quickSearch();
 			this.searchBar.focus();
 		})
-		userModeBtn.addEventListener("click", () => {
-			userModeBtn.classList.toggle("checked");
-			subModeBtn.classList.remove("checked");
+		this.userModeBtn.addEventListener("click", () => {
+			this.userModeBtn.classList.toggle("checked");
+			this.subModeBtn.classList.remove("checked");
 			this.searchPrefix = this.searchPrefix === "/user/" ? "" : "/user/";
 			this.quickSearch();
 			this.searchBar.focus();
@@ -140,6 +142,16 @@ class Ph_Search extends HTMLElement {
 	onTextEnter() {
 		if (this.searchBar.value) {
 			this.resultsWrapper.classList.remove("remove");
+			if (/^\/?r\//.test(this.searchBar.value)) {
+				this.searchBar.value = this.searchBar.value.replace(/^\/?r\//, "");
+				if (!this.subModeBtn.classList.contains("checked"))
+					this.subModeBtn.click();
+			}
+			if (/^\/?(u|user)\//.test(this.searchBar.value)) {
+				this.searchBar.value = this.searchBar.value.replace(/^\/?(u|user)\//, "");
+				if (!this.userModeBtn.classList.contains("checked"))
+					this.userModeBtn.click();
+			}
 			this.quickSearchThrottled();
 		}
 		else {

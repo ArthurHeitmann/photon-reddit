@@ -45,6 +45,9 @@
 		position: relative;
 		opacity: .5;
 		transition: all .25s ease;
+		--dim: 1.5rem;
+		--hover-bg: #ffffff3d;
+		--active-bg: #ffffff78;
 
 		&.checked {
 			color: lightcoral;
@@ -52,34 +55,38 @@
 		}
 
 		&::before {
-			content: "";
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 1.5rem;
-			height: 1.5rem;
-			border-radius: 50%;
-			margin-left: 50%;
-			margin-top: 50%;
 			transform: translateX(-50%) translateY(-40%);
-			transition: background-color .25s ease;
 		}
 
-		&:hover {
-			&:not(.checked) {
-				opacity: .75;
-			}
-
-			&::before {
-				background: #ffffff1a;
-			}
-		}
-
-		&:active {
-			&::before {
-				background: #ffffff40;
-			}
-		}
+		//&::before {
+		//	content: "";
+		//	position: absolute;
+		//	top: 0;
+		//	left: 0;
+		//	width: 1.5rem;
+		//	height: 1.5rem;
+		//	border-radius: 50%;
+		//	margin-left: 50%;
+		//	margin-top: 50%;
+		//	transform: translateX(-50%) translateY(-40%);
+		//	transition: background-color .25s ease;
+		//}
+		//
+		//&:hover {
+		//	&:not(.checked) {
+		//		opacity: .75;
+		//	}
+		//
+		//	&::before {
+		//		background: #ffffff1a;
+		//	}
+		//}
+		//
+		//&:active {
+		//	&::before {
+		//		background: #ffffff40;
+		//	}
+		//}
 	}
 
 	.searchDropdown {

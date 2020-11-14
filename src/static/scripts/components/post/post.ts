@@ -53,7 +53,7 @@ export default class Post extends Ph_FeedItem implements Votable {
 		actionWrapper.appendChild(this.voteUpButton);
 		// current votes
 		this.currentUpvotes = document.createElement("div");
-		this.currentUpvotes.className = "upvotes";
+		this.currentUpvotes.className = "upvotes ";
 		this.setVotesState(this.currentVoteDirection);
 		actionWrapper.appendChild(this.currentUpvotes);
 		// vote down button
@@ -70,16 +70,17 @@ export default class Post extends Ph_FeedItem implements Votable {
 				{ displayHTML: "Crosspost", onSelectCallback: this.crossPost.bind(this) },
 			] }
 		], "", DirectionX.left, DirectionY.bottom, true);
+		moreDropDown.toggleButton.classList.add("transparentButtonAlt");
 		actionWrapper.appendChild(moreDropDown);
 		// go to comments link
 		const commentsLink = document.createElement("a");
-		commentsLink.className = "commentsLink";
+		commentsLink.className = "commentsLink transparentButtonAlt";
 		commentsLink.href = postData.data["permalink"];
 		commentsLink.setAttribute("data-tooltip", postData.data["num_comments"]);
 		const numbOfComments = numberToShortStr(postData.data["num_comments"]);
 		let commentsSizeClass = "";
 		if (numbOfComments.length > 3) {
-			commentsSizeClass = "small";
+			commentsSizeClass = " small";
 		}
 		else if (numbOfComments.length === 3) {
 			commentsSizeClass = "medium";

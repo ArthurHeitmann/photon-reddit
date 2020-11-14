@@ -9,7 +9,7 @@ body {
 	position: relative;
 }
 
-[data-tooltip]::before {
+[data-tooltip]::after {
 	content: attr(data-tooltip);
 	font-size: .8rem;
 	position: absolute;
@@ -31,7 +31,7 @@ body {
 	transition-delay: .5s;
 }
 
-[data-tooltip]:hover::before {
+[data-tooltip]:hover::after {
 	opacity: 1;
 	visibility: visible;
 	transform: translateX(-50%) translateY(-100%) scale(1);
@@ -183,7 +183,7 @@ a.inlineImage {
 	max-height: 95vh;
 }
 
-button.transparentButton {
+.transparentButton {
 	background-color: unset;
 	border-radius: 50%;
 	transition: background-color .25s ease;
@@ -194,6 +194,40 @@ button.transparentButton {
 
 	&:active {
 		background-color: #ffffff40;
+	}
+}
+
+.transparentButtonAlt {
+	position: relative;
+	--dim: 100%;
+	--hover-bg: #ffffff1a;
+	--active-bg: #ffffff40;
+
+	&::before {
+		content: "";
+		position: absolute;
+		top: 0;
+		left: 0;
+		margin-left: 50%;
+		margin-top: 50%;
+		transform: translateX(-50%) translateY(-50%);
+		width: var(--dim);
+		height: var(--dim);
+		background-color: unset;
+		border-radius: 50%;
+		transition: background-color .25s ease;
+	}
+
+	&:hover, &:focus-visible {
+		&::before {
+			background-color: var(--hover-bg);
+		}
+	}
+
+	&:active {
+		&::before {
+			background-color: var(--active-bg);
+		}
 	}
 }
 

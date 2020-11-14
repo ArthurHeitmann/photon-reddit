@@ -112,14 +112,6 @@
 				background-color: unset;
 				border: none;
 				padding: 0;
-
-				&:hover {
-					background-color: #ffffff1a;
-				}
-
-				&:active {
-					background-color: #ffffff40;
-				}
 			}
 
 			.dropDownArea {
@@ -196,6 +188,12 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
+		margin-top: .75rem;
+		--dim: 2.5rem;
+
+		&:hover {
+			filter: none;
+		}
 
 		> img {
 			width: 1.8rem;
