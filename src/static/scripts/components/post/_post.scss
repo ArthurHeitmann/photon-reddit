@@ -192,9 +192,30 @@
 		}
 	}
 
-	.comments {
-		img {
-			width: vars.$postActionsWidth * .69;
+	.commentsLink {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		> img {
+			width: 1.8rem;
+		}
+
+		> div {
+			position: absolute;
+			color: vars.$background;
+			transform: translateY(-.1rem);
+			font-weight: 700;
+
+			&.medium {
+				font-size: .8em;
+				transform: translateY(-.15rem);
+			}
+
+			&.small {
+				font-size: .6em;
+				transform: translateY(-.15rem);
+			}
 		}
 	}
 }

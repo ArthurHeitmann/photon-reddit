@@ -13,6 +13,8 @@ body {
 	content: attr(data-tooltip);
 	font-size: .8rem;
 	position: absolute;
+	top: 0;
+	left: 0;
 	z-index: 10000;
 	transform: translateX(-50%) translateY(-85%) scale(.5);
 	width: max-content;

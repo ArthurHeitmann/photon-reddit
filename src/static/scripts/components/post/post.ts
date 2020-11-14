@@ -1,6 +1,6 @@
 import { save, vote, VoteDirection, voteDirectionFromLikes } from "../../api/api.js";
 import { mainURL } from "../../utils/consts.js";
-import { linksToSpa } from "../../utils/htmlStuff.js";
+import { elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
 import { numberToShort as numberToShort, numberToShortStr, timePassedSinceStr } from "../../utils/utils.js";
 import Ph_FeedItem from "../feed/feedItem/feedItem.js";
@@ -72,20 +72,31 @@ export default class Post extends Ph_FeedItem implements Votable {
 		], "", DirectionX.left, DirectionY.bottom, true);
 		actionWrapper.appendChild(moreDropDown);
 		// go to comments link
-		if (isInFeed) {
-			const commentsLink = document.createElement("a");
-			commentsLink.className = "comments";
-			commentsLink.href = postData.data["permalink"];
-			commentsLink.innerHTML = `<img alt="comments" src="/img/comments.svg">`;
-			actionWrapper.appendChild(commentsLink);
+		const commentsLink = document.createElement("a");
+		commentsLink.className = "commentsLink";
+		commentsLink.href = postData.data["permalink"];
+		commentsLink.setAttribute("data-tooltip", postData.data["num_comments"]);
+		const numbOfComments = numberToShortStr(postData.data["num_comments"]);
+		let commentsSizeClass = "";
+		if (numbOfComments.length > 3) {
+			commentsSizeClass = "small";
 		}
-		// additional actions button
-		const numberOfComments = document.createElement("div");
-		numberOfComments.className = "";
-		numberOfComments.innerText = numberToShortStr(postData.data["num_comments"]);
-		numberOfComments.setAttribute("data-tooltip", postData.data["num_comments"]);
-		actionWrapper.appendChild(numberOfComments);
-
+		else if (numbOfComments.length === 3) {
+			commentsSizeClass = "medium";
+		}
+		commentsLink.innerHTML = `
+			<img alt="comments" src="/img/comments.svg">
+			<div class="${commentsSizeClass}">${numbOfComments}</div>
+		`;
+		commentsLink.addEventListener("click", (e: MouseEvent) => {
+			if (isInFeed)
+				return true;
+			elementWithClassInTree(this.parentElement, "viewState").scrollBy(0, this.getBoundingClientRect().bottom);
+			e.stopImmediatePropagation();
+			e.preventDefault();
+			return false;
+		})
+		actionWrapper.appendChild(commentsLink);
 
 		const isLocked = this.isLocked = postData.data["locked"] || postData.data["archived"];
 		const lockedReason = postData.data["locked"] ? "locked" : "archived";
