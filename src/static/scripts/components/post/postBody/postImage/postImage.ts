@@ -3,6 +3,19 @@ import { RedditApiType } from "../../../../utils/types";
 import Ph_ControlsBar from "../../../misc/controlsBar/controlsBar.js";
 import Ph_DraggableWrapper from "../draggableWrapper/draggableWrapper.js";
 
+interface GalleryInitData {
+	originalUrl: string,
+	previewUrl?: string,
+	caption: string
+}
+
+interface GalleryDataInternal {
+	caption: string,
+	previewImg: HTMLImageElement,
+	originalImg: HTMLImageElement,
+	originalSrc: string,
+}
+
 export default class Ph_PostImage extends HTMLElement {
 	imageMax: Ph_DraggableWrapper;
 	controls: Ph_ControlsBar;
@@ -12,20 +25,12 @@ export default class Ph_PostImage extends HTMLElement {
 	imageIndexText: HTMLDivElement;
 	caption: HTMLDivElement;
 	loadingIcon: HTMLImageElement;
-	galleryData: {
-		caption: string,
-		previewImg: HTMLImageElement,
-		originalImg: HTMLImageElement,
-		originalSrc: string,
-	}[] = [];
+	galleryData: GalleryDataInternal[] = [];
 	currentImageIndex: number = 0;
 	beforeFsScrollTop = 0;
 
-	constructor(postData: RedditApiType) {
-		super();
-
-		this.classList.add("postImage");
-		this.setAttribute("tabindex", "0");
+	static fromPostData(postData: RedditApiType): Ph_PostImage {
+		let galleryInitData: GalleryInitData[] = [];
 
 		// is gallery
 		if (postData.data["gallery_data"]) {
@@ -33,14 +38,10 @@ export default class Ph_PostImage extends HTMLElement {
 			for (const item of items) {
 				const imgData = postData.data["media_metadata"][item["media_id"]];
 				const previews: {}[] = imgData["p"];
-				const prevImg = document.createElement("img");
-				prevImg.draggable = false;
-				prevImg.src = previews[previews.length - 1]["u"];
-				this.galleryData.push({
+				galleryInitData.push({
 					caption: item["caption"] || postData.data["title"],
-					previewImg: prevImg,
-					originalImg: null,
-					originalSrc: imgData["s"]["u"],
+					originalUrl: imgData["s"]["u"],
+					previewUrl: previews[previews.length - 1]["u"],
 				});
 			}
 		}
@@ -48,40 +49,59 @@ export default class Ph_PostImage extends HTMLElement {
 		else {
 			// reddit has generated a preview for us
 			if (postData.data["preview"]) {
-				const prevImg = document.createElement("img");
 				const previews: any[] = postData.data["preview"]["images"][0]["resolutions"];
-				prevImg.src = previews[previews.length - 1]["url"];
-				prevImg.draggable = false
-				this.galleryData = [{
+				galleryInitData = [{
 					caption: postData.data["title"],
-					previewImg: prevImg,
-					originalImg: null,
-					originalSrc: postData.data["url"],
+					originalUrl: postData.data["url"],
+					previewUrl: previews[previews.length - 1]["url"],
 				}];
 			}
 			// just a raw image url
 			else {
-				const prevImg = document.createElement("img");
-				prevImg.src = postData.data["url"];
-				prevImg.draggable = false;
-				const origImg = document.createElement("img");
-				origImg.src = postData.data["url"];
-				origImg.draggable = false;
-				this.galleryData = [{
+				galleryInitData = [{
 					caption: postData.data["title"],
-					previewImg: prevImg,
-					originalImg: origImg,
-					originalSrc: null,
+					originalUrl: postData.data["url"],
 				}];
 
 			}
 		}
 
+		return new Ph_PostImage(galleryInitData);
+	}
+
+	constructor(galleryInitData: GalleryInitData[]) {
+		super();
+
+		for (const img of galleryInitData) {
+			const imgData: GalleryDataInternal = {
+				caption: img.caption,
+				originalSrc: img.previewUrl ? img.originalUrl : undefined,
+				originalImg: img.previewUrl ? null : document.createElement("img"),
+				previewImg: img.previewUrl ? document.createElement("img") : undefined
+			}
+
+			if (img.previewUrl) {
+				imgData.previewImg.src = img.previewUrl;
+				imgData.previewImg.draggable = false;
+			}
+			else if (img.originalUrl) {
+				imgData.originalImg.src = img.originalUrl;
+				imgData.originalImg.draggable = false;
+			}
+			else
+				throw "No image URL given";
+
+			this.galleryData.push(imgData);
+		}
+
+		this.classList.add("postImage");
+		this.setAttribute("tabindex", "0");
+
 		// gallery wrapper
-		this.galleryWrapper = document.createElement("div")
+		this.galleryWrapper = document.createElement("div");
 		this.galleryWrapper.className = "galleryWrapper draggable";
 		this.galleryWrapper.setAttribute("tabindex", "0");
-		this.galleryWrapper.appendChild(this.galleryData[0].previewImg);
+		this.galleryWrapper.appendChild(this.galleryData[0].previewImg || this.galleryData[0].originalImg);
 		this.galleryWrapper.addEventListener("dblclick", this.toggleFullscreen.bind(this));
 		this.galleryWrapper.addEventListener("dragstart", e => {
 			e.preventDefault();
@@ -104,7 +124,6 @@ export default class Ph_PostImage extends HTMLElement {
 			this.prevImageButton = this.controls.appendMakeImageButton("/img/playBack.svg");
 			this.prevImageButton.setAttribute("data-tooltip", "Shortcut: Arrow Left");
 			this.prevImageButton.addEventListener("click", this.previousImage.bind(this));
-			this.prevImageButton.disabled = true;
 			// next img
 			this.nextImageButton = this.controls.appendMakeImageButton("/img/playNext.svg");
 			this.nextImageButton.setAttribute("data-tooltip", "Shortcut: Arrow Right");
@@ -133,7 +152,7 @@ export default class Ph_PostImage extends HTMLElement {
 		resetViewBtn.addEventListener("click", () => {
 			this.imageMax.setMoveXY(0, 0);
 			this.imageMax.setZoom(1);
-		})
+		});
 		// fullscreen
 		const fullscreenBtn = this.controls.appendMakeImageButton("/img/minimize.svg");
 		fullscreenBtn.setAttribute("data-tooltip", "Shortcut: F");
@@ -141,8 +160,9 @@ export default class Ph_PostImage extends HTMLElement {
 		this.addEventListener("fullscreenchange", e => document.fullscreenElement || this.onClose());
 
 		this.addEventListener("keydown", (e: KeyboardEvent) => {
-			if (e.code == "ArrowUp" || e.code == "ArrowRight" || e.code == "ArrowDown" || e.code == "ArrowLeft")
+			if (e.code == "ArrowUp" || e.code == "ArrowRight" || e.code == "ArrowDown" || e.code == "ArrowLeft") {
 				e.preventDefault();
+			}
 		});
 		this.addEventListener("keyup", (e: KeyboardEvent) => {
 			switch (e.code) {
@@ -155,22 +175,23 @@ export default class Ph_PostImage extends HTMLElement {
 					break;
 				case "ArrowRight":
 				case "ArrowDown":
-					if (this.galleryData.length > 1)
+					if (this.galleryData.length > 1) {
 						this.nextImage();
+					}
 					break;
 				case "ArrowLeft":
 				case "ArrowUp":
-					if (this.galleryData.length > 1)
+					if (this.galleryData.length > 1) {
 						this.previousImage();
+					}
 					break;
 			}
 		});
 
 		const intersectionObserver = new IntersectionObserver((entries, obs) => {
 			if (entries[0].intersectionRatio > .4) {
-				this.focus({ preventScroll: true });
-			}
-			else {
+				this.focus({preventScroll: true});
+			} else {
 				this.blur();
 			}
 		}, {
@@ -182,33 +203,30 @@ export default class Ph_PostImage extends HTMLElement {
 	}
 
 	updateTexts() {
-		if (this.imageIndexText)
+		if (this.imageIndexText) {
 			this.imageIndexText.innerText = `${this.currentImageIndex + 1} / ${this.galleryData.length}`;
+		}
 		this.caption.innerText = this.galleryData[this.currentImageIndex].caption;
 		this.caption.setAttribute("data-tooltip", this.galleryData[this.currentImageIndex].caption);
 		this.caption.title = this.galleryData[this.currentImageIndex].caption;
 	}
 
 	nextImage() {
-		if (this.currentImageIndex === 0)
-			this.prevImageButton.disabled = false;
-		else if (this.currentImageIndex + 1 === this.galleryData.length)
-			return;
-		++this.currentImageIndex;
-		if (this.currentImageIndex + 1 === this.galleryData.length)
-			this.nextImageButton.disabled = true;
+		if (this.currentImageIndex + 1 === this.galleryData.length) {
+			this.currentImageIndex = 0;
+		} else {
+			++this.currentImageIndex;
+		}
 		this.replaceCurrentImage();
 		this.updateTexts();
 	}
 
 	previousImage() {
-		if (this.currentImageIndex + 1 === this.galleryData.length)
-			this.nextImageButton.disabled = false;
-		else if (this.currentImageIndex === 0)
-			return;
-		--this.currentImageIndex;
-		if (this.currentImageIndex === 0)
-			this.prevImageButton.disabled = true;
+		if (this.currentImageIndex === 0) {
+			this.currentImageIndex = this.galleryData.length - 1;
+		} else {
+			--this.currentImageIndex;
+		}
 		this.replaceCurrentImage();
 		this.updateTexts();
 	}
@@ -218,8 +236,9 @@ export default class Ph_PostImage extends HTMLElement {
 	}
 
 	replaceCurrentImage() {
-		for (let img of this.galleryWrapper.children)
+		for (let img of this.galleryWrapper.children) {
 			img.remove();
+		}
 
 		if (this.isFullscreen() && this.galleryData[this.currentImageIndex].originalImg === null) {
 			const origImg = document.createElement("img");
@@ -231,32 +250,37 @@ export default class Ph_PostImage extends HTMLElement {
 			origImg.addEventListener("load", () => {
 				this.loadingIcon.hidden = true;
 				this.galleryData[currIndex].previewImg.remove();
-				this.galleryData[currIndex].previewImg = null
+				this.galleryData[currIndex].previewImg = null;
 			});
 		}
 
-		if (this.galleryData[this.currentImageIndex].previewImg)
+		if (this.galleryData[this.currentImageIndex].previewImg) {
 			this.galleryWrapper.appendChild(this.galleryData[this.currentImageIndex].previewImg);
-		if (this.galleryData[this.currentImageIndex].originalImg)
+		}
+		if (this.galleryData[this.currentImageIndex].originalImg) {
 			this.galleryWrapper.appendChild(this.galleryData[this.currentImageIndex].originalImg);
+		}
 	}
 
 	toggleFullscreen() {
-		if (this.isFullscreen())
+		if (this.isFullscreen()) {
 			document.exitFullscreen();
-		else
+		} else {
 			this.onShow();
+		}
 	}
 
 	async onShow() {
 		const viewState = elementWithClassInTree(this.parentElement, "viewState");
-		if (viewState)
+		if (viewState) {
 			this.beforeFsScrollTop = viewState.scrollTop;
+		}
 
 		this.classList.add("fullscreen");
 		await this.requestFullscreen();
-		if (this.galleryData[this.currentImageIndex].originalImg === null)
+		if (this.galleryData[this.currentImageIndex].originalImg === null) {
 			this.replaceCurrentImage();
+		}
 		this.galleryWrapper.focus();
 		this.imageMax.activateWith(this.galleryWrapper);
 	}

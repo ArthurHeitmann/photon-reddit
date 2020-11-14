@@ -16,7 +16,7 @@ export default class Ph_PostBody extends HTMLElement {
 		switch (this.getPostType(postData.data)) {
 			case PostType.Image:
 				this.classList.add("fullScale");
-				this.appendChild(new Ph_PostImage(postData));
+				this.appendChild(Ph_PostImage.fromPostData(postData));
 				break;
 			case PostType.Text:
 				const text = new Ph_PostText(postData.data["selftext_html"] || "");
