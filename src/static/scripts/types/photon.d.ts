@@ -4,3 +4,7 @@ interface HTMLElement {
 	$tag: (tagName: string) => HTMLCollection;
 	$css: (cssQuery: string) => HTMLCollection;
 }
+
+interface SVGAnimateElement extends SVGElement {
+	beginElement: () => any;
+}

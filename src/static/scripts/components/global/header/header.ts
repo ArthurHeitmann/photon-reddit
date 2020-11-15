@@ -74,22 +74,26 @@ export default class Ph_Header extends HTMLElement {
 			return;
 		}
 
-		for (const anim of this.headerShowVisualizer) (anim as SVGAnimateElement).beginElement();
+		for (const anim of this.headerShowVisualizer)
+			(anim as SVGAnimateElement).beginElement();
 		this.classList.add("hover");
-		this.clearHideTimeout()
+		this.clearHideTimeout();
 	}
 
 	headerMouseLeave(e: MouseEvent) {
 		if (e.relatedTarget === null) {
 			this.hideTimeout = setTimeout(() => {
-				for (const anim of this.headerHideVisualizer) (anim as SVGAnimateElement).beginElement()
+				for (const anim of this.headerHideVisualizer)
+					(anim as SVGAnimateElement).beginElement();
 				this.classList.remove("hover");
+				this.search.minimize();
 			}, 10000);
-		}
-		else {
-			for (const anim of this.headerHideVisualizer) (anim as SVGAnimateElement).beginElement();
+		} else {
+			for (const anim of this.headerHideVisualizer)
+				(anim as SVGAnimateElement).beginElement();
 			this.classList.remove("hover");
-			this.clearHideTimeout()
+			this.clearHideTimeout();
+			this.search.minimize();
 		}
 	}
 }

@@ -2,7 +2,7 @@
 export default class Ph_MorphingImage extends HTMLElement {
 	svg: SVGElement;
 	path: SVGPathElement;
-	anim: SVGElement;
+	anim: SVGAnimateElement;
 
 	constructor(initPath: string, viewBox: string, isButton = false) {
 		super();
@@ -25,7 +25,7 @@ export default class Ph_MorphingImage extends HTMLElement {
 		this.path.setAttribute("d", initPath);
 		this.path.setAttribute("fill", "#e4e4e4");
 
-		this.anim = document.createElementNS("http://www.w3.org/2000/svg", "animate");
+		this.anim = document.createElementNS("http://www.w3.org/2000/svg", "animate") as SVGAnimateElement;
 		this.path.appendChild(this.anim);
 		this.anim.setAttribute("attributeName", "d");
 		this.anim.setAttribute("dur", "0.15s");
@@ -38,7 +38,6 @@ export default class Ph_MorphingImage extends HTMLElement {
 	changePath(newPath: string) {
 		this.anim.setAttribute("from", this.anim.getAttribute("to"));
 		this.anim.setAttribute("to", newPath);
-		// @ts-ignore
 		this.anim.beginElement();
 	}
 }
