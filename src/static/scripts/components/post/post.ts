@@ -154,18 +154,18 @@ export default class Post extends Ph_FeedItem implements Votable {
 		if (postData.data["over_18"]) {
 			mainPart.$class("flairWrapper")[0]
 				.appendChild(new Ph_Flair({type: "text", backgroundColor: "darkred", text: "NSFW"}));
-			if (isInFeed) {
+			this.classList.add("nsfw");
+			if (isInFeed && !this.isEmpty(postBody)) {
 				postBody.classList.add("covered");
-				this.classList.add("nsfw");
 				postBody.appendChild(this.makeContentCover());
 			}
 		}
 		if (postData.data["spoiler"]) {
 			mainPart.getElementsByClassName("flairWrapper")[0]
 				.appendChild(new Ph_Flair({type: "text", backgroundColor: "orange", text: "Spoiler"}));
-			if (isInFeed) {
+			this.classList.add("spoiler");
+			if (isInFeed && !this.isEmpty(postBody)) {
 				postBody.classList.add("covered");
-				this.classList.add("spoiler");
 				postBody.appendChild(this.makeContentCover());
 			}
 		}
@@ -173,6 +173,10 @@ export default class Post extends Ph_FeedItem implements Votable {
 		this.appendChild(this.actionBar);
 
 		linksToSpa(this);
+	}
+
+	private isEmpty(element: HTMLElement): boolean {
+		return element.innerHTML === "" || Boolean(element.$css(".postText > *:empty").length > 0)
 	}
 
 	makeContentCover(): HTMLElement {
