@@ -1,6 +1,6 @@
-import { redditApiRequest, searchSubreddits, searchUser } from "../../../api/api.js";
+import { searchSubreddits, searchUser } from "../../../api/api.js";
 import { pushLinkToHistoryComb, pushLinkToHistorySep } from "../../../state/stateManager.js";
-import { elementWithClassInTree, linksToSpa } from "../../../utils/htmlStuff.js";
+import { linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiType, SortPostsTimeFrame, SortSearchOrder } from "../../../utils/types.js";
 import { throttle } from "../../../utils/utils.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
@@ -140,6 +140,13 @@ export default class Ph_Search extends HTMLElement {
 		}
 
 		this.limitToSubreddit = makeLabelCheckboxPair("Limit to", "limitToSubreddit", true, expandedOptions);
+		if (/\/search\/?$/.test(location.pathname)) {
+			const currParams = new URLSearchParams(location.search);
+			this.searchBar.value = currParams.get("q");
+			this.searchOrder = SortSearchOrder[currParams.get("sort")];
+			this.searchTimeFrame = SortPostsTimeFrame[currParams.get("t")];
+			this.limitToSubreddit.checked = Boolean(currParams.get("restrict_sr"));
+		}
 	}
 
 	onTextEnter() {
@@ -279,7 +286,7 @@ export default class Ph_Search extends HTMLElement {
 		if (currentSubMatches && currentSubMatches[1])
 			url = currentSubMatches[1].replace(/\/?$/, "/search");
 
-		pushLinkToHistorySep("/search", new URLSearchParams([
+		pushLinkToHistorySep("/search", "?" + new URLSearchParams([
 			["q", this.searchBar.value],
 			["type", "link"],
 			["restrict_sr", this.limitToSubreddit.checked ? "true" : "false"],

@@ -160,6 +160,10 @@
 			height: calc(100% + 5rem);
 			transform: translateX(-50%);
 			margin-left: 50%;
+
+			~ * {
+				position: relative;
+			}
 		}
 	}
 
