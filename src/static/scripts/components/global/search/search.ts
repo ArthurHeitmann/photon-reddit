@@ -57,7 +57,6 @@ export default class Ph_Search extends HTMLElement {
 		this.searchBar.addEventListener("keypress", e => e.code === "Enter" && this.search());
 		this.searchBar.addEventListener("input", this.onTextEnter.bind(this));
 		this.searchBar.addEventListener("focus", this.onFocus.bind(this));
-		this.searchBar.addEventListener("blur", this.onBlur.bind(this));
 
 		const toggleDropdownBtn = document.createElement("button")
 		toggleDropdownBtn.className = "toggleDropdownButton transparentButton";
@@ -72,10 +71,14 @@ export default class Ph_Search extends HTMLElement {
 
 		this.searchDropdown = document.createElement("div");
 		this.searchDropdown.className = "searchDropdown";
-		this.appendChild(this.searchDropdown)
+		this.appendChild(this.searchDropdown);
+
+		const accessibilitySpacer = document.createElement("div");
+		accessibilitySpacer.className = "accessibilitySpacer";
+		this.searchDropdown.appendChild(accessibilitySpacer);
 
 		this.resultsWrapper = document.createElement("div");
-		this.resultsWrapper.className = "resultsWrapper remove";
+		this.resultsWrapper.className = "resultsWrapper";
 		this.searchDropdown.appendChild(this.resultsWrapper);
 
 		const expandedOptions = document.createElement("div");
@@ -141,7 +144,6 @@ export default class Ph_Search extends HTMLElement {
 
 	onTextEnter() {
 		if (this.searchBar.value) {
-			this.resultsWrapper.classList.remove("remove");
 			if (/^\/?r\//.test(this.searchBar.value)) {
 				this.searchBar.value = this.searchBar.value.replace(/^\/?r\//, "");
 				if (!this.subModeBtn.classList.contains("checked"))
@@ -154,21 +156,15 @@ export default class Ph_Search extends HTMLElement {
 			}
 			this.quickSearchThrottled();
 		}
-		else {
-			this.resultsWrapper.classList.add("remove");
-
-		}
 	}
 
 	onFocus() {
 		this.classList.add("expanded")
 	}
 
-	onBlur(e) {
-		console.log(e.relatedTarget);
-		console.log(e.target);
-		if (!this.searchBar.value && !elementWithClassInTree(e.relatedTarget, "search"))
-			this.classList.remove("expanded")
+	minimize() {
+		this.classList.remove("expanded");
+		this.searchBar.blur();
 	}
 	
 	toggleSearchDropdown() {

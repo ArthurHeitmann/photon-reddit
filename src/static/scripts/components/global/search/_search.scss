@@ -82,10 +82,6 @@
 			margin-right: 1rem;
 			word-break: break-all;
 
-			&.remove {
-				display: none;
-			}
-
 			&::before {		// loading icon
 				content: "";
 				position: absolute;
@@ -154,6 +150,16 @@
 					height: 1.3em;
 				}
 			}
+		}
+
+		.accessibilitySpacer {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: calc(100% + 10rem);
+			height: calc(100% + 5rem);
+			transform: translateX(-50%);
+			margin-left: 50%;
 		}
 	}
 

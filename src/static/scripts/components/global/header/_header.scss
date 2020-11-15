@@ -9,7 +9,7 @@
 	transform: translateY(-100%);
 	transition: transform .25s linear;
 
-	.actions {
+	> .actions {
 		height: 100%;
 		box-sizing: content-box;
 		position: relative;
@@ -44,7 +44,7 @@
 		}
 	}
 
-	.accessibilitySpacer {
+	> .accessibilitySpacer {
 		width: 25%;
 		height: 50%;
 	}
@@ -56,7 +56,7 @@
 			height: 130%;
 		}
 
-		.accessibilitySpacer {
+		> .accessibilitySpacer {
 			height: 150%;
 			width: 100%;
 			top: vars.$headerHeight;
