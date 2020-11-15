@@ -109,6 +109,11 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+
+		.upvotes {
+			height: .6rem;
+			line-height: .7rem;
+		}
 	}
 
 	.header {
