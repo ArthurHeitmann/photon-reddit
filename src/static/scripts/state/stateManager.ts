@@ -24,6 +24,10 @@ window.addEventListener("popstate", (e: PopStateEvent) => {
 	}
 });
 
+// window.onbeforeunload = () => {
+// 	return "Are you sure you want to Exit?";
+// };
+
 export enum PushType {
 	PushAfter, PushBefore
 }

@@ -1,19 +1,24 @@
-import { $class } from "../../../utils/htmlStuff.js";
+import { $class, $tag } from "../../../utils/htmlStuff.js";
 import { SVGAnimateElement } from "../../../utils/types.js";
 import Ph_Search from "../search/search.js";
+import Ph_PhotonSettings from "../photonSettings/photonSettings.js";
 
 export default class Ph_Header extends HTMLElement {
 	search: Ph_Search;
 	headerHideVisualizer = $class("headerHideVisualizer");
 	headerShowVisualizer = $class("headerShowVisualizer");
 	hideTimeout = null;
+	settings: Ph_PhotonSettings;
 
 	constructor() {
 		super();
+
 	}
 
 	connectedCallback() {
 		this.classList.add("header");
+
+		this.settings = $tag("ph-photon-settings")[0];
 
 		this.innerHTML = `
 			<div class="actions flex f-justify-center f-align-center">
@@ -35,7 +40,7 @@ export default class Ph_Header extends HTMLElement {
 					<button></button>
 				</div>
 				<a href="#" id="loginButton" hidden>Login with Reddit</a>
-				<button class="miscActions">...</button>
+				<button class="showSettingsButton transparentButtonAlt"><img src="/img/settings1.svg" alt="show settings" draggable="false"></button>
 			</div>
 			<div class="expander absolute w100">
 				<svg viewBox="0 0 1400 200" preserveAspectRatio="none">
@@ -57,6 +62,10 @@ export default class Ph_Header extends HTMLElement {
 
 		this.addEventListener("mouseenter", this.headerMouseEnter);
 		this.addEventListener("mouseleave", this.headerMouseLeave);
+		this.$class("showSettingsButton")[0].addEventListener("click", () => {
+			this.settings.toggle();
+			this.headerMouseLeave();
+		});
 
 	}
 
@@ -80,8 +89,8 @@ export default class Ph_Header extends HTMLElement {
 		this.clearHideTimeout();
 	}
 
-	headerMouseLeave(e: MouseEvent) {
-		if (e.relatedTarget === null) {
+	headerMouseLeave(e?: MouseEvent) {
+		if (e && e.relatedTarget === null) {
 			this.hideTimeout = setTimeout(() => {
 				for (const anim of this.headerHideVisualizer)
 					(anim as SVGAnimateElement).beginElement();

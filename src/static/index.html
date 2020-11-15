@@ -6,17 +6,19 @@
 	<title>Reddit Photon</title>
 	<meta name='viewport' content='width=device-width, initial-scale=1'>
 	<link rel="manifest" href="/manifest.json">
-	<link rel='stylesheet' type='text/css' media='screen' href='/style/main.css' media="none" onload="this.media='all'">
+	<link rel='stylesheet' type='text/css' media='screen' href='/style/main.css'>
 	<link rel="shortcut icon" href="/favicon.ico">
 	<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,600;0,800;1,800&display=swap" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
 	<script src='/scripts/components/global/header/header.js' type="module"></script>
+	<script src='/scripts/components/global/photonSettings/photonSettings.js' type="module"></script>
 </head>
 <body class="overflow-hide">
 	<div class="flex f-direction-column f-align-center" id="mainWrapper">
 		<ph-header></ph-header>
 		<main class="relative w100"></main>
 	</div>
+	<ph-photon-settings></ph-photon-settings>
 	<script src='/scripts/main.js' type="module"></script>
 </body>
 </html>

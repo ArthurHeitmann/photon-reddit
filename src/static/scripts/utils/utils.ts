@@ -122,3 +122,7 @@ export function isObjectEmpty(obj: {}) {
 	// basically does what resp === {} should (but doesn't) do
 	return Object.keys(obj).length === 0 && obj.constructor === Object;
 }
+
+export function deepClone<T>(object: T): T {
+	return JSON.parse(JSON.stringify(object));
+}

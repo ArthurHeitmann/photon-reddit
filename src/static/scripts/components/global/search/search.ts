@@ -281,7 +281,7 @@ export default class Ph_Search extends HTMLElement {
 
 	async search() {
 		if (!this.searchBar.value) {
-			new Ph_Toast(Level.Warning, "Empty search query")
+			new Ph_Toast(Level.Warning, "Empty search query", 2000);
 			return;
 		}
 

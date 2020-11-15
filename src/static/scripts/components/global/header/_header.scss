@@ -19,6 +19,14 @@
 		& > * {
 			margin: 0 1.5rem;
 		}
+
+		> .showSettingsButton {
+			--dim: 2.5rem;
+
+			> img {
+				width: 2.5rem;
+			}
+		}
 	}
 
 	.expander {

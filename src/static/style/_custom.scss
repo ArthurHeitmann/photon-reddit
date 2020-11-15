@@ -209,3 +209,33 @@ input.checkbox {
 		}
 	}
 }
+
+input.radio {
+	display: none;
+
+	&:checked + label {
+		background: lightcoral;
+	}
+
+	&:disabled + label {
+		opacity: .5;
+
+		&::before {
+		}
+	}
+
+	+ label {
+		display: inline-block;
+		width: 1em;
+		height: 1em;
+		box-sizing: border-box;
+		background: #4a4a4a;
+		border-radius: 50%;
+		border: 2px solid #696969;
+		position: relative;
+		transition: background-color .25s ease;
+
+		&:hover, &:focus {
+		}
+	}
+}

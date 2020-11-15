@@ -1,3 +1,4 @@
+import { classInElementTree } from "../../utils/htmlStuff.js";
 import { secondsToVideoTime } from "../../utils/utils.js";
 import { RedditApiType } from "../../utils/types.js";
 import Ph_ControlsBar from "../misc/controlsBar/controlsBar.js";
@@ -116,7 +117,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		window.addEventListener("viewChange", () => this.video.pause());
 
 		const intersectionObserver = new IntersectionObserver((entries, obs) => {
-			if (entries[0].intersectionRatio > .4) {
+			if (entries[0].intersectionRatio > .4 && !classInElementTree(this.parentElement, "covered")) {
 				this.video.play();
 				this.focus({ preventScroll: true });
 			}
@@ -270,7 +271,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		})
 		controls.appendChild(this.resetViewBtn);
 
-		// settings
+		// photonSettings
 		this.controlsDropDown = new Ph_DropDown([
 			{ displayHTML: "Speed", nestedEntries: [
 					{ displayHTML: "0.10x", value: 0.10, onSelectCallback: this.setVideoSpeed.bind(this) },
