@@ -18,6 +18,7 @@ export default class Ph_Search extends HTMLElement {
 	searchPrefix: string;	// r/ or user
 	subModeBtn: HTMLDivElement;
 	userModeBtn: HTMLDivElement;
+	currentSubreddit: string = null;
 
 	constructor() {
 		super();
@@ -123,7 +124,7 @@ export default class Ph_Search extends HTMLElement {
 		], "Sort by", DirectionX.right, DirectionY.bottom, false);
 		expandedOptions.appendChild(this.sortBy);
 
-		function makeLabelCheckboxPair(labelText: string, checkboxId: string, defaultChecked: boolean, appendTo: HTMLElement): HTMLInputElement {
+		function makeLabelCheckboxPair(labelText: string, checkboxId: string, defaultChecked: boolean, appendTo: HTMLElement): { checkbox: HTMLInputElement, label: HTMLLabelElement } {
 			const wrapper = document.createElement("div");
 			wrapper.innerHTML = `<label for="${checkboxId}">${labelText}</label>`;
 			const checkbox = document.createElement("input");
@@ -136,10 +137,12 @@ export default class Ph_Search extends HTMLElement {
 			wrapper.appendChild(checkbox);
 			wrapper.appendChild(checkboxVis);
 			appendTo.appendChild(wrapper);
-			return checkbox;
+			return { checkbox: checkbox, label: wrapper.children[0] as HTMLLabelElement };
 		}
 
-		this.limitToSubreddit = makeLabelCheckboxPair("Limit to", "limitToSubreddit", true, expandedOptions);
+		const { checkbox: limitToCheckbox, label: limitToLabel } = makeLabelCheckboxPair("Limit to", "limitToSubreddit", true, expandedOptions);
+		this.limitToSubreddit = limitToCheckbox;
+
 		if (/\/search\/?$/.test(location.pathname)) {
 			const currParams = new URLSearchParams(location.search);
 			this.searchBar.value = currParams.get("q");
@@ -147,6 +150,12 @@ export default class Ph_Search extends HTMLElement {
 			this.searchTimeFrame = SortPostsTimeFrame[currParams.get("t")];
 			this.limitToSubreddit.checked = Boolean(currParams.get("restrict_sr"));
 		}
+
+		window.addEventListener("urlChange", (e: CustomEvent) => {
+			const subMatches = e.detail.match(/^\/r\/[^\/]+/);
+			this.currentSubreddit = subMatches && subMatches[0] || null;
+			limitToLabel.innerText = `Limit to ${this.currentSubreddit || "all"}`;
+		})
 	}
 
 	onTextEnter() {
@@ -286,13 +295,16 @@ export default class Ph_Search extends HTMLElement {
 		if (currentSubMatches && currentSubMatches[1])
 			url = currentSubMatches[1].replace(/\/?$/, "/search");
 
-		pushLinkToHistorySep("/search", "?" + new URLSearchParams([
-			["q", this.searchBar.value],
-			["type", "link"],
-			["restrict_sr", this.limitToSubreddit.checked ? "true" : "false"],
-			["sort", this.searchOrder],
-			["t", this.searchTimeFrame || ""],
-		]).toString());
+		pushLinkToHistorySep(
+			(this.currentSubreddit ?? "") + "/search",
+			"?" + new URLSearchParams([
+				["q", this.searchBar.value],
+				["type", "link"],
+				["restrict_sr", this.limitToSubreddit.checked ? "true" : "false"],
+				["sort", this.searchOrder],
+				["t", this.searchTimeFrame || ""],
+			]).toString()
+		);
 	}
 }
 

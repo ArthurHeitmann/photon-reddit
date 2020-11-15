@@ -167,8 +167,15 @@ input.checkbox {
 	&:checked + label {
 		background: lightcoral;
 
-		&::after {
+		&::before {
 			opacity: 1;
+		}
+	}
+
+	&:disabled + label {
+		opacity: .5;
+
+		&::before {
 		}
 	}
 
@@ -181,7 +188,7 @@ input.checkbox {
 		position: relative;
 		transition: background-color .25s ease;
 
-		&::after {
+		&::before {
 			content: "";
 			position: absolute;
 			width: 70%;
@@ -196,7 +203,7 @@ input.checkbox {
 		}
 
 		&:hover, &:focus {
-			&::after {
+			&::before {
 				opacity: .333;
 			}
 		}

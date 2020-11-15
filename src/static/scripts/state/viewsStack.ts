@@ -33,7 +33,7 @@ export default class ViewsStack {
 		state.state.index = this.pos;
 		this.views[this.pos] = state;
 
-		// document.title = state.state.title;
+		window.dispatchEvent(new CustomEvent("urlChange", { detail: state.state.url }))
 		if (this.isNextReplace) {
 			history.replaceState(state.state, state.state.title, state.state.url);
 			this.isNextReplace = false;
@@ -66,6 +66,7 @@ export default class ViewsStack {
 			this.views[this.pos].state.title, 
 			this.views[this.pos].state.url
 		);
+		window.dispatchEvent(new CustomEvent("urlChange", { detail: newUrl }));
 	}
 
 	forward(isFromPopStateEvent = false) {
