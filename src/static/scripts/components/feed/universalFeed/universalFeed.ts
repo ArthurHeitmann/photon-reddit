@@ -6,6 +6,7 @@ import Ph_Comment from "../../comment/comment.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Post from "../../post/post.js";
+import Ph_SearchFeedSorter from "../sorting/searchFeedSorter.js";
 import Ph_UniversalFeedSorter from "../sorting/universalFeedSorter.js";
 
 export default class Ph_UniversalFeed extends HTMLElement {
@@ -58,7 +59,10 @@ export default class Ph_UniversalFeed extends HTMLElement {
 		this.appendChild(this.header);
 		this.header.className = "feedHeader";
 
-		this.header.appendChild(new Ph_UniversalFeedSorter(this));
+		if (this.isSearchFeed)
+			this.header.appendChild(new Ph_SearchFeedSorter(this));
+		else
+			this.header.appendChild(new Ph_UniversalFeedSorter(this));
 
 		for (const postData of posts.data.children) {
 			try {													// TODO when no more errors happen, remove all try & catches

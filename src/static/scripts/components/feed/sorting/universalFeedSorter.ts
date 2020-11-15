@@ -91,4 +91,4 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 	}
 }
 
-customElements.define("ph-search-feed-sorter", Ph_UniversalFeedSorter);
+customElements.define("ph-universal-feed-sorter", Ph_UniversalFeedSorter);
