@@ -1,26 +1,64 @@
 import { redditApiRequest } from "../../../api/api.js";
 import { viewsStack } from "../../../state/stateManager.js";
-import { splitPathQuery } from "../../../utils/utils.js";
-import { PostSorting, RedditApiType, SortPostsOrder } from "../../../utils/types.js";
+import { splitPathQuery, throttle } from "../../../utils/utils.js";
+import { PostSorting, RedditApiType, SortPostsOrder, SortPostsTimeFrame } from "../../../utils/types.js";
 import Ph_Comment from "../../comment/comment.js";
-import { LoadPosition, Ph_Feed } from "../../feed/feed.js";
+import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Post from "../../post/post.js";
-import Ph_PostsSorter from "../sorting/postsSorter/postsSorter.js";
+import Ph_UniversalFeedSorter from "../sorting/universalFeedSorter.js";
 
-export default class Ph_UniversalFeed extends Ph_Feed {
+export default class Ph_UniversalFeed extends HTMLElement {
+	absoluteFirst: string = null;
+	beforeData: string = null;
+	afterData: string = null;
+	isLoading: boolean = false;
+	requestUrl: string;
+	hasReachedEndOfFeed = false;
 	header: HTMLDivElement;
+	isSearchFeed = false;
 
 	constructor(posts: RedditApiType, requestUrl: string) {
-		super(posts, true, requestUrl);
+		super();
+
+		this.beforeData = posts.data.before;
+		this.afterData = posts.data.after;
+		if (this.afterData === null)
+			this.hasReachedEndOfFeed = true;
+		this.requestUrl = requestUrl;
+
+		//wait for this element to be attached to a parent
+		setTimeout(() => {
+			let scrollElement = this.parentElement;
+			while (!scrollElement.classList.contains("overflow-y-auto"))
+				scrollElement = this.parentElement;
+
+			scrollElement.addEventListener("scroll", throttle(this.onScroll.bind(this), 500), { passive: true });
+		}, 0);
+
+		// find first FeedItem, once it has been added
+		const observer = new MutationObserver((mutationsList: MutationRecord[], observer) => {
+			for (const mutation of mutationsList) {
+				for (const addedNode of mutation.addedNodes) {
+					if (addedNode["itemId"]) {
+						this.absoluteFirst = addedNode["itemId"];
+						observer.disconnect();
+						return;
+					}
+				}
+			}
+		});
+		observer.observe(this, { childList: true });
 
 		this.classList.add("universalFeed");
+		if (/\/search\/?(\?.*)?$/.test(requestUrl))
+			this.isSearchFeed = true;
 
 		this.header = document.createElement("div");
 		this.appendChild(this.header);
 		this.header.className = "feedHeader";
 
-		this.header.appendChild(new Ph_PostsSorter(this));
+		this.header.appendChild(new Ph_UniversalFeedSorter(this));
 
 		for (const postData of posts.data.children) {
 			try {													// TODO when no more errors happen, remove all try & catches
@@ -42,6 +80,54 @@ export default class Ph_UniversalFeed extends Ph_Feed {
 			default:
 				new Ph_Toast(Level.Error, `Unknown feed item "${itemData.kind}"`);
 				throw `What is this feed item? ${JSON.stringify(itemData, null, 4)}`;
+		}
+	}
+
+	/**
+	 * If less than 5 screen heights are left until the end of the feed, load new content
+	 *
+	 * @param e
+	 */
+	onScroll(e) {
+		if (this.children.length <= 0 || this.isLoading)
+			return;
+		const last = this.children[this.childElementCount - 1];
+		if (last.getBoundingClientRect().y < window.innerHeight * 2.5 && !this.hasReachedEndOfFeed)
+			this.scrollAction(LoadPosition.After)
+		const first = this.children[0];
+		if (first && first.getBoundingClientRect().y > window.innerHeight * -2.5)
+			this.scrollAction(LoadPosition.Before);
+	}
+
+	scrollAction(loadPosition: LoadPosition) {
+		if (loadPosition === LoadPosition.Before && (this.beforeData === null || this.beforeData === this.absoluteFirst))
+			return;
+
+		this.isLoading = true;
+		this.loadMore(loadPosition)
+			.then(() => {
+				this.clearPrevious(loadPosition);
+				this.isLoading = false;
+			})
+			.catch(() => this.isLoading = false);
+	}
+
+	clearPrevious(loadPosition: LoadPosition) {
+		if (loadPosition === LoadPosition.Before) {
+			let last = this.children[this.childElementCount - 1];
+			while (last && last.getBoundingClientRect().y > window.innerHeight * 12) {
+				last.remove();
+				last = this.children[this.childElementCount - 1];
+			}
+			this.afterData = last["itemId"]
+		}
+		else if (loadPosition === LoadPosition.After) {
+			let first = this.children[1];
+			while (first && first.getBoundingClientRect().y < window.innerHeight * -12) {
+				first.remove();
+				first = this.children[1];
+			}
+			this.beforeData = first["itemId"];
 		}
 	}
 
@@ -68,7 +154,7 @@ export default class Ph_UniversalFeed extends Ph_Feed {
 		else {
 			for (const postData of posts.data.children.reverse()) {
 				try {
-					const newPost = this.appendChild(this.makeFeedItem(postData));
+					const newPost = this.makeFeedItem(postData);
 					this.header.insertAdjacentElement("afterend", newPost);
 				}
 				catch (e) {
@@ -81,46 +167,15 @@ export default class Ph_UniversalFeed extends Ph_Feed {
 		}
 	}
 
-	async setSorting(sortingMode: PostSorting): Promise<void> {
-		let [path, query] = splitPathQuery(this.requestUrl);
-		
-		const pathEnding = path.match(/\w*\/?$/)[0];
-		if (SortPostsOrder[pathEnding]) {
-			path = path.replace(/\w*\/?$/, sortingMode.order);
-		}
-		else {
-			path = path.replace(/\/?$/, "/");
-			path += sortingMode.order;
-		}
-		
-		// top and controversial can also be sorted by time
-		const params = new URLSearchParams(query);
-		if (sortingMode.order == SortPostsOrder.top || sortingMode.order == SortPostsOrder.controversial) {
-			params.set("t", sortingMode.timeFrame);
-		}
-		else {
-			params.delete("t");
+	replaceChildren(posts: RedditApiType[]) {
+
+		let last = this.lastElementChild;
+		while (last.className !== "feedHeader") {
+			last.remove();
+			last = this.lastElementChild;
 		}
 
-		const paramsStr = params.toString();
-		const newUrl = path + (paramsStr ? `?${paramsStr}` : "");
-		
-		viewsStack.changeCurrentUrl(newUrl);
-
-        let last = this.lastElementChild;
-        while (last.className !== "feedHeader") {
-            last.remove();
-            last = this.lastElementChild;
-		}
-		
-        const request: RedditApiType = await redditApiRequest(newUrl, [], false);
-        if (request["error"]) {
-        	new Ph_Toast(Level.Error, "Error making request to reddit");
-            throw `Error making sort request: ${JSON.stringify(request)}`;
-        }
-		
-        
-		for (const item of request.data.children) {
+		for (const item of posts) {
 			try {
 				this.appendChild(this.makeFeedItem(item));
 			}
@@ -129,8 +184,11 @@ export default class Ph_UniversalFeed extends Ph_Feed {
 				new Ph_Toast(Level.Error, `Error making feed item`);
 			}
 		}
-		
 	}
+}
+
+enum LoadPosition {
+	Before, After
 }
 
 customElements.define("ph-universal-feed", Ph_UniversalFeed);
