@@ -12,11 +12,11 @@
 	background: #00000080;
 	opacity: 1;
 	transform: scale(1);
-	transform-origin: top center;
+	transform-origin: center 25%;
 	transition: opacity .25s ease, transform .25s ease, visibility .25s ease;
 
 	&.remove {
-		transform: scale(.75);
+		transform: scale(.9);
 		opacity: 0;
 		visibility: hidden;
 	}
@@ -31,6 +31,7 @@
 		border-radius: vars.$b-r;
 		padding: 1.75rem;
 		display: flex;
+		flex-direction: column;
 
 		> .closeButton {
 			position: absolute;
@@ -44,39 +45,51 @@
 			}
 		}
 
-		> .previewArea {
-			padding-right: 1rem;
-			margin-right: 1rem;
-			width: 60%;
-			position: relative;
+		> .mainWrapper {
+			display: flex;
+			flex-grow: 1;
 
-			&::after {
-				content: "";
-				position: absolute;
-				top: 0;
-				right: 0;
-				width: 1px;
-				height: 100%;
+			> .previewArea {
+				padding-right: 1rem;
+				margin-right: 1rem;
+				width: 60%;
+				position: relative;
+
+				&::after {
+					content: "";
+					position: absolute;
+					top: 0;
+					right: 0;
+					width: 1px;
+					height: 100%;
+					background: #616161;
+				}
+			}
+
+			> .optionsArea {
+				width: 40%;
+
+				.inputGroup {
+					> div:not(:first-child) {
+						margin-left: 1rem;
+					}
+				}
+
+				.inputWrapper {
+					display: flex;
+					justify-content: space-between;
+					align-items: center;
+				}
+			}
+
+			hr {
 				background: #616161;
 			}
 		}
 
-		> .optionsArea {
-			width: 40%;
-
-			.inputGroup {
-				> div:not(:first-child) {
-					margin-left: 1rem;
-				}
-			}
-
-			.inputWrapper {
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-			}
+		> .bottomBar {
+			display: flex;
+			justify-content: flex-end;
 		}
-
-
 	}
 }

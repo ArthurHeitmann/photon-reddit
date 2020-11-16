@@ -122,7 +122,7 @@ export default class Post extends Ph_FeedItem implements Votable {
 					<a href="/user/${postData.data["author"]}" class="user${userAdditionClasses}">
 						<span>u/${postData.data["author"]}</span>
 					</a>
-					<div class="time" data-tooltip="${new Date(postData.data["created_utc"] * 1000).toString()}">${timePassedSinceStr(postData.data["created_utc"])}</div>
+					<span class="time" data-tooltip="${new Date(postData.data["created_utc"] * 1000).toString()}">${timePassedSinceStr(postData.data["created_utc"])}</span>
 					<span>ago</span>
 					${ postData.data["edited"]
 					? `	<span>|</span><span>edited</span> 

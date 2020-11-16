@@ -18,7 +18,7 @@ export default class Ph_Header extends HTMLElement {
 	connectedCallback() {
 		this.classList.add("header");
 
-		this.settings = $tag("ph-photon-settings")[0];
+		this.settings = document.body.appendChild(new Ph_PhotonSettings());
 
 		this.innerHTML = `
 			<div class="actions flex f-justify-center f-align-center">

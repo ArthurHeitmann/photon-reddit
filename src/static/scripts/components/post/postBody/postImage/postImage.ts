@@ -1,5 +1,6 @@
 import { elementWithClassInTree } from "../../../../utils/htmlStuff.js";
 import { RedditApiType } from "../../../../utils/types";
+import { globalSettings, ImageLoadingPolicy, PhotonSettings } from "../../../global/photonSettings/photonSettings.js";
 import Ph_ControlsBar from "../../../misc/controlsBar/controlsBar.js";
 import Ph_DraggableWrapper from "../draggableWrapper/draggableWrapper.js";
 
@@ -72,15 +73,16 @@ export default class Ph_PostImage extends HTMLElement {
 	constructor(galleryInitData: GalleryInitData[]) {
 		super();
 
+		let hasUnloadedOriginals = false;
 		for (const img of galleryInitData) {
 			const imgData: GalleryDataInternal = {
 				caption: img.caption,
-				originalSrc: img.previewUrl ? img.originalUrl : undefined,
-				originalImg: img.previewUrl ? null : document.createElement("img"),
-				previewImg: img.previewUrl ? document.createElement("img") : undefined
+				originalSrc: img.previewUrl && globalSettings.imageLoadingPolicy !== ImageLoadingPolicy.alwaysOriginal ? img.originalUrl : undefined,
+				originalImg: img.previewUrl && globalSettings.imageLoadingPolicy !== ImageLoadingPolicy.alwaysOriginal ? null : document.createElement("img"),
+				previewImg: img.previewUrl && globalSettings.imageLoadingPolicy !== ImageLoadingPolicy.alwaysOriginal ? document.createElement("img") : undefined
 			}
 
-			if (img.previewUrl) {
+			if (img.previewUrl && globalSettings.imageLoadingPolicy !== ImageLoadingPolicy.alwaysOriginal) {
 				imgData.previewImg.src = img.previewUrl;
 				imgData.previewImg.draggable = false;
 			}
@@ -91,8 +93,14 @@ export default class Ph_PostImage extends HTMLElement {
 			else
 				throw "No image URL given";
 
+			if (!hasUnloadedOriginals && imgData.previewImg && imgData.originalSrc)
+				hasUnloadedOriginals = true;
+
 			this.galleryData.push(imgData);
 		}
+
+		if (hasUnloadedOriginals)
+			window.addEventListener("settingsChanged", (e: CustomEvent) => this.onAlwaysLoadOriginals(e.detail), { once: true });
 
 		this.classList.add("postImage");
 		this.setAttribute("tabindex", "0");
@@ -202,6 +210,29 @@ export default class Ph_PostImage extends HTMLElement {
 		this.updateTexts();
 	}
 
+	private onAlwaysLoadOriginals(changedSettings: PhotonSettings) {
+		if (!changedSettings.imageLoadingPolicy)
+			return;
+
+		for (const [i, galleryImg] of this.galleryData.entries()) {
+			if (galleryImg.originalImg)
+				continue;
+			if (!galleryImg.previewImg)
+				throw "No preview image???";
+
+			galleryImg.originalImg = document.createElement("img");
+			galleryImg.originalImg.addEventListener("load", () => {
+				galleryImg.previewImg.remove();
+				galleryImg.previewImg = undefined;
+			}, { once: true });
+			galleryImg.originalImg.src = galleryImg.originalSrc;
+			galleryImg.originalImg.draggable = false;
+
+			if (this.currentImageIndex === i)
+				this.galleryWrapper.appendChild(galleryImg.originalImg);
+		}
+	}
+
 	updateTexts() {
 		if (this.imageIndexText) {
 			this.imageIndexText.innerText = `${this.currentImageIndex + 1} / ${this.galleryData.length}`;
@@ -240,7 +271,7 @@ export default class Ph_PostImage extends HTMLElement {
 			img.remove();
 		}
 
-		if (this.isFullscreen() && this.galleryData[this.currentImageIndex].originalImg === null) {
+		if (this.isFullscreen() && this.galleryData[this.currentImageIndex].originalImg === null && globalSettings.imageLoadingPolicy !== ImageLoadingPolicy.alwaysPreview) {
 			const origImg = document.createElement("img");
 			origImg.draggable = false;
 			origImg.src = this.galleryData[this.currentImageIndex].originalSrc;
@@ -251,7 +282,7 @@ export default class Ph_PostImage extends HTMLElement {
 				this.loadingIcon.hidden = true;
 				this.galleryData[currIndex].previewImg.remove();
 				this.galleryData[currIndex].previewImg = null;
-			});
+			}, { once: true });
 		}
 
 		if (this.galleryData[this.currentImageIndex].previewImg) {

@@ -186,6 +186,7 @@ input.checkbox {
 		box-sizing: border-box;
 		background: #4a4a4a;
 		position: relative;
+		cursor: pointer;
 		transition: background-color .25s ease;
 
 		&::before {
@@ -215,13 +216,14 @@ input.radio {
 
 	&:checked + label {
 		background: lightcoral;
+
+		&:hover {
+			background: lightcoral;
+		}
 	}
 
 	&:disabled + label {
 		opacity: .5;
-
-		&::before {
-		}
 	}
 
 	+ label {
@@ -233,9 +235,11 @@ input.radio {
 		border-radius: 50%;
 		border: 2px solid #696969;
 		position: relative;
+		cursor: pointer;
 		transition: background-color .25s ease;
 
 		&:hover, &:focus {
+			background: #865E5E;
 		}
 	}
 }

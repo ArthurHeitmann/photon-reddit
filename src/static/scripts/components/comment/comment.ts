@@ -164,10 +164,9 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 				<a href="/user/${commentData.data["author"]}" class="user${userAdditionClasses}">
 					<span>u/${commentData.data["author"]}</span>
 				</a>
-				<span>commented</span>
-				<div class="time" data-tooltip="${new Date(commentData.data["created_utc"] * 1000).toString()}">
+				<span class="time" data-tooltip="${new Date(commentData.data["created_utc"] * 1000).toString()}">
 					${timePassedSinceStr(commentData.data["created_utc"])}
-				</div>
+				</span>
 				<span>ago</span>
 					${ commentData.data["edited"]
 					? `	<span>|</span><span>edited</span>

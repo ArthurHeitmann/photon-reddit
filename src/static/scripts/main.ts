@@ -1,11 +1,13 @@
 import { fetchThisUserName } from "./api/api.js";
+import Ph_Header from "./components/global/header/header.js";
 import { checkTokenExpiry, initiateLogin, isAccessTokenValid } from "./login/login.js";
 import { pushLinkToHistorySep } from "./state/stateManager.js";
 import { $class, $id, $tag, linksToSpa } from "./utils/htmlStuff.js";
 import { SVGAnimateElement } from "./utils/types.js";
 
-const header: HTMLElement = $tag("header")[0]; 
 async function init(): Promise<void> {
+	$id("mainWrapper").insertAdjacentElement("afterbegin", new Ph_Header());
+
 	linksToSpa(document.body);
 	const loginBtn = $id("loginButton");
 	loginBtn.addEventListener("click", initiateLogin);
