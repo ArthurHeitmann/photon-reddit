@@ -4,13 +4,13 @@ import { elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
 import { numberToShort as numberToShort, numberToShortStr, timePassedSinceStr } from "../../utils/utils.js";
 import Ph_FeedItem from "../feed/feedItem/feedItem.js";
+import { globalSettings, NsfwPolicy, PhotonSettings } from "../global/photonSettings/photonSettings.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
 import Ph_DropDownEntry from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_Flair from "../misc/flair/flair.js";
 import Ph_Toast, { Level } from "../misc/toast/toast.js";
 import Votable from "../misc/votable/votable.js";
 import Ph_VoteButton from "../misc/voteButton/voteButton.js";
-import postBody from "./postBody/postBody.js";
 import Ph_PostBody from "./postBody/postBody.js";
 
 export default class Post extends Ph_FeedItem implements Votable {
@@ -20,6 +20,7 @@ export default class Post extends Ph_FeedItem implements Votable {
 	voteDownButton: Ph_VoteButton;
 	url: string;
 	permalink: string;
+	cover: HTMLElement = null;
 	// Votable implementation
 	totalVotes: number;
 	votableId: string;
@@ -151,23 +152,43 @@ export default class Post extends Ph_FeedItem implements Votable {
 			.appendChild(Ph_Flair.fromThingData(postData.data, "link"));
 		mainPart.$class("user")[0]
 			.insertAdjacentElement("afterend", Ph_Flair.fromThingData(postData.data, "author"));
-		if (postData.data["over_18"]) {
+		const makeCoverNFlair = (flairColor: string, flairText: string, makeCover: boolean) => {
 			mainPart.$class("flairWrapper")[0]
-				.appendChild(new Ph_Flair({type: "text", backgroundColor: "darkred", text: "NSFW"}));
-			this.classList.add("nsfw");
-			if (isInFeed && !this.isEmpty(postBody)) {
+				.appendChild(new Ph_Flair({type: "text", backgroundColor: flairColor, text: flairText}));
+			if (makeCover && !this.cover && isInFeed && !this.isEmpty(postBody)) {
 				postBody.classList.add("covered");
-				postBody.appendChild(this.makeContentCover());
+				this.cover = postBody.appendChild(this.makeContentCover());
 			}
+			else
+				this.cover = null;
+		}
+		if (postData.data["over_18"]) {
+			this.classList.add("nsfw");
+			if (globalSettings.nsfwPolicy === NsfwPolicy.never)
+				this.classList.add("hide");
+			else
+				makeCoverNFlair("darkred", "NSFW", globalSettings.nsfwPolicy === NsfwPolicy.covered);
+
+			window.addEventListener("settingsChanged", (e: CustomEvent) => {
+				const nsfwPolicy: NsfwPolicy = (e.detail as PhotonSettings).nsfwPolicy;
+				if (!nsfwPolicy)		// this setting hasn't been changed
+					return;
+				if (this.cover)			// previously cover as enabled, due to change can't be covered --> remove it
+					this.cover.click();
+				if (nsfwPolicy === NsfwPolicy.never)		// hide this post
+					this.classList.add("hide");
+				else {										// show this post
+					this.classList.remove("hide");
+					if (nsfwPolicy === NsfwPolicy.covered && isInFeed && !this.isEmpty(postBody)) {		// add cover
+						postBody.classList.add("covered");
+						this.cover = postBody.appendChild(this.makeContentCover());
+					}
+				}
+			});
 		}
 		if (postData.data["spoiler"]) {
-			mainPart.getElementsByClassName("flairWrapper")[0]
-				.appendChild(new Ph_Flair({type: "text", backgroundColor: "orange", text: "Spoiler"}));
 			this.classList.add("spoiler");
-			if (isInFeed && !this.isEmpty(postBody)) {
-				postBody.classList.add("covered");
-				postBody.appendChild(this.makeContentCover());
-			}
+			makeCoverNFlair("orange", "Spoiler", true);
 		}
 
 		this.appendChild(this.actionBar);
@@ -187,6 +208,7 @@ export default class Post extends Ph_FeedItem implements Votable {
 		cover.addEventListener("click", () => {
 			this.$class("content")[0].classList.remove("covered");
 			cover.remove();
+			this.cover = null;
 		})
 		cover.appendChild(removeBtn);
 		return cover;

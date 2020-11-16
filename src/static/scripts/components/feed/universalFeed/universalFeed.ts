@@ -93,7 +93,8 @@ export default class Ph_UniversalFeed extends HTMLElement {
 	 * @param e
 	 */
 	onScroll(e) {
-		if (this.children.length <= 0 || this.isLoading)
+		// stop if empty or is loading or for some reason close to empty (normal feed will have very large scrollHeight)
+		if (this.children.length <= 0 || this.isLoading || this.scrollHeight < window.innerHeight)
 			return;
 		const last = this.children[this.childElementCount - 1];
 		if (last.getBoundingClientRect().y < window.innerHeight * 2.5 && !this.hasReachedEndOfFeed)

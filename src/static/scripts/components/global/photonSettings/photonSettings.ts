@@ -73,7 +73,8 @@ export default class Ph_PhotonSettings extends HTMLElement {
 				{ id: ImageLoadingPolicy.alwaysOriginal, text: "Always load original images" },
 			],
 			(loadingPolicy: ImageLoadingPolicy) => {
-				this.temporarySettings.imageLoadingPolicy = loadingPolicy;
+				if (loadingPolicy !== globalSettings.imageLoadingPolicy)
+					this.temporarySettings.imageLoadingPolicy = loadingPolicy;
 			}
 		));
 		optionsArea.appendChild(document.createElement("hr"));
@@ -87,7 +88,10 @@ export default class Ph_PhotonSettings extends HTMLElement {
 				{ id: NsfwPolicy.always, text: "Always show NSFW posts" },
 			],
 			(nsfwPolicy: NsfwPolicy) => {
-				this.temporarySettings.nsfwPolicy = nsfwPolicy;
+				if (nsfwPolicy !== globalSettings.nsfwPolicy)
+					this.temporarySettings.nsfwPolicy = nsfwPolicy;
+				else
+					delete this.temporarySettings.nsfwPolicy;
 			}
 		));
 
