@@ -10,21 +10,39 @@
 	transition: transform .25s linear;
 
 	> .actions {
-		height: 100%;
-		box-sizing: content-box;
 		position: relative;
 		z-index: 55;
-		transition: height .25s linear;
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		transform: translateY(-5%);
+		transition: all .25s linear;
 
-		& > * {
-			margin: 0 1.5rem;
+		> * {
+			width: 100%;
+			flex-grow: 1;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+
+			& > * {
+				margin: 0 1.5rem;
+			}
+
+			&:empty {
+				display: none;
+			}
 		}
 
-		> .showSettingsButton {
-			--dim: 2.5rem;
+		.top {
+			transition: height .25s linear;
 
-			> img {
-				width: 2.5rem;
+			> .showSettingsButton {
+				--dim: 2.5rem;
+
+				> img {
+					width: 2.5rem;
+				}
 			}
 		}
 	}
@@ -62,6 +80,7 @@
 
 		.actions {
 			height: 130%;
+			transform: translateY(0);
 		}
 
 		> .accessibilitySpacer {

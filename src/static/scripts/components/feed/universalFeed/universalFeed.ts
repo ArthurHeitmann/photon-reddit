@@ -1,11 +1,13 @@
 import { redditApiRequest } from "../../../api/api.js";
 import { viewsStack } from "../../../state/stateManager.js";
+import { $tag, elementWithClassInTree } from "../../../utils/htmlStuff.js";
 import { splitPathQuery, throttle } from "../../../utils/utils.js";
 import { PostSorting, RedditApiType, SortPostsOrder, SortPostsTimeFrame } from "../../../utils/types.js";
 import Ph_Comment from "../../comment/comment.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Post from "../../post/post.js";
+import { Ph_ViewState } from "../../viewState/viewState.js";
 import Ph_SearchFeedSorter from "../sorting/searchFeedSorter.js";
 import Ph_UniversalFeedSorter from "../sorting/universalFeedSorter.js";
 
@@ -16,7 +18,6 @@ export default class Ph_UniversalFeed extends HTMLElement {
 	isLoading: boolean = false;
 	requestUrl: string;
 	hasReachedEndOfFeed = false;
-	header: HTMLDivElement;
 	isSearchFeed = false;
 
 	constructor(posts: RedditApiType, requestUrl: string) {
@@ -55,17 +56,30 @@ export default class Ph_UniversalFeed extends HTMLElement {
 		if (/\/search\/?(\?.*)?$/.test(requestUrl))
 			this.isSearchFeed = true;
 
-		this.header = document.createElement("div");
-		this.appendChild(this.header);
-		this.header.className = "feedHeader";
+		setTimeout(() => {
+			const headerElements = [];
+			const title = document.createElement("div");
+			if (/^\/?(\?.*)?$/.test(requestUrl))									// home
+				title.innerText = "Home";
+			else if (/^\/r\/[^/]+/.test(requestUrl))								// subreddit
+				title.innerText = requestUrl.match(/r\/[^/]+/)[0];
+			else if (/^\/(u|user)\/[^/]+\/m\/[^/]+/.test(requestUrl))				// multi
+				title.innerText = "Multireddit " + requestUrl.match(/\/m\/([^/]+)/)[1];
+			else if (/^\/(u|user)\/[^/]+/.test(requestUrl))							// user
+				title.innerText = "u/" + requestUrl.match(/\/(u|user)\/([^/]+)/)[2];
+			else
+				title.innerText = `Unknown feed for ${requestUrl}`;
+			headerElements.push(title);
+			if (this.isSearchFeed)
+				headerElements.push(new Ph_SearchFeedSorter(this));
+			else
+				headerElements.push(new Ph_UniversalFeedSorter(this));
+			(elementWithClassInTree(this.parentElement, "viewState") as Ph_ViewState).setHeaderElements(headerElements);
+		}, 0);
 
-		if (this.isSearchFeed)
-			this.header.appendChild(new Ph_SearchFeedSorter(this));
-		else
-			this.header.appendChild(new Ph_UniversalFeedSorter(this));
 
 		for (const postData of posts.data.children) {
-			try {													// TODO when no more errors happen, remove all try & catches
+			try {
 				this.appendChild(this.makeFeedItem(postData));
 			}
 			catch (e) {
@@ -127,10 +141,10 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			this.afterData = last["itemId"]
 		}
 		else if (loadPosition === LoadPosition.After) {
-			let first = this.children[1];
+			let first = this.children[0];
 			while (first && first.getBoundingClientRect().y < window.innerHeight * -12) {
 				first.remove();
-				first = this.children[1];
+				first = this.children[0];
 			}
 			this.beforeData = first["itemId"];
 		}
@@ -160,7 +174,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			for (const postData of posts.data.children.reverse()) {
 				try {
 					const newPost = this.makeFeedItem(postData);
-					this.header.insertAdjacentElement("afterend", newPost);
+					this.insertAdjacentElement("afterbegin", newPost);
 				}
 				catch (e) {
 					console.error(e);
@@ -173,12 +187,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 	}
 
 	replaceChildren(posts: RedditApiType[]) {
-
-		let last = this.lastElementChild;
-		while (last.className !== "feedHeader") {
-			last.remove();
-			last = this.lastElementChild;
-		}
+		this.innerText = "";
 
 		for (const item of posts) {
 			try {

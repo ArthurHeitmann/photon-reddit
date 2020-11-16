@@ -14,6 +14,7 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 		super();
 
 		this.feed = feed;
+		this.className = "feedSorter";
 
 		this.appendChild(this.dropdown = new Ph_DropDown([
 			{ displayHTML: "Default", value: SortPostsOrder.default, onSelectCallback: this.handleSortSelect.bind(this) },

@@ -1,5 +1,7 @@
 import { $class, $tag } from "../../../utils/htmlStuff.js";
 import { SVGAnimateElement } from "../../../utils/types.js";
+import Ph_DropDownArea from "../../misc/dropDown/dropDownArea/dropDownArea.js";
+import { Ph_ViewState } from "../../viewState/viewState.js";
 import Ph_Search from "../search/search.js";
 import Ph_PhotonSettings from "../photonSettings/photonSettings.js";
 
@@ -9,10 +11,12 @@ export default class Ph_Header extends HTMLElement {
 	headerShowVisualizer = $class("headerShowVisualizer");
 	hideTimeout = null;
 	settings: Ph_PhotonSettings;
+	feedSpecificElements: HTMLElement;
 
 	constructor() {
 		super();
 
+		window.addEventListener("viewChange", (e: CustomEvent) => this.setFeedElements((e.detail as Ph_ViewState).headerElements));
 	}
 
 	connectedCallback() {
@@ -22,25 +26,12 @@ export default class Ph_Header extends HTMLElement {
 
 		this.innerHTML = `
 			<div class="actions flex f-justify-center f-align-center">
-				<a href="/" class="home"><div>Photon</div></a>
-				<div class="subredditList dropdown">
-					<a href="/r/JavaScript" class="listItem">
-						<img src="#" alt="" class="subredditIcon">
-						<div class="title">JavaScript</div>
-					</a>	
-					<a href="/r/ProgrammingHorror" class="listItem">
-						<img src="#" alt="" class="subredditIcon">
-						<div class="title">ProgrammingHorror</div>
-					</a>	
+				<div class="top">
+					<a href="/" class="home"><div>Photon</div></a>
+					<a href="#" id="loginButton" hidden>Login with Reddit</a>
+					<button class="showSettingsButton transparentButtonAlt"><img src="/img/settings1.svg" alt="show settings" draggable="false"></button>
 				</div>
-				<button class="showSubredditListButton">Subs</button>
-				<button class="showUserListButton">u/user</button>
-				<div class="textFieldWithButton dropdown">
-					<input type="text">
-					<button></button>
-				</div>
-				<a href="#" id="loginButton" hidden>Login with Reddit</a>
-				<button class="showSettingsButton transparentButtonAlt"><img src="/img/settings1.svg" alt="show settings" draggable="false"></button>
+				<div class="bottom"></div>
 			</div>
 			<div class="expander absolute w100">
 				<svg viewBox="0 0 1400 200" preserveAspectRatio="none">
@@ -57,6 +48,8 @@ export default class Ph_Header extends HTMLElement {
 			<div class="accessibilitySpacer absolute center-h-alt"></div>
 		`;
 
+		this.feedSpecificElements = this.$css(".actions > .bottom")[0] as HTMLElement;
+
 		this.$class("home")[0]
 			.insertAdjacentElement("afterend", this.search = new Ph_Search());
 
@@ -66,12 +59,21 @@ export default class Ph_Header extends HTMLElement {
 			this.settings.toggle();
 			this.headerMouseLeave();
 		});
+	}
 
+	setFeedElements(elements: HTMLElement[]) {
+		this.feedSpecificElements.innerText = "";
+		this.feedSpecificElements.append(...elements);
+	}
+
+	setFeedElement(element: HTMLElement) {
+		this.setFeedElements([element]);
 	}
 
 	clearHideTimeout() {
-		if (this.hideTimeout === null)
+		if (this.hideTimeout === null) {
 			return;
+		}
 
 		clearTimeout(this.hideTimeout);
 		this.hideTimeout = null;
@@ -83,8 +85,9 @@ export default class Ph_Header extends HTMLElement {
 			return;
 		}
 
-		for (const anim of this.headerShowVisualizer)
+		for (const anim of this.headerShowVisualizer) {
 			(anim as SVGAnimateElement).beginElement();
+		}
 		this.classList.add("hover");
 		this.clearHideTimeout();
 	}
@@ -92,18 +95,25 @@ export default class Ph_Header extends HTMLElement {
 	headerMouseLeave(e?: MouseEvent) {
 		if (e && e.relatedTarget === null) {
 			this.hideTimeout = setTimeout(() => {
-				for (const anim of this.headerHideVisualizer)
+				for (const anim of this.headerHideVisualizer) {
 					(anim as SVGAnimateElement).beginElement();
+				}
 				this.classList.remove("hover");
-				this.search.minimize();
+				this.minimizeAll();
 			}, 10000);
 		} else {
-			for (const anim of this.headerHideVisualizer)
+			for (const anim of this.headerHideVisualizer) {
 				(anim as SVGAnimateElement).beginElement();
+			}
 			this.classList.remove("hover");
 			this.clearHideTimeout();
-			this.search.minimize();
+			this.minimizeAll();
 		}
+	}
+
+	minimizeAll() {
+		this.search.minimize();
+		Array.from(this.$class("dropDownArea")).forEach((area: Ph_DropDownArea) => area.closeMenu(true));
 	}
 }
 

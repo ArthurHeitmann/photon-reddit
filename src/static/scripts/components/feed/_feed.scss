@@ -1,12 +1,6 @@
 @use '../../../style/vars';
 
-.feedHeader {
-	display: flex;
-
-	> :first-child {
-		margin-left: auto;
-	}
-
+.feedSorter {
 	.dropDownButton {
 		display: flex;
 		align-items: center;
@@ -15,10 +9,6 @@
 			height: 2em;
 			margin-left: .5rem;
 		}
-	}
-
-	.dropDownArea {
-		right: 0;
 	}
 }
 

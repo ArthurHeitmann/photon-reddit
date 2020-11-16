@@ -29,10 +29,14 @@ code {
 	margin: 0 .25rem;
 }
 
-pre > code {
-	padding: .5rem .75rem;
-	border-radius: .5rem;
-	margin: .5rem 0;
+pre {
+	white-space: normal;
+
+	> code {
+		padding: .5rem .75rem;
+		border-radius: .5rem;
+		margin: .5rem 0;
+	}
 }
 
 p {
@@ -43,6 +47,8 @@ p {
 table {
 	border-collapse: collapse;
 	margin: .75rem 0;
+	table-layout: fixed;
+	width: 100%;
 }
 
 td, th {

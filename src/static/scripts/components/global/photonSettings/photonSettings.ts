@@ -1,5 +1,6 @@
-import { deepClone } from "../../../utils/utils.js";
 import "../../../utils/htmlStuff.js";
+import { deepClone, isObjectEmpty } from "../../../utils/utils.js";
+import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 
 export enum ImageLoadingPolicy {
 	alwaysPreview = "alwaysPreview",
@@ -100,6 +101,10 @@ export default class Ph_PhotonSettings extends HTMLElement {
 		const saveButton = document.createElement("button");
 		saveButton.innerText = "Save";
 		saveButton.addEventListener("click", () => {
+			if (isObjectEmpty(this.temporarySettings)) {
+				new Ph_Toast(Level.Warning, "Nothing to save", 2000);
+				return;
+			}
 			globalSettings = {
 				...globalSettings,
 				...deepClone(this.temporarySettings),
@@ -107,6 +112,7 @@ export default class Ph_PhotonSettings extends HTMLElement {
 			window.dispatchEvent(new CustomEvent("settingsChanged", { detail: deepClone(this.temporarySettings) }));
 			this.temporarySettings = {};
 			localStorage.settings = JSON.stringify(globalSettings);
+			new Ph_Toast(Level.Success, "", 1500);
 		})
 		bottomBar.appendChild(saveButton);
 		windowWrapper.appendChild(bottomBar);

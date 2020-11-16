@@ -13,6 +13,7 @@ export default class Ph_SearchFeedSorter extends HTMLElement {
 	constructor(feed: Ph_UniversalFeed) {
 		super();
 
+		this.className = "feedSorter";
 		this.feed = feed;
 
 		this.appendChild(this.dropdown = new Ph_DropDown([
