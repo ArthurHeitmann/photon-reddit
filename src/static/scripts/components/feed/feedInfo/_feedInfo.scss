@@ -1,0 +1,29 @@
+@use "../../../../style/vars";
+
+.feedInfo {
+	position: fixed;
+	z-index: 200;
+	top: 0;
+	right: 0;
+	height: 100%;
+	width: min(33vw, 30rem);
+	background: vars.$background-el1;
+	border-left: 1px solid #383838;
+	opacity: 1;
+	transform: translateX(0);
+	transition: all .25s ease;
+
+	&.remove {
+		opacity: 0;
+		transform: translateX(20%);
+		visibility: hidden;
+	}
+}
+
+.showInfo {
+	height: 1.5rem;
+
+	> img {
+		height: 1.5rem;
+	}
+}

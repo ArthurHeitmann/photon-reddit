@@ -1,15 +1,21 @@
 import { redditApiRequest } from "../../../api/api.js";
-import { viewsStack } from "../../../state/stateManager.js";
-import { $tag, elementWithClassInTree } from "../../../utils/htmlStuff.js";
-import { splitPathQuery, throttle } from "../../../utils/utils.js";
-import { PostSorting, RedditApiType, SortPostsOrder, SortPostsTimeFrame } from "../../../utils/types.js";
+import { elementWithClassInTree } from "../../../utils/htmlStuff.js";
+import { RedditApiType } from "../../../utils/types.js";
+import { throttle } from "../../../utils/utils.js";
 import Ph_Comment from "../../comment/comment.js";
-import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Post from "../../post/post.js";
 import { Ph_ViewState } from "../../viewState/viewState.js";
+import Ph_FeedInfo from "../feedInfo/feedInfo.js";
 import Ph_SearchFeedSorter from "../sorting/searchFeedSorter.js";
 import Ph_UniversalFeedSorter from "../sorting/universalFeedSorter.js";
+
+export enum FeedType {
+	subreddit,
+	multireddit,
+	user,
+	misc,
+}
 
 export default class Ph_UniversalFeed extends HTMLElement {
 	absoluteFirst: string = null;
@@ -56,20 +62,42 @@ export default class Ph_UniversalFeed extends HTMLElement {
 		if (/\/search\/?(\?.*)?$/.test(requestUrl))
 			this.isSearchFeed = true;
 
+		// make feed specific header elements
 		setTimeout(() => {
 			const headerElements = [];
 			const title = document.createElement("div");
-			if (/^\/?(\?.*)?$/.test(requestUrl))									// home
+			title.className = "feedTitle";
+			let feedType: FeedType;
+			let feedBaseUrl: string;
+			if (/^\/?(\?.*)?$/.test(requestUrl)) {									// home
 				title.innerText = "Home";
-			else if (/^\/r\/[^/]+/.test(requestUrl))								// subreddit
+				feedType = FeedType.misc;
+			}
+			else if (/^\/r\/[^/]+/.test(requestUrl)) {								// subreddit
 				title.innerText = requestUrl.match(/r\/[^/]+/)[0];
-			else if (/^\/(u|user)\/[^/]+\/m\/[^/]+/.test(requestUrl))				// multi
+				feedType = FeedType.subreddit;
+				feedBaseUrl = requestUrl.match(/\/r\/[^/]+/)[0];
+			}
+			else if (/^\/(u|user)\/[^/]+\/m\/[^/]+/.test(requestUrl)) {				// multi
 				title.innerText = "Multireddit " + requestUrl.match(/\/m\/([^/]+)/)[1];
-			else if (/^\/(u|user)\/[^/]+/.test(requestUrl))							// user
+				feedType = FeedType.multireddit;
+				const matches = requestUrl.match(/\/(u|user)\/([^/]+)\/m\/([^/]+)/)
+				feedBaseUrl = `/user/${matches[2]}/m/${matches[3]}`;
+			}
+			else if (/^\/(u|user)\/[^/]+/.test(requestUrl)) {						// user
 				title.innerText = "u/" + requestUrl.match(/\/(u|user)\/([^/]+)/)[2];
-			else
+				feedType = FeedType.user;
+				feedBaseUrl = "/user/" + requestUrl.match(/\/(u|user)\/([^/]+)/)[2];
+			}
+			else {
+				new Ph_Toast(Level.Error, `Unknown feed for ${requestUrl}`)
+				console.error(`Unknown feed for ${requestUrl}`);
 				title.innerText = `Unknown feed for ${requestUrl}`;
+				feedType = FeedType.misc;
+			}
 			headerElements.push(title);
+			if (feedType !== FeedType.misc)
+				headerElements.push(new Ph_FeedInfo(feedType, feedBaseUrl).makeShowInfoButton());
 			if (this.isSearchFeed)
 				headerElements.push(new Ph_SearchFeedSorter(this));
 			else
