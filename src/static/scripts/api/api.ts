@@ -7,8 +7,8 @@ import { isObjectEmpty, splitPathQuery } from "../utils/utils.js";
 
 export async function redditApiRequest(pathAndQuery, params: string[][], requiresLogin: boolean, options = {}) {
 	if (requiresLogin && !isLoggedIn) {
-		new Ph_Toast(Level.Error, "You need to be logged in tu use this feature");
-		throw "This feature requires te be logged in";
+		new Ph_Toast(Level.Error, "You need to be logged in to use this feature");
+		throw "This feature requires to be logged in";
 	}
 
 	if (requiresLogin || isLoggedIn)

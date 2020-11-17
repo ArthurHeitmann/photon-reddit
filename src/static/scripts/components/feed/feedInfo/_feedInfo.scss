@@ -25,7 +25,7 @@
 
 	> .bannerImg {
 		width: 100%;
-		min-height: 3rem;
+		min-height: 5rem;
 		max-height: 10rem;
 		object-fit: cover;
 		margin-top: -1.5rem;
@@ -100,7 +100,28 @@
 	}
 
 	.description {
+		position: relative;
 
+		> .descriptionSwitcher {
+			position: absolute;
+			top: 0;
+			right: .75rem;
+			opacity: 0.5;
+			transition: opacity .25s ease;
+			width: 2.5rem;
+			height: 2.5rem;
+			padding: .5rem;
+			transform: translateY(-50%);
+
+			&:hover {
+				opacity: 1;
+			}
+
+			img {
+				width: 1.5rem;
+				height: 1.5rem;
+			}
+		}
 	}
 }
 

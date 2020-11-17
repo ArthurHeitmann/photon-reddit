@@ -111,9 +111,10 @@ export default class Ph_FeedInfo extends HTMLElement {
 		const headerBar = document.createElement("div");
 		headerBar.className = "headerBar";
 		this.appendChild(headerBar);
-		if (this.loadedInfo.data["community_icon"]) {
+		const iconUrl = this.loadedInfo.data["community_icon"] || this.loadedInfo.data["icon_img"];
+		if (iconUrl) {
 			const profileImg = document.createElement("img");
-			profileImg.src = this.loadedInfo.data["community_icon"];
+			profileImg.src = iconUrl;
 			profileImg.className = "profileImg";
 			headerBar.appendChild(profileImg);
 		}
@@ -163,10 +164,21 @@ export default class Ph_FeedInfo extends HTMLElement {
 		title.className = "title";
 		title.innerText = escapeHTML(this.loadedInfo.data["title"]);
 		this.appendChild(title);
+		const textNew: string = this.loadedInfo.data["public_description_html"];
+		const textOld: string = this.loadedInfo.data["description_html"];
+		let currentIsNewText = textNew.length >= textOld.length;
 		const description = document.createElement("div");
-		description.className = "description";
-		description.innerHTML = this.loadedInfo.data["public_description_html"];
 		this.appendChild(description);
+		description.className = "description";
+		const descriptionText = document.createElement("div");
+		description.appendChild(descriptionText);
+		descriptionText.innerHTML = currentIsNewText ? textNew : textOld;
+		const descriptionSwitcher = document.createElement("button");
+		description.appendChild(descriptionSwitcher);
+		descriptionSwitcher.className = "descriptionSwitcher transparentButtonAlt";
+		descriptionSwitcher.innerHTML = `<img src="/img/swap.svg" draggable="false">`;
+		descriptionSwitcher.addEventListener("click",
+			() => descriptionText.innerHTML = (currentIsNewText = !currentIsNewText) ? textNew : textOld);
 	}
 
 	saveInfo() {
