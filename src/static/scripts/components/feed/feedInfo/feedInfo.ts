@@ -1,4 +1,4 @@
-import { redditApiRequest } from "../../../api/api.js";
+import { redditApiRequest, subscribe } from "../../../api/api.js";
 import { classInElementTree, escapeHTML } from "../../../utils/htmlStuff.js";
 import { RedditApiType } from "../../../utils/types.js";
 import { numberToShort } from "../../../utils/utils.js";
@@ -40,7 +40,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		document.body.appendChild(this);
 	}
 
-	getOrUpdateInfo() {
+	async getOrUpdateInfo() {
 		const isValid = this.isLoadedInfoValid();
 		// if (isValid && this.loadedInfo.lastUpdatedMsUTC + Ph_FeedInfo.refreshEveryNMs > Date.now())
 		// 	return
@@ -51,10 +51,10 @@ export default class Ph_FeedInfo extends HTMLElement {
 			console.error(`Corrupted feed info for ${this.feedUrl} (${JSON.stringify(this.loadedInfo)})`);
 			throw "Corrupted feed info";
 		}
-		if (!isValid && this.loadedInfo.lastUpdatedMsUTC + Ph_FeedInfo.refreshEveryNMs < Date.now()) {
+		if (!isValid || this.loadedInfo.lastUpdatedMsUTC + Ph_FeedInfo.refreshEveryNMs < Date.now()) {
 			switch (this.loadedInfo.feedType) {
 				case FeedType.subreddit:
-					this.loadSubredditInfo();
+					await this.loadSubredditInfo();
 					break;
 				case FeedType.multireddit:
 				// break;
@@ -125,6 +125,19 @@ export default class Ph_FeedInfo extends HTMLElement {
 		const subscribeButton = document.createElement("button");
 		subscribeButton.className = "subscribeButton";
 		subscribeButton.innerText = this.loadedInfo.data["user_is_subscriber"] ? "Unsubscribe" : "Subscribe";
+		subscribeButton.addEventListener("click", async () => {
+			this.loadedInfo.data["user_is_subscriber"] = !this.loadedInfo.data["user_is_subscriber"];
+			subscribeButton.innerText = this.loadedInfo.data["user_is_subscriber"] ? "Unsubscribe" : "Subscribe";
+			if (await subscribe(this.loadedInfo.data["name"], this.loadedInfo.data["user_is_subscriber"])) {
+				new Ph_Toast(Level.Success, "", 2000)
+			}
+			else {
+				this.loadedInfo.data["user_is_subscriber"] = !this.loadedInfo.data["user_is_subscriber"];
+				subscribeButton.innerText = this.loadedInfo.data["user_is_subscriber"] ? "Unsubscribe" : "Subscribe";
+				new Ph_Toast(Level.Error, `Error subscribing to subreddit`, 2000);
+			}
+
+		});
 		subActionsWrapper.appendChild(subscribeButton);
 		subActionsWrapper.appendChild(new Ph_DropDown(
 			[

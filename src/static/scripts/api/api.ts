@@ -173,3 +173,20 @@ export async function searchSubreddits(query: string, limit = 5): Promise<Reddit
 export async function searchUser(query: string, limit = 5): Promise<RedditApiType> {
 	return await redditApiRequest("/users/search", [["q", query], ["limit", limit.toString()]], false);
 }
+
+export async function subscribe(subredditFullName: string, shouldSubscribe: boolean): Promise<boolean> {
+	try {
+		return isObjectEmpty(await redditApiRequest(
+			"/api/subscribe",
+			[
+				["action", shouldSubscribe ? "sub" : "unsub"],
+				["sr", subredditFullName]
+			],
+			true,
+			{method: "POST"}
+		));
+	} catch (e) {
+		console.error(e);
+		return false;
+	}
+}
