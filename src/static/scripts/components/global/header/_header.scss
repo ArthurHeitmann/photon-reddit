@@ -55,7 +55,6 @@
 		svg {
 			width: 100%;
 			height: calc(#{vars.$headerHeight} * 2);
-			filter: drop-shadow(0 0 1rem var(--shadow-color));
 
 			.filled {
 				fill: var(--bg-color);

@@ -89,3 +89,9 @@ export function linksToInlineImages(elem: HTMLElement) {
 		(link as HTMLAnchorElement).onclick = (e: MouseEvent) => Boolean(e.ctrlKey);
 	}
 }
+
+export function escapeHTML(unsafeHTML: string): string {
+	const dummy = document.createElement("div");
+	dummy.innerText = unsafeHTML;
+	return dummy.innerHTML;
+}

@@ -50,9 +50,11 @@
 
 				> div {
 					margin: auto;
-					padding: .25rem .4rem;
-					background: vars.$background;
-					border: 1px solid vars.$text;
+					padding: 0.25rem 0.75rem;
+					background: var(--bg-color);
+					border: 1px solid var(--text-color);
+					height: 2rem;
+					border-radius: 1rem;
 				}
 			}
 
