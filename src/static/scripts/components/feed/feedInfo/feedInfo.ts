@@ -12,6 +12,26 @@ interface StoredFeedInfo {
 	lastUpdatedMsUTC: number;
 }
 
+interface SubredditRule {
+	kind: string,
+	description: string,
+	short_name: string,
+	violation_reason: string
+	created_utc: number,
+	priority: number,
+	description_html: string
+}
+
+interface SubredditModerator {
+	name: string,
+	author_flair_text: string,
+	mod_permissions: string[],
+	date: number,
+	rel_id: string,
+	id: string,
+	author_flair_css_class: string
+}
+
 export default class Ph_FeedInfo extends HTMLElement {
 	focusLossHideRef: (e: MouseEvent) => void;
 	hideRef: () => void;
@@ -88,16 +108,28 @@ export default class Ph_FeedInfo extends HTMLElement {
 
 	async loadSubredditInfo() {
 		let feedAbout: RedditApiType;
+		let rules: SubredditRule[];
+		let mods: SubredditModerator[];
 		try {
 			feedAbout = await redditApiRequest(`${this.feedUrl}/about`, [], false);
 			if (feedAbout["error"] || !(feedAbout["kind"] && feedAbout["data"]))
-				throw `Invalid response ${JSON.stringify(feedAbout)}`;
+				throw `Invalid about response ${JSON.stringify(feedAbout)}`;
+			const tmpRules = await redditApiRequest(`${this.feedUrl}/about/rules`, [], false);
+			if (tmpRules["error"] || !tmpRules["rules"])
+				throw `Invalid rules response ${JSON.stringify(tmpRules)}`;
+			rules = tmpRules["rules"];
+			const tmpMods = await redditApiRequest(`${this.feedUrl}/about/moderators`, [], false);
+			if (tmpMods["error"] || !(tmpMods["kind"] === "UserList" && tmpMods["data"]))
+				throw `Invalid mods response ${JSON.stringify(tmpRules)}`;
+			mods = tmpMods["data"]["children"];
 		} catch (e) {
 			new Ph_Toast(Level.Error, "Error getting subreddit info");
 			console.error(`Error getting subreddit info for ${this.feedUrl}`);
 			console.error(e);
 		}
 		this.loadedInfo.data = feedAbout.data;
+		this.loadedInfo.data.rules = rules;
+		this.loadedInfo.data.mods = mods;
 		this.loadedInfo.lastUpdatedMsUTC = Date.now();
 		this.saveInfo();
 	}
@@ -183,7 +215,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		const publicDescription = document.createElement("div");
 		publicDescription.innerHTML = this.loadedInfo.data["public_description_html"];
 		const rules = document.createElement("div");
-		rules.innerHTML = "Rules";
+		rules.append(...this.makeRules());
 		const miscText = document.createElement("div");
 		miscText.innerHTML = "Misc";
 		this.appendChild(this.makeSwitchableBar([
@@ -193,15 +225,6 @@ export default class Ph_FeedInfo extends HTMLElement {
 			{ titleHTML: "Other", content: miscText },
 		]));
 
-		// const textNew: string = this.loadedInfo.data["public_description_html"];
-		// const textOld: string = this.loadedInfo.data["description_html"];
-		// let currentIsNewText = textNew.length >= textOld.length;
-		// const description = document.createElement("div");
-		// this.appendChild(description);
-		// description.className = "description";
-		// const descriptionText = document.createElement("div");
-		// description.appendChild(descriptionText);
-		// descriptionText.innerHTML = currentIsNewText ? textNew : textOld;
 
 		linksToSpa(this);
 	}
@@ -228,6 +251,21 @@ export default class Ph_FeedInfo extends HTMLElement {
 		}
 		(switcher.children[0] as HTMLButtonElement).click();
 		return wrapper;
+	}
+
+	private makeRules(): HTMLElement[] {
+		return this.loadedInfo.data.rules.map((rule: SubredditRule) => {
+			const ruleWrapper = document.createElement("div");
+			ruleWrapper.className = "ruleWrapper";
+			const title = document.createElement("button");
+			title.innerText = rule.short_name;
+			title.addEventListener("click", () => title.classList.toggle("expanded"));
+			ruleWrapper.appendChild(title);
+			const description = document.createElement("div");
+			description.innerHTML = rule.description_html;
+			ruleWrapper.appendChild(description);
+			return ruleWrapper;
+		});
 	}
 
 	saveInfo() {
