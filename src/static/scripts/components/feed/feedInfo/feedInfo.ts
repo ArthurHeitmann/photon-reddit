@@ -217,7 +217,13 @@ export default class Ph_FeedInfo extends HTMLElement {
 		const rules = document.createElement("div");
 		rules.append(...this.makeRules());
 		const miscText = document.createElement("div");
-		miscText.innerHTML = "Misc";
+		miscText.innerHTML = `
+			<div>Created: ${new Date(this.loadedInfo.data["created_utc"] * 1000).toDateString()}</div>
+			<div>Moderators:</div>
+			${(this.loadedInfo.data.mods as SubredditModerator[])
+			.map(mod => `<div><a href="/user/${mod.name}">${mod.name}</a></div>`)
+			.join("\n")}	
+		`;
 		this.appendChild(this.makeSwitchableBar([
 			{ titleHTML: "Description", content: description },
 			{ titleHTML: "Public Description", content: publicDescription },
