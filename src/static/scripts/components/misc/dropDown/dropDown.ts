@@ -30,11 +30,11 @@ export default class Ph_DropDown extends HTMLElement {
 }
 
 export enum DirectionX {
-	left = "dirLeft", center = "dirCenter", right = "dirRight"
+	left = "dirLeft", right = "dirRight"
 }
 
 export enum DirectionY {
-	top = "dirTop", center = "dirCenter", bottom = "dirBottom"
+	top = "dirTop", bottom = "dirBottom"
 }
 
 customElements.define("ph-drop-down", Ph_DropDown);

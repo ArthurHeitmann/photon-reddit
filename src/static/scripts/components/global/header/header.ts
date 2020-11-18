@@ -25,13 +25,13 @@ export default class Ph_Header extends HTMLElement {
 		this.settings = document.body.appendChild(new Ph_PhotonSettings());
 
 		this.innerHTML = `
-			<div class="actions flex f-justify-center f-align-center">
-				<div class="top">
+			<div class="actions">
+				<div>
 					<a href="/" class="home"><div>Photon</div></a>
-					<a href="#" id="loginButton" hidden>Login with Reddit</a>
 					<button class="showSettingsButton transparentButtonAlt"><img src="/img/settings1.svg" alt="show settings" draggable="false"></button>
+					<a href="#" id="loginButton" hidden>Login with Reddit</a>
 				</div>
-				<div class="bottom"></div>
+				<div class="feedSpecific"></div>
 			</div>
 			<div class="expander absolute w100">
 				<svg viewBox="0 0 1400 200" preserveAspectRatio="none">
@@ -48,9 +48,9 @@ export default class Ph_Header extends HTMLElement {
 			<div class="accessibilitySpacer absolute center-h-alt"></div>
 		`;
 
-		this.feedSpecificElements = this.$css(".actions > .bottom")[0] as HTMLElement;
+		this.feedSpecificElements = this.$class("feedSpecific")[0] as HTMLElement;
 
-		this.$class("home")[0]
+		this.$class("showSettingsButton")[0]
 			.insertAdjacentElement("afterend", this.search = new Ph_Search());
 
 		this.addEventListener("mouseenter", this.headerMouseEnter);
@@ -63,11 +63,7 @@ export default class Ph_Header extends HTMLElement {
 
 	setFeedElements(elements: HTMLElement[]) {
 		this.feedSpecificElements.innerText = "";
-		this.feedSpecificElements.append(...elements);
-	}
-
-	setFeedElement(element: HTMLElement) {
-		this.setFeedElements([element]);
+		this.feedSpecificElements.append(...elements)
 	}
 
 	clearHideTimeout() {

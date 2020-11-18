@@ -50,6 +50,8 @@
 		max-height: 10rem;
 		object-fit: cover;
 		margin-top: -1.5rem;
+		--bamer-bg: transparent;
+		background-color: var(--banner-bg);
 
 		+ .headerBar {
 			margin-top: -2.5rem;

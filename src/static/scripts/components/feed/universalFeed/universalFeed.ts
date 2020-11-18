@@ -69,8 +69,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			title.className = "feedTitle";
 			let feedType: FeedType;
 			let feedBaseUrl: string;
-			if (/^\/?(\?.*)?$/.test(requestUrl)) {									// home
-				title.innerText = "Home";
+			if (/^\/?(\?.*)?$/.test(requestUrl) || /^\/r\/(all|popular|random)\/?(\?.*)?$/.test(requestUrl)) {	// home
 				feedType = FeedType.misc;
 			}
 			else if (/^\/r\/[^/]+/.test(requestUrl)) {								// subreddit

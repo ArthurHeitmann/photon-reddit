@@ -13,30 +13,21 @@
 		position: relative;
 		z-index: 55;
 		display: flex;
-		flex-direction: column;
+		justify-content: space-evenly;
 		height: 100%;
-		transform: translateY(-5%);
 		transition: all .25s linear;
 
 		> * {
-			width: 100%;
-			flex-grow: 1;
 			display: flex;
 			justify-content: center;
 			align-items: center;
 
 			& > * {
-				margin: 0 1.5rem;
-			}
-
-			&:empty {
-				display: none;
+				margin: 0 .5rem;
 			}
 		}
 
-		.top {
-			transition: height .25s linear;
-
+		> div {
 			> .showSettingsButton {
 				--dim: 2.5rem;
 
@@ -44,6 +35,10 @@
 					width: 2.5rem;
 				}
 			}
+		}
+
+		.feedSpecific:empty {
+			display: none !important;
 		}
 	}
 
@@ -79,7 +74,6 @@
 
 		.actions {
 			height: 130%;
-			transform: translateY(0);
 		}
 
 		> .accessibilitySpacer {

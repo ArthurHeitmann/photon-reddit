@@ -34,7 +34,7 @@
 
 	.header {
 		flex-wrap: wrap;
-		margin-bottom: .6rem;
+		margin-bottom: .25rem;
 		align-items: center;
 
 		> * {
@@ -104,6 +104,15 @@
 	.content {
 		margin-right: 2rem;
 		margin-left: .2rem;
+
+		> .md {
+			> p:first-child {
+				margin-block-start: 0.25em;
+			}
+			> p:last-child {
+				margin-block-end: 0.25em;
+			}
+		}
 	}
 
 	.markdownForm {

@@ -146,11 +146,13 @@ export default class Ph_FeedInfo extends HTMLElement {
 		});
 		this.appendChild(refreshButton);
 
-		const bannerUrl = this.loadedInfo.data["banner_background_image"] || this.loadedInfo.data["header_img"];
+		const bannerUrl = this.loadedInfo.data["banner_img"] || this.loadedInfo.data["header_img"] || this.loadedInfo.data["banner_background_image"];
 		if (bannerUrl) {
 			const bannerImg = document.createElement("img");
 			bannerImg.src = bannerUrl;
 			bannerImg.className = "bannerImg";
+			if (this.loadedInfo.data["banner_background_color"])
+				bannerImg.style.setProperty("--banner-bg", this.loadedInfo.data["banner_background_color"]);
 			this.appendChild(bannerImg);
 		}
 		const headerBar = document.createElement("div");
