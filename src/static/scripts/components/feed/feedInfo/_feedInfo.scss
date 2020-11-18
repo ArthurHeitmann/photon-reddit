@@ -23,6 +23,26 @@
 		visibility: hidden;
 	}
 
+	> .refreshButton {
+		position: absolute;
+		z-index: 1;
+		top: 1.5rem;
+		right: 1.5rem;
+		width: 1.5rem;
+		height: 1.5rem;
+		opacity: .5;
+		transition: all .25s ease;
+
+		&:hover {
+			opacity: 1;
+		}
+
+		> img {
+			width: 1.5rem;
+			height: 1.5rem;
+		}
+	}
+
 	> .bannerImg {
 		width: 100%;
 		min-height: 5rem;

@@ -104,6 +104,16 @@ export default class Ph_FeedInfo extends HTMLElement {
 
 	displaySubredditInfo() {
 		this.innerText = "";
+
+		const refreshButton = document.createElement("button");
+		refreshButton.className = "refreshButton transparentButtonAlt";
+		refreshButton.innerHTML = `<img src="/img/refresh.svg" draggable="false" alt="refresh">`;
+		refreshButton.setAttribute("data-tooltip", "auto ever 2h");
+		refreshButton.addEventListener("click", () => {
+			this.loadSubredditInfo().then(this.displaySubredditInfo.bind(this));
+		});
+		this.appendChild(refreshButton);
+
 		const bannerUrl = this.loadedInfo.data["banner_background_image"] || this.loadedInfo.data["header_img"];
 		if (bannerUrl) {
 			const bannerImg = document.createElement("img");
