@@ -91,20 +91,6 @@
 		}
 	}
 
-	ol, ul {
-		list-style-position: inside;
-
-		li {
-			> ul, > ol {
-				margin-left: 1rem;
-			}
-		}
-
-		p {
-			display: inline;
-		}
-	}
-
 	.actions {
 		display: flex;
 		flex-direction: column;

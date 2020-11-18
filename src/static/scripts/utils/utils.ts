@@ -12,20 +12,20 @@ function _numberToShort(num): { n: number, s: string } {
 		case 6:
 			return { n: floorTo(num / 1000, 0), s: "k"};
 		case 7:
-			return { n: floorTo(num / 100000, 2), s: "m"};
+			return { n: floorTo(num / 1000000, 2), s: "m"};
 		case 8:
 		case 9:
-			return { n: floorTo(num / 100000, 0), s: "m"};
+			return { n: floorTo(num / 1000000, 0), s: "m"};
 		case 10:
-			return { n: floorTo(num / 100000, 2), s: "b"};
+			return { n: floorTo(num / 1000000000, 2), s: "b"};
 		case 11:
 		case 12:
-			return { n: floorTo(num / 100000, 0), s: "b"};
+			return { n: floorTo(num / 1000000000, 0), s: "b"};
 		case 13:
-			return { n: floorTo(num / 100000, 2), s: "t"};
+			return { n: floorTo(num / 1000000000000, 2), s: "t"};
 		case 14:
 		case 15:
-			return { n: floorTo(num / 100000, 0), s: "t"};
+			return { n: floorTo(num / 1000000000000, 0), s: "t"};
 		default:
 			return { n: 0, s: " - ∞" }
 	}
@@ -66,19 +66,8 @@ function _timePassedSince(time: number): { n: number, s: string } {
  * @param time 
  */
 export function timePassedSince(time: number): string {
-	const s = Math.round(Date.now() / 1000 - time);
-	if (s < 60)
-		return `${s} seconds`;
-	else if (s < 3600)
-		return `${(s / 60).toFixed(0)} minutes`;
-	else if (s < 86400)
-		return `${(s / 3600).toFixed(0)} hours`;
-	else if (s < 2592000)
-		return `${(s / 86400).toFixed(0)} days`;
-	else if (s < 31557600)
-		return `${(s / 2592000).toFixed(0)} months`;
-	else
-		return `${(s / 31557600).toFixed(0)} years`;
+	const { n: n, s: s } = _timePassedSince(time);
+	return `${n.toString()} ${n !== 1 ? s : s.replace(/s$/, "")}`;
 }
 
 export function timePassedSinceStr(time: string): string {

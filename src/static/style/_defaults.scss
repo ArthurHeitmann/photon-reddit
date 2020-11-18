@@ -39,6 +39,20 @@ pre {
 	}
 }
 
+ol, ul {
+	list-style-position: inside;
+
+	li {
+		> ul, > ol {
+			margin-left: 1rem;
+		}
+	}
+
+	p {
+		display: inline;
+	}
+}
+
 p {
 	margin-block-start: 1em;
 	margin-block-end: 1em;

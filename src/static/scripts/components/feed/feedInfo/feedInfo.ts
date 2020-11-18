@@ -1,5 +1,5 @@
 import { redditApiRequest, subscribe } from "../../../api/api.js";
-import { classInElementTree, escapeHTML } from "../../../utils/htmlStuff.js";
+import { classInElementTree, escapeHTML, linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiType } from "../../../utils/types.js";
 import { numberToShort } from "../../../utils/utils.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
@@ -13,16 +13,18 @@ interface StoredFeedInfo {
 }
 
 export default class Ph_FeedInfo extends HTMLElement {
-	hideRef: (e: MouseEvent) => void;
+	focusLossHideRef: (e: MouseEvent) => void;
+	hideRef: () => void;
 	loadedInfo: StoredFeedInfo;
 	feedUrl: string;
-	static refreshEveryNMs = 60 * 60 * 1000;
+	static refreshEveryNMs = 2 * 60 * 60 * 1000;		// 2 hours
 
 	constructor(feedType: FeedType, feedUrl: string) {
 		super();
 
 		this.feedUrl = feedUrl;
-		this.hideRef = e => classInElementTree(e.target as HTMLElement, "feedInfo") || this.hide();
+		this.focusLossHideRef = e => classInElementTree(e.target as HTMLElement, "feedInfo") || this.hide();
+		this.hideRef = this.hide.bind(this);
 		this.className = "feedInfo remove";
 
 		const storedInfo = localStorage[feedUrl];
@@ -102,9 +104,10 @@ export default class Ph_FeedInfo extends HTMLElement {
 
 	displaySubredditInfo() {
 		this.innerText = "";
-		if (this.loadedInfo.data["banner_background_image"]) {
+		const bannerUrl = this.loadedInfo.data["banner_background_image"] || this.loadedInfo.data["header_img"];
+		if (bannerUrl) {
 			const bannerImg = document.createElement("img");
-			bannerImg.src = this.loadedInfo.data["banner_background_image"];
+			bannerImg.src = bannerUrl;
 			bannerImg.className = "bannerImg";
 			this.appendChild(bannerImg);
 		}
@@ -152,7 +155,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 			.$class("dropDownButton")[0].classList.add("transparentButtonAlt");
 		subscriberBar.insertAdjacentHTML("beforeend", `
 			<div data-tooltip="${this.loadedInfo.data["subscribers"]}">
-			Subscribers: ${numberToShort(this.loadedInfo.data["subscribers"])}
+				Subscribers: ${numberToShort(this.loadedInfo.data["subscribers"])}
 			</div>
 			<div data-tooltip="${this.loadedInfo.data["active_user_count"]}">
 				Online: ${numberToShort(this.loadedInfo.data["active_user_count"])} &nbsp — &nbsp; 
@@ -164,21 +167,57 @@ export default class Ph_FeedInfo extends HTMLElement {
 		title.className = "title";
 		title.innerText = escapeHTML(this.loadedInfo.data["title"]);
 		this.appendChild(title);
-		const textNew: string = this.loadedInfo.data["public_description_html"];
-		const textOld: string = this.loadedInfo.data["description_html"];
-		let currentIsNewText = textNew.length >= textOld.length;
+
 		const description = document.createElement("div");
-		this.appendChild(description);
-		description.className = "description";
-		const descriptionText = document.createElement("div");
-		description.appendChild(descriptionText);
-		descriptionText.innerHTML = currentIsNewText ? textNew : textOld;
-		const descriptionSwitcher = document.createElement("button");
-		description.appendChild(descriptionSwitcher);
-		descriptionSwitcher.className = "descriptionSwitcher transparentButtonAlt";
-		descriptionSwitcher.innerHTML = `<img src="/img/swap.svg" draggable="false">`;
-		descriptionSwitcher.addEventListener("click",
-			() => descriptionText.innerHTML = (currentIsNewText = !currentIsNewText) ? textNew : textOld);
+		description.innerHTML = this.loadedInfo.data["description_html"];
+		const publicDescription = document.createElement("div");
+		publicDescription.innerHTML = this.loadedInfo.data["public_description_html"];
+		const rules = document.createElement("div");
+		rules.innerHTML = "Rules";
+		const miscText = document.createElement("div");
+		miscText.innerHTML = "Misc";
+		this.appendChild(this.makeSwitchableBar([
+			{ titleHTML: "Description", content: description },
+			{ titleHTML: "Public Description", content: publicDescription },
+			{ titleHTML: "Rules", content: rules },
+			{ titleHTML: "Other", content: miscText },
+		]));
+
+		// const textNew: string = this.loadedInfo.data["public_description_html"];
+		// const textOld: string = this.loadedInfo.data["description_html"];
+		// let currentIsNewText = textNew.length >= textOld.length;
+		// const description = document.createElement("div");
+		// this.appendChild(description);
+		// description.className = "description";
+		// const descriptionText = document.createElement("div");
+		// description.appendChild(descriptionText);
+		// descriptionText.innerHTML = currentIsNewText ? textNew : textOld;
+
+		linksToSpa(this);
+	}
+
+	private makeSwitchableBar(entries: { titleHTML: string, content: HTMLElement }[]): HTMLElement {
+		const wrapper = document.createElement("div");
+		wrapper.className = "switchableBar";
+		const switcher = document.createElement("div");
+		switcher.className = "switcher";
+		wrapper.appendChild(switcher);
+		const content = document.createElement("div");
+		content.className = "content";
+		wrapper.appendChild(content)
+		for (let entry of entries) {
+			const switchBtn = document.createElement("button");
+			switchBtn.innerHTML = entry.titleHTML;
+			switchBtn.addEventListener("click", () => {
+				content.firstElementChild?.remove();
+				content.appendChild(entry.content);
+				Array.from(switcher.$class("selected")).forEach((el: HTMLElement) => el.classList.remove("selected"));
+				switchBtn.classList.add("selected");
+			});
+			switcher.appendChild(switchBtn);
+		}
+		(switcher.children[0] as HTMLButtonElement).click();
+		return wrapper;
 	}
 
 	saveInfo() {
@@ -211,12 +250,14 @@ export default class Ph_FeedInfo extends HTMLElement {
 
 	show() {
 		this.classList.remove("remove");
-		setTimeout(() => window.addEventListener("click", this.hideRef), 0);
+		setTimeout(() => window.addEventListener("click", this.focusLossHideRef), 0);
+		window.addEventListener("viewChange", this.hideRef);
 	}
 
 	hide() {
 		this.classList.add("remove");
-		window.removeEventListener("click", this.hideRef);
+		window.removeEventListener("click", this.focusLossHideRef);
+		window.removeEventListener("viewChange", this.hideRef);
 	}
 }
 
