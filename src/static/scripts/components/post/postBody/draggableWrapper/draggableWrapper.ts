@@ -1,4 +1,5 @@
 import { classInElementTree } from "../../../../utils/htmlStuff.js";
+import { throttle } from "../../../../utils/utils.js";
 
 export default class Ph_DraggableWrapper extends HTMLElement {
 	prevX = 0;
@@ -22,7 +23,7 @@ export default class Ph_DraggableWrapper extends HTMLElement {
 		elem.addEventListener("mousedown", this.mouseDownRef = e => this.beginDrag(e));
 		elem.addEventListener("mouseup", this.mouseUpRef = e => this.endDrag(e));
 		elem.addEventListener("mouseleave", this.mouseLeaveRef = e => this.endDrag(e));
-		elem.addEventListener("wheel", this.wheelRef = e => this.onZoom(e), { passive: false });
+		elem.addEventListener("wheel", this.wheelRef = throttle(e => this.onZoom(e), 50, {leading: true, trailing: true}), { passive: false });
 		elem.addEventListener("keyup", this.keyRef = e => {
 			switch (e.code) {
 				case "ArrowUp":
@@ -58,7 +59,7 @@ export default class Ph_DraggableWrapper extends HTMLElement {
 	}
 
 	beginDrag(e: MouseEvent) {
-		this.onmousemove = e => this.moveImage(e);
+		this.onmousemove = throttle(e => this.moveImage(e), 50, {leading: true, trailing: true});
 		this.prevX = e.screenX;
 		this.prevY = e.screenY;
 	}
@@ -74,7 +75,7 @@ export default class Ph_DraggableWrapper extends HTMLElement {
 	}
 
 	onZoom(e: WheelEvent) {
-		this.addZoom(e.deltaY > 0 ? -.1 : .1);
+		this.addZoom(e.deltaY > 0 ? -.15 : .15);
 		e.preventDefault();
 	}
 
