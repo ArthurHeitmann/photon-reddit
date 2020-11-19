@@ -49,7 +49,7 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 	}
 
 	play(): void {
-		this.video.play();
+		this.video.play().catch(() => undefined);
 	}
 
 	pause(): void {

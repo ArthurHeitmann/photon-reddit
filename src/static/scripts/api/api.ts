@@ -104,7 +104,7 @@ export async function vote(votable: Votable): Promise<boolean> {
 	try {
 		const resp = await redditApiRequest("/api/vote", [
 			["dir", votable.currentVoteDirection], 
-			["id", votable.votableId]
+			["id", votable.fullName]
 		],
 		true, { method: "POST" });
 
@@ -120,7 +120,7 @@ export async function vote(votable: Votable): Promise<boolean> {
 export async function save(votable: Votable): Promise<boolean> {
 	try {
 		const resp = await redditApiRequest(votable.isSaved ? "/api/save" : "/api/unsave", [
-			["id", votable.votableId]
+			["id", votable.fullName]
 		],
 		true, { method: "POST" });
 
@@ -144,7 +144,7 @@ export async function comment(votable: Votable, text: string): Promise<{
 	return await redditApiRequest("/api/comment", [
 		["api_type", "json"],
 		["text", text],
-		["thing_id", votable.votableId]
+		["thing_id", votable.fullName]
 	], true, { method: "POST" });
 }
 
@@ -153,12 +153,12 @@ export async function edit(votable: Votable, bodyMd: string) {
 		["api_type", "json"],
 		["return_rtjson", "trie"],
 		["text", bodyMd],
-		["thing_id", votable.votableId],
+		["thing_id", votable.fullName],
 	], true, { method: "POST" })
 }
 
 export async function deleteThing(votable: Votable) {
-	return await redditApiRequest("/api/del", [["id", votable.votableId]], true, { method: "POST" });
+	return await redditApiRequest("/api/del", [["id", votable.fullName]], true, { method: "POST" });
 }
 
 export async function searchSubreddits(query: string, limit = 5): Promise<RedditApiType> {

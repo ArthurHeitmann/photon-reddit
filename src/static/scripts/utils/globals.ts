@@ -1,17 +1,19 @@
 import { redditApiRequest } from "../api/api.js";
 import { RedditApiType } from "./types.js";
 
+// is logged in
 export let isLoggedIn: boolean = false;
 
 export function setIsLoggedIn(newIsLoggedIn: boolean): boolean {
 	return isLoggedIn = newIsLoggedIn;
 }
 
-interface StoredData {
+export interface StoredData {
 	data: any,
 	lastUpdatedMsUTC: number
 }
 
+// this user data
 const _MultiReddit = {
 	display_name: "",
 	path: ""
@@ -98,3 +100,42 @@ export class User {
 }
 
 export let thisUser = new User();
+
+// seen posts
+
+// all the follow try/catches are necessary in case the user messes around with the localstorage
+if (!localStorage.seenPosts)
+	localStorage.seenPosts = "{}";
+export let seenPosts: { [fullName: string]: number };
+try {
+	seenPosts = JSON.parse(localStorage.seenPosts) || {};
+}
+catch (e) {
+	localStorage.seenPosts = "{}";
+	seenPosts = {};
+}
+
+export function saveSeenPosts() {
+	try {
+		// in case from another tab new posts have been seen
+		const tmpSeenPosts = JSON.parse(localStorage.seenPosts);
+		for (let [name, time] of tmpSeenPosts.entries()) {
+			if (!seenPosts[name])
+				seenPosts[name] = time;
+		}
+	}
+	catch (e) {}
+
+	localStorage.seenPosts = JSON.stringify(seenPosts);
+}
+setTimeout(saveSeenPosts, 1000 * 60 * 10);
+window.addEventListener("beforeunload", saveSeenPosts);
+
+export function markPostAsSeen(postFullName: string) {
+	console.log(`seen ${postFullName}`);
+	seenPosts[postFullName] = Math.floor(Date.now() / 1000);
+}
+
+export function hasPostsBeenSeen(postFullName: string): boolean {
+	return  Boolean(seenPosts[postFullName]);
+}

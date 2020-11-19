@@ -1,8 +1,8 @@
-import { classInElementTree } from "../../utils/htmlStuff.js";
+import { classInElementTree, elementWithClassInTree } from "../../utils/htmlStuff.js";
 import { secondsToVideoTime } from "../../utils/utils.js";
 import { RedditApiType } from "../../utils/types.js";
 import Ph_ControlsBar from "../misc/controlsBar/controlsBar.js";
-import Ph_DropDown, {DirectionX, DirectionY} from "../misc/dropDown/dropDown.js";
+import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
 import Ph_DropDownArea from "../misc/dropDown/dropDownArea/dropDownArea.js";
 import Ph_DropDownEntry from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_ProgressBar from "../misc/progressBar/progressBar.js";
@@ -34,9 +34,9 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		this.setAttribute("tabindex", "0");
 
 		this.overlayIcon = new Ph_SwitchingImage([
-			{ src: "/img/loading.svg", key: "loading" },
-			{ src: "/img/playVideo.svg", key: "ready" },
-			{ src: "", key: "none" },
+			{src: "/img/loading.svg", key: "loading"},
+			{src: "/img/playVideo.svg", key: "ready"},
+			{src: "", key: "none"},
 		]);
 		this.overlayIcon.classList.add("initialIcon");
 		this.appendChild(this.overlayIcon);
@@ -47,47 +47,47 @@ export default class Ph_VideoPlayer extends HTMLElement {
 			case "i.imgur.com":
 				const typelessUrl = this.url.match(/^https?:\/\/([im])?\.?imgur\.com\/\w+/)[0];
 				this.video = new Ph_SimpleVideo([
-					{ src: typelessUrl + ".mp4", type: "video/mp4" },
+					{src: typelessUrl + ".mp4", type: "video/mp4"},
 				]);
 				break;
 			case "gfycat.com":
 				const capitalizedPath = postData.data["media"]["oembed"]["thumbnail_url"].match(/^https?:\/\/thumbs\.gfycat\.com\/(\w+)/)[1];
 				this.video = new Ph_SimpleVideo([
-					{ src: `https://thumbs.gfycat.com/${capitalizedPath}-mobile.mp4`, type: "video/mp4" },
-					{ src: `https://giant.gfycat.com/${capitalizedPath}.webm`, type: "video/webm" },
-					{ src: `https://giant.gfycat.com/${capitalizedPath}.mp4`, type: "video/mp4" },
-					{ src: `https://thumbs.gfycat.com/${capitalizedPath}-mobile.mp4`, type: "video/mp4" },
+					{src: `https://thumbs.gfycat.com/${capitalizedPath}-mobile.mp4`, type: "video/mp4"},
+					{src: `https://giant.gfycat.com/${capitalizedPath}.webm`, type: "video/webm"},
+					{src: `https://giant.gfycat.com/${capitalizedPath}.mp4`, type: "video/mp4"},
+					{src: `https://thumbs.gfycat.com/${capitalizedPath}-mobile.mp4`, type: "video/mp4"},
 				]);
 				break;
 			case "v.redd.it":
 				// wtf is this inconsistency v.redd.it ??????!
 				this.video = new Ph_VideoAudio([
-					{ src: postData.data["url"] + "/DASH_1080.mp4", type: "video/mp4" },
-					{ src: postData.data["url"] + "/DASH_1080", type: "video/mp4" },
-					{ src: postData.data["url"] + "/DASH_720.mp4", type: "video/mp4" },
-					{ src: postData.data["url"] + "/DASH_720", type: "video/mp4" },
-					{ src: postData.data["url"] + "/DASH_480.mp4", type: "video/mp4" },
-					{ src: postData.data["url"] + "/DASH_480", type: "video/mp4" },
-					{ src: postData.data["url"] + "/DASH_360.mp4", type: "video/mp4" },
-					{ src: postData.data["url"] + "/DASH_360", type: "video/mp4" },
-					{ src: postData.data["url"] + "/DASH_240.mp4", type: "video/mp4" },
-					{ src: postData.data["url"] + "/DASH_240", type: "video/mp4" },
-					{ src: postData.data["url"] + "/DASH_96.mp4", type: "video/mp4" },
-					{ src: postData.data["url"] + "/DASH_96", type: "video/mp4" },
-					{ src: postData.data["url"] + "/DASH_4_8_M", type: "video/mp4" },
-					{ src: postData.data["url"] + "/DASH_2_4_M", type: "video/mp4" },
-					{ src: postData.data["url"] + "/DASH_1_2_M", type: "video/mp4" },
-					{ src: postData.data["url"] + "/DASH_600_K", type: "video/mp4" },
+					{src: postData.data["url"] + "/DASH_1080.mp4", type: "video/mp4"},
+					{src: postData.data["url"] + "/DASH_1080", type: "video/mp4"},
+					{src: postData.data["url"] + "/DASH_720.mp4", type: "video/mp4"},
+					{src: postData.data["url"] + "/DASH_720", type: "video/mp4"},
+					{src: postData.data["url"] + "/DASH_480.mp4", type: "video/mp4"},
+					{src: postData.data["url"] + "/DASH_480", type: "video/mp4"},
+					{src: postData.data["url"] + "/DASH_360.mp4", type: "video/mp4"},
+					{src: postData.data["url"] + "/DASH_360", type: "video/mp4"},
+					{src: postData.data["url"] + "/DASH_240.mp4", type: "video/mp4"},
+					{src: postData.data["url"] + "/DASH_240", type: "video/mp4"},
+					{src: postData.data["url"] + "/DASH_96.mp4", type: "video/mp4"},
+					{src: postData.data["url"] + "/DASH_96", type: "video/mp4"},
+					{src: postData.data["url"] + "/DASH_4_8_M", type: "video/mp4"},
+					{src: postData.data["url"] + "/DASH_2_4_M", type: "video/mp4"},
+					{src: postData.data["url"] + "/DASH_1_2_M", type: "video/mp4"},
+					{src: postData.data["url"] + "/DASH_600_K", type: "video/mp4"},
 				], [
-					{ src: postData.data["url"] + "/DASH_audio.mp4", type: "video/mp4" },
-					{ src: postData.data["url"] + "/DASH_audio", type: "video/mp4" },
-					{ src: postData.data["url"] + "/audio.mp4", type: "video/mp4" },
-					{ src: postData.data["url"] + "/audio", type: "video/mp4" },
+					{src: postData.data["url"] + "/DASH_audio.mp4", type: "video/mp4"},
+					{src: postData.data["url"] + "/DASH_audio", type: "video/mp4"},
+					{src: postData.data["url"] + "/audio.mp4", type: "video/mp4"},
+					{src: postData.data["url"] + "/audio", type: "video/mp4"},
 				]);
 				break;
 			case "clips.twitch.tv":
 				const twitchUrl = postData.data["media"]["oembed"]["thumbnail_url"].match(/(.*)-social-preview.jpg$/)[1];
-				this. video = new Ph_SimpleVideo([{ src: twitchUrl + ".mp4", type: "video/mp4" }]);
+				this.video = new Ph_SimpleVideo([{src: twitchUrl + ".mp4", type: "video/mp4"}]);
 				break;
 			case "redgifs.com":
 				const iframeUrl = this.url.replace(/\/watch\//, "/ifr/");
@@ -100,35 +100,51 @@ export default class Ph_VideoPlayer extends HTMLElement {
 				if (/\.gif$/.test(this.url)) {
 					this.video = new Ph_GifVideo(this.url);
 					break;
-				}
-				else if (/\.mp4$/.test(this.url)) {
-					this.video = new Ph_SimpleVideo([{ src: this.url, type: "video/mp4" }]);
+				} else if (/\.mp4$/.test(this.url)) {
+					this.video = new Ph_SimpleVideo([{src: this.url, type: "video/mp4"}]);
 					break;
 				}
 				this.innerText = `Unknown video provider for ${postData.data["url"]}`;
 				break;
 		}
 
-		if (this.video)
+		if (this.video) {
 			this.makeControls();
+		}
 	}
 
 	makeControls() {
 		window.addEventListener("viewChange", () => this.video.pause());
 
-		const intersectionObserver = new IntersectionObserver((entries, obs) => {
-			if (entries[0].intersectionRatio > .4 && !classInElementTree(this.parentElement, "covered")) {
-				this.video.play();
-				this.focus({ preventScroll: true });
-			}
-			else {
-				this.video.pause();
-				this.blur();
-			}
-		}, {
-			threshold: .4,
-		});
-		intersectionObserver.observe(this);
+		setTimeout(() => {
+			elementWithClassInTree(this.parentElement, "post").addEventListener("ph-intersection", (e: CustomEvent) => {
+				const entries: IntersectionObserverEntry[] = e.detail;
+				if (entries[0].intersectionRatio > .4 && !classInElementTree(this.parentElement, "covered")) {
+					this.video.play();
+					this.focus({preventScroll: true});
+				} else {
+					this.video.pause();
+					this.blur();
+				}
+			})
+		}, 0);
+
+
+		// const intersectionObserver = new IntersectionObserver(
+		// 	(entries, obs) => {
+		// 		if (entries[0].intersectionRatio > .4 && !classInElementTree(this.parentElement, "covered")) {
+		// 			this.video.play();
+		// 			this.focus({preventScroll: true});
+		// 		} else {
+		// 			this.video.pause();
+		// 			this.blur();
+		// 		}
+		// 	},
+		// 	{
+		// 		threshold: .4,
+		// 	}
+		// );
+		// intersectionObserver.observe(this);
 
 		this.draggableWrapper = new Ph_DraggableWrapper();
 		this.video.classList.add("draggable");
@@ -214,7 +230,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		this.video.addEventListener("ph-pause", () => {
 			playButton.toPlay();
 			if (this.videoProgressInterval !== null) {
-				clearTimeout(this.videoProgressInterval)
+				clearTimeout(this.videoProgressInterval);
 				this.videoProgressInterval = null;
 			}
 		});
@@ -229,8 +245,8 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		volumeWrapper.className = "volumeWrapper";
 		controls.appendChild(volumeWrapper);
 		const muteButton = this.makeImgBtn(new Ph_SwitchingImage([
-			{ src: "/img/mute.svg", key: "mute" },
-			{ src: "/img/audio.svg", key: "audio" },
+			{src: "/img/mute.svg", key: "mute"},
+			{src: "/img/audio.svg", key: "audio"},
 		]), volumeWrapper);
 		muteButton.setAttribute("data-tooltip", "Shortcut: M");
 		muteButton.parentElement.addEventListener("click", () => this.video.toggleMute());
@@ -243,14 +259,14 @@ export default class Ph_VideoPlayer extends HTMLElement {
 				muteButton.activate(e.detail === 0 ? "mute" : "audio");
 				volumeSlider.setProgress(e.detail);
 			}
-		)
+		);
 		volumeWrapper.addEventListener("wheel", e => {
 			e.preventDefault();
-			this.video.setVolume(this.video.getVolume() + ((-e.deltaY || e.deltaX) > 0 ? .05 : -.05))
-		}, { passive: false });
+			this.video.setVolume(this.video.getVolume() + ((-e.deltaY || e.deltaX) > 0 ? .05 : -.05));
+		}, {passive: false});
 		this.video.addEventListener("ph-noaudio", () => {
 			volumeWrapper.classList.add("remove");
-			setTimeout(() => volumeWrapper.remove(), 1000)
+			setTimeout(() => volumeWrapper.remove(), 1000);
 		});
 
 		// left right divider
@@ -268,38 +284,44 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		this.resetViewBtn.addEventListener("click", () => {
 			this.draggableWrapper.setZoom(1);
 			this.draggableWrapper.setMoveXY(0, 0);
-		})
+		});
 		controls.appendChild(this.resetViewBtn);
 
 		// photonSettings
 		this.controlsDropDown = new Ph_DropDown([
-			{ displayHTML: "Speed", nestedEntries: [
-					{ displayHTML: "0.10x", value: 0.10, onSelectCallback: this.setVideoSpeed.bind(this) },
-					{ displayHTML: "0.25x", value: 0.25, onSelectCallback: this.setVideoSpeed.bind(this) },
-					{ displayHTML: "0.50x", value: 0.50, onSelectCallback: this.setVideoSpeed.bind(this) },
-					{ displayHTML: "1.00x", value: 1.00, onSelectCallback: this.setVideoSpeed.bind(this) },
-					{ displayHTML: "2.00x", value: 2.00, onSelectCallback: this.setVideoSpeed.bind(this) },
-					{ displayHTML: "4.00x", value: 4.00, onSelectCallback: this.setVideoSpeed.bind(this) },
-					{ displayHTML: "8.00x", value: 8.00, onSelectCallback: this.setVideoSpeed.bind(this) },
-					{ displayHTML: "16.00x", value: 16.00, onSelectCallback: this.setVideoSpeed.bind(this) },
-				] },
-			{ displayHTML: `<span data-tooltip="Shortcut: I">Popout</span>`, onSelectCallback: this.popoutVideo.bind(this) },
+			{
+				displayHTML: "Speed", nestedEntries: [
+					{displayHTML: "0.10x", value: 0.10, onSelectCallback: this.setVideoSpeed.bind(this)},
+					{displayHTML: "0.25x", value: 0.25, onSelectCallback: this.setVideoSpeed.bind(this)},
+					{displayHTML: "0.50x", value: 0.50, onSelectCallback: this.setVideoSpeed.bind(this)},
+					{displayHTML: "1.00x", value: 1.00, onSelectCallback: this.setVideoSpeed.bind(this)},
+					{displayHTML: "2.00x", value: 2.00, onSelectCallback: this.setVideoSpeed.bind(this)},
+					{displayHTML: "4.00x", value: 4.00, onSelectCallback: this.setVideoSpeed.bind(this)},
+					{displayHTML: "8.00x", value: 8.00, onSelectCallback: this.setVideoSpeed.bind(this)},
+					{displayHTML: "16.00x", value: 16.00, onSelectCallback: this.setVideoSpeed.bind(this)},
+				]
+			},
+			{
+				displayHTML: `<span data-tooltip="Shortcut: I">Popout</span>`,
+				onSelectCallback: this.popoutVideo.bind(this)
+			},
 		], `<img src="/img/settings2.svg" draggable="false">`, DirectionX.right, DirectionY.top, false);
 		this.controlsDropDown.classList.add("settings");
 		this.controlsDropDown.$class("dropDownButton")[0].classList.add("imgBtn");
 		controls.appendChild(this.controlsDropDown);
 		controls.addEventListener("ph-hidecontrols", () => {
-			for (let area of this.controlsDropDown.getElementsByClassName("dropDownArea"))
+			for (let area of this.controlsDropDown.getElementsByClassName("dropDownArea")) {
 				(area as Ph_DropDownArea).closeMenu(true);
-		})
+			}
+		});
 
 		// fullscreen
 		const fullscreenButton = this.makeImgBtn(new Ph_SwitchingImage([
-			{ src: "/img/fullscreen.svg", key: "fullscreen" },
-			{ src: "/img/minimize.svg", key: "minimize" },
+			{src: "/img/fullscreen.svg", key: "fullscreen"},
+			{src: "/img/minimize.svg", key: "minimize"},
 		]), controls);
 		fullscreenButton.setAttribute("data-tooltip", "Shortcut: F");
-		fullscreenButton.parentElement.addEventListener("click", () => this.toggleFullscreen())
+		fullscreenButton.parentElement.addEventListener("click", () => this.toggleFullscreen());
 		this.addEventListener("fullscreenchange",
 			() => fullscreenButton.activate(document.fullscreenElement ? "minimize" : "fullscreen")
 		);
@@ -314,7 +336,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		progressBar.addEventListener("wheel", e => {
 			e.preventDefault();
 			this.video.seekTo(this.video.getCurrentTime() + ((-e.deltaY || e.deltaX) > 0 ? 5 : -5));
-		}, { passive: false });
+		}, {passive: false});
 		const timeTextHover = document.createElement("div");
 		timeTextHover.className = "timeTextHover";
 		controls.appendChild(timeTextHover);
@@ -323,10 +345,10 @@ export default class Ph_VideoPlayer extends HTMLElement {
 			timeTextHover.style.left = e.offsetX + "px";
 		});
 		progressBar.addEventListener("mouseenter", () => {
-			timeTextHover.classList.add("show")
+			timeTextHover.classList.add("show");
 		});
 		progressBar.addEventListener("mouseleave", () => {
-			timeTextHover.classList.remove("show")
+			timeTextHover.classList.remove("show");
 		});
 	}
 
@@ -358,12 +380,11 @@ export default class Ph_VideoPlayer extends HTMLElement {
 			this.draggableWrapper.deactivate();
 			this.resetViewBtn.classList.add("hide");
 			return false;
-		}
-		else if (this.requestFullscreen) {
+		} else if (this.requestFullscreen) {
 			this.requestFullscreen();
 			this.draggableWrapper.activateWith(this.video);
 			this.resetViewBtn.classList.remove("hide");
-			return  true
+			return true;
 		}
 		throw "can't enter fullscreen";
 	}

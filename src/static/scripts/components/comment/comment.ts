@@ -32,7 +32,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 	childComments: HTMLElement;
 	// Votable implementation
 	totalVotes: number;
-	votableId: string;
+	fullName: string;
 	currentVoteDirection: VoteDirection;
 	isSaved: boolean;
 	postFullName: string;
@@ -56,7 +56,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 				linksToSpa(loadMoreButton);
 			}
 			else {
-				this.postFullName = post.votableId;
+				this.postFullName = post.fullName;
 				const moreId = commentData.data["name"];
 				const loadMoreBtnText: string = `Load more (${commentData.data["count"]})`;
 				loadMoreButton.innerText = loadMoreBtnText;
@@ -91,7 +91,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 		this.setAttribute("data-id", commentData.data["name"].slice(3));
 		this.bodyMarkdown = commentData.data["body"];
 
-		this.votableId = commentData.data["name"];
+		this.fullName = commentData.data["name"];
 		this.currentVoteDirection = voteDirectionFromLikes(commentData.data["likes"]);
 		this.totalVotes = parseInt(commentData.data["ups"]) + -parseInt(this.currentVoteDirection);
 		this.isSaved = commentData.data["saved"];
@@ -328,7 +328,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 		this.isSaved = !this.isSaved;
 		source.innerText = this.isSaved ? "Unsave" : "Save";
 		if (!await save(this)) {
-			console.error(`error voting on comment ${this.votableId}`);
+			console.error(`error voting on comment ${this.fullName}`);
 			new Ph_Toast(Level.Error, "Error saving post");
 		}
 	}

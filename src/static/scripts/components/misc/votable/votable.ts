@@ -2,7 +2,7 @@ import { VoteDirection } from "../../../api/api.js";
 
 export default interface Votable {
 	totalVotes: number;
-	votableId: string,
+	fullName: string,
 	currentVoteDirection: VoteDirection,
 	isSaved: boolean,
 }

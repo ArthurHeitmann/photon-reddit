@@ -1,4 +1,5 @@
 import { redditApiRequest, subscribe } from "../../../api/api.js";
+import { StoredData } from "../../../utils/globals.js";
 import { classInElementTree, escapeHTML, linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiType } from "../../../utils/types.js";
 import { numberToShort } from "../../../utils/utils.js";
@@ -6,10 +7,8 @@ import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDow
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import { FeedType } from "../universalFeed/universalFeed.js";
 
-interface StoredFeedInfo {
-	data: any;
+interface StoredFeedInfo extends StoredData {
 	feedType: FeedType;
-	lastUpdatedMsUTC: number;
 }
 
 interface SubredditRule {

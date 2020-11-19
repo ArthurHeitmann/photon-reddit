@@ -1,6 +1,7 @@
 import { save, vote, VoteDirection, voteDirectionFromLikes } from "../../api/api.js";
 import { mainURL } from "../../utils/consts.js";
-import { elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff.js";
+import { markPostAsSeen } from "../../utils/globals.js";
+import { classInElementTree, elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
 import { numberToShort as numberToShort, numberToShortStr, timePassedSinceStr } from "../../utils/utils.js";
 import Ph_FeedItem from "../feed/feedItem/feedItem.js";
@@ -23,7 +24,7 @@ export default class Post extends Ph_FeedItem implements Votable {
 	cover: HTMLElement = null;
 	// Votable implementation
 	totalVotes: number;
-	votableId: string;
+	fullName: string;
 	currentVoteDirection: VoteDirection;
 	isSaved: boolean;
 	isLocked: boolean;
@@ -34,7 +35,7 @@ export default class Post extends Ph_FeedItem implements Votable {
 		if (postData.kind !== "t3")
 			throw "Invalid comment data type";
 
-		this.votableId = postData.data["name"];
+		this.fullName = postData.data["name"];
 		this.currentVoteDirection = voteDirectionFromLikes(postData.data["likes"]);
 		this.totalVotes = parseInt(postData.data["ups"]) + -parseInt(this.currentVoteDirection);
 		this.isSaved = postData.data["saved"];
@@ -194,6 +195,19 @@ export default class Post extends Ph_FeedItem implements Votable {
 		this.appendChild(this.actionBar);
 
 		linksToSpa(this);
+
+		const intersectionObserver = new IntersectionObserver(
+			(entries, obs) => {
+				this.dispatchEvent(new CustomEvent("ph-intersection", { detail: entries }))
+				if (entries[0].intersectionRatio > .4 && isInFeed) {
+					markPostAsSeen(this.fullName);
+				}
+			},
+			{
+				threshold: .4,
+			}
+		);
+		intersectionObserver.observe(this);
 	}
 
 	private isEmpty(element: HTMLElement): boolean {
@@ -254,7 +268,7 @@ export default class Post extends Ph_FeedItem implements Votable {
 		this.isSaved = !this.isSaved;
 		source.innerText = this.isSaved ? "Unsave" : "Save";
 		if (!await save(this)) {
-			console.error(`error voting on post ${this.votableId}`);
+			console.error(`error voting on post ${this.fullName}`);
 			new Ph_Toast(Level.Error, "Error saving post");
 		}
 	}
