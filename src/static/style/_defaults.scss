@@ -151,10 +151,10 @@ blockquote {
 .md-spoiler-text {
 	background: vars.$text;
 	transition: background-color .5s ease;
-	transition-duration: 2.5s;
+	transition-delay: 9999999s;
 
 	&:hover {
 		background: inherit;
-		transition-duration: .5s;
+		transition-delay: 0s;
 	}
 }

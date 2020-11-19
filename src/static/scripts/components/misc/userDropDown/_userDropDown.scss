@@ -1,0 +1,89 @@
+@use "../../../../style/vars";
+
+.userDropDown {
+	position: relative;
+
+	> * {
+		background: #1f1f1f;
+		border: 1px solid #505050;
+		border-radius: 1.3rem;
+	}
+
+	&.expanded {
+		> button {
+			min-width: 15rem;
+
+			&::before {
+				transform: rotate(180deg);
+			}
+		}
+
+		> div {
+			visibility: visible;
+			opacity: 1;
+			transform: scale(1) translateY(0);
+		}
+	}
+
+	> button {
+		height: 2.6rem;
+		padding: 0 3.3rem 0 1rem;
+		min-width: 10rem;
+		text-align: left;
+		transition: all 0.25s cubic-bezier(0.6, 0, 0.4, 1.0);
+
+		&::before {
+			content: "";
+			position: absolute;
+			top: 0.3rem;
+			right: 1rem;
+			width: 2rem;
+			height: 2rem;
+			background-image: url("/img/downArrow.svg");
+			background-size: contain;
+		}
+	}
+
+	> div {
+		position: absolute;
+		left: 0;
+		top: 0;
+		margin-top: 2.6rem + .5rem;
+		width: 100%;
+		max-height: 60vh;
+		overflow-x: hidden;
+		overflow-y: auto;
+		padding: 1rem;
+		visibility: hidden;
+		opacity: 0;
+		transform: scale(.9) translateY(-1.5rem);
+		transition: all .25s ease;
+
+		> .subGroup {
+			position: relative;
+
+			&:not(:last-child) {
+				margin-bottom: .5rem;
+				padding-bottom: .5rem;
+
+				&::before {
+					content: "";
+					position: absolute;
+					bottom: 0;
+					left: 1rem;
+					height: 1px;
+					width: calc(100% - 2rem);
+					background: vars.$text;
+				}
+			}
+
+			> .sub {
+				> a {
+					text-overflow: ellipsis;
+					overflow: hidden;
+					display: block;
+				}
+			}
+		}
+	}
+}

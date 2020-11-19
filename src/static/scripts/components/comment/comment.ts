@@ -8,7 +8,7 @@ import {
 	voteDirectionFromLikes
 } from "../../api/api.js";
 import { mainURL } from "../../utils/consts.js";
-import { thisUserName } from "../../utils/globals.js";
+import { thisUser } from "../../utils/globals.js";
 import { elementWithClassInTree, linksToInlineImages, linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
 import { isObjectEmpty, numberToShort, replaceRedditLinks, timePassedSinceStr } from "../../utils/utils.js";
@@ -125,7 +125,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 		let dropDownParams: DropDownEntryParam[] = [];
 		if (!isLocked)
 			dropDownParams.push({ displayHTML: "Reply", onSelectCallback: this.showReplyForm.bind(this) });
-		if (commentData.data["author"] === thisUserName) {
+		if (commentData.data["author"] === thisUser.name) {
 			dropDownParams.push({displayHTML: "Edit", onSelectCallback: this.edit.bind(this)});
 			dropDownParams.push({displayHTML: "Delete", onSelectCallback: this.delete.bind(this)});
 		}

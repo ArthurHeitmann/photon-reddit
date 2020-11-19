@@ -1,7 +1,7 @@
 import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
 import Votable from "../components/misc/votable/votable.js";
 import { checkTokenExpiry } from "../login/login.js";
-import { isLoggedIn, setThisUserName } from "../utils/globals.js";
+import { isLoggedIn, thisUser, } from "../utils/globals.js";
 import { RedditApiType } from "../utils/types.js";
 import { isObjectEmpty, splitPathQuery } from "../utils/utils.js";
 
@@ -159,11 +159,6 @@ export async function edit(votable: Votable, bodyMd: string) {
 
 export async function deleteThing(votable: Votable) {
 	return await redditApiRequest("/api/del", [["id", votable.votableId]], true, { method: "POST" });
-}
-
-export async function fetchThisUserName() {
-	const userInfo = await redditApiRequest("/api/v1/me", [], true);
-	setThisUserName(userInfo["name"]);
 }
 
 export async function searchSubreddits(query: string, limit = 5): Promise<RedditApiType> {

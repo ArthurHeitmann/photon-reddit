@@ -1,12 +1,14 @@
 import { $class, $tag } from "../../../utils/htmlStuff.js";
 import { SVGAnimateElement } from "../../../utils/types.js";
 import Ph_DropDownArea from "../../misc/dropDown/dropDownArea/dropDownArea.js";
+import Ph_UserDropDown from "../../misc/userDropDown/userDropDown.js";
 import { Ph_ViewState } from "../../viewState/viewState.js";
 import Ph_Search from "../search/search.js";
 import Ph_PhotonSettings from "../photonSettings/photonSettings.js";
 
 export default class Ph_Header extends HTMLElement {
 	search: Ph_Search;
+	userDropDown: Ph_UserDropDown;
 	headerHideVisualizer = $class("headerHideVisualizer");
 	headerShowVisualizer = $class("headerShowVisualizer");
 	hideTimeout = null;
@@ -52,6 +54,8 @@ export default class Ph_Header extends HTMLElement {
 
 		this.$class("showSettingsButton")[0]
 			.insertAdjacentElement("afterend", this.search = new Ph_Search());
+		this.search
+			.insertAdjacentElement("afterend", this.userDropDown = new Ph_UserDropDown());
 
 		this.addEventListener("mouseenter", this.headerMouseEnter);
 		this.addEventListener("mouseleave", this.headerMouseLeave);
@@ -109,6 +113,7 @@ export default class Ph_Header extends HTMLElement {
 
 	minimizeAll() {
 		this.search.minimize();
+		this.userDropDown.minimize();
 		Array.from(this.$class("dropDownArea")).forEach((area: Ph_DropDownArea) => area.closeMenu(true));
 	}
 }

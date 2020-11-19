@@ -1,7 +1,7 @@
-import { fetchThisUserName } from "./api/api.js";
 import Ph_Header from "./components/global/header/header.js";
 import { checkTokenExpiry, initiateLogin, isAccessTokenValid } from "./login/login.js";
 import { pushLinkToHistorySep } from "./state/stateManager.js";
+import { thisUser } from "./utils/globals.js";
 import { $class, $id, $tag, linksToSpa } from "./utils/htmlStuff.js";
 import { SVGAnimateElement } from "./utils/types.js";
 
@@ -13,7 +13,7 @@ async function init(): Promise<void> {
 	loginBtn.addEventListener("click", initiateLogin);
 
 	if (isAccessTokenValid()) {
-		await fetchThisUserName()
+		await thisUser.fetch();
 		loadPosts();
 	}
 	else {
@@ -21,15 +21,15 @@ async function init(): Promise<void> {
 		if (!isValid)
 			loginBtn.hidden = false;
 		else
-			await fetchThisUserName();
+			await thisUser.fetch();
 		loadPosts();
 	}
 }
 
 function loadPosts() {
+	window.dispatchEvent(new Event("ph-ready"));
 	pushLinkToHistorySep(location.pathname, location.search || "");
 }
-
 
 
 window.addEventListener("load", init);
