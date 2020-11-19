@@ -14,12 +14,9 @@ interface StoredData {
 
 const _MultiReddit = {
 	display_name: "",
-	icon_url: "",
-	subreddits: [""],
-	visibility: "",
-	over_18: false,
+	path: ""
 }
-type MultiReddit = typeof _MultiReddit;
+export type MultiReddit = typeof _MultiReddit;
 
 export class User {
 	name: string;
@@ -86,13 +83,12 @@ export class User {
 
 	private async fetchMultis() {
 		// my first attempt at functional programming lol
-		(this.multiReddits = <MultiReddit[]>
+		this.multiReddits = <MultiReddit[]>
 			(await redditApiRequest("/api/multi/mine", [], true) as RedditApiType[])
 				.map(multi => multi.data)						// simplify, by only using the data property
 				.map(multi => Object.entries(multi))													// split
 				.map(multi => multi.filter(entries => Object.keys(_MultiReddit).includes(entries[0])))		// remove all entries that are not part of MultiReddit
-				.map(filteredEntries => Object.fromEntries(filteredEntries)))							// join again
-			.forEach(multi => multi.subreddits = multi.subreddits.map(subs => subs["name"]));			// fix subreddits
+				.map(filteredEntries => Object.fromEntries(filteredEntries))							// join again
 
 		localStorage.multis = JSON.stringify(<StoredData> {
 			lastUpdatedMsUTC: Date.now(),
