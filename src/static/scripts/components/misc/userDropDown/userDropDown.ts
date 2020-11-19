@@ -12,7 +12,7 @@ export default class Ph_UserDropDown extends HTMLElement {
 		dropDownButton.addEventListener("click", () => this.classList.toggle("expanded"));
 		this.appendChild(dropDownButton);
 		const dropDownArea = document.createElement("div");
-		dropDownArea.appendChild(this.makeSubredditGroup([{ path: "r/popular" }, { path: "r/all" }], "Reddit Feeds"));
+		dropDownArea.appendChild(this.makeSubredditGroup([{ path: "/r/popular", name: "r/popular" }, { path: "/r/all", name: "r/all" }], "Reddit Feeds"));
 		this.appendChild(dropDownArea);
 
 		window.addEventListener("ph-ready", () => {
@@ -22,7 +22,7 @@ export default class Ph_UserDropDown extends HTMLElement {
 				"Custom Feeds"
 			));
 			dropDownArea.appendChild(this.makeSubredditGroup(
-				thisUser.subreddits.map(sub => <SubGroupData> {name: sub, path: sub}),
+				thisUser.subreddits.map(sub => <SubGroupData> {name: sub, path: `/${sub}`}),
 				"Subscribed"
 			));
 		});
@@ -45,7 +45,7 @@ export default class Ph_UserDropDown extends HTMLElement {
 
 interface SubGroupData {
 	path: string,
-	name?: string,
+	name: string,
 }
 
 customElements.define("ph-user-dropdown", Ph_UserDropDown);
