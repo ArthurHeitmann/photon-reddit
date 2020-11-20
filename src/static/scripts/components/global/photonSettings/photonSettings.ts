@@ -18,7 +18,8 @@ export interface PhotonSettings {
 	imageLoadingPolicy?: ImageLoadingPolicy,
 	nsfwPolicy?: NsfwPolicy,
 	markSeenPosts?: boolean,
-	hideSeenPosts?: boolean;
+	hideSeenPosts?: boolean,
+	isIncognitoEnabled?: boolean
 }
 
 // default config
@@ -26,7 +27,8 @@ export let globalSettings: PhotonSettings = {
 	imageLoadingPolicy: ImageLoadingPolicy.originalInFs,
 	nsfwPolicy: NsfwPolicy.covered,
 	markSeenPosts: true,
-	hideSeenPosts: true
+	hideSeenPosts: true,
+	isIncognitoEnabled: false,
 };
 
 export default class Ph_PhotonSettings extends HTMLElement {
@@ -156,6 +158,24 @@ export default class Ph_PhotonSettings extends HTMLElement {
 			}
 		}));
 		this.optionsArea.append(seenPostsGroup);
+		this.optionsArea.appendChild(document.createElement("hr"));
+
+		// incognito mode
+		this.optionsArea.appendChild(this.makeCustomLabeledInput(
+			"checkbox",
+			"Incognito Mode",
+			"",
+			"checkboxIncognito",
+			"",
+			globalSettings.isIncognitoEnabled
+		))
+			.$tag("input")[0].addEventListener("input", e => {
+				const checkbox = e.currentTarget as HTMLInputElement;
+				if (checkbox.checked !== globalSettings.isIncognitoEnabled)
+					this.temporarySettings.isIncognitoEnabled = checkbox.checked;
+				else
+					delete this.temporarySettings.isIncognitoEnabled;
+			});
 	}
 
 	private makeGeneralInputGroup(groupTitle: string, elements: HTMLDivElement[]): HTMLElement {

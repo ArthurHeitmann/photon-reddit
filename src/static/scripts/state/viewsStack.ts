@@ -1,3 +1,4 @@
+import { globalSettings } from "../components/global/photonSettings/photonSettings.js";
 import { Ph_ViewState } from "../components/viewState/viewState.js";
 import { $tag } from "../utils/htmlStuff.js";
 import { HistoryState } from "../utils/types.js";
@@ -35,11 +36,18 @@ export default class ViewsStack {
 
 		window.dispatchEvent(new CustomEvent("urlChange", { detail: state.state.url }))
 		if (this.isNextReplace) {
-			history.replaceState(state.state, state.state.title, state.state.url);
+			if (globalSettings.isIncognitoEnabled)
+				this.incognitoReplace(state.state);
+			else
+				history.replaceState(state.state, state.state.title, state.state.url);
 			this.isNextReplace = false;
 		}
-		else
-			history.pushState(state.state, state.state.title, state.state.url);
+		else {
+			if (globalSettings.isIncognitoEnabled)
+				this.incognitoPush(state.state);
+			else
+				history.pushState(state.state, state.state.title, state.state.url);
+		}
 
 		window.dispatchEvent(new CustomEvent("viewChange", { detail: this.views[this.pos]  }));
 	}
@@ -61,11 +69,15 @@ export default class ViewsStack {
 			throw "Trying to update state, but there is currently no state";
 			
 		this.views[this.pos].state.url = newUrl;
-		history.replaceState(
-			this.views[this.pos].state, 
-			this.views[this.pos].state.title, 
-			this.views[this.pos].state.url
-		);
+		if (globalSettings.isIncognitoEnabled)
+			this.incognitoReplace(this.views[this.pos].state);
+		else {
+			history.replaceState(
+				this.views[this.pos].state,
+				this.views[this.pos].state.title,
+				this.views[this.pos].state.url
+			);
+		}
 		window.dispatchEvent(new CustomEvent("urlChange", { detail: newUrl }));
 	}
 
@@ -101,7 +113,7 @@ export default class ViewsStack {
 	}
 
 	setCurrentStateTitle(title: string) {
-		document.title = title;
+		document.title = globalSettings.isIncognitoEnabled ? `Photon: ${this.randomUrl()}` : title;
 		history.state.title = title;
 	}
 
@@ -126,4 +138,20 @@ export default class ViewsStack {
 		return this.pos !== null && this.views[this.pos - 1] !== undefined;
 	}
 
+	private incognitoPush(state) {
+		history.pushState(state, `Photon; ${this.randomUrl()}`, this.randomUrl());
+	}
+
+	private incognitoReplace(state) {
+		history.replaceState(state, `Photon; ${this.randomUrl()}`, this.randomUrl());
+	}
+
+	private readonly allChars = "abcdefghijklmnopqrstuvxyz";
+	private randomUrl(): string {
+		let randomSub = ["/", "r", "/"]
+		for (let i = 0; i < 5; i++) {
+			randomSub.push(this.allChars[Math.floor(Math.random() * this.allChars.length)]);
+		}
+		return randomSub.join("");
+	}
 }
