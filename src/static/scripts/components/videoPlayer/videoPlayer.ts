@@ -1,12 +1,13 @@
 import { classInElementTree, elementWithClassInTree } from "../../utils/htmlStuff.js";
-import { secondsToVideoTime } from "../../utils/utils.js";
 import { RedditApiType } from "../../utils/types.js";
+import { secondsToVideoTime } from "../../utils/utils.js";
 import Ph_ControlsBar from "../misc/controlsBar/controlsBar.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
 import Ph_DropDownArea from "../misc/dropDown/dropDownArea/dropDownArea.js";
 import Ph_DropDownEntry from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_ProgressBar from "../misc/progressBar/progressBar.js";
 import Ph_SwitchingImage from "../misc/switchableImage/switchableImage.js";
+import Ph_Toast, { Level } from "../misc/toast/toast.js";
 import Ph_DraggableWrapper from "../post/postBody/draggableWrapper/draggableWrapper.js";
 
 import Ph_GifVideo from "./gifVideo/gifVideo.js";
@@ -52,12 +53,15 @@ export default class Ph_VideoPlayer extends HTMLElement {
 				break;
 			case "gfycat.com":
 				let capitalizedPath;
-				if (/^https?:\/\/thumbs\.gfycat\.com\/./.test(postData.data["media"]["oembed"]["thumbnail_url"]))
+				if (/^https?:\/\/thumbs\.gfycat\.com\/./.test(postData.data["media"]["oembed"]["thumbnail_url"])) {
 					capitalizedPath = postData.data["media"]["oembed"]["thumbnail_url"].match(/^https?:\/\/thumbs\.gfycat\.com\/(\w+)/)[1];
-				else if (/^https?:\/\/i.embed.ly\/./.test(postData.data["media"]["oembed"]["thumbnail_url"]))
+				}
+				else if (/^https?:\/\/i.embed.ly\/./.test(postData.data["media"]["oembed"]["thumbnail_url"])) {
 					capitalizedPath = postData.data["media"]["oembed"]["thumbnail_url"].match(/thumbs\.gfycat\.com%2F(\w+)/)[1];
-				else
-					throw `Invalid gfycat oembed link ${postData.data["media"]["oembed"]["thumbnail_url"]}`
+				}
+				else {
+					throw `Invalid gfycat oembed link ${postData.data["media"]["oembed"]["thumbnail_url"]}`;
+				}
 				this.video = new Ph_SimpleVideo([
 					{src: `https://thumbs.gfycat.com/${capitalizedPath}-mobile.mp4`, type: "video/mp4"},
 					{src: `https://giant.gfycat.com/${capitalizedPath}.webm`, type: "video/webm"},
@@ -67,29 +71,79 @@ export default class Ph_VideoPlayer extends HTMLElement {
 				break;
 			case "v.redd.it":
 				// wtf is this inconsistency v.redd.it ??????!
-				this.video = new Ph_VideoAudio([
-					{src: postData.data["url"] + "/DASH_1080.mp4", type: "video/mp4"},
-					{src: postData.data["url"] + "/DASH_1080", type: "video/mp4"},
-					{src: postData.data["url"] + "/DASH_720.mp4", type: "video/mp4"},
-					{src: postData.data["url"] + "/DASH_720", type: "video/mp4"},
-					{src: postData.data["url"] + "/DASH_480.mp4", type: "video/mp4"},
-					{src: postData.data["url"] + "/DASH_480", type: "video/mp4"},
-					{src: postData.data["url"] + "/DASH_360.mp4", type: "video/mp4"},
-					{src: postData.data["url"] + "/DASH_360", type: "video/mp4"},
-					{src: postData.data["url"] + "/DASH_240.mp4", type: "video/mp4"},
-					{src: postData.data["url"] + "/DASH_240", type: "video/mp4"},
-					{src: postData.data["url"] + "/DASH_96.mp4", type: "video/mp4"},
-					{src: postData.data["url"] + "/DASH_96", type: "video/mp4"},
-					{src: postData.data["url"] + "/DASH_4_8_M", type: "video/mp4"},
-					{src: postData.data["url"] + "/DASH_2_4_M", type: "video/mp4"},
-					{src: postData.data["url"] + "/DASH_1_2_M", type: "video/mp4"},
-					{src: postData.data["url"] + "/DASH_600_K", type: "video/mp4"},
-				], [
-					{src: postData.data["url"] + "/DASH_audio.mp4", type: "video/mp4"},
-					{src: postData.data["url"] + "/DASH_audio", type: "video/mp4"},
-					{src: postData.data["url"] + "/audio.mp4", type: "video/mp4"},
-					{src: postData.data["url"] + "/audio", type: "video/mp4"},
-				]);
+				// try to minimize sources list and failed requests
+				if (postData.data["media"] && postData.data["media"]["reddit_video"]) {
+					const helperUrl = postData.data["media"]["reddit_video"]["fallback_url"];
+					const resolutions = [1080, 720, 480, 360, 240, 96];
+					if (/DASH_\d+\?source=fallback$/.test(helperUrl)) {
+						const maxRes = helperUrl.match(/(?<=DASH_)\d+/)[0];
+						const resOptions = resolutions.slice(resolutions.indexOf(parseInt(maxRes)));
+						this.video = new Ph_VideoAudio(
+							resOptions.map(res => <any> {src: `${postData.data["url"]}/DASH_${res}`, type: "video/mp4"}),
+							[
+							{src: postData.data["url"] + "/DASH_audio.mp4", type: "video/mp4"},
+							{src: postData.data["url"] + "/DASH_audio", type: "video/mp4"},
+							{src: postData.data["url"] + "/audio.mp4", type: "video/mp4"},
+							{src: postData.data["url"] + "/audio", type: "video/mp4"},
+						]
+						);
+					}
+					else if (/DASH_\d+\.mp4\?source=fallback$/.test(helperUrl)) {
+						const maxRes = helperUrl.match(/(?<=DASH_)\d+/)[0];
+						const resOptions = resolutions.slice(resolutions.indexOf(parseInt(maxRes)));
+						this.video = new Ph_VideoAudio(
+							resOptions.map(res => <any> {src: `${postData.data["url"]}/DASH_${res}.mp4`, type: "video/mp4"}),
+							[
+							{src: postData.data["url"] + "/DASH_audio.mp4", type: "video/mp4"},
+							{src: postData.data["url"] + "/DASH_audio", type: "video/mp4"},
+							{src: postData.data["url"] + "/audio.mp4", type: "video/mp4"},
+							{src: postData.data["url"] + "/audio", type: "video/mp4"},
+						]);
+					}
+					else if (/DASH_[\d_]+[KM]\.mp4\?source=fallback$/.test(helperUrl)) {
+						this.video = new Ph_VideoAudio([
+							{src: postData.data["url"] + "/DASH_4_8_M", type: "video/mp4"},
+							{src: postData.data["url"] + "/DASH_2_4_M", type: "video/mp4"},
+							{src: postData.data["url"] + "/DASH_1_2_M", type: "video/mp4"},
+							{src: postData.data["url"] + "/DASH_600_K", type: "video/mp4"},
+						], [
+							{src: postData.data["url"] + "/DASH_audio.mp4", type: "video/mp4"},
+							{src: postData.data["url"] + "/DASH_audio", type: "video/mp4"},
+							{src: postData.data["url"] + "/audio.mp4", type: "video/mp4"},
+							{src: postData.data["url"] + "/audio", type: "video/mp4"},
+						]);
+					}
+					else {
+						new Ph_Toast(Level.Error, "A wild new v.redd.it standard has appeared!");
+						console.error(`A wild new v.redd.it standard has appeared! ${helperUrl}`);
+						throw "A wild new v.redd.it standard has appeared!";
+					}
+				}
+				else {
+					this.video = new Ph_VideoAudio([
+						{src: postData.data["url"] + "/DASH_1080.mp4", type: "video/mp4"},
+						{src: postData.data["url"] + "/DASH_1080", type: "video/mp4"},
+						{src: postData.data["url"] + "/DASH_720.mp4", type: "video/mp4"},
+						{src: postData.data["url"] + "/DASH_720", type: "video/mp4"},
+						{src: postData.data["url"] + "/DASH_480.mp4", type: "video/mp4"},
+						{src: postData.data["url"] + "/DASH_480", type: "video/mp4"},
+						{src: postData.data["url"] + "/DASH_360.mp4", type: "video/mp4"},
+						{src: postData.data["url"] + "/DASH_360", type: "video/mp4"},
+						{src: postData.data["url"] + "/DASH_240.mp4", type: "video/mp4"},
+						{src: postData.data["url"] + "/DASH_240", type: "video/mp4"},
+						{src: postData.data["url"] + "/DASH_96.mp4", type: "video/mp4"},
+						{src: postData.data["url"] + "/DASH_96", type: "video/mp4"},
+						{src: postData.data["url"] + "/DASH_4_8_M", type: "video/mp4"},
+						{src: postData.data["url"] + "/DASH_2_4_M", type: "video/mp4"},
+						{src: postData.data["url"] + "/DASH_1_2_M", type: "video/mp4"},
+						{src: postData.data["url"] + "/DASH_600_K", type: "video/mp4"},
+					], [
+						{src: postData.data["url"] + "/DASH_audio.mp4", type: "video/mp4"},
+						{src: postData.data["url"] + "/DASH_audio", type: "video/mp4"},
+						{src: postData.data["url"] + "/audio.mp4", type: "video/mp4"},
+						{src: postData.data["url"] + "/audio", type: "video/mp4"},
+					]);
+				}
 				break;
 			case "clips.twitch.tv":
 				const twitchUrl = postData.data["media"]["oembed"]["thumbnail_url"].match(/(.*)-social-preview.jpg$/)[1];
@@ -106,7 +160,8 @@ export default class Ph_VideoPlayer extends HTMLElement {
 				if (/\.gif(\?.*)?$/.test(this.url)) {
 					this.video = new Ph_GifVideo(this.url);
 					break;
-				} else if (/\.mp4(\?.*)?$/.test(this.url)) {
+				}
+				else if (/\.mp4(\?.*)?$/.test(this.url)) {
 					this.video = new Ph_SimpleVideo([{src: this.url, type: "video/mp4"}]);
 					break;
 				}
@@ -128,13 +183,13 @@ export default class Ph_VideoPlayer extends HTMLElement {
 				if (entries[0].intersectionRatio > .4 && !classInElementTree(this.parentElement, "covered")) {
 					this.video.play();
 					this.focus({preventScroll: true});
-				} else {
+				}
+				else {
 					this.video.pause();
 					this.blur();
 				}
-			})
+			});
 		}, 0);
-
 
 		// const intersectionObserver = new IntersectionObserver(
 		// 	(entries, obs) => {
@@ -386,7 +441,8 @@ export default class Ph_VideoPlayer extends HTMLElement {
 			this.draggableWrapper.deactivate();
 			this.resetViewBtn.classList.add("hide");
 			return false;
-		} else if (this.requestFullscreen) {
+		}
+		else if (this.requestFullscreen) {
 			this.requestFullscreen();
 			this.draggableWrapper.activateWith(this.video);
 			this.resetViewBtn.classList.remove("hide");

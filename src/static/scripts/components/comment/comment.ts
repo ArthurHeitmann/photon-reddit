@@ -115,12 +115,12 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 		// current votes
 		this.currentUpvotes = document.createElement("div");
 		this.currentUpvotes.className = "upvotes";
-		this.setVotesState(this.currentVoteDirection);
 		actionBar.appendChild(this.currentUpvotes);
 		// vote down button
 		this.voteDownButton = new Ph_VoteButton(false);
 		this.voteDownButton.addEventListener("click", e => this.vote(VoteDirection.down));
 		actionBar.appendChild(this.voteDownButton);
+		this.setVotesState(this.currentVoteDirection);
 		// additional actions drop down
 		let dropDownParams: DropDownEntryParam[] = [];
 		if (!isLocked)

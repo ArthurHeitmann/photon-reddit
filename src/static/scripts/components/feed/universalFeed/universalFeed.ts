@@ -162,6 +162,8 @@ export default class Ph_UniversalFeed extends HTMLElement {
 	scrollAction(loadPosition: LoadPosition) {
 		if (loadPosition === LoadPosition.Before && (this.beforeData === null || this.beforeData === this.absoluteFirst))
 			return;
+		if (loadPosition === LoadPosition.After && this.afterData === null)
+			return;
 
 		this.isLoading = true;
 		this.loadMore(loadPosition)
@@ -209,7 +211,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 					new Ph_Toast(Level.Error, `Error making feed item`);
 				}
 			}
-			this.afterData = this.children[this.childElementCount - 1]["itemId"];
+			this.afterData = posts.data.after;
 			if (this.afterData === null)
 				this.hasReachedEndOfFeed = true;
 		}
@@ -225,7 +227,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 				}
 			}
 
-			this.beforeData = this.children[1]["itemId"];
+			this.beforeData = posts.data.before;
 		}
 	}
 
