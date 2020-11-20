@@ -1,6 +1,6 @@
 
 export default class Ph_Toast extends HTMLElement {
-	constructor(level: Level, displayHtml: string, timeout = -1) {
+	constructor(level: Level, displayHtml: string, options: { timeout?: number, onConfirm?: () => void } = {}) {
 		super();
 
 		this.className = "toast";
@@ -12,14 +12,25 @@ export default class Ph_Toast extends HTMLElement {
 				<div class="title">${levelConfig[level].text}</div>
 				<div class="info">${displayHtml}</div>
 			</div>
-			<button class="closeButton mla">
+			<button class="closeButton transparentButtonAlt">
 				<img src="/img/close.svg" draggable="false">
 			</button>
 		`;
 
+		if (options.onConfirm !== undefined) {
+			const confirmBtn = document.createElement("button");
+			confirmBtn.className = "confirmButton transparentButtonAlt";
+			confirmBtn.innerHTML = `<img src="/img/check.svg" draggable="false">`;
+			confirmBtn.addEventListener("click", () => {
+				this.removeSelf();
+				options.onConfirm();
+			});
+			this.$class("closeButton")[0].insertAdjacentElement("beforebegin", confirmBtn);
+		}
+
 		this.$class("closeButton")[0].addEventListener("click", this.removeSelf.bind(this));
-		if (timeout > 0)
-			setTimeout(this.removeSelf.bind(this), timeout);
+		if (options.timeout > 0)
+			setTimeout(this.removeSelf.bind(this), options.timeout);
 
 		document.body.appendChild(this);
 	}

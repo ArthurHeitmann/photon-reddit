@@ -103,7 +103,7 @@ export default class Ph_PhotonSettings extends HTMLElement {
 		saveButton.innerText = "Save";
 		saveButton.addEventListener("click", () => {
 			if (isObjectEmpty(this.temporarySettings)) {
-				new Ph_Toast(Level.Warning, "Nothing to save", 2000);
+				new Ph_Toast(Level.Warning, "Nothing to save", { timeout: 2000 });
 				return;
 			}
 			globalSettings = {
@@ -113,7 +113,7 @@ export default class Ph_PhotonSettings extends HTMLElement {
 			window.dispatchEvent(new CustomEvent("settingsChanged", { detail: deepClone(this.temporarySettings) }));
 			this.temporarySettings = {};
 			localStorage.settings = JSON.stringify(globalSettings);
-			new Ph_Toast(Level.Success, "", 1500);
+			new Ph_Toast(Level.Success, "", { timeout: 150 });
 		})
 		bottomBar.appendChild(saveButton);
 		windowWrapper.appendChild(bottomBar);

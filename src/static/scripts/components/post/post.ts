@@ -1,6 +1,6 @@
 import { save, vote, VoteDirection, voteDirectionFromLikes } from "../../api/api.js";
 import { mainURL } from "../../utils/consts.js";
-import { markPostAsSeen } from "../../utils/globals.js";
+import { hasPostsBeenSeen, markPostAsSeen } from "../../utils/globals.js";
 import { classInElementTree, elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
 import { numberToShort as numberToShort, numberToShortStr, timePassedSinceStr } from "../../utils/utils.js";
@@ -42,6 +42,9 @@ export default class Post extends Ph_FeedItem implements Votable {
 		this.url = postData.data["url"];
 		this.permalink = postData.data["permalink"];
 		this.classList.add("post");
+
+		if (isInFeed && hasPostsBeenSeen(this.fullName))
+			this.classList.add("hide");
 
 		// actions bar
 		this.actionBar = document.createElement("div");

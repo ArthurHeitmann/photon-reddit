@@ -41,7 +41,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			while (!scrollElement.classList.contains("overflow-y-auto"))
 				scrollElement = this.parentElement;
 
-			scrollElement.addEventListener("scroll", throttle(this.onScroll.bind(this), 500), { passive: true });
+			scrollElement.addEventListener("wheel", throttle(this.onScroll.bind(this), 500), { passive: true });
 		}, 0);
 
 		// find first FeedItem, once it has been added
@@ -130,13 +130,17 @@ export default class Ph_UniversalFeed extends HTMLElement {
 
 	/**
 	 * If less than 5 screen heights are left until the end of the feed, load new content
-	 *
-	 * @param e
 	 */
-	onScroll(e) {
+	onScroll(e: Event = undefined, skipEmptyCheck = false) {
 		// stop if empty or is loading or for some reason close to empty (normal feed will have very large scrollHeight)
-		if (this.children.length <= 0 || this.isLoading || this.scrollHeight < window.innerHeight)
+		if (!skipEmptyCheck && (this.children.length <= 0 || this.isLoading || this.scrollHeight < window.innerHeight)) {
+			new Ph_Toast(
+				Level.Warning,
+				"Empty feed. Try to load more?",
+				{ onConfirm: () => this.onScroll(undefined, true) }
+			);
 			return;
+		}
 		const last = this.children[this.childElementCount - 1];
 		if (last.getBoundingClientRect().y < window.innerHeight * 2.5 && !this.hasReachedEndOfFeed)
 			this.scrollAction(LoadPosition.After)

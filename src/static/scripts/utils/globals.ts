@@ -132,7 +132,6 @@ setTimeout(saveSeenPosts, 1000 * 60 * 10);
 window.addEventListener("beforeunload", saveSeenPosts);
 
 export function markPostAsSeen(postFullName: string) {
-	console.log(`seen ${postFullName}`);
 	seenPosts[postFullName] = Math.floor(Date.now() / 1000);
 }
 

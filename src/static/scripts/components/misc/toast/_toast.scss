@@ -17,6 +17,7 @@
 	margin-left: 50%;
 	transform: translateX(-50%);
 	display: flex;
+	align-items: center;
 	background: var(--theme);
 	padding: 0.7rem;
 	width: min(27rem, 70vw);
@@ -31,17 +32,20 @@
 		margin-right: .7rem;
 	}
 
-	> .closeButton {
+	> button:first-of-type {
+		margin-left: auto;
+	}
+
+	> button {
 		display: flex;
 		align-items: center;
 		transition: transform .25s ease;
+		width: 2rem;
+		height: 2rem;
+		--dim: 2.5rem;
 
 		> img {
 			width: 2rem;
-		}
-
-		&:hover {
-			transform: scale(1.1);
 		}
 	}
 

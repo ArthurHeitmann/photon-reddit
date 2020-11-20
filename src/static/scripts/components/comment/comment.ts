@@ -367,7 +367,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 				this.classList.remove("isEditing");
 				this.getElementsByClassName("content")[0].innerHTML = resp["body_html"];
 				editForm.remove();
-				new Ph_Toast(Level.Success, "Edited comment", 2000);
+				new Ph_Toast(Level.Success, "Edited comment", { timeout: 2000 });
 			} catch (e) {
 				console.error("Error editing comment");
 				console.error(e);
@@ -390,7 +390,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 			}
 
 			this.$class("content")[0].innerHTML = "[deleted]";
-			new Ph_Toast(Level.Success, "Deleted comment", 2000);
+			new Ph_Toast(Level.Success, "Deleted comment", { timeout: 2000 });
 		} catch (e) {
 			console.error("Error deleting comment");
 			console.error(e);
