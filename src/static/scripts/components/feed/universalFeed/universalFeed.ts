@@ -25,6 +25,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 	requestUrl: string;
 	hasReachedEndOfFeed = false;
 	isSearchFeed = false;
+	private allPostFullNames: string[] = [];
 
 	constructor(posts: RedditApiType, requestUrl: string) {
 		super();
@@ -106,6 +107,8 @@ export default class Ph_UniversalFeed extends HTMLElement {
 
 
 		for (const postData of posts.data.children) {
+			if (!this.shouldAddFeedItem(postData))
+				continue;
 			try {
 				this.appendChild(this.makeFeedItem(postData));
 			}
@@ -119,13 +122,19 @@ export default class Ph_UniversalFeed extends HTMLElement {
 	makeFeedItem(itemData: RedditApiType): HTMLElement {
 		switch (itemData.kind) {
 			case "t3":
-				return new Post(itemData, true);
+				const post = new Post(itemData, true);
+				this.allPostFullNames.push(post.fullName);
+				return post;
 			case "t1":
 				return new Ph_Comment(itemData, false, true, null);
 			default:
 				new Ph_Toast(Level.Error, `Unknown feed item "${itemData.kind}"`);
 				throw `What is this feed item? ${JSON.stringify(itemData, null, 4)}`;
 		}
+	}
+
+	shouldAddFeedItem(itemData: RedditApiType): boolean {
+		return itemData.kind !== "t3" || !this.allPostFullNames.includes(itemData.data["name"]);
 	}
 
 	/**
