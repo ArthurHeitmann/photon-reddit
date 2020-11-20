@@ -61,13 +61,13 @@ export default class Ph_PostBody extends HTMLElement {
 		if (postData["is_self"])
 			return PostType.Text;
 		else if (new RegExp(
-			"(https?://(i|m)?\.?imgur\\.com\/[\\w-]+.(gifv|mp4))|" +
-			"(https?://gfycat.com\/[\\w-]+)|" + 
+			"^((https?://(i|m)?\.?imgur\\.com\/[\\w-]+.(gifv|mp4))|" +
 			"(https?://v.redd.it\/[\\w-]+)|" +
 			"(https?://clips.twitch.tv\/[\\w-]+)|" +
 			"(https?://w?w?w?\.?redgifs.com\/watch\/\\w+)|" +
-			"(\.(gif|mp4)$)"
-		).test(postData["url"]))
+			"(\.(gif|mp4)$))"
+		).test(postData["url"])
+		|| /^https?:\/\/gfycat.com\/[\w-]+/.test(postData["url"]) && postData["media"])
 			return PostType.Video;
 		else if (postData["post_hint"] == "image" ||
 			/\.(png|jpg|jpeg|svg)$/.test(postData["url"]) ||

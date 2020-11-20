@@ -51,7 +51,13 @@ export default class Ph_VideoPlayer extends HTMLElement {
 				]);
 				break;
 			case "gfycat.com":
-				const capitalizedPath = postData.data["media"]["oembed"]["thumbnail_url"].match(/^https?:\/\/thumbs\.gfycat\.com\/(\w+)/)[1];
+				let capitalizedPath;
+				if (/^https?:\/\/thumbs\.gfycat\.com\/./.test(postData.data["media"]["oembed"]["thumbnail_url"]))
+					capitalizedPath = postData.data["media"]["oembed"]["thumbnail_url"].match(/^https?:\/\/thumbs\.gfycat\.com\/(\w+)/)[1];
+				else if (/^https?:\/\/i.embed.ly\/./.test(postData.data["media"]["oembed"]["thumbnail_url"]))
+					capitalizedPath = postData.data["media"]["oembed"]["thumbnail_url"].match(/thumbs\.gfycat\.com%2F(\w+)/)[1];
+				else
+					throw `Invalid gfycat oembed link ${postData.data["media"]["oembed"]["thumbnail_url"]}`
 				this.video = new Ph_SimpleVideo([
 					{src: `https://thumbs.gfycat.com/${capitalizedPath}-mobile.mp4`, type: "video/mp4"},
 					{src: `https://giant.gfycat.com/${capitalizedPath}.webm`, type: "video/webm"},
