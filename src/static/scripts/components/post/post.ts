@@ -1,7 +1,7 @@
 import { save, vote, VoteDirection, voteDirectionFromLikes } from "../../api/api.js";
 import { mainURL } from "../../utils/consts.js";
 import { hasPostsBeenSeen, markPostAsSeen } from "../../utils/globals.js";
-import { classInElementTree, elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff.js";
+import { elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
 import { numberToShort as numberToShort, numberToShortStr, timePassedSinceStr } from "../../utils/utils.js";
 import Ph_FeedItem from "../feed/feedItem/feedItem.js";
@@ -43,8 +43,17 @@ export default class Post extends Ph_FeedItem implements Votable {
 		this.permalink = postData.data["permalink"];
 		this.classList.add("post");
 
-		if (isInFeed && hasPostsBeenSeen(this.fullName))
+		if (isInFeed && globalSettings.hideSeenPosts && hasPostsBeenSeen(this.fullName))
 			this.classList.add("hide");
+		window.addEventListener("settingsChanged", (e: CustomEvent) => {
+			const changed: PhotonSettings = e.detail;
+			if (changed.hideSeenPosts === undefined)
+				return
+			if (changed.hideSeenPosts && hasPostsBeenSeen(this.fullName))
+				this.classList.add("hide");
+			else if (globalSettings.nsfwPolicy !== NsfwPolicy.never)
+				this.classList.remove("hide");
+		});
 
 		// actions bar
 		this.actionBar = document.createElement("div");
@@ -181,7 +190,7 @@ export default class Post extends Ph_FeedItem implements Votable {
 					this.cover.click();
 				if (nsfwPolicy === NsfwPolicy.never)		// hide this post
 					this.classList.add("hide");
-				else {										// show this post
+				else if (!globalSettings.hideSeenPosts) {										// show this post
 					this.classList.remove("hide");
 					if (nsfwPolicy === NsfwPolicy.covered && isInFeed && !this.isEmpty(postBody)) {		// add cover
 						postBody.classList.add("covered");
@@ -202,7 +211,7 @@ export default class Post extends Ph_FeedItem implements Votable {
 		const intersectionObserver = new IntersectionObserver(
 			(entries, obs) => {
 				this.dispatchEvent(new CustomEvent("ph-intersection", { detail: entries }))
-				if (entries[0].intersectionRatio > .4 && isInFeed) {
+				if (globalSettings.markSeenPosts && entries[0].intersectionRatio > .4 && isInFeed) {
 					markPostAsSeen(this.fullName);
 				}
 			},

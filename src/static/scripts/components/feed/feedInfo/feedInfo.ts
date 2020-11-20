@@ -323,7 +323,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 			switchBtn.addEventListener("click", () => {
 				content.firstElementChild?.remove();
 				content.appendChild(entry.content);
-				Array.from(switcher.$class("selected")).forEach((el: HTMLElement) => el.classList.remove("selected"));
+				switcher.$classAr("selected").forEach((el: HTMLElement) => el.classList.remove("selected"));
 				switchBtn.classList.add("selected");
 			});
 			switcher.appendChild(switchBtn);

@@ -137,7 +137,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			new Ph_Toast(
 				Level.Warning,
 				"Empty feed. Try to load more?",
-				{ onConfirm: () => this.onScroll(undefined, true) }
+				{ timeout: 5000, onConfirm: () => this.onScroll(undefined, true) }
 			);
 			return;
 		}

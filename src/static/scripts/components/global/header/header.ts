@@ -30,8 +30,8 @@ export default class Ph_Header extends HTMLElement {
 			<div class="actions">
 				<div>
 					<a href="/" class="home"><div>Photon</div></a>
-					<button class="showSettingsButton transparentButtonAlt"><img src="/img/settings1.svg" alt="show settings" draggable="false"></button>
 					<a href="#" id="loginButton" hidden>Login with Reddit</a>
+					<button class="showSettingsButton transparentButtonAlt"><img src="/img/settings1.svg" alt="show settings" draggable="false"></button>
 				</div>
 				<div class="feedSpecific"></div>
 			</div>
@@ -53,7 +53,7 @@ export default class Ph_Header extends HTMLElement {
 		this.feedSpecificElements = this.$class("feedSpecific")[0] as HTMLElement;
 
 		this.$class("showSettingsButton")[0]
-			.insertAdjacentElement("afterend", this.search = new Ph_Search());
+			.insertAdjacentElement("beforebegin", this.search = new Ph_Search());
 		this.search
 			.insertAdjacentElement("afterend", this.userDropDown = new Ph_UserDropDown());
 
@@ -114,7 +114,7 @@ export default class Ph_Header extends HTMLElement {
 	minimizeAll() {
 		this.search.minimize();
 		this.userDropDown.minimize();
-		Array.from(this.$class("dropDownArea")).forEach((area: Ph_DropDownArea) => area.closeMenu(true));
+		this.$classAr("dropDownArea").forEach((area: Ph_DropDownArea) => area.closeMenu(true));
 	}
 }
 

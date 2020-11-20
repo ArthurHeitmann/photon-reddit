@@ -17,16 +17,21 @@ export enum NsfwPolicy {
 export interface PhotonSettings {
 	imageLoadingPolicy?: ImageLoadingPolicy,
 	nsfwPolicy?: NsfwPolicy,
+	markSeenPosts?: boolean,
+	hideSeenPosts?: boolean;
 }
 
 // default config
 export let globalSettings: PhotonSettings = {
 	imageLoadingPolicy: ImageLoadingPolicy.originalInFs,
 	nsfwPolicy: NsfwPolicy.covered,
+	markSeenPosts: true,
+	hideSeenPosts: true
 };
 
 export default class Ph_PhotonSettings extends HTMLElement {
 	temporarySettings: PhotonSettings = null;
+	optionsArea: HTMLElement
 
 	constructor() {
 		super();
@@ -60,41 +65,11 @@ export default class Ph_PhotonSettings extends HTMLElement {
 		const previewArea = document.createElement("div");
 		previewArea.className = "previewArea";
 		mainWrapper.appendChild(previewArea);
-		const optionsArea = document.createElement("div");
-		optionsArea.className = "optionsArea";
-		mainWrapper.appendChild(optionsArea);
+		this.optionsArea = document.createElement("div");
+		this.optionsArea.className = "optionsArea";
+		mainWrapper.appendChild(this.optionsArea);
 
-		optionsArea.appendChild(this.makeRadioGroup(
-			"preferPreviews",
-			"Image Previews:",
-			globalSettings.imageLoadingPolicy,
-			[
-				{ id: ImageLoadingPolicy.alwaysPreview, text: "Always only load preview images" },
-				{ id: ImageLoadingPolicy.originalInFs, text: "Load originals only in fullscreen" },
-				{ id: ImageLoadingPolicy.alwaysOriginal, text: "Always load original images" },
-			],
-			(loadingPolicy: ImageLoadingPolicy) => {
-				if (loadingPolicy !== globalSettings.imageLoadingPolicy)
-					this.temporarySettings.imageLoadingPolicy = loadingPolicy;
-			}
-		));
-		optionsArea.appendChild(document.createElement("hr"));
-		optionsArea.appendChild(this.makeRadioGroup(
-			"nsfwPolicy",
-			"NSFW Posts Visibility:",
-			globalSettings.nsfwPolicy,
-			[
-				{ id: NsfwPolicy.never, text: "Hide all NSFW posts" },
-				{ id: NsfwPolicy.covered, text: "Show warning on NSFW posts" },
-				{ id: NsfwPolicy.always, text: "Always show NSFW posts" },
-			],
-			(nsfwPolicy: NsfwPolicy) => {
-				if (nsfwPolicy !== globalSettings.nsfwPolicy)
-					this.temporarySettings.nsfwPolicy = nsfwPolicy;
-				else
-					delete this.temporarySettings.nsfwPolicy;
-			}
-		));
+		this.populateSettings();
 
 		const bottomBar = document.createElement("div");
 		bottomBar.className = "bottomBar";
@@ -113,10 +88,82 @@ export default class Ph_PhotonSettings extends HTMLElement {
 			window.dispatchEvent(new CustomEvent("settingsChanged", { detail: deepClone(this.temporarySettings) }));
 			this.temporarySettings = {};
 			localStorage.settings = JSON.stringify(globalSettings);
-			new Ph_Toast(Level.Success, "", { timeout: 150 });
+			new Ph_Toast(Level.Success, "", { timeout: 1500 });
 		})
 		bottomBar.appendChild(saveButton);
 		windowWrapper.appendChild(bottomBar);
+	}
+	
+	private populateSettings() {
+		// image previews
+		this.optionsArea.appendChild(this.makeRadioGroup(
+			"preferPreviews",
+			"Image Previews:",
+			globalSettings.imageLoadingPolicy,
+			[
+				{ id: ImageLoadingPolicy.alwaysPreview, text: "Always only load preview images" },
+				{ id: ImageLoadingPolicy.originalInFs, text: "Load originals only in fullscreen" },
+				{ id: ImageLoadingPolicy.alwaysOriginal, text: "Always load original images" },
+			],
+			(loadingPolicy: ImageLoadingPolicy) => {
+				if (loadingPolicy !== globalSettings.imageLoadingPolicy)
+					this.temporarySettings.imageLoadingPolicy = loadingPolicy;
+			}
+		));
+		this.optionsArea.appendChild(document.createElement("hr"));
+		// nsfw visibility
+
+		this.optionsArea.appendChild(this.makeRadioGroup(
+			"nsfwPolicy",
+			"NSFW Posts Visibility:",
+			globalSettings.nsfwPolicy,
+			[
+				{ id: NsfwPolicy.never, text: "Hide all NSFW posts" },
+				{ id: NsfwPolicy.covered, text: "Show warning on NSFW posts" },
+				{ id: NsfwPolicy.always, text: "Always show NSFW posts" },
+			],
+			(nsfwPolicy: NsfwPolicy) => {
+				if (nsfwPolicy !== globalSettings.nsfwPolicy)
+					this.temporarySettings.nsfwPolicy = nsfwPolicy;
+				else
+					delete this.temporarySettings.nsfwPolicy;
+			}
+		));
+		this.optionsArea.appendChild(document.createElement("hr"));
+
+		// seen posts
+		const seenPostsGroup = this.makeGeneralInputGroup("Seen Posts", [
+			this.makeCustomLabeledInput("checkbox", "Mark seen posts", "", "markSeenPosts", "", globalSettings.markSeenPosts),
+			this.makeCustomLabeledInput("checkbox", "Hide seen posts", "", "hideSeenPosts", "", globalSettings.hideSeenPosts),
+		]);
+		seenPostsGroup.$tagAr("input").forEach((checkbox: HTMLInputElement) => checkbox.addEventListener("input", (e: Event) => {
+			switch (checkbox.id) {
+				case "markSeenPosts":
+					if (checkbox.checked !== globalSettings.markSeenPosts)
+						this.temporarySettings.markSeenPosts = checkbox.checked;
+					else
+						delete this.temporarySettings.markSeenPosts;
+					break;
+				case "hideSeenPosts":
+					if (checkbox.checked !== globalSettings.hideSeenPosts)
+						this.temporarySettings.hideSeenPosts = checkbox.checked;
+					else
+						delete this.temporarySettings.hideSeenPosts;
+					break;
+				default:
+					new Ph_Toast(Level.Error, "Wut is happening?");
+					console.error(checkbox.outerHTML);
+			}
+		}));
+		this.optionsArea.append(seenPostsGroup);
+	}
+
+	private makeGeneralInputGroup(groupTitle: string, elements: HTMLDivElement[]): HTMLElement {
+		const wrapper = document.createElement("div");
+		wrapper.className = "inputGroup";
+		wrapper.innerHTML = `<div>${groupTitle}</div>`;
+		wrapper.append(...elements);
+		return wrapper;
 	}
 
 	private makeRadioGroup(
@@ -149,7 +196,7 @@ export default class Ph_PhotonSettings extends HTMLElement {
 		wrapper.className = "inputWrapper";
 		wrapper.innerHTML = `
 			<label for="${inputId}">${labelText}</label>
-			<input type="${type}" id ="${inputId}" class="${type}" value="${value}" name="${inputName}" ${type === "radio" && checked ? "checked" : ""}>
+			<input type="${type}" id ="${inputId}" class="${type}" value="${value}" name="${inputName}" ${checked ? "checked" : ""}>
 			<label for="${inputId}"></label>
 		`;
 		return wrapper;
