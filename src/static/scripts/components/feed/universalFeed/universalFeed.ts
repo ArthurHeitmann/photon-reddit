@@ -107,8 +107,6 @@ export default class Ph_UniversalFeed extends HTMLElement {
 
 
 		for (const postData of posts.data.children) {
-			if (!this.shouldAddFeedItem(postData))
-				continue;
 			try {
 				this.appendChild(this.makeFeedItem(postData));
 			}
@@ -123,7 +121,8 @@ export default class Ph_UniversalFeed extends HTMLElement {
 		switch (itemData.kind) {
 			case "t3":
 				const post = new Post(itemData, true);
-				this.allPostFullNames.push(post.fullName);
+				if (!this.allPostFullNames.includes(post.fullName))
+					this.allPostFullNames.push(post.fullName);
 				return post;
 			case "t1":
 				return new Ph_Comment(itemData, false, true, null);
@@ -143,6 +142,8 @@ export default class Ph_UniversalFeed extends HTMLElement {
 	onScroll(e: Event = undefined, skipEmptyCheck = false) {
 		// stop if empty or is loading or for some reason close to empty (normal feed will have very large scrollHeight)
 		if (!skipEmptyCheck && (this.children.length <= 0 || this.isLoading || this.scrollHeight < window.innerHeight)) {
+			if (this.isLoading)
+				return;
 			new Ph_Toast(
 				Level.Warning,
 				"Empty feed. Try to load more?",
@@ -198,6 +199,8 @@ export default class Ph_UniversalFeed extends HTMLElement {
 
 		if (loadPosition === LoadPosition.After) {
 			for (const postData of posts.data.children) {
+				if (!this.shouldAddFeedItem(postData))
+					continue;
 				try {
 					this.appendChild(this.makeFeedItem(postData));
 				}
@@ -228,6 +231,8 @@ export default class Ph_UniversalFeed extends HTMLElement {
 
 	replaceChildren(posts: RedditApiType[]) {
 		this.innerText = "";
+		this.allPostFullNames = [];
+		elementWithClassInTree(this.parentElement, "viewState")?.scrollTo(0, 0);
 
 		for (const item of posts) {
 			try {
