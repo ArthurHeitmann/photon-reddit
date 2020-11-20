@@ -103,10 +103,10 @@ export default class Ph_VideoPlayer extends HTMLElement {
 				}));
 				break;
 			default:
-				if (/\.gif$/.test(this.url)) {
+				if (/\.gif(\?.*)?$/.test(this.url)) {
 					this.video = new Ph_GifVideo(this.url);
 					break;
-				} else if (/\.mp4$/.test(this.url)) {
+				} else if (/\.mp4(\?.*)?$/.test(this.url)) {
 					this.video = new Ph_SimpleVideo([{src: this.url, type: "video/mp4"}]);
 					break;
 				}

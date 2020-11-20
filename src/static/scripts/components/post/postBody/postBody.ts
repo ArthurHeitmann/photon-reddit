@@ -64,8 +64,8 @@ export default class Ph_PostBody extends HTMLElement {
 			"^((https?://(i|m)?\.?imgur\\.com\/[\\w-]+.(gifv|mp4))|" +
 			"(https?://v.redd.it\/[\\w-]+)|" +
 			"(https?://clips.twitch.tv\/[\\w-]+)|" +
-			"(https?://w?w?w?\.?redgifs.com\/watch\/\\w+)|" +
-			"(\.(gif|mp4)$))"
+			"(https?://w?w?w?\.?redgifs.com\/watch\/\\w+))|" +
+			"(\.(gif|mp4)(\\?.*)?$)"
 		).test(postData["url"])
 		|| /^https?:\/\/gfycat.com\/[\w-]+/.test(postData["url"]) && postData["media"])
 			return PostType.Video;
