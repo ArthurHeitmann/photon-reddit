@@ -28,11 +28,12 @@
 		z-index: 1;
 		top: .75rem;
 		right: .75rem;
-		width: 1rem;
-		height: 1rem;
+		width: 2rem;
+		height: 2rem;
 		opacity: .5;
 		transition: all .25s ease;
 		padding: 0 !important;
+		display: flex;
 
 		&:hover {
 			opacity: 1;
@@ -41,6 +42,7 @@
 		> img {
 			width: 1rem;
 			height: 1rem;
+			margin: auto;
 		}
 	}
 

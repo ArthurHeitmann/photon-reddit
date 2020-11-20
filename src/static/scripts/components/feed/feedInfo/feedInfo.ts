@@ -2,7 +2,7 @@ import { redditApiRequest, subscribe } from "../../../api/api.js";
 import { StoredData } from "../../../utils/globals.js";
 import { classInElementTree, escapeHTML, linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiType } from "../../../utils/types.js";
-import { numberToShort } from "../../../utils/utils.js";
+import { numberToShort, stringSortComparer } from "../../../utils/utils.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import { FeedType } from "../universalFeed/universalFeed.js";
@@ -78,6 +78,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 					await this.loadSubredditInfo();
 					break;
 				case FeedType.multireddit:
+					await this.loadMultiInfo();
 					break;
 				case FeedType.user:
 					await this.loadUserInfo();
@@ -97,6 +98,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 				this.displayUserInfo();
 				break;
 			case FeedType.multireddit:
+				this.displayMultiInfo();
 				break;
 			case FeedType.misc:
 				// break;
@@ -205,8 +207,10 @@ export default class Ph_FeedInfo extends HTMLElement {
 		description.innerHTML = this.loadedInfo.data["description_html"];
 		const publicDescription = document.createElement("div");
 		publicDescription.innerHTML = this.loadedInfo.data["public_description_html"];
+		linksToSpa(publicDescription);
 		const rules = document.createElement("div");
 		rules.append(...this.makeRules());
+		linksToSpa(rules);
 		const miscText = document.createElement("div");
 		miscText.innerHTML = `
 			<div>Created: ${new Date(this.loadedInfo.data["created_utc"] * 1000).toDateString()}</div>
@@ -215,6 +219,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 			.map(mod => `<div><a href="/user/${mod.name}">${mod.name}</a></div>`)
 			.join("\n")}	
 		`;
+		linksToSpa(miscText);
 		this.appendChild(this.makeSwitchableBar([
 			{ titleHTML: "Description", content: description },
 			{ titleHTML: "Public Description", content: publicDescription },
@@ -228,16 +233,21 @@ export default class Ph_FeedInfo extends HTMLElement {
 
 	async loadUserInfo() {
 		let feedAbout: RedditApiType;
+		let multis: RedditApiType[];
 		try {
 			feedAbout = await redditApiRequest(`${this.feedUrl}/about`, [], false);
 			if (feedAbout["error"] || !(feedAbout["kind"] && feedAbout["data"]))
 				throw `Invalid about response ${JSON.stringify(feedAbout)}`;
+			multis = await redditApiRequest(`/api/multi/user/${this.feedUrl.match(/(?<=(u|user)\/)[^/]*/)[0]}`, [], false);
+			if (multis["error"])
+				throw `Invalid user multis response ${JSON.stringify(feedAbout)}`;
 		} catch (e) {
 			new Ph_Toast(Level.Error, "Error getting user info");
 			console.error(`Error getting user info for ${this.feedUrl}`);
 			console.error(e);
 		}
 		this.loadedInfo.data = feedAbout.data;
+		this.loadedInfo.data.multis = multis;
 		this.loadedInfo.lastUpdatedMsUTC = Date.now();
 		this.saveInfo();
 	}
@@ -299,11 +309,97 @@ export default class Ph_FeedInfo extends HTMLElement {
 		miscText.innerHTML = `
 			<div>Created: ${new Date(this.loadedInfo.data["created_utc"] * 1000).toDateString()}</div>
 		`;
+		if (this.loadedInfo.data.multis.length > 0) {
+			miscText.insertAdjacentHTML("beforeend", `
+				<div>User Multireddits:</div>
+				${this.loadedInfo.data.multis.map(multi => `<div><a href="${multi.data.path}">${multi.data.display_name}</a></div>`).join("")}
+			`);
+		}
+		linksToSpa(miscText);
 		this.appendChild(this.makeSwitchableBar([
 			{ titleHTML: "Description", content: publicDescription },
 			{ titleHTML: "Other", content: miscText },
 		]));
 
+		linksToSpa(this);
+	}
+
+	async loadMultiInfo() {
+		let feedAbout: RedditApiType;
+		try {
+			feedAbout = await redditApiRequest(`/api/multi${this.feedUrl}`, [], false);
+			if (feedAbout["error"] || !(feedAbout["kind"] && feedAbout["data"]))
+				throw `Invalid about response ${JSON.stringify(feedAbout)}`;
+		} catch (e) {
+			new Ph_Toast(Level.Error, "Error getting multi info");
+			console.error(`Error getting user info for ${this.feedUrl}`);
+			console.error(e);
+		}
+		feedAbout.data["subreddits"] = feedAbout.data["subreddits"].map(sub => sub.name);
+		feedAbout.data["subreddits"].sort(stringSortComparer);
+		this.loadedInfo.data = feedAbout.data;
+		this.loadedInfo.lastUpdatedMsUTC = Date.now();
+		this.saveInfo();
+	}
+
+	displayMultiInfo() {
+		this.innerText = "";
+
+		this.appendChild(this.makeRefreshButton(() => this.loadMultiInfo().then(this.displayMultiInfo.bind(this))));
+
+		const headerBar = document.createElement("div");
+		headerBar.className = "headerBar";
+		this.appendChild(headerBar);
+		const iconUrl = this.loadedInfo.data["icon_url"];
+		if (iconUrl) {
+			const profileImg = document.createElement("img");
+			profileImg.src = iconUrl;
+			profileImg.className = "profileImg";
+			headerBar.appendChild(profileImg);
+		}
+		const overviewBar = document.createElement("div");
+		overviewBar.className = "overviewBar";
+		const userActionsWrapper = document.createElement("div");
+		userActionsWrapper.className = "subActionsWrapper";
+		overviewBar.appendChild(userActionsWrapper);
+		userActionsWrapper.appendChild(new Ph_DropDown(
+			[
+			],
+			`<img src="/img/kebab.svg" draggable="false">`,
+			DirectionX.left,
+			DirectionY.bottom,
+			false
+		))
+			.$class("dropDownButton")[0].classList.add("transparentButtonAlt");
+		overviewBar.insertAdjacentHTML("beforeend", `
+			<div data-tooltip="${this.loadedInfo.data["num_subscribers"]}">
+				Subscribers: ${numberToShort(this.loadedInfo.data["num_subscribers"])}
+			</div>
+			<div>
+				Created: ${new Date(this.loadedInfo.data["created_utc"] * 1000).toDateString()}
+			</div>
+			<div>
+				By: <a href="/user/${this.loadedInfo.data["owner"]}">u/${this.loadedInfo.data["owner"]}</a>
+			</div>
+		`);
+		headerBar.appendChild(overviewBar);
+		const title = document.createElement("h1");
+		title.className = "title";
+		title.innerText = escapeHTML(this.loadedInfo.data["display_name"]);
+		this.appendChild(title);
+
+		const description = document.createElement("div");
+		description.innerHTML = this.loadedInfo.data["description_html"];
+		const miscText = document.createElement("div");
+		miscText.innerHTML = `
+			<div>Subreddits:</div>
+				${this.loadedInfo.data.subreddits.map(sub => `<div><a href="/r/${sub}">r/${sub}</a></div>`).join("")}
+		`;
+		linksToSpa(miscText);
+		this.appendChild(this.makeSwitchableBar([
+			{ titleHTML: "Description", content: description },
+			{ titleHTML: "Subreddits", content: miscText },
+		]));
 
 		linksToSpa(this);
 	}
@@ -316,7 +412,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		wrapper.appendChild(switcher);
 		const content = document.createElement("div");
 		content.className = "content";
-		wrapper.appendChild(content)
+		wrapper.appendChild(content);
 		for (let entry of entries) {
 			const switchBtn = document.createElement("button");
 			switchBtn.innerHTML = entry.titleHTML;

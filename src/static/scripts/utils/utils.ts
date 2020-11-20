@@ -160,3 +160,7 @@ export function floorTo(number: number, precision: number): number {
 export function ceilTo(number: number, precision: number): number {
 	return Math.ceil(number * Math.pow(10, precision)) / Math.pow(10, precision);
 }
+
+export function stringSortComparer(s1: string, s2): number {
+	return s1.toLowerCase().localeCompare(s2.toLowerCase());
+}

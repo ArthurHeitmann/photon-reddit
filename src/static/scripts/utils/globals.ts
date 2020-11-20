@@ -1,5 +1,6 @@
 import { redditApiRequest } from "../api/api.js";
 import { RedditApiType } from "./types.js";
+import { stringSortComparer } from "./utils.js";
 
 // is logged in
 export let isLoggedIn: boolean = false;
@@ -75,7 +76,7 @@ export class User {
 			subs.data.children.push(...tmpSubs.data.children);
 			subs.data.after = tmpSubs.data.after;
 		}
-		this.subreddits = subs.data.children.map(subData => subData.data["display_name_prefixed"]).sort();
+		this.subreddits = subs.data.children.map(subData => subData.data["display_name_prefixed"]).sort(stringSortComparer);
 
 		localStorage.subreddits = JSON.stringify(<StoredData> {
 			lastUpdatedMsUTC: Date.now(),
