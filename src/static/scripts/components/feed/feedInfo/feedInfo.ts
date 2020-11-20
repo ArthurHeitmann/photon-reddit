@@ -78,9 +78,10 @@ export default class Ph_FeedInfo extends HTMLElement {
 					await this.loadSubredditInfo();
 					break;
 				case FeedType.multireddit:
-				// break;
+					break;
 				case FeedType.user:
-				// break;
+					await this.loadUserInfo();
+					break;
 				case FeedType.misc:
 				// break;
 				default:
@@ -92,10 +93,11 @@ export default class Ph_FeedInfo extends HTMLElement {
 			case FeedType.subreddit:
 				this.displaySubredditInfo();
 				break;
-			case FeedType.multireddit:
-				// break;
 			case FeedType.user:
-				// break;
+				this.displayUserInfo();
+				break;
+			case FeedType.multireddit:
+				break;
 			case FeedType.misc:
 				// break;
 			default:
@@ -132,27 +134,15 @@ export default class Ph_FeedInfo extends HTMLElement {
 		this.loadedInfo.lastUpdatedMsUTC = Date.now();
 		this.saveInfo();
 	}
-
+	
 	displaySubredditInfo() {
 		this.innerText = "";
-
-		const refreshButton = document.createElement("button");
-		refreshButton.className = "refreshButton transparentButtonAlt";
-		refreshButton.innerHTML = `<img src="/img/refresh.svg" draggable="false" alt="refresh">`;
-		refreshButton.setAttribute("data-tooltip", "auto ever 2h");
-		refreshButton.addEventListener("click", () => {
-			this.loadSubredditInfo().then(this.displaySubredditInfo.bind(this));
-		});
-		this.appendChild(refreshButton);
+		
+		this.appendChild(this.makeRefreshButton(() => this.loadSubredditInfo().then(this.displaySubredditInfo.bind(this))));
 
 		const bannerUrl = this.loadedInfo.data["banner_img"] || this.loadedInfo.data["header_img"] || this.loadedInfo.data["banner_background_image"];
 		if (bannerUrl) {
-			const bannerImg = document.createElement("img");
-			bannerImg.src = bannerUrl;
-			bannerImg.className = "bannerImg";
-			if (this.loadedInfo.data["banner_background_color"])
-				bannerImg.style.setProperty("--banner-bg", this.loadedInfo.data["banner_background_color"]);
-			this.appendChild(bannerImg);
+			this.makeBannerImage(bannerUrl, this, this.loadedInfo.data["banner_background_color"]);
 		}
 		const headerBar = document.createElement("div");
 		headerBar.className = "headerBar";
@@ -164,11 +154,11 @@ export default class Ph_FeedInfo extends HTMLElement {
 			profileImg.className = "profileImg";
 			headerBar.appendChild(profileImg);
 		}
-		const subscriberBar = document.createElement("div");
-		subscriberBar.className = "subscriberBar";
+		const overviewBar = document.createElement("div");
+		overviewBar.className = "overviewBar";
 		const subActionsWrapper = document.createElement("div");
 		subActionsWrapper.className = "subActionsWrapper";
-		subscriberBar.appendChild(subActionsWrapper);
+		overviewBar.appendChild(subActionsWrapper);
 		const subscribeButton = document.createElement("button");
 		subscribeButton.className = "subscribeButton";
 		subscribeButton.innerText = this.loadedInfo.data["user_is_subscriber"] ? "Unsubscribe" : "Subscribe";
@@ -176,12 +166,12 @@ export default class Ph_FeedInfo extends HTMLElement {
 			this.loadedInfo.data["user_is_subscriber"] = !this.loadedInfo.data["user_is_subscriber"];
 			subscribeButton.innerText = this.loadedInfo.data["user_is_subscriber"] ? "Unsubscribe" : "Subscribe";
 			if (await subscribe(this.loadedInfo.data["name"], this.loadedInfo.data["user_is_subscriber"])) {
-				new Ph_Toast(Level.Success, "", 2000)
+				new Ph_Toast(Level.Success, "", { timeout: 2000 })
 			}
 			else {
 				this.loadedInfo.data["user_is_subscriber"] = !this.loadedInfo.data["user_is_subscriber"];
 				subscribeButton.innerText = this.loadedInfo.data["user_is_subscriber"] ? "Unsubscribe" : "Subscribe";
-				new Ph_Toast(Level.Error, `Error subscribing to subreddit`, 2000);
+				new Ph_Toast(Level.Error, `Error subscribing to subreddit`, { timeout: 2000 });
 			}
 
 		});
@@ -196,7 +186,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 			false
 		))
 			.$class("dropDownButton")[0].classList.add("transparentButtonAlt");
-		subscriberBar.insertAdjacentHTML("beforeend", `
+		overviewBar.insertAdjacentHTML("beforeend", `
 			<div data-tooltip="${this.loadedInfo.data["subscribers"]}">
 				Subscribers: ${numberToShort(this.loadedInfo.data["subscribers"])}
 			</div>
@@ -205,7 +195,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 				${(this.loadedInfo.data["active_user_count"] / this.loadedInfo.data["subscribers"] * 100).toPrecision(1)} %
 			</div>
 		`);
-		headerBar.appendChild(subscriberBar);
+		headerBar.appendChild(overviewBar);
 		const title = document.createElement("h1");
 		title.className = "title";
 		title.innerText = escapeHTML(this.loadedInfo.data["title"]);
@@ -236,6 +226,88 @@ export default class Ph_FeedInfo extends HTMLElement {
 		linksToSpa(this);
 	}
 
+	async loadUserInfo() {
+		let feedAbout: RedditApiType;
+		try {
+			feedAbout = await redditApiRequest(`${this.feedUrl}/about`, [], false);
+			if (feedAbout["error"] || !(feedAbout["kind"] && feedAbout["data"]))
+				throw `Invalid about response ${JSON.stringify(feedAbout)}`;
+		} catch (e) {
+			new Ph_Toast(Level.Error, "Error getting user info");
+			console.error(`Error getting user info for ${this.feedUrl}`);
+			console.error(e);
+		}
+		this.loadedInfo.data = feedAbout.data;
+		this.loadedInfo.lastUpdatedMsUTC = Date.now();
+		this.saveInfo();
+	}
+	
+	displayUserInfo() {
+		this.innerText = "";
+
+		
+		this.appendChild(this.makeRefreshButton(() => this.loadUserInfo().then(this.displayUserInfo.bind(this))));
+
+		const bannerUrl = this.loadedInfo.data["subreddit"]["banner_img"];
+		if (bannerUrl)
+			this.makeBannerImage(bannerUrl, this, this.loadedInfo.data["subreddit"]["banner_background_color"] || undefined)
+		
+		const headerBar = document.createElement("div");
+		headerBar.className = "headerBar";
+		this.appendChild(headerBar);
+		const iconUrl = this.loadedInfo.data["subreddit"]["icon_img"] || this.loadedInfo.data["icon_img"];
+		if (iconUrl) {
+			const profileImg = document.createElement("img");
+			profileImg.src = iconUrl;
+			profileImg.className = "profileImg";
+			headerBar.appendChild(profileImg);
+		}
+		const overviewBar = document.createElement("div");
+		overviewBar.className = "overviewBar";
+		const userActionsWrapper = document.createElement("div");
+		userActionsWrapper.className = "subActionsWrapper";
+		overviewBar.appendChild(userActionsWrapper);
+		userActionsWrapper.appendChild(new Ph_DropDown(
+			[
+			],
+			`<img src="/img/kebab.svg" draggable="false">`,
+			DirectionX.left,
+			DirectionY.bottom,
+			false
+		))
+			.$class("dropDownButton")[0].classList.add("transparentButtonAlt");
+		overviewBar.insertAdjacentHTML("beforeend", `
+			<div data-tooltip="${this.loadedInfo.data["total_karma"]}">
+				Karma: ${numberToShort(this.loadedInfo.data["total_karma"])}
+			</div>
+			<div data-tooltip="${this.loadedInfo.data["link_karma"]}">
+				Link Karma: ${numberToShort(this.loadedInfo.data["link_karma"])}
+			</div>
+			<div data-tooltip="${this.loadedInfo.data["comment_karma"]}">
+				Comment Karma: ${numberToShort(this.loadedInfo.data["comment_karma"])}
+			</div>
+		`);
+		headerBar.appendChild(overviewBar);
+		const title = document.createElement("h1");
+		title.className = "title";
+		title.innerText = escapeHTML(this.loadedInfo.data["subreddit"]["title"]);
+		this.appendChild(title);
+
+		const publicDescription = document.createElement("div");
+		publicDescription.innerText = this.loadedInfo.data["subreddit"]["public_description"];
+		const miscText = document.createElement("div");
+		miscText.innerHTML = `
+			<div>Created: ${new Date(this.loadedInfo.data["created_utc"] * 1000).toDateString()}</div>
+		`;
+		this.appendChild(this.makeSwitchableBar([
+			{ titleHTML: "Description", content: publicDescription },
+			{ titleHTML: "Other", content: miscText },
+		]));
+
+
+		linksToSpa(this);
+	}
+	
 	private makeSwitchableBar(entries: { titleHTML: string, content: HTMLElement }[]): HTMLElement {
 		const wrapper = document.createElement("div");
 		wrapper.className = "switchableBar";
@@ -259,7 +331,25 @@ export default class Ph_FeedInfo extends HTMLElement {
 		(switcher.children[0] as HTMLButtonElement).click();
 		return wrapper;
 	}
+	
+	private makeRefreshButton(refreshAction: () => void): HTMLElement {
+		const refreshButton = document.createElement("button");
+		refreshButton.className = "refreshButton transparentButtonAlt";
+		refreshButton.innerHTML = `<img src="/img/refresh.svg" draggable="false" alt="refresh">`;
+		refreshButton.setAttribute("data-tooltip", "auto ever 2h");
+		refreshButton.addEventListener("click", refreshAction);
+		return refreshButton;
+	}
 
+	private makeBannerImage(bannerUrl: string, appendTo: HTMLElement, bgColo: string): void {
+		const bannerImg = document.createElement("img");
+		bannerImg.src = bannerUrl;
+		bannerImg.className = "bannerImg";
+		if (this.loadedInfo.data["banner_background_color"])
+			bannerImg.style.setProperty("--banner-bg", this.loadedInfo.data["banner_background_color"]);
+		appendTo.appendChild(bannerImg);
+	}
+	
 	private makeRules(): HTMLElement[] {
 		return this.loadedInfo.data.rules.map((rule: SubredditRule) => {
 			const ruleWrapper = document.createElement("div");

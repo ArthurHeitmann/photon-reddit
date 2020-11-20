@@ -55,6 +55,10 @@
 
 		+ .headerBar {
 			margin-top: -2.5rem;
+
+			> .overviewBar {
+				margin-top: 2.5rem;
+			}
 		}
 	}
 
@@ -76,14 +80,14 @@
 			background-color: vars.$text;
 		}
 
-		> .subscriberBar {
+		> .overviewBar {
 			display: flex;
 			justify-content: space-between;
 			flex-wrap: wrap;
 			align-items: center;
 			width: 100%;
 			height: 2.5rem;
-			margin-top: 2.5rem;
+			margin-top: 1.25rem;
 
 			* {
 				font-size: .8rem;
