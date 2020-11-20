@@ -55,7 +55,7 @@ export default class Ph_Search extends HTMLElement {
 		this.searchBar = document.createElement("input");
 		this.searchBar.type = "text";
 		this.appendChild(this.searchBar);
-		this.searchBar.addEventListener("keypress", e => e.code === "Enter" && this.search());
+		this.searchBar.addEventListener("keypress", e => e.code === "Enter" && this.search(e));
 		this.searchBar.addEventListener("input", this.onTextEnter.bind(this));
 		this.searchBar.addEventListener("focus", this.onFocus.bind(this));
 
@@ -279,14 +279,19 @@ export default class Ph_Search extends HTMLElement {
 		return a;
 	}
 
-	async search() {
+	async search(e) {
+		const inNewTab: boolean = e && e.ctrlKey || false;
+
 		if (!this.searchBar.value) {
 			new Ph_Toast(Level.Warning, "Empty search query", { timeout: 2000 });
 			return;
 		}
 
 		if (this.searchPrefix) {
-			pushLinkToHistoryComb(this.searchPrefix + this.searchBar.value);
+			if (inNewTab)
+				window.open(this.searchPrefix + this.searchBar.value);
+			else
+				pushLinkToHistoryComb(this.searchPrefix + this.searchBar.value);
 			return;
 		}
 
@@ -295,16 +300,21 @@ export default class Ph_Search extends HTMLElement {
 		if (currentSubMatches && currentSubMatches[1])
 			url = currentSubMatches[1].replace(/\/?$/, "/search");
 
-		pushLinkToHistorySep(
-			(this.currentSubreddit ?? "") + "/search",
-			"?" + new URLSearchParams([
-				["q", this.searchBar.value],
-				["type", "link"],
-				["restrict_sr", this.limitToSubreddit.checked ? "true" : "false"],
-				["sort", this.searchOrder],
-				["t", this.searchTimeFrame || ""],
-			]).toString()
-		);
+		const paramsString = new URLSearchParams([
+			["q", this.searchBar.value],
+			["type", "link"],
+			["restrict_sr", this.limitToSubreddit.checked ? "true" : "false"],
+			["sort", this.searchOrder],
+			["t", this.searchTimeFrame || ""],
+		]).toString();
+		if (inNewTab)
+			window.open(`${url}?${paramsString}`).focus();
+		else {
+			pushLinkToHistorySep(
+				(this.currentSubreddit ?? "") + "/search",
+				"?" + paramsString
+			);
+		}
 	}
 }
 
