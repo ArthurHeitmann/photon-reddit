@@ -1,5 +1,5 @@
 import { redditApiRequest, subscribe } from "../../../api/api.js";
-import { StoredData } from "../../../utils/globals.js";
+import { MultiReddit, StoredData } from "../../../utils/globals.js";
 import { classInElementTree, escapeHTML, linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiType } from "../../../utils/types.js";
 import { numberToShort, stringSortComparer, throttle } from "../../../utils/utils.js";
@@ -179,16 +179,25 @@ export default class Ph_FeedInfo extends HTMLElement {
 
 		});
 		subActionsWrapper.appendChild(subscribeButton);
-		subActionsWrapper.appendChild(new Ph_DropDown(
-			[
-				{ displayHTML: "Add to Multireddit" }
-			],
-			`<img src="/img/kebab.svg" draggable="false">`,
-			DirectionX.left,
-			DirectionY.bottom,
-			false
-		))
-			.$class("dropDownButton")[0].classList.add("transparentButtonAlt");
+		if (localStorage.multis) {
+			const userMultis = ((JSON.parse(localStorage.multis) as StoredData).data as MultiReddit[]);
+			subActionsWrapper.appendChild(new Ph_DropDown(
+				[{
+					displayHTML: "Add to Multireddit",
+					nestedEntries:
+						userMultis.map(multi => ({
+							displayHTML: multi.display_name,
+							value: multi.path,
+							onSelectCallback: ([_, multiPath]) => this.addSubToMulti(this.feedUrl, multiPath.replace(/\/?$/, ""), false)
+						}))
+				}],
+				`<img src="/img/kebab.svg" draggable="false">`,
+				DirectionX.left,
+				DirectionY.bottom,
+				false
+			))
+				.$class("dropDownButton")[0].classList.add("transparentButtonAlt");
+		}
 		overviewBar.insertAdjacentHTML("beforeend", `
 			<div data-tooltip="${this.loadedInfo.data["subscribers"]}">
 				Subscribers: ${numberToShort(this.loadedInfo.data["subscribers"])}
@@ -476,10 +485,14 @@ export default class Ph_FeedInfo extends HTMLElement {
 		addSubredditBar.appendChild(addSubInput);
 		addSubButton.addEventListener("click", e => this.addSubToMulti(
 			addSubInput.value,
+			this.feedUrl,
+			true,
 			(e.currentTarget as HTMLElement).parentElement.parentElement)
 		);
 		addSubInput.addEventListener("keypress", e => e.code === "Enter" && this.addSubToMulti(
 			addSubInput.value,
+			this.feedUrl,
+			true,
 			(e.currentTarget as HTMLElement).parentElement.parentElement)
 		);
 		addSubInput.addEventListener("input", throttle(async () => {
@@ -493,6 +506,8 @@ export default class Ph_FeedInfo extends HTMLElement {
 					selectSubBtn.innerText = sub;
 					selectSubBtn.addEventListener("click", e => this.addSubToMulti(
 						sub,
+						this.feedUrl,
+						true,
 						(e.currentTarget as HTMLElement).parentElement.parentElement.parentElement)
 					);
 					subsSearchResults.appendChild(selectSubBtn);
@@ -523,22 +538,23 @@ export default class Ph_FeedInfo extends HTMLElement {
 		removeSubButton.addEventListener("click",
 			e => this.removeSubFromMulti(
 				(e.currentTarget as HTMLElement).parentElement.$tag("a")[0].innerHTML,
+				this.feedUrl,
 				(e.currentTarget as HTMLElement).parentElement)
 		);
 		return removeSubredditBar;
 	}
 
-	private async addSubToMulti(subName: string, subsList: HTMLElement) {
+	private async addSubToMulti(subName: string, multiPath: string, sourceIsMulti: boolean, subsList?: HTMLElement) {
 		subName = subName.replace(/^\/?r\//, "");
 		if (subName === "")
 			return;
-		if (this.loadedInfo.data.subreddits.includes(subName)) {
-			new Ph_Toast(Level.Warning, `r/${subName} already exists in ${this.feedUrl}`, { timeout: 6000 });
+		if (sourceIsMulti && this.loadedInfo.data.subreddits.includes(subName)) {
+			new Ph_Toast(Level.Warning, `r/${subName} already exists in ${multiPath}`, { timeout: 6000 });
 			return;
 		}
 		try {
 			const response = await redditApiRequest(
-				`/api/multi${this.feedUrl}/r/${subName}`,
+				`/api/multi${multiPath}/r/${subName}`,
 				[
 					["model", JSON.stringify({ name: subName })]
 				],
@@ -551,12 +567,22 @@ export default class Ph_FeedInfo extends HTMLElement {
 			}
 			if (!response["name"])
 				throw `Invalid add to multi response ${JSON.stringify(response)}`;
-			this.loadedInfo.data.subreddits.push(response["name"]);
-			this.loadedInfo.data.subreddits.sort(stringSortComparer);
-			const newSubIndex = this.loadedInfo.data.subreddits.indexOf(response["name"]);
-			subsList.children[newSubIndex].insertAdjacentElement("afterend", this.makeRemoveSubBar(response["name"]));
-			(subsList.$tag("input")[0] as HTMLInputElement).value = "";
-			this.saveInfo();
+			if (sourceIsMulti) {
+				this.loadedInfo.data.subreddits.push(response["name"]);
+				this.loadedInfo.data.subreddits.sort(stringSortComparer);
+				this.saveInfo();
+			}
+			else if (localStorage[multiPath]) {
+				// force reload on next load
+				const multiData: StoredData = JSON.parse(localStorage[multiPath]);
+				multiData.lastUpdatedMsUTC = 1;
+				localStorage[multiPath] = JSON.stringify(multiData);
+			}
+			if (subsList) {
+				const newSubIndex = this.loadedInfo.data.subreddits.indexOf(response["name"]);
+				subsList.children[newSubIndex].insertAdjacentElement("afterend", this.makeRemoveSubBar(response["name"]));
+				(subsList.$tag("input")[0] as HTMLInputElement).value = "";
+			}
 
 		} catch (e) {
 			new Ph_Toast(Level.Error, "Error adding sub to multi");
@@ -565,15 +591,15 @@ export default class Ph_FeedInfo extends HTMLElement {
 		}
 	}
 
-	private async removeSubFromMulti(subName: string, editSubBar: HTMLElement) {
+	private async removeSubFromMulti(subName: string, multiPath: string, editSubBar: HTMLElement) {
 		subName = subName.replace(/^\/?r\//, "");
 		if (!this.loadedInfo.data.subreddits.includes(subName)) {
-			new Ph_Toast(Level.Warning, `r/${subName} does not exist in ${this.feedUrl}`, { timeout: 6000 });
+			new Ph_Toast(Level.Warning, `r/${subName} does not exist in ${multiPath}`, { timeout: 6000 });
 			return;
 		}
 		try {
 			await redditApiRequest(
-				`/api/multi${this.feedUrl}/r/${subName}`,
+				`/api/multi${multiPath}/r/${subName}`,
 				[],
 				true,
 				{ method: "DELETE" }
