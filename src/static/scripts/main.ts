@@ -3,7 +3,6 @@ import { checkTokenExpiry, initiateLogin, isAccessTokenValid } from "./login/log
 import { pushLinkToHistorySep } from "./state/stateManager.js";
 import { thisUser } from "./utils/globals.js";
 import { $class, $id, $tag, linksToSpa } from "./utils/htmlStuff.js";
-import { SVGAnimateElement } from "./utils/types.js";
 
 async function init(): Promise<void> {
 	$id("mainWrapper").insertAdjacentElement("afterbegin", new Ph_Header());
@@ -28,7 +27,7 @@ async function init(): Promise<void> {
 
 function loadPosts() {
 	window.dispatchEvent(new Event("ph-ready"));
-	pushLinkToHistorySep(location.pathname, location.search || "");
+	pushLinkToHistorySep(location.pathname + location.hash, location.search || "");
 }
 
 

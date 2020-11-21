@@ -3,6 +3,8 @@ import Ph_UniversalFeed from "../components/feed/universalFeed/universalFeed.js"
 import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
 import Ph_PostAndComments from "../components/postAndComments/postAndComments.js";
 import Ph_ViewStateLoader from "../components/viewState/viewStateLoader/viewStateLoader.js";
+import Ph_Wiki from "../components/wiki/wiki.js";
+import { $id } from "../utils/htmlStuff.js";
 import { splitPathQuery } from "../utils/utils.js";
 import ViewsStack from "./viewsStack.js";
 
@@ -10,6 +12,8 @@ export const viewsStack: ViewsStack = new ViewsStack();
 viewsStack.setNextIsReplace();
 
 window.addEventListener("popstate", (e: PopStateEvent) => {
+	if (!e.state)
+		return
 	if (e.state.index > viewsStack.position()) {
 		for(let i = e.state.index - viewsStack.position(); i > 0; --i) 
 			viewsStack.forward(true);
@@ -19,11 +23,12 @@ window.addEventListener("popstate", (e: PopStateEvent) => {
 			viewsStack.back();
 	}
 	else {
-		new Ph_Toast(Level.Error, "Weird navigation error");
-		throw "Equal state";
+		// new Ph_Toast(Level.Error, "Weird navigation error");
+		// throw "Equal state";
 	}
 });
 
+// TODO Make this an option
 // window.onbeforeunload = () => {
 // 	return "Are you sure you want to Exit?";
 // };
@@ -69,8 +74,17 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 		stateLoader.finishWith(new Ph_PostAndComments(requestData));
 		viewsStack.setCurrentStateTitle(`Photon: ${requestData[0]["data"]["children"][0]["data"]["title"]}`);
 	}
-	else {
-		stateLoader.finishWith(new Ph_UniversalFeed(requestData, path + query));
-		viewsStack.setCurrentStateTitle(`Photon:  ${(path.length > 3) ? path.slice(1) : "Home"}`);
+	else if (requestData["kind"]) {
+		if (requestData["kind"] === "Listing") {
+			stateLoader.finishWith(new Ph_UniversalFeed(requestData, path + query));
+			viewsStack.setCurrentStateTitle(`Photon:  ${(path.length > 3) ? path.slice(1) : "Home"}`);
+		}
+		else if (requestData["kind"] === "wikipage") {
+			stateLoader.finishWith(new Ph_Wiki(requestData));
+			viewsStack.setCurrentStateTitle(`Photon: ${path.match(/r\/[^/]+/)[0]} Wiki`);
+		}
 	}
+
+	if (location.hash)
+		$id(location.hash.slice(1)).scrollIntoView();
 }
