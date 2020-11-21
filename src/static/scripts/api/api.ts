@@ -29,7 +29,8 @@ async function simpleApiRequest(pathAndQuery, params: string[][]) {
 
 	try {
 		const response = await fetch(`https://www.reddit.com${path}?${parameters.toString()}`);
-		return await response.json();
+		const responseText = await response.text()
+		return response ? JSON.parse(responseText) : {};
 	} catch (e) {
 		// maybe the token has expired, try to refresh it; try again up to 3 times
 		return { error: e }
@@ -52,14 +53,15 @@ async function oath2Request(pathAndQuery, params: string[][], options: Object, a
 		}),
 	};
 	let parametersStr = parameters.toString();
-	if (fetchOptions.method?.toUpperCase() === "POST") {
+	if (fetchOptions.method && fetchOptions.method.toUpperCase() !== "GET") {
 		fetchOptions.body = parameters;
 		parametersStr = "";
 	}
 
 	try {
 		const response = await fetch(`https://oauth.reddit.com${ path }?${ parametersStr }`, fetchOptions);
-		return await response.json();
+		const responseText = await response.text()
+		return response ? JSON.parse(responseText) : {};
 	} catch (e) {
 		// maybe the token has expired, try to refresh it; try again up to 3 times
 		if (attempt < 3 && await checkTokenExpiry())

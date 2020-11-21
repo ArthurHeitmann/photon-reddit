@@ -473,20 +473,80 @@ export default class Ph_FeedInfo extends HTMLElement {
 		addSubInput.type = "text";
 		addSubInput.placeholder = "Subreddit";
 		addSubredditBar.appendChild(addSubInput);
+		addSubButton.addEventListener("click", e => this.addSubToMulti(addSubInput.value, (e.currentTarget as HTMLElement).parentElement.parentElement));
+		addSubInput.addEventListener("keypress",
+				e => e.code === "Enter" && this.addSubToMulti(addSubInput.value, (e.currentTarget as HTMLElement).parentElement.parentElement));
 		outElements.push(addSubredditBar);
-		this.loadedInfo.data.subreddits.forEach(sub => {
-			const removeSubredditBar = document.createElement("div");
-			removeSubredditBar.className = "editableSub";
-			const removeSubButton = document.createElement("button");
-			removeSubButton.className = "removeSub transparentButton";
-			removeSubredditBar.appendChild(removeSubButton);
-			const addSubText = document.createElement("div");
-			addSubText.innerHTML = `<a href="/r/${sub}">r/${sub}</a>`;
-			removeSubredditBar.appendChild(addSubText);
-			outElements.push(removeSubredditBar)
-			return removeSubredditBar;
-		});
+		this.loadedInfo.data.subreddits.forEach(sub => outElements.push(this.makeRemoveSubBar(sub)));
 		return outElements;
+	}
+
+	private makeRemoveSubBar(sub: string) {
+		const removeSubredditBar = document.createElement("div");
+		removeSubredditBar.className = "editableSub";
+		const removeSubButton = document.createElement("button");
+		removeSubButton.className = "removeSub transparentButton";
+		removeSubredditBar.appendChild(removeSubButton);
+		const addSubText = document.createElement("div");
+		addSubText.innerHTML = `<a href="/r/${sub}">r/${sub}</a>`;
+		removeSubredditBar.appendChild(addSubText);
+		removeSubButton.addEventListener("click",
+			e => this.removeSubFromMulti(
+				(e.currentTarget as HTMLElement).parentElement.$tag("a")[0].innerHTML,
+				(e.currentTarget as HTMLElement).parentElement)
+		);
+		return removeSubredditBar;
+	}
+
+	private async addSubToMulti(subName: string, subsList: HTMLElement) {
+		subName = subName.replace(/^\/?r\//, "");
+		if (this.loadedInfo.data.subreddits.includes(subName)) {
+			new Ph_Toast(Level.Warning, `r/${subName} already exists in ${this.feedUrl}`, { timeout: 6000 });
+			return;
+		}
+		try {
+			const response = await redditApiRequest(
+				`/api/multi${this.feedUrl}/r/${subName}`,
+				[
+					["model", JSON.stringify({name: subName})]
+				],
+				true,
+				{method: "PUT"}
+			);
+			if (!response["name"])
+				throw `Invalid add to multi response ${JSON.stringify(response)}`;
+			this.loadedInfo.data.subreddits.push(response["name"]);
+			this.loadedInfo.data.subreddits.sort(stringSortComparer);
+			const newSubIndex = this.loadedInfo.data.subreddits.indexOf(response["name"]);
+			subsList.children[newSubIndex].insertAdjacentElement("afterend", this.makeRemoveSubBar(response["name"]));
+
+		} catch (e) {
+			new Ph_Toast(Level.Error, "Error adding sub to multi");
+			console.error("Error adding sub to multi");
+			console.error(subName);
+		}
+	}
+
+	private async removeSubFromMulti(subName: string, editSubBar: HTMLElement) {
+		subName = subName.replace(/^\/?r\//, "");
+		if (!this.loadedInfo.data.subreddits.includes(subName)) {
+			new Ph_Toast(Level.Warning, `r/${subName} does not exist in ${this.feedUrl}`, { timeout: 6000 });
+			return;
+		}
+		try {
+			await redditApiRequest(
+				`/api/multi${this.feedUrl}/r/${subName}`,
+				[],
+				true,
+				{method: "DELETE"}
+			);
+			editSubBar.remove();
+			this.loadedInfo.data.subreddits.splice(this.loadedInfo.data.subreddits.indexOf(subName), 1);
+		} catch (e) {
+			new Ph_Toast(Level.Error, "Error removing sub from multi");
+			console.error("Error removing sub from multi");
+			console.error(subName);
+		}
 	}
 
 	saveInfo() {
