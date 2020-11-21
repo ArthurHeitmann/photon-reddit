@@ -14,7 +14,7 @@ import Votable from "../misc/votable/votable.js";
 import Ph_VoteButton from "../misc/voteButton/voteButton.js";
 import Ph_PostBody from "./postBody/postBody.js";
 
-export default class Post extends Ph_FeedItem implements Votable {
+export default class Ph_Post extends Ph_FeedItem implements Votable {
 	actionBar: HTMLDivElement;
 	voteUpButton: Ph_VoteButton;
 	currentUpvotes: HTMLDivElement;
@@ -308,4 +308,4 @@ export default class Post extends Ph_FeedItem implements Votable {
 	}
 }
 
-customElements.define("ph-post", Post);
+customElements.define("ph-post", Ph_Post);

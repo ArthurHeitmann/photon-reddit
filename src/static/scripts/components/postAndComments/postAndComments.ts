@@ -1,20 +1,33 @@
-import { comment } from "../../api/api.js";
-import { RedditApiType } from "../../utils/types.js";
+import { redditApiRequest } from "../../api/api.js";
+import { viewsStack } from "../../state/stateManager.js";
+import { elementWithClassInTree } from "../../utils/htmlStuff.js";
+import { RedditApiType, SortCommentsOrder } from "../../utils/types.js";
 import Ph_Comment from "../comment/comment.js";
-import Ph_CommentForm from "../misc/markdownForm/commentForm/commentForm.js";
 import Ph_CommentsFeed from "../feed/commentsFeed/commentsFeed.js";
+import Ph_FeedInfo from "../feed/feedInfo/feedInfo.js";
+import { FeedType } from "../feed/universalFeed/universalFeed.js";
+import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
+import Ph_CommentForm from "../misc/markdownForm/commentForm/commentForm.js";
 import Ph_Toast, { Level } from "../misc/toast/toast.js";
-import Post from "../post/post.js";
+import Ph_Post from "../post/post.js";
+import { Ph_ViewState } from "../viewState/viewState.js";
 
 export default class Ph_PostAndComments extends HTMLElement {
+	post: Ph_Post;
+	comments: Ph_CommentsFeed
+	sorter: Ph_DropDown;
+	subredditPrefixed: string;
+	userPrefixed: string;
+
 	constructor(data: RedditApiType[]) {
 		super();
 
 		this.classList.add("postAndComments");
+		this.subredditPrefixed = data[0].data.children[0].data["subreddit_name_prefixed"];
+		this.userPrefixed = `u/${data[0].data.children[0].data["author"]}`;
 
-		let post;
 		try {
-			this.appendChild(post = new Post(data[0].data.children[0], false));
+			this.appendChild(this.post = new Ph_Post(data[0].data.children[0], false));
 		}
 		catch (e) {
 			console.error("Error making post in comments");
@@ -22,21 +35,93 @@ export default class Ph_PostAndComments extends HTMLElement {
 			new Ph_Toast(Level.Error, "Error making post");
 		}
 
-		if (!post.isLocked) {
-			const commentForm = new Ph_CommentForm(post, false);
+		if (!this.post.isLocked) {
+			const commentForm = new Ph_CommentForm(this.post, false);
 			this.appendChild(commentForm);
 			commentForm.addEventListener("ph-comment-submitted",
-				(e: CustomEvent) => comments.insertAdjacentElement("afterbegin", new Ph_Comment(e.detail, false, false, post)));
+				(e: CustomEvent) => this.comments.insertAdjacentElement("afterbegin",
+					new Ph_Comment(e.detail, false, false, this.post)));
 		}
 
-		const comments = new Ph_CommentsFeed(data[1], post);
-		this.appendChild(comments);
+		this.comments = new Ph_CommentsFeed(data[1], this.post);
+		this.appendChild(this.comments);
 
-		const commentLinkMatches = location.pathname.match(new RegExp(post.permalink + "(\\w*)"));
+		const commentLinkMatches = location.pathname.match(new RegExp(this.post.permalink + "(\\w*)"));
 		if (commentLinkMatches && commentLinkMatches.length > 1 && commentLinkMatches[1]) {
-			comments.$css(`[data-id=${commentLinkMatches[1]}]`)[0].classList.add("highlight");
-			comments.insertParentLink(post.permalink, "Load all comments");
+			this.comments.$css(`[data-id=${commentLinkMatches[1]}]`)[0].classList.add("highlight");
+			this.comments.insertParentLink(this.post.permalink, "Load all comments");
 		}
+
+		this.sorter = new Ph_DropDown([
+			{ displayHTML: "Best", value: SortCommentsOrder.best, onSelectCallback: this.handleSort.bind(this) },
+			{ displayHTML: "Top", value: SortCommentsOrder.top, onSelectCallback: this.handleSort.bind(this) },
+			{ displayHTML: "New", value: SortCommentsOrder.new, onSelectCallback: this.handleSort.bind(this) },
+			{ displayHTML: "Controversial", value: SortCommentsOrder.controversial, onSelectCallback: this.handleSort.bind(this) },
+			{ displayHTML: "Old", value: SortCommentsOrder.old, onSelectCallback: this.handleSort.bind(this) },
+			{ displayHTML: "Q & A", value: SortCommentsOrder.qa, onSelectCallback: this.handleSort.bind(this) },
+			{ displayHTML: "Random", value: SortCommentsOrder.random, onSelectCallback: this.handleSort.bind(this) },
+		], "Sort by", DirectionX.right, DirectionY.bottom, false);
+		this.sorter.classList.add("commentsSorter");
+	}
+
+	connectedCallback() {
+		const headerElements: HTMLElement[] = [];
+
+		const subTitle = document.createElement("div");
+		subTitle.className = "feedTitle";
+		subTitle.innerText = this.subredditPrefixed;
+		headerElements.push(subTitle);
+		headerElements.push(new Ph_FeedInfo(
+			this.subredditPrefixed[0] === "r" ? FeedType.subreddit : FeedType.user,
+			`/${this.subredditPrefixed}`
+		).makeShowInfoButton());
+		if (this.userPrefixed !== this.subredditPrefixed) {
+			const userTitle = document.createElement("div");
+			userTitle.className = "feedTitle";
+			userTitle.innerText = this.userPrefixed;
+			headerElements.push(userTitle);
+			headerElements.push(new Ph_FeedInfo(
+				FeedType.user,
+				`/${this.userPrefixed}`
+			).makeShowInfoButton());
+		}
+
+		headerElements.push(this.sorter);
+
+		(elementWithClassInTree(this.parentElement, "viewState") as Ph_ViewState).setHeaderElements(headerElements);
+	}
+
+	async handleSort(valueChain: any[]) {
+		const path = location.pathname;
+		const query = location.search;
+		const params = new URLSearchParams(query);
+		params.set("sort", valueChain[0]);
+
+		const loadingIcon = document.createElement("img");
+		loadingIcon.src = "/img/loading.svg";
+		this.sorter.toggleButton.appendChild(loadingIcon);
+
+		try {
+			const newUrl = `${path}?${params.toString()}`;
+			const newComments: RedditApiType[] = await redditApiRequest(newUrl, [], false);
+			if (newComments["error"])
+				throw `Sorting error (${JSON.stringify(newComments, null, 4)})`;
+
+			this.comments.innerText = "";
+
+			for (let comment of newComments[1].data.children) {
+				this.comments.appendChild(new Ph_Comment(comment, false, false, this.post));
+			}
+
+			viewsStack.changeCurrentUrl(newUrl);
+		}
+		catch (e) {
+			console.error("Error sorting comments");
+			console.error(e);
+			new Ph_Toast(Level.Error, "Error sorting comments");
+		}
+
+		loadingIcon.remove();
 	}
 }
 

@@ -4,7 +4,7 @@ import { RedditApiType } from "../../../utils/types.js";
 import { throttle } from "../../../utils/utils.js";
 import Ph_Comment from "../../comment/comment.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
-import Post from "../../post/post.js";
+import Ph_Post from "../../post/post.js";
 import { Ph_ViewState } from "../../viewState/viewState.js";
 import Ph_FeedInfo from "../feedInfo/feedInfo.js";
 import Ph_SearchFeedSorter from "../sorting/searchFeedSorter.js";
@@ -120,7 +120,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 	makeFeedItem(itemData: RedditApiType): HTMLElement {
 		switch (itemData.kind) {
 			case "t3":
-				const post = new Post(itemData, true);
+				const post = new Ph_Post(itemData, true);
 				if (!this.allPostFullNames.includes(post.fullName))
 					this.allPostFullNames.push(post.fullName);
 				return post;

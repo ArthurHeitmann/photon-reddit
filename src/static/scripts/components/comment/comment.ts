@@ -22,7 +22,7 @@ import Ph_MarkdownForm from "../misc/markdownForm/markdownForm.js";
 import Ph_Toast, { Level } from "../misc/toast/toast.js";
 import Votable from "../misc/votable/votable.js";
 import Ph_VoteButton from "../misc/voteButton/voteButton.js";
-import Post from "../post/post.js";
+import Ph_Post from "../post/post.js";
 
 export default class Ph_Comment extends Ph_FeedItem implements Votable {
 	voteUpButton: Ph_VoteButton;
@@ -38,7 +38,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 	postFullName: string;
 	bodyMarkdown: string;
 
-	constructor(commentData: RedditApiType, isChild: boolean, isInFeed: boolean, post: Post) {
+	constructor(commentData: RedditApiType, isChild: boolean, isInFeed: boolean, post: Ph_Post) {
 		super(commentData, isInFeed);
 
 		this.classList.add("comment");

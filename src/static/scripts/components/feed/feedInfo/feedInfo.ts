@@ -2,7 +2,7 @@ import { redditApiRequest, subscribe } from "../../../api/api.js";
 import { MultiReddit, StoredData } from "../../../utils/globals.js";
 import { classInElementTree, escapeHTML, linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiType } from "../../../utils/types.js";
-import { numberToShort, stringSortComparer, throttle } from "../../../utils/utils.js";
+import { numberToShort, replaceRedditLinks, stringSortComparer, throttle } from "../../../utils/utils.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import { FeedType } from "../universalFeed/universalFeed.js";
@@ -217,9 +217,11 @@ export default class Ph_FeedInfo extends HTMLElement {
 		description.innerHTML = this.loadedInfo.data["description_html"];
 		const publicDescription = document.createElement("div");
 		publicDescription.innerHTML = this.loadedInfo.data["public_description_html"];
+		replaceRedditLinks(publicDescription);
 		linksToSpa(publicDescription);
 		const rules = document.createElement("div");
 		rules.append(...this.makeRules());
+		replaceRedditLinks(rules);
 		linksToSpa(rules);
 		const miscText = document.createElement("div");
 		miscText.innerHTML = `
@@ -229,6 +231,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 			.map(mod => `<div><a href="/user/${mod.name}">${mod.name}</a></div>`)
 			.join("\n")}	
 		`;
+		replaceRedditLinks(miscText);
 		linksToSpa(miscText);
 		this.appendChild(this.makeSwitchableBar([
 			{ titleHTML: "Description", content: description },
@@ -237,6 +240,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 			{ titleHTML: "Other", content: miscText },
 		]));
 
+		replaceRedditLinks(this);
 		linksToSpa(this);
 	}
 
@@ -322,12 +326,14 @@ export default class Ph_FeedInfo extends HTMLElement {
 				${this.loadedInfo.data.multis.map(multi => `<div><a href="${multi.data.path}">${multi.data.display_name}</a></div>`).join("")}
 			`);
 		}
+		replaceRedditLinks(miscText);
 		linksToSpa(miscText);
 		this.appendChild(this.makeSwitchableBar([
 			{ titleHTML: "Description", content: publicDescription },
 			{ titleHTML: "Other", content: miscText },
 		]));
 
+		replaceRedditLinks(this);
 		linksToSpa(this);
 	}
 
@@ -398,12 +404,14 @@ export default class Ph_FeedInfo extends HTMLElement {
 		description.innerHTML = this.loadedInfo.data["description_html"];
 		const miscText = document.createElement("div");
 		miscText.append(...this.makeMultiSubManager());
+		replaceRedditLinks(miscText);
 		linksToSpa(miscText);
 		this.appendChild(this.makeSwitchableBar([
 			{ titleHTML: "Description", content: description },
 			{ titleHTML: "Subreddits", content: miscText },
 		]));
 
+		replaceRedditLinks(this);
 		linksToSpa(this);
 	}
 
