@@ -2,7 +2,7 @@ import { redditApiRequest, subscribe } from "../../../api/api.js";
 import { StoredData } from "../../../utils/globals.js";
 import { classInElementTree, escapeHTML, linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiType } from "../../../utils/types.js";
-import { numberToShort, stringSortComparer } from "../../../utils/utils.js";
+import { numberToShort, stringSortComparer, throttle } from "../../../utils/utils.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import { FeedType } from "../universalFeed/universalFeed.js";
@@ -47,8 +47,9 @@ export default class Ph_FeedInfo extends HTMLElement {
 		this.className = "feedInfo remove";
 
 		const storedInfo = localStorage[feedUrl];
-		if (storedInfo)
+		if (storedInfo) {
 			this.loadedInfo = JSON.parse(storedInfo);
+		}
 		else {
 			this.loadedInfo = {
 				data: null,
@@ -101,7 +102,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 				this.displayMultiInfo();
 				break;
 			case FeedType.misc:
-				// break;
+			// break;
 			default:
 				this.innerText = `Unknown feed type ${this.loadedInfo.feedType} for ${this.feedUrl}`;
 				new Ph_Toast(Level.Warning, `Unknown feed type ${this.loadedInfo.feedType} for ${this.feedUrl}`);
@@ -136,10 +137,10 @@ export default class Ph_FeedInfo extends HTMLElement {
 		this.loadedInfo.lastUpdatedMsUTC = Date.now();
 		this.saveInfo();
 	}
-	
+
 	displaySubredditInfo() {
 		this.innerText = "";
-		
+
 		this.appendChild(this.makeRefreshButton(() => this.loadSubredditInfo().then(this.displaySubredditInfo.bind(this))));
 
 		const bannerUrl = this.loadedInfo.data["banner_img"] || this.loadedInfo.data["header_img"] || this.loadedInfo.data["banner_background_image"];
@@ -168,7 +169,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 			this.loadedInfo.data["user_is_subscriber"] = !this.loadedInfo.data["user_is_subscriber"];
 			subscribeButton.innerText = this.loadedInfo.data["user_is_subscriber"] ? "Unsubscribe" : "Subscribe";
 			if (await subscribe(this.loadedInfo.data["name"], this.loadedInfo.data["user_is_subscriber"])) {
-				new Ph_Toast(Level.Success, "", { timeout: 2000 })
+				new Ph_Toast(Level.Success, "", { timeout: 2000 });
 			}
 			else {
 				this.loadedInfo.data["user_is_subscriber"] = !this.loadedInfo.data["user_is_subscriber"];
@@ -227,7 +228,6 @@ export default class Ph_FeedInfo extends HTMLElement {
 			{ titleHTML: "Other", content: miscText },
 		]));
 
-
 		linksToSpa(this);
 	}
 
@@ -251,17 +251,16 @@ export default class Ph_FeedInfo extends HTMLElement {
 		this.loadedInfo.lastUpdatedMsUTC = Date.now();
 		this.saveInfo();
 	}
-	
+
 	displayUserInfo() {
 		this.innerText = "";
 
-		
 		this.appendChild(this.makeRefreshButton(() => this.loadUserInfo().then(this.displayUserInfo.bind(this))));
 
 		const bannerUrl = this.loadedInfo.data["subreddit"]["banner_img"];
 		if (bannerUrl)
-			this.makeBannerImage(bannerUrl, this, this.loadedInfo.data["subreddit"]["banner_background_color"] || undefined)
-		
+			this.makeBannerImage(bannerUrl, this, this.loadedInfo.data["subreddit"]["banner_background_color"] || undefined);
+
 		const headerBar = document.createElement("div");
 		headerBar.className = "headerBar";
 		this.appendChild(headerBar);
@@ -278,8 +277,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		userActionsWrapper.className = "subActionsWrapper";
 		overviewBar.appendChild(userActionsWrapper);
 		userActionsWrapper.appendChild(new Ph_DropDown(
-			[
-			],
+			[],
 			`<img src="/img/kebab.svg" draggable="false">`,
 			DirectionX.left,
 			DirectionY.bottom,
@@ -363,8 +361,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		userActionsWrapper.className = "subActionsWrapper";
 		overviewBar.appendChild(userActionsWrapper);
 		userActionsWrapper.appendChild(new Ph_DropDown(
-			[
-			],
+			[],
 			`<img src="/img/kebab.svg" draggable="false">`,
 			DirectionX.left,
 			DirectionY.bottom,
@@ -392,10 +389,6 @@ export default class Ph_FeedInfo extends HTMLElement {
 		description.innerHTML = this.loadedInfo.data["description_html"];
 		const miscText = document.createElement("div");
 		miscText.append(...this.makeMultiSubManager());
-		// miscText.innerHTML = `
-		// 	<div>Subreddits:</div>
-		// 		${this.loadedInfo.data.subreddits.map(sub => `<div><a href="/r/${sub}">r/${sub}</a></div>`).join("")}
-		// `;
 		linksToSpa(miscText);
 		this.appendChild(this.makeSwitchableBar([
 			{ titleHTML: "Description", content: description },
@@ -404,7 +397,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 
 		linksToSpa(this);
 	}
-	
+
 	private makeSwitchableBar(entries: { titleHTML: string, content: HTMLElement }[]): HTMLElement {
 		const wrapper = document.createElement("div");
 		wrapper.className = "switchableBar";
@@ -428,7 +421,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		(switcher.children[0] as HTMLButtonElement).click();
 		return wrapper;
 	}
-	
+
 	private makeRefreshButton(refreshAction: () => void): HTMLElement {
 		const refreshButton = document.createElement("button");
 		refreshButton.className = "refreshButton transparentButtonAlt";
@@ -446,7 +439,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 			bannerImg.style.setProperty("--banner-bg", this.loadedInfo.data["banner_background_color"]);
 		appendTo.appendChild(bannerImg);
 	}
-	
+
 	private makeRules(): HTMLElement[] {
 		return this.loadedInfo.data.rules.map((rule: SubredditRule) => {
 			const ruleWrapper = document.createElement("div");
@@ -463,21 +456,58 @@ export default class Ph_FeedInfo extends HTMLElement {
 	}
 
 	private makeMultiSubManager(): HTMLElement[] {
-		const outElements: HTMLElement[] = []
+		const outElements: HTMLElement[] = [];
+
 		const addSubredditBar = document.createElement("div");
 		addSubredditBar.className = "editableSub addSub";
+
 		const addSubButton = document.createElement("button");
 		addSubButton.className = "addSub transparentButtonAlt";
 		addSubredditBar.appendChild(addSubButton);
+
 		const addSubInput = document.createElement("input");
 		addSubInput.type = "text";
 		addSubInput.placeholder = "Subreddit";
+
+		const subsSearchResults = document.createElement("div");
+		subsSearchResults.className = "subsSearchResults remove";
+		addSubredditBar.appendChild(subsSearchResults);
+
 		addSubredditBar.appendChild(addSubInput);
-		addSubButton.addEventListener("click", e => this.addSubToMulti(addSubInput.value, (e.currentTarget as HTMLElement).parentElement.parentElement));
-		addSubInput.addEventListener("keypress",
-				e => e.code === "Enter" && this.addSubToMulti(addSubInput.value, (e.currentTarget as HTMLElement).parentElement.parentElement));
+		addSubButton.addEventListener("click", e => this.addSubToMulti(
+			addSubInput.value,
+			(e.currentTarget as HTMLElement).parentElement.parentElement)
+		);
+		addSubInput.addEventListener("keypress", e => e.code === "Enter" && this.addSubToMulti(
+			addSubInput.value,
+			(e.currentTarget as HTMLElement).parentElement.parentElement)
+		);
+		addSubInput.addEventListener("input", throttle(async () => {
+			addSubInput.value = addSubInput.value.replace(/^\/?r\//, "");
+			if (addSubInput.value) {
+				subsSearchResults.classList.remove("remove");
+				const subs: { names: string[] } = await redditApiRequest("/api/search_reddit_names", [["query", addSubInput.value]], false);
+				subsSearchResults.innerText = "";
+				subs.names.forEach(sub => {
+					const selectSubBtn = document.createElement("button");
+					selectSubBtn.innerText = sub;
+					selectSubBtn.addEventListener("click", e => this.addSubToMulti(
+						sub,
+						(e.currentTarget as HTMLElement).parentElement.parentElement.parentElement)
+					);
+					subsSearchResults.appendChild(selectSubBtn);
+				});
+			}
+			else {
+				subsSearchResults.classList.add("remove");
+			}
+		}, 500, { leading: true, trailing: true }));
+		addSubInput.addEventListener("blur", () => subsSearchResults.classList.add("remove"));
+
 		outElements.push(addSubredditBar);
+
 		this.loadedInfo.data.subreddits.forEach(sub => outElements.push(this.makeRemoveSubBar(sub)));
+
 		return outElements;
 	}
 
@@ -500,6 +530,8 @@ export default class Ph_FeedInfo extends HTMLElement {
 
 	private async addSubToMulti(subName: string, subsList: HTMLElement) {
 		subName = subName.replace(/^\/?r\//, "");
+		if (subName === "")
+			return;
 		if (this.loadedInfo.data.subreddits.includes(subName)) {
 			new Ph_Toast(Level.Warning, `r/${subName} already exists in ${this.feedUrl}`, { timeout: 6000 });
 			return;
@@ -508,17 +540,23 @@ export default class Ph_FeedInfo extends HTMLElement {
 			const response = await redditApiRequest(
 				`/api/multi${this.feedUrl}/r/${subName}`,
 				[
-					["model", JSON.stringify({name: subName})]
+					["model", JSON.stringify({ name: subName })]
 				],
 				true,
-				{method: "PUT"}
+				{ method: "PUT" }
 			);
+			if (response["explanation"]) {
+				new Ph_Toast(Level.Error, response["explanation"], { timeout: 6000 });
+				return;
+			}
 			if (!response["name"])
 				throw `Invalid add to multi response ${JSON.stringify(response)}`;
 			this.loadedInfo.data.subreddits.push(response["name"]);
 			this.loadedInfo.data.subreddits.sort(stringSortComparer);
 			const newSubIndex = this.loadedInfo.data.subreddits.indexOf(response["name"]);
 			subsList.children[newSubIndex].insertAdjacentElement("afterend", this.makeRemoveSubBar(response["name"]));
+			(subsList.$tag("input")[0] as HTMLInputElement).value = "";
+			this.saveInfo();
 
 		} catch (e) {
 			new Ph_Toast(Level.Error, "Error adding sub to multi");
@@ -538,10 +576,11 @@ export default class Ph_FeedInfo extends HTMLElement {
 				`/api/multi${this.feedUrl}/r/${subName}`,
 				[],
 				true,
-				{method: "DELETE"}
+				{ method: "DELETE" }
 			);
 			editSubBar.remove();
 			this.loadedInfo.data.subreddits.splice(this.loadedInfo.data.subreddits.indexOf(subName), 1);
+			this.saveInfo();
 		} catch (e) {
 			new Ph_Toast(Level.Error, "Error removing sub from multi");
 			console.error("Error removing sub from multi");

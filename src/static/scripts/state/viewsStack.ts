@@ -149,7 +149,7 @@ export default class ViewsStack {
 	private readonly allChars = "abcdefghijklmnopqrstuvxyz";
 	private randomUrl(): string {
 		let randomSub = ["/", "r", "/"]
-		for (let i = 0; i < 5; i++) {
+		for (let i = 0; i < 10; i++) {
 			randomSub.push(this.allChars[Math.floor(Math.random() * this.allChars.length)]);
 		}
 		return randomSub.join("");

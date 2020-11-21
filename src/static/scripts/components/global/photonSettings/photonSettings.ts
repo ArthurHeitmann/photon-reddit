@@ -32,7 +32,7 @@ export let globalSettings: PhotonSettings = {
 };
 
 export default class Ph_PhotonSettings extends HTMLElement {
-	temporarySettings: PhotonSettings = null;
+	temporarySettings: PhotonSettings = {};
 	optionsArea: HTMLElement
 
 	constructor() {
@@ -161,21 +161,24 @@ export default class Ph_PhotonSettings extends HTMLElement {
 		this.optionsArea.appendChild(document.createElement("hr"));
 
 		// incognito mode
-		this.optionsArea.appendChild(this.makeCustomLabeledInput(
+		const incognitoGroup = this.makeCustomLabeledInput(
 			"checkbox",
 			"Incognito Mode",
 			"",
 			"checkboxIncognito",
 			"",
 			globalSettings.isIncognitoEnabled
-		))
-			.$tag("input")[0].addEventListener("input", e => {
-				const checkbox = e.currentTarget as HTMLInputElement;
-				if (checkbox.checked !== globalSettings.isIncognitoEnabled)
-					this.temporarySettings.isIncognitoEnabled = checkbox.checked;
-				else
-					delete this.temporarySettings.isIncognitoEnabled;
-			});
+		);
+		incognitoGroup.$tag("input")[0].addEventListener("input", e => {
+			const checkbox = e.currentTarget as HTMLInputElement;
+			if (checkbox.checked !== globalSettings.isIncognitoEnabled)
+				this.temporarySettings.isIncognitoEnabled = checkbox.checked;
+			else
+				delete this.temporarySettings.isIncognitoEnabled;
+		});
+		incognitoGroup.setAttribute("data-tooltip", "Randomize tab title and url")
+		this.optionsArea.appendChild(incognitoGroup);
+
 	}
 
 	private makeGeneralInputGroup(groupTitle: string, elements: HTMLDivElement[]): HTMLElement {
@@ -232,8 +235,6 @@ export default class Ph_PhotonSettings extends HTMLElement {
 
 	show() {
 		this.classList.remove("remove");
-
-		this.temporarySettings = {};
 	}
 
 	hide() {
