@@ -48,6 +48,7 @@
 		> .mainWrapper {
 			display: flex;
 			flex-grow: 1;
+			overflow: auto;
 
 			> .previewArea {
 				padding-right: 1rem;
@@ -79,6 +80,10 @@
 					display: flex;
 					justify-content: space-between;
 					align-items: center;
+
+					> input + label {
+						margin-right: .5rem;
+					}
 				}
 			}
 

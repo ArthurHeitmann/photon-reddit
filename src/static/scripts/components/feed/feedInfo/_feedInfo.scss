@@ -222,6 +222,35 @@
 			}
 		}
 	}
+
+	.editableSub {
+		display: flex;
+		margin-bottom: .25rem;
+
+		&.addSub {
+			margin-bottom: .75rem;
+		}
+
+		> button {
+			width: 1.5rem;
+			height: 1.5rem;
+			background-size: contain;
+			background-image: url("/img/close.svg");
+			margin-right: .25rem;
+
+			&.addSub {
+				transform: rotate(45deg);
+			}
+		}
+
+		> input {
+			border-bottom: 1px solid #383838;
+		}
+
+		> a {
+
+		}
+	}
 }
 
 .showInfo {

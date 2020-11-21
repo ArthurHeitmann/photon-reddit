@@ -391,10 +391,11 @@ export default class Ph_FeedInfo extends HTMLElement {
 		const description = document.createElement("div");
 		description.innerHTML = this.loadedInfo.data["description_html"];
 		const miscText = document.createElement("div");
-		miscText.innerHTML = `
-			<div>Subreddits:</div>
-				${this.loadedInfo.data.subreddits.map(sub => `<div><a href="/r/${sub}">r/${sub}</a></div>`).join("")}
-		`;
+		miscText.append(...this.makeMultiSubManager());
+		// miscText.innerHTML = `
+		// 	<div>Subreddits:</div>
+		// 		${this.loadedInfo.data.subreddits.map(sub => `<div><a href="/r/${sub}">r/${sub}</a></div>`).join("")}
+		// `;
 		linksToSpa(miscText);
 		this.appendChild(this.makeSwitchableBar([
 			{ titleHTML: "Description", content: description },
@@ -459,6 +460,33 @@ export default class Ph_FeedInfo extends HTMLElement {
 			ruleWrapper.appendChild(description);
 			return ruleWrapper;
 		});
+	}
+
+	private makeMultiSubManager(): HTMLElement[] {
+		const outElements: HTMLElement[] = []
+		const addSubredditBar = document.createElement("div");
+		addSubredditBar.className = "editableSub addSub";
+		const addSubButton = document.createElement("button");
+		addSubButton.className = "addSub transparentButtonAlt";
+		addSubredditBar.appendChild(addSubButton);
+		const addSubInput = document.createElement("input");
+		addSubInput.type = "text";
+		addSubInput.placeholder = "Subreddit";
+		addSubredditBar.appendChild(addSubInput);
+		outElements.push(addSubredditBar);
+		this.loadedInfo.data.subreddits.forEach(sub => {
+			const removeSubredditBar = document.createElement("div");
+			removeSubredditBar.className = "editableSub";
+			const removeSubButton = document.createElement("button");
+			removeSubButton.className = "removeSub transparentButton";
+			removeSubredditBar.appendChild(removeSubButton);
+			const addSubText = document.createElement("div");
+			addSubText.innerHTML = `<a href="/r/${sub}">r/${sub}</a>`;
+			removeSubredditBar.appendChild(addSubText);
+			outElements.push(removeSubredditBar)
+			return removeSubredditBar;
+		});
+		return outElements;
 	}
 
 	saveInfo() {

@@ -18,7 +18,7 @@ export default class Ph_UserDropDown extends HTMLElement {
 		window.addEventListener("ph-ready", () => {
 			dropDownButton.innerText = `u/${thisUser.name}`;
 			dropDownArea.appendChild(this.makeSubredditGroup(
-				thisUser.multiReddits.map(multi => <SubGroupData> {name: multi.display_name, path: multi.path}),
+				thisUser.multiReddits.map(multi => ({name: multi.display_name, path: multi.path})),
 				"Custom Feeds"
 			));
 			dropDownArea.appendChild(this.makeSubredditGroup(

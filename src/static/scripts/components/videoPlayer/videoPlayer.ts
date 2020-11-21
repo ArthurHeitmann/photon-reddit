@@ -79,7 +79,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 						const maxRes = helperUrl.match(/(?<=DASH_)\d+/)[0];
 						const resOptions = resolutions.slice(resolutions.indexOf(parseInt(maxRes)));
 						this.video = new Ph_VideoAudio(
-							resOptions.map(res => <any> {src: `${postData.data["url"]}/DASH_${res}`, type: "video/mp4"}),
+							resOptions.map(res => ({src: `${postData.data["url"]}/DASH_${res}`, type: "video/mp4"})),
 							[
 							{src: postData.data["url"] + "/DASH_audio.mp4", type: "video/mp4"},
 							{src: postData.data["url"] + "/DASH_audio", type: "video/mp4"},
