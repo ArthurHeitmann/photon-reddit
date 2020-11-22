@@ -102,6 +102,19 @@ export default class Ph_VideoPlayer extends HTMLElement {
 					}
 					else if (/DASH_[\d_]+[KM]\.mp4\?source=fallback$/.test(helperUrl)) {
 						this.video = new Ph_VideoAudio([
+							{src: postData.data["url"] + "/DASH_4_8_M.mp4", type: "video/mp4"},
+							{src: postData.data["url"] + "/DASH_2_4_M.mp4", type: "video/mp4"},
+							{src: postData.data["url"] + "/DASH_1_2_M.mp4", type: "video/mp4"},
+							{src: postData.data["url"] + "/DASH_600_K.mp4", type: "video/mp4"},
+						], [
+							{src: postData.data["url"] + "/DASH_audio.mp4", type: "video/mp4"},
+							{src: postData.data["url"] + "/DASH_audio", type: "video/mp4"},
+							{src: postData.data["url"] + "/audio.mp4", type: "video/mp4"},
+							{src: postData.data["url"] + "/audio", type: "video/mp4"},
+						]);
+					}
+					else if (/DASH_[\d_]+[KM]\?source=fallback$/.test(helperUrl)) {
+						this.video = new Ph_VideoAudio([
 							{src: postData.data["url"] + "/DASH_4_8_M", type: "video/mp4"},
 							{src: postData.data["url"] + "/DASH_2_4_M", type: "video/mp4"},
 							{src: postData.data["url"] + "/DASH_1_2_M", type: "video/mp4"},
