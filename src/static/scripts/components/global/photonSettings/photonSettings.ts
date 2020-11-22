@@ -19,7 +19,8 @@ export interface PhotonSettings {
 	nsfwPolicy?: NsfwPolicy,
 	markSeenPosts?: boolean,
 	hideSeenPosts?: boolean,
-	isIncognitoEnabled?: boolean
+	isIncognitoEnabled?: boolean,
+	controlBarForImages?: boolean,
 }
 
 // default config
@@ -29,6 +30,7 @@ export let globalSettings: PhotonSettings = {
 	markSeenPosts: true,
 	hideSeenPosts: true,
 	isIncognitoEnabled: false,
+	controlBarForImages: false,
 };
 
 export default class Ph_PhotonSettings extends HTMLElement {
@@ -178,6 +180,26 @@ export default class Ph_PhotonSettings extends HTMLElement {
 		});
 		incognitoGroup.setAttribute("data-tooltip", "Randomize tab title and url")
 		this.optionsArea.appendChild(incognitoGroup);
+		this.optionsArea.appendChild(document.createElement("hr"));
+
+		// show control bar for images
+		const imageControlsGroup = this.makeCustomLabeledInput(
+			"checkbox",
+			"Show controls bar for images (not galleries)",
+			"",
+			"checkboxControlsImage",
+			"",
+			globalSettings.controlBarForImages
+		);
+		imageControlsGroup.$tag("input")[0].addEventListener("input", e => {
+			const checkbox = e.currentTarget as HTMLInputElement;
+			if (checkbox.checked !== globalSettings.controlBarForImages)
+				this.temporarySettings.controlBarForImages = checkbox.checked;
+			else
+				delete this.temporarySettings.controlBarForImages;
+		});
+		this.optionsArea.appendChild(imageControlsGroup);
+		this.optionsArea.appendChild(document.createElement("hr"));
 
 	}
 

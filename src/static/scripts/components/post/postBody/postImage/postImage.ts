@@ -140,6 +140,19 @@ export default class Ph_PostImage extends HTMLElement {
 			this.imageIndexText = document.createElement("div");
 			this.controls.appendChild(this.imageIndexText);
 		}
+		if (this.galleryData.length === 1) {
+			if (!globalSettings.controlBarForImages)
+				this.controls.classList.add("hide");
+			window.addEventListener("settingsChanged", (e: CustomEvent) => {
+				const changed = e.detail as PhotonSettings;
+				if (changed.controlBarForImages === undefined)
+					return;
+				if (changed.controlBarForImages)
+					this.controls.classList.remove("hide");
+				else
+					this.controls.classList.add("hide");
+			});
+		}
 		// spacer
 		this.controls.appendSpacer();
 		// loading icon
