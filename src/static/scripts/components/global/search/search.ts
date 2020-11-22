@@ -166,14 +166,20 @@ export default class Ph_Search extends HTMLElement {
 			}
 			window.addEventListener("feedInfoReady", (e: CustomEvent) => {
 				const flairs: FlairData[] = (e.detail as Ph_FeedInfo).loadedInfo.data.flairs;
+				if (this.flairSearch) {
+					this.flairSearch?.remove();
+					this.flairSearch = undefined;
+				}
 				if (!flairs)
 					return;
 				this.flairSearch = new Ph_DropDown(
-					flairs.map(flair => ({
+					flairs.length > 0
+					? flairs.map(flair => ({
 						displayElement: new Ph_Flair(flair),
 						value: flair.text,
 						onSelectCallback: this.searchByFlair.bind(this),
-					})),
+					}))
+					: [{ displayHTML: "No flairs available" }],
 					"Search by flair",
 					DirectionX.right,
 					DirectionY.bottom,
