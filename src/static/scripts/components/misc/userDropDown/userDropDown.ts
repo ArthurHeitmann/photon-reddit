@@ -1,5 +1,6 @@
 import { MultiReddit, thisUser } from "../../../utils/globals.js";
-import { linksToSpa } from "../../../utils/htmlStuff.js";
+import { elementWithClassInTree, linksToSpa } from "../../../utils/htmlStuff.js";
+import Ph_Header from "../../global/header/header.js";
 
 export default class Ph_UserDropDown extends HTMLElement {
 	constructor() {
@@ -9,7 +10,7 @@ export default class Ph_UserDropDown extends HTMLElement {
 
 		const dropDownButton = document.createElement("button");
 		dropDownButton.innerText = "Subreddits";
-		dropDownButton.addEventListener("click", () => this.classList.toggle("expanded"));
+		dropDownButton.addEventListener("click", this.toggle.bind(this));
 		this.appendChild(dropDownButton);
 		const dropDownArea = document.createElement("div");
 		dropDownArea.appendChild(this.makeSubredditGroup([{ path: "/r/popular", name: "r/popular" }, { path: "/r/all", name: "r/all" }], "Reddit Feeds"));
@@ -40,6 +41,12 @@ export default class Ph_UserDropDown extends HTMLElement {
 
 	minimize() {
 		this.classList.remove("expanded");
+	}
+
+	toggle() {
+		this.classList.toggle("expanded");
+		if (this.classList.contains("expanded"))
+			(elementWithClassInTree(this.parentElement, "header") as Ph_Header)?.minimizeAll([this]);
 	}
 }
 

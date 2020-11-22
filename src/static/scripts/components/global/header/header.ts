@@ -111,9 +111,11 @@ export default class Ph_Header extends HTMLElement {
 		}
 	}
 
-	minimizeAll() {
-		this.search.minimize();
-		this.userDropDown.minimize();
+	minimizeAll(exclude: HTMLElement[] = []) {
+		if (!exclude.includes(this.search))
+			this.search.minimize();
+		if (!exclude.includes(this.userDropDown))
+			this.userDropDown.minimize();
 		this.$classAr("dropDownArea").forEach((area: Ph_DropDownArea) => area.closeMenu(true));
 	}
 }

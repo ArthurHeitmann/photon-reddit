@@ -149,6 +149,10 @@
 				.checkbox + label {
 					width: 1.3em;
 					height: 1.3em;
+					min-width: 1.3em;
+					min-height: 1.3em;
+					max-width: 1.3em;
+					max-height: 1.3em;
 				}
 			}
 		}

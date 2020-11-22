@@ -1,10 +1,12 @@
 import { searchSubreddits, searchUser } from "../../../api/api.js";
 import { pushLinkToHistoryComb, pushLinkToHistorySep } from "../../../state/stateManager.js";
-import { linksToSpa } from "../../../utils/htmlStuff.js";
+import { elementWithClassInTree, linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiType, SortPostsTimeFrame, SortSearchOrder } from "../../../utils/types.js";
 import { throttle } from "../../../utils/utils.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
+import { Ph_ViewState } from "../../viewState/viewState.js";
+import Ph_Header from "../header/header.js";
 
 export default class Ph_Search extends HTMLElement {
 	searchBar: HTMLInputElement;
@@ -151,8 +153,8 @@ export default class Ph_Search extends HTMLElement {
 			this.limitToSubreddit.checked = Boolean(currParams.get("restrict_sr"));
 		}
 
-		window.addEventListener("urlChange", (e: CustomEvent) => {
-			const subMatches = e.detail.match(/^\/r\/[^\/]+/);
+		window.addEventListener("viewChange", (e: CustomEvent) => {
+			const subMatches = (e.detail as Ph_ViewState).state.url.match(/^\/r\/[^\/]+/);
 			this.currentSubreddit = subMatches && subMatches[0] || null;
 			limitToLabel.innerText = `Limit to ${this.currentSubreddit || "all"}`;
 		})
@@ -175,7 +177,9 @@ export default class Ph_Search extends HTMLElement {
 	}
 
 	onFocus() {
-		this.classList.add("expanded")
+		this.classList.add("expanded");
+		if (this.classList.contains("expanded"))
+			(elementWithClassInTree(this.parentElement, "header") as Ph_Header)?.minimizeAll([this]);
 	}
 
 	minimize() {
@@ -185,6 +189,8 @@ export default class Ph_Search extends HTMLElement {
 	
 	toggleSearchDropdown() {
 		this.classList.toggle("expanded");
+		if (this.classList.contains("expanded"))
+			(elementWithClassInTree(this.parentElement, "header") as Ph_Header)?.minimizeAll([this]);
 	}
 
 	setSortOrder(valueChain: any[]) {

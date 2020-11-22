@@ -34,7 +34,6 @@ export default class ViewsStack {
 		state.state.index = this.pos;
 		this.views[this.pos] = state;
 
-		window.dispatchEvent(new CustomEvent("urlChange", { detail: state.state.url }))
 		if (this.isNextReplace) {
 			if (globalSettings.isIncognitoEnabled)
 				this.incognitoReplace(state.state);
