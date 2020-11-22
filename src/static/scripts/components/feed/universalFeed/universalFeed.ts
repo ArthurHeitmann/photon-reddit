@@ -1,8 +1,10 @@
 import { redditApiRequest } from "../../../api/api.js";
+import { viewsStack } from "../../../state/stateManager.js";
 import { elementWithClassInTree } from "../../../utils/htmlStuff.js";
 import { RedditApiType } from "../../../utils/types.js";
 import { throttle } from "../../../utils/utils.js";
 import Ph_Comment from "../../comment/comment.js";
+import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Ph_Post from "../../post/post.js";
 import { Ph_ViewState } from "../../viewState/viewState.js";
@@ -15,6 +17,13 @@ export enum FeedType {
 	multireddit,
 	user,
 	misc,
+}
+
+export enum UserSection {
+	Overview = "",
+	Posts = "submitted",
+	Comments = "comments",
+	Gilded = "gilded",
 }
 
 export default class Ph_UniversalFeed extends HTMLElement {
@@ -98,6 +107,20 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			headerElements.push(title);
 			if (feedType !== FeedType.misc)
 				headerElements.push(new Ph_FeedInfo(feedType, feedBaseUrl).makeShowInfoButton());
+			if (feedType === FeedType.user) {
+				headerElements.push(new Ph_DropDown(
+					[
+						{ displayHTML: "Overview", value: UserSection.Overview, onSelectCallback: this.setUserSection.bind(this) },
+						{ displayHTML: "Posts", value: UserSection.Posts, onSelectCallback: this.setUserSection.bind(this) },
+						{ displayHTML: "Comments", value: UserSection.Comments, onSelectCallback: this.setUserSection.bind(this) },
+						{ displayHTML: "Gilded", value: UserSection.Gilded, onSelectCallback: this.setUserSection.bind(this) },
+					],
+					"Sections",
+					DirectionX.left,
+					DirectionY.bottom,
+					false
+				))
+			}
 			if (this.isSearchFeed)
 				headerElements.push(new Ph_SearchFeedSorter(this));
 			else
@@ -114,6 +137,25 @@ export default class Ph_UniversalFeed extends HTMLElement {
 				console.error(e);
 				new Ph_Toast(Level.Error, `Error making feed item`);
 			}
+		}
+	}
+
+	async setUserSection(section: UserSection) {
+		this.requestUrl = this.requestUrl.replace(/^(\/(u|user)\/[^/]+)(\/[^/]*)?/, `$1/${section}`);
+		try {
+			const sectionItems: RedditApiType = await redditApiRequest(
+				this.requestUrl,
+				[],
+				false
+			);
+			this.beforeData = sectionItems.data.before;
+			this.afterData = sectionItems.data.after;
+			this.replaceChildren(sectionItems.data.children);
+			viewsStack.changeCurrentUrl(this.requestUrl);
+		} catch (e) {
+			new Ph_Toast(Level.Error, "Error getting user section items");
+			console.error("Error getting user section items");
+			console.error(e);
 		}
 	}
 
