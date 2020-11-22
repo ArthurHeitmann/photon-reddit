@@ -44,6 +44,15 @@ export default class Ph_PostBody extends HTMLElement {
 				this.classList.add("fullScale");
 				this.appendChild(new Ph_VideoPlayer(postData));
 				break;
+			case PostType.Tweet:
+				this.classList.add("fullScale");
+				this.innerHTML = `
+					<div class="aspect-ratio-16-9-wrapper">
+						<iframe border=0 frameborder=0 height=250 width=550
+ 							src="https://twitframe.com/show?url=${encodeURIComponent(postData.data["url"])}&theme=dark&align=center">
+						</iframe>
+					</div>`;
+				break;
 			default:
 				this.classList.add("padded");
 				this.innerText = `Unknown post type ${this.getPostType(postData.data)}`;
@@ -77,6 +86,8 @@ export default class Ph_PostBody extends HTMLElement {
 			return PostType.Video;
 		else if (postData["post_hint"] == "rich:video")
 			return PostType.EmbeddedVideo;
+		else if (/^(https?:\/\/)?(www\.)?twitter\.com\/[^/]+\/status\/\d+/.test(postData["url"]))
+			return PostType.Tweet;
 		else
 			return PostType.Link;
 		}
@@ -90,4 +101,5 @@ enum PostType {
 	Video,
 	EmbeddedVideo,
 	Text,
+	Tweet,
 }

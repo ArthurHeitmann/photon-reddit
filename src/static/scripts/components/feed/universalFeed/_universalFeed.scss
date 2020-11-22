@@ -2,10 +2,12 @@
 @media (orientation: landscape) {
 	.universalFeed {
 		width: 50%;
+	}
+}
 
-		> * {
-			margin: 1.5rem 0;
-		}
+.universalFeed {
+	> * {
+		margin: 1.5rem 0;
 	}
 }
 
