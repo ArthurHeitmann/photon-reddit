@@ -67,14 +67,6 @@ export default class Ph_PostAndComments extends HTMLElement {
 	connectedCallback() {
 		const headerElements: HTMLElement[] = [];
 
-		const subTitle = document.createElement("div");
-		subTitle.className = "feedTitle";
-		subTitle.innerText = this.subredditPrefixed;
-		headerElements.push(subTitle);
-		headerElements.push(new Ph_FeedInfo(
-			this.subredditPrefixed[0] === "r" ? FeedType.subreddit : FeedType.user,
-			`/${this.subredditPrefixed}`
-		).makeShowInfoButton());
 		if (this.userPrefixed !== this.subredditPrefixed) {
 			const userTitle = document.createElement("div");
 			userTitle.className = "feedTitle";
@@ -85,6 +77,14 @@ export default class Ph_PostAndComments extends HTMLElement {
 				`/${this.userPrefixed}`
 			).makeShowInfoButton());
 		}
+		const subTitle = document.createElement("div");
+		subTitle.className = "feedTitle";
+		subTitle.innerText = this.subredditPrefixed;
+		headerElements.push(subTitle);
+		headerElements.push(new Ph_FeedInfo(
+			this.subredditPrefixed[0] === "r" ? FeedType.subreddit : FeedType.user,
+			`/${this.subredditPrefixed}`
+		).makeShowInfoButton());
 
 		headerElements.push(this.sorter);
 
