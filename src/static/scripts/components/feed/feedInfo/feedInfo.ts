@@ -4,6 +4,7 @@ import { classInElementTree, escapeHTML, linksToSpa } from "../../../utils/htmlS
 import { RedditApiType } from "../../../utils/types.js";
 import { numberToShort, replaceRedditLinks, stringSortComparer, throttle } from "../../../utils/utils.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
+import { FlairData } from "../../misc/flair/flair.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import { FeedType } from "../universalFeed/universalFeed.js";
 
@@ -90,6 +91,8 @@ export default class Ph_FeedInfo extends HTMLElement {
 					break;
 			}
 		}
+		else
+			window.dispatchEvent(new CustomEvent("feedInfoReady", { detail: this }));
 
 		switch (this.loadedInfo.feedType) {
 			case FeedType.subreddit:
@@ -114,6 +117,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		let feedAbout: RedditApiType;
 		let rules: SubredditRule[];
 		let mods: SubredditModerator[];
+		let flairs: FlairData[];
 		try {
 			feedAbout = await redditApiRequest(`${this.feedUrl}/about`, [], false);
 			if (feedAbout["error"] || !(feedAbout["kind"] && feedAbout["data"]))
@@ -126,6 +130,16 @@ export default class Ph_FeedInfo extends HTMLElement {
 			if (tmpMods["error"] || !(tmpMods["kind"] === "UserList" && tmpMods["data"]))
 				throw `Invalid mods response ${JSON.stringify(tmpRules)}`;
 			mods = tmpMods["data"]["children"];
+			let tmpFlair: Object[] = await redditApiRequest(`${this.feedUrl}/api/link_flair_v2`, [], false);
+			if (tmpFlair["error"])		// no post flairs from this sub
+				tmpFlair = [];
+			flairs = tmpFlair.map(flair => ({
+				type: flair["type"],
+				text: flair["text"],
+				backgroundColor: flair["background_color"],
+				richText: flair["richtext"],
+				textColor: flair["text_color"]
+			}));
 		} catch (e) {
 			new Ph_Toast(Level.Error, "Error getting subreddit info");
 			console.error(`Error getting subreddit info for ${this.feedUrl}`);
@@ -134,6 +148,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		this.loadedInfo.data = feedAbout.data;
 		this.loadedInfo.data.rules = rules;
 		this.loadedInfo.data.mods = mods;
+		this.loadedInfo.data.flairs = flairs;
 		this.loadedInfo.lastUpdatedMsUTC = Date.now();
 		this.saveInfo();
 	}
@@ -624,6 +639,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 
 	saveInfo() {
 		localStorage.setItem(this.feedUrl, JSON.stringify(this.loadedInfo));
+		window.dispatchEvent(new CustomEvent("feedInfoReady", { detail: this }));
 	}
 
 	removeInfo() {

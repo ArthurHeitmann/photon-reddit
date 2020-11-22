@@ -3,7 +3,9 @@ import { pushLinkToHistoryComb, pushLinkToHistorySep } from "../../../state/stat
 import { elementWithClassInTree, linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiType, SortPostsTimeFrame, SortSearchOrder } from "../../../utils/types.js";
 import { throttle } from "../../../utils/utils.js";
+import Ph_FeedInfo from "../../feed/feedInfo/feedInfo.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
+import Ph_Flair, { FlairData } from "../../misc/flair/flair.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import { Ph_ViewState } from "../../viewState/viewState.js";
 import Ph_Header from "../header/header.js";
@@ -11,6 +13,7 @@ import Ph_Header from "../header/header.js";
 export default class Ph_Search extends HTMLElement {
 	searchBar: HTMLInputElement;
 	sortBy: Ph_DropDown;
+	flairSearch: Ph_DropDown;
 	searchOrder = SortSearchOrder.relevance;
 	searchTimeFrame = SortPostsTimeFrame.all;
 	limitToSubreddit: HTMLInputElement;
@@ -157,6 +160,27 @@ export default class Ph_Search extends HTMLElement {
 			const subMatches = (e.detail as Ph_ViewState).state.url.match(/^\/r\/[^\/]+/);
 			this.currentSubreddit = subMatches && subMatches[0] || null;
 			limitToLabel.innerText = `Limit to ${this.currentSubreddit || "all"}`;
+			if (this.flairSearch) {
+				this.flairSearch?.remove();
+				this.flairSearch = undefined;
+			}
+			window.addEventListener("feedInfoReady", (e: CustomEvent) => {
+				const flairs: FlairData[] = (e.detail as Ph_FeedInfo).loadedInfo.data.flairs;
+				if (!flairs)
+					return;
+				this.flairSearch = new Ph_DropDown(
+					flairs.map(flair => ({
+						displayElement: new Ph_Flair(flair),
+						value: flair.text,
+						onSelectCallback: this.searchByFlair.bind(this),
+					})),
+					"Search by flair",
+					DirectionX.right,
+					DirectionY.bottom,
+					false
+				);
+				this.sortBy.insertAdjacentElement("afterend", this.flairSearch);
+			}, { once: true })
 		})
 	}
 
@@ -321,6 +345,13 @@ export default class Ph_Search extends HTMLElement {
 				"?" + paramsString
 			);
 		}
+	}
+
+	searchByFlair([flairText]: string[]) {
+		this.limitToSubreddit.checked = true;
+		this.searchBar.value = `flair:${flairText}`;
+		this.searchPrefix = "";
+		this.search(null);
 	}
 }
 

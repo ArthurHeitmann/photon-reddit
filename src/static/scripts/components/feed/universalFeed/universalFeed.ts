@@ -83,9 +83,9 @@ export default class Ph_UniversalFeed extends HTMLElement {
 				feedType = FeedType.misc;
 			}
 			else if (/^\/r\/[^/]+/.test(requestUrl)) {								// subreddit
-				title.innerText = requestUrl.match(/r\/[^/]+/)[0];
+				title.innerText = requestUrl.match(/r\/[^/?]+/)[0];
 				feedType = FeedType.subreddit;
-				feedBaseUrl = requestUrl.match(/\/r\/[^/]+/)[0];
+				feedBaseUrl = requestUrl.match(/\/r\/[^/?]+/)[0];
 			}
 			else if (/^\/(u|user)\/[^/]+\/m\/[^/]+/.test(requestUrl)) {				// multi
 				title.innerText = "Multireddit " + requestUrl.match(/\/m\/([^/]+)/)[1];
@@ -94,9 +94,9 @@ export default class Ph_UniversalFeed extends HTMLElement {
 				feedBaseUrl = `/user/${matches[2]}/m/${matches[3]}`;
 			}
 			else if (/^\/(u|user)\/[^/]+/.test(requestUrl)) {						// user
-				title.innerText = "u/" + requestUrl.match(/\/(u|user)\/([^/]+)/)[2];
+				title.innerText = "u/" + requestUrl.match(/\/(u|user)\/([^/?]+)/)[2];
 				feedType = FeedType.user;
-				feedBaseUrl = "/user/" + requestUrl.match(/\/(u|user)\/([^/]+)/)[2];
+				feedBaseUrl = "/user/" + requestUrl.match(/\/(u|user)\/([^/?]+)/)[2];
 			}
 			else {
 				new Ph_Toast(Level.Error, `Unknown feed for ${requestUrl}`)

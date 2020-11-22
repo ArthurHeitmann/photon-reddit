@@ -1,8 +1,16 @@
 import { RedditApiData } from "../../../utils/types.js";
 import Ph_Toast, { Level } from "../toast/toast.js";
 
+export interface FlairData {
+	type: string,
+	backgroundColor?: string,
+	textColor?: string,
+	richText?: {}[],
+	text?: string
+}
+
 export default class Ph_Flair extends HTMLElement {
-	constructor(data: { type: string, backgroundColor?: string, textColor?: string, richText?: {}[], text?: string }) {
+	constructor(data: FlairData) {
 		super();
 
 		if (!data.type)
@@ -54,7 +62,7 @@ export default class Ph_Flair extends HTMLElement {
 			textColor: thingData[`${prefix}_flair_text_color`],
 			richText: thingData[`${prefix}_flair_richtext`],
 			text: thingData[`${prefix}_flair_text`],
-		})
+		});
 	}
 
 	private makeFlairColorScheme(color: string, secondaryColor?: string): string[] {
@@ -73,9 +81,9 @@ export default class Ph_Flair extends HTMLElement {
 
 	private contrastColor(color: string): string {
 		if (color === "light")
-			return this.shortColorToCss("dark")
+			return this.shortColorToCss("dark");
 		else if (color === "dark")
-			return this.shortColorToCss("light")
+			return this.shortColorToCss("light");
 
 		color = this.shortColorToCss(color);
 		const testElement = document.createElement("div");
@@ -88,9 +96,9 @@ export default class Ph_Flair extends HTMLElement {
 		const rgbValues: string[] = cssRgb.match(/\d+/g);
 		if (rgbValues) {
 			const brightness = rgbValues.reduce((prev, cur) => prev + parseInt(cur), 0) / 3;
-			return  brightness < 128 ? this.shortColorToCss("light") : this.shortColorToCss("dark");
+			return brightness < 128 ? this.shortColorToCss("light") : this.shortColorToCss("dark");
 		}
-		else  {
+		else {
 			new Ph_Toast(Level.Error, "Invalid flair color");
 			return "red";
 		}
