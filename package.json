@@ -5,7 +5,8 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "start": "tsc && sass src/static && node src/app.js",
+    "start": "node --experimental-modules src/app.mjs",
+    "build": "tsc src/ && sass src/static --style compact --no-source-map",
     "watch-sass": " sass --watch src/static",
     "watch-sass-wsl2": " sass --watch --poll src/static",
     "watch-tsc": "tsc -w",
@@ -28,6 +29,7 @@
     "typescript": "^3.9.7"
   },
   "dependencies": {
+    "esm": "^3.2.25",
     "express": "^4.16.4",
     "node-fetch": "^2.6.1"
   }
