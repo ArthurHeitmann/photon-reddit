@@ -1,6 +1,7 @@
 import express from "express";
-import { initialAccessToken, refreshAccessToken } from "./static/scripts/login/loginRedirect.js"
-import fetch from "node-fetch"
+import fetch from "node-fetch";
+import { initialAccessToken, refreshAccessToken } from "./static/scripts/login/loginRedirect.js";
+
 const app = express();
 app.use(express.static('src/static'));
 const port = 8080;

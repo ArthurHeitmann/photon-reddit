@@ -1,7 +1,7 @@
 import Ph_Toast, { Level } from "./components/misc/toast/toast.js";
 import Ph_PostBody from "./components/post/postBody/postBody.js";
-import { splitPathQuery } from "./utils/utils.js";
 import { RedditApiType } from "./utils/types.js";
+import { splitPathQuery } from "./utils/utils.js";
 
 window.addEventListener("load", async () => {
 	const params = new URLSearchParams(location.search);

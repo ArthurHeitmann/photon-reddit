@@ -1,6 +1,6 @@
-import { replaceRedditLinks } from "../../../utils/utils.js";
 import { linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiData, RedditApiType } from "../../../utils/types.js";
+import { replaceRedditLinks } from "../../../utils/utils.js";
 import Ph_VideoPlayer from "../../videoPlayer/videoPlayer.js";
 import Ph_PostImage from "./postImage/postImage.js";
 import Ph_PostText from "./postText/postText.js";

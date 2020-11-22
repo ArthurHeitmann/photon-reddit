@@ -95,6 +95,7 @@
 		> .bottomBar {
 			display: flex;
 			justify-content: flex-end;
+			padding-top: .5rem;
 
 			.saveButton {
 				border: 1px solid vars.$text;

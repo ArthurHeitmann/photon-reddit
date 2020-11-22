@@ -1,4 +1,3 @@
-import Ph_DropDown from "../dropDown.js";
 import Ph_DropDownArea from "../dropDownArea/dropDownArea.js";
 
 export default class Ph_DropDownEntry extends HTMLButtonElement {

@@ -2,7 +2,7 @@ import Ph_Header from "./components/global/header/header.js";
 import { checkTokenExpiry, initiateLogin, isAccessTokenValid } from "./login/login.js";
 import { pushLinkToHistorySep } from "./state/stateManager.js";
 import { thisUser } from "./utils/globals.js";
-import { $class, $id, $tag, linksToSpa } from "./utils/htmlStuff.js";
+import { $id, linksToSpa } from "./utils/htmlStuff.js";
 
 async function init(): Promise<void> {
 	$id("mainWrapper").insertAdjacentElement("afterbegin", new Ph_Header());

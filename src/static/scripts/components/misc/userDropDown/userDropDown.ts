@@ -1,4 +1,4 @@
-import { MultiReddit, thisUser } from "../../../utils/globals.js";
+import { thisUser } from "../../../utils/globals.js";
 import { elementWithClassInTree, linksToSpa } from "../../../utils/htmlStuff.js";
 import Ph_Header from "../../global/header/header.js";
 
@@ -17,7 +17,7 @@ export default class Ph_UserDropDown extends HTMLElement {
 		this.appendChild(dropDownArea);
 
 		window.addEventListener("ph-ready", () => {
-			dropDownButton.innerText = `u/${thisUser.name}`;
+			dropDownButton.innerText = thisUser.name ? `u/${thisUser.name}` : "Subreddits";
 			dropDownArea.appendChild(this.makeSubredditGroup(
 				thisUser.multiReddits.map(multi => ({name: multi.display_name, path: multi.path})),
 				"Custom Feeds"

@@ -1,6 +1,6 @@
 import { redditApiRequest, subscribe } from "../../../api/api.js";
-import { MultiReddit, StoredData } from "../../../utils/globals.js";
-import { classInElementTree, escapeHTML, linksToSpa } from "../../../utils/htmlStuff.js";
+import { isLoggedIn, MultiReddit, StoredData } from "../../../utils/globals.js";
+import { classInElementTree, linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiType } from "../../../utils/types.js";
 import { numberToShort, replaceRedditLinks, stringSortComparer, throttle } from "../../../utils/utils.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
@@ -130,21 +130,32 @@ export default class Ph_FeedInfo extends HTMLElement {
 			if (tmpMods["error"] || !(tmpMods["kind"] === "UserList" && tmpMods["data"]))
 				throw `Invalid mods response ${JSON.stringify(tmpRules)}`;
 			mods = tmpMods["data"]["children"];
-			let tmpFlair: Object[] = await redditApiRequest(`${this.feedUrl}/api/link_flair_v2`, [], false);
-			if (tmpFlair["error"])		// no post flairs from this sub
-				tmpFlair = [];
-			flairs = tmpFlair.map(flair => ({
-				type: flair["type"],
-				text: flair["text"],
-				backgroundColor: flair["background_color"],
-				richText: flair["richtext"],
-				textColor: flair["text_color"]
-			}));
+
 		} catch (e) {
 			new Ph_Toast(Level.Error, "Error getting subreddit info");
 			console.error(`Error getting subreddit info for ${this.feedUrl}`);
 			console.error(e);
 		}
+		let tmpFlairs: Object[];
+		if (isLoggedIn) {
+			try {
+				tmpFlairs = await redditApiRequest(`${this.feedUrl}/api/link_flair_v2`, [], true);
+				if (tmpFlairs["error"])		// no post flairs from this sub
+					tmpFlairs = [];
+			} catch (e) {
+				tmpFlairs = [];
+			}
+		}
+		else
+			tmpFlairs = [];
+
+		flairs = tmpFlairs.map(flair => ({
+			type: flair["type"],
+			text: flair["text"],
+			backgroundColor: flair["background_color"],
+			richText: flair["richtext"],
+			textColor: flair["text_color"]
+		}));
 		this.loadedInfo.data = feedAbout.data;
 		this.loadedInfo.data.rules = rules;
 		this.loadedInfo.data.mods = mods;
@@ -225,7 +236,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		headerBar.appendChild(overviewBar);
 		const title = document.createElement("h1");
 		title.className = "title";
-		title.innerText = escapeHTML(this.loadedInfo.data["title"]);
+		title.innerText = this.loadedInfo.data["title"] || this.loadedInfo.data["display_name"];
 		this.appendChild(title);
 
 		const description = document.createElement("div");
@@ -326,7 +337,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		headerBar.appendChild(overviewBar);
 		const title = document.createElement("h1");
 		title.className = "title";
-		title.innerText = escapeHTML(this.loadedInfo.data["subreddit"]["title"]);
+		title.innerText = this.loadedInfo.data["subreddit"]["title"] || this.loadedInfo.data["name"];
 		this.appendChild(title);
 
 		const publicDescription = document.createElement("div");
@@ -412,7 +423,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		headerBar.appendChild(overviewBar);
 		const title = document.createElement("h1");
 		title.className = "title";
-		title.innerText = escapeHTML(this.loadedInfo.data["display_name"]);
+		title.innerText = this.loadedInfo.data["display_name"];
 		this.appendChild(title);
 
 		const description = document.createElement("div");

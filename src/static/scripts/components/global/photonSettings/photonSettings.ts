@@ -27,8 +27,8 @@ export interface PhotonSettings {
 export let globalSettings: PhotonSettings = {
 	imageLoadingPolicy: ImageLoadingPolicy.originalInFs,
 	nsfwPolicy: NsfwPolicy.covered,
-	markSeenPosts: true,
-	hideSeenPosts: true,
+	markSeenPosts: false,
+	hideSeenPosts: false,
 	isIncognitoEnabled: false,
 	controlBarForImages: false,
 };

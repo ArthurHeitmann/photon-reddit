@@ -1,9 +1,6 @@
-import { redditApiRequest } from "../../../api/api.js";
-import { viewsStack } from "../../../state/stateManager.js";
 import { linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiType, SortCommentsOrder } from "../../../utils/types.js";
 import Ph_Comment from "../../comment/comment.js";
-import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Ph_Post from "../../post/post.js";
 

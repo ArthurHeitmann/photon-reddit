@@ -1,7 +1,3 @@
-import { comment } from "../../../api/api.js";
-import Ph_Toast, { Level } from "../toast/toast.js";
-import Votable from "../votable/votable.js";
-
 export default class Ph_MarkdownForm extends HTMLElement {
 	commentTextField: HTMLTextAreaElement;
 	submitCommentBtn: HTMLButtonElement;

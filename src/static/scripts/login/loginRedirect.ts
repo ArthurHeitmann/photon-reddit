@@ -1,5 +1,5 @@
-import { appId, redirectURI } from "../utils/consts.js"
-import fetch from "node-fetch"
+import fetch from "node-fetch";
+import { appId, redirectURI } from "../utils/consts.js";
 
 async function getAccessToken(params: URLSearchParams): Promise<string> {
 	const response = await fetch("https://www.reddit.com/api/v1/access_token", {

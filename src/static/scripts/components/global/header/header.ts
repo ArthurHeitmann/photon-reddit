@@ -1,10 +1,10 @@
-import { $class, $tag } from "../../../utils/htmlStuff.js";
+import { $class } from "../../../utils/htmlStuff.js";
 import { SVGAnimateElement } from "../../../utils/types.js";
 import Ph_DropDownArea from "../../misc/dropDown/dropDownArea/dropDownArea.js";
 import Ph_UserDropDown from "../../misc/userDropDown/userDropDown.js";
 import { Ph_ViewState } from "../../viewState/viewState.js";
-import Ph_Search from "../search/search.js";
 import Ph_PhotonSettings from "../photonSettings/photonSettings.js";
+import Ph_Search from "../search/search.js";
 
 export default class Ph_Header extends HTMLElement {
 	search: Ph_Search;
@@ -30,7 +30,7 @@ export default class Ph_Header extends HTMLElement {
 			<div class="actions">
 				<div>
 					<a href="/" class="home"><div>Photon</div></a>
-					<a href="" id="loginButton" hidden>Login with Reddit</a>
+					<button id="loginButton" hidden>Login with Reddit</button>
 					<button class="showSettingsButton transparentButtonAlt"><img src="/img/settings1.svg" alt="show settings" draggable="false"></button>
 				</div>
 				<div class="feedSpecific"></div>
