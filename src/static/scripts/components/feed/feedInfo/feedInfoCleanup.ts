@@ -3,6 +3,7 @@ import { globalSettings } from "../../global/photonSettings/photonSettings.js";
 
 export function clearAllOldData() {
 	const now = Date.now();
+	let removedCachedInfos = 0;
 	for (const localStorageKey of Object.keys(localStorage)) {
 		if (!/^\/(r|u|user)\/[^/]+/.test(localStorageKey))		// skip if not feed info
 			continue;
@@ -16,14 +17,17 @@ export function clearAllOldData() {
 		)
 			continue;
 
-		localStorage.removeItem(localStorageKey)
+		localStorage.removeItem(localStorageKey);
+		++removedCachedInfos;
 	}
 
+	let removedSeen = 0;
 	for (const [postName, lastSeenUtcS] of Object.entries(seenPosts)) {
 		if (now - lastSeenUtcS*1000 < globalSettings.clearSeenPostAfterMs)
 			continue;
 		unmarkPostAsSeen(postName);
+		++removedSeen;
 	}
 
-	console.log(`Cache cleaner too ${Date.now() - now}ms`);
+	console.log(`Cache cleaner too ${Date.now() - now}ms, removed ${removedCachedInfos} cached feed infos and ${removedSeen} seen posts`);
 }

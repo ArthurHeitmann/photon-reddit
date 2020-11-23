@@ -67,14 +67,14 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		// current votes
 		this.currentUpvotes = document.createElement("div");
 		this.currentUpvotes.className = "upvotes ";
-		this.setVotesState(this.currentVoteDirection);
 		actionWrapper.appendChild(this.currentUpvotes);
 		// vote down button
 		this.voteDownButton = new Ph_VoteButton(false);
 		this.voteDownButton.addEventListener("click", e => this.vote(VoteDirection.down));
 		actionWrapper.appendChild(this.voteDownButton);
+		this.setVotesState(this.currentVoteDirection);
 		// additional actions drop down
-		const moreDropDown = new Ph_DropDown([ 
+		const moreDropDown = new Ph_DropDown([
 			{ displayHTML: this.isSaved ? "Unsave" : "Save", onSelectCallback: this.toggleSave.bind(this) },
 			{ displayHTML: "Share", nestedEntries: [
 				{ displayHTML: "Copy Post Link", value: "post link", onSelectCallback: this.share.bind(this) },
