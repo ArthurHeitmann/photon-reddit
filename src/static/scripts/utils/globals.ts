@@ -120,9 +120,9 @@ export function saveSeenPosts() {
 	try {
 		// in case from another tab new posts have been seen
 		const tmpSeenPosts = JSON.parse(localStorage.seenPosts);
-		for (let [name, time] of tmpSeenPosts.entries()) {
+		for (let [name, time] of Object.entries(tmpSeenPosts)) {
 			if (!seenPosts[name])
-				seenPosts[name] = time;
+				seenPosts[name] = time as number;
 		}
 	}
 	catch (e) {}
