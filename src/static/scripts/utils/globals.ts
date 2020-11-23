@@ -130,10 +130,19 @@ export function saveSeenPosts() {
 	localStorage.seenPosts = JSON.stringify(seenPosts);
 }
 setTimeout(saveSeenPosts, 1000 * 60 * 10);
-window.addEventListener("beforeunload", saveSeenPosts);
+window.addEventListener("beforeunload", () => saveSeenPosts());
 
 export function markPostAsSeen(postFullName: string) {
 	seenPosts[postFullName] = Math.floor(Date.now() / 1000);
+}
+
+export function unmarkPostAsSeen(postFullName: string) {
+	delete seenPosts[postFullName];
+}
+
+export function clearSeenPosts() {
+	localStorage.seenPosts = "{}";
+	seenPosts = {};
 }
 
 export function hasPostsBeenSeen(postFullName: string): boolean {

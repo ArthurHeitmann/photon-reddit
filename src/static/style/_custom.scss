@@ -49,19 +49,13 @@ body {
 
 .button {
 	border: 1px solid vars.$text;
-	padding: .5rem;
-	min-width: 2.4rem;
-	min-height: 2.4rem;
-	border-radius: 1.2rem;
-	background-color: vars.$background-el1;
-
+	height: 2rem;
+	border-radius: 1rem;
+	padding: 0 .75rem;
 	transition: all .25s ease;
 
 	&:hover {
 		color: lightcoral;
-	}
-
-	&:active {
 		border-color: lightcoral;
 	}
 }

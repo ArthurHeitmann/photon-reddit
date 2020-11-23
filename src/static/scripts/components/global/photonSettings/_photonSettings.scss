@@ -83,6 +83,21 @@
 
 					> input + label {
 						margin-right: .5rem;
+
+						&:empty {
+							display: none;
+						}
+					}
+
+					> input.text {
+						width: 6rem;
+						text-align: right;
+						border-bottom: 1px solid #616161;
+						transition: border-bottom-color .25s ease;
+
+						&:focus {
+							border-bottom: 1px solid #838383;
+						}
 					}
 				}
 			}
@@ -96,19 +111,6 @@
 			display: flex;
 			justify-content: flex-end;
 			padding-top: .5rem;
-
-			.saveButton {
-				border: 1px solid vars.$text;
-				height: 2rem;
-				border-radius: 1rem;
-				padding: 0 .75rem;
-				transition: all .25s ease;
-
-				&:hover {
-					color: lightcoral;
-					border-color: lightcoral;
-				}
-			}
 		}
 	}
 }

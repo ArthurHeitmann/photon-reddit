@@ -1,3 +1,4 @@
+import { clearSeenPosts } from "../../../utils/globals.js";
 import "../../../utils/htmlStuff.js";
 import { deepClone, isObjectEmpty } from "../../../utils/utils.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
@@ -21,6 +22,8 @@ export interface PhotonSettings {
 	hideSeenPosts?: boolean,
 	isIncognitoEnabled?: boolean,
 	controlBarForImages?: boolean,
+	clearFeedCacheAfterMs?: number,
+	clearSeenPostAfterMs?: number,
 }
 
 // default config
@@ -31,11 +34,13 @@ export let globalSettings: PhotonSettings = {
 	hideSeenPosts: false,
 	isIncognitoEnabled: false,
 	controlBarForImages: false,
+	clearFeedCacheAfterMs: 1000 * 60 * 60 * 24 * 2,
+	clearSeenPostAfterMs: 1000 * 60 * 60 * 24 * 31,
 };
 
 export default class Ph_PhotonSettings extends HTMLElement {
 	temporarySettings: PhotonSettings = {};
-	optionsArea: HTMLElement
+	optionsArea: HTMLElement;
 
 	constructor() {
 		super();
@@ -45,9 +50,9 @@ export default class Ph_PhotonSettings extends HTMLElement {
 		const savedSettings = localStorage.settings ? JSON.parse(localStorage.settings) : undefined;
 		if (savedSettings)
 			globalSettings = {
-			...globalSettings,
-			...savedSettings,
-		};
+				...globalSettings,
+				...savedSettings,
+			};
 	}
 
 	connectedCallback() {
@@ -78,7 +83,7 @@ export default class Ph_PhotonSettings extends HTMLElement {
 		const bottomBar = document.createElement("div");
 		bottomBar.className = "bottomBar";
 		const saveButton = document.createElement("button");
-		saveButton.className = "saveButton";
+		saveButton.className = "button";
 		saveButton.innerText = "Save";
 		saveButton.addEventListener("click", () => {
 			if (isObjectEmpty(this.temporarySettings)) {
@@ -93,11 +98,11 @@ export default class Ph_PhotonSettings extends HTMLElement {
 			this.temporarySettings = {};
 			localStorage.settings = JSON.stringify(globalSettings);
 			new Ph_Toast(Level.Success, "", { timeout: 1500 });
-		})
+		});
 		bottomBar.appendChild(saveButton);
 		windowWrapper.appendChild(bottomBar);
 	}
-	
+
 	private populateSettings() {
 		// image previews
 		this.optionsArea.appendChild(this.makeRadioGroup(
@@ -162,6 +167,54 @@ export default class Ph_PhotonSettings extends HTMLElement {
 		this.optionsArea.append(seenPostsGroup);
 		this.optionsArea.appendChild(document.createElement("hr"));
 
+		// stored data duration
+		const feedInfoCacheGroup = this.makeCustomLabeledInput(
+			"text",
+			"Cached subreddit & user info",
+			globalSettings.clearFeedCacheAfterMs.toString(),
+			"inputClearFeedCacheAfterMs",
+			""
+		);
+		feedInfoCacheGroup.$tag("input")[0].addEventListener("change", e => {
+			const ms = parseInt((e.currentTarget as HTMLInputElement).value);
+			if (isNaN(ms)) {
+				new Ph_Toast(Level.Error, "Invalid number");
+				return;
+			}
+			if (ms !== globalSettings.clearFeedCacheAfterMs)
+				this.temporarySettings.clearFeedCacheAfterMs = ms;
+			else
+				delete this.temporarySettings.clearFeedCacheAfterMs;
+		});
+		const seenPostsStoredGroup = this.makeCustomLabeledInput(
+			"text",
+			"Seen posts stay marked",
+			globalSettings.clearSeenPostAfterMs.toString(),
+			"inputClearSeenPostAfterMs",
+			""
+		);
+		seenPostsStoredGroup.$tag("input")[0].addEventListener("change", e => {
+			const ms = parseInt((e.currentTarget as HTMLInputElement).value);
+			if (isNaN(ms)) {
+				new Ph_Toast(Level.Error, "Invalid number");
+				return;
+			}
+			if (ms !== globalSettings.clearSeenPostAfterMs)
+				this.temporarySettings.clearSeenPostAfterMs = ms;
+			else
+				delete this.temporarySettings.clearSeenPostAfterMs;
+		});
+		const clearSeenPostsBtn = document.createElement("button");
+		clearSeenPostsBtn.innerText = "Clear seen posts";
+		clearSeenPostsBtn.addEventListener("click", clearSeenPosts);
+		clearSeenPostsBtn.className = "mla button";
+		this.optionsArea.appendChild(this.makeGeneralInputGroup("Keep stored data for N ms", [
+			feedInfoCacheGroup,
+			seenPostsStoredGroup,
+			clearSeenPostsBtn
+		]));
+		this.optionsArea.appendChild(document.createElement("hr"));
+
 		// incognito mode
 		const incognitoGroup = this.makeCustomLabeledInput(
 			"checkbox",
@@ -178,7 +231,7 @@ export default class Ph_PhotonSettings extends HTMLElement {
 			else
 				delete this.temporarySettings.isIncognitoEnabled;
 		});
-		incognitoGroup.setAttribute("data-tooltip", "Randomize tab title and url")
+		incognitoGroup.setAttribute("data-tooltip", "Randomize tab title and url");
 		this.optionsArea.appendChild(incognitoGroup);
 		this.optionsArea.appendChild(document.createElement("hr"));
 
@@ -203,7 +256,7 @@ export default class Ph_PhotonSettings extends HTMLElement {
 
 	}
 
-	private makeGeneralInputGroup(groupTitle: string, elements: HTMLDivElement[]): HTMLElement {
+	private makeGeneralInputGroup(groupTitle: string, elements: HTMLElement[]): HTMLElement {
 		const wrapper = document.createElement("div");
 		wrapper.className = "inputGroup";
 		wrapper.innerHTML = `<div>${groupTitle}</div>`;
@@ -250,7 +303,8 @@ export default class Ph_PhotonSettings extends HTMLElement {
 	toggle() {
 		if (this.classList.contains("remove")) {
 			this.show();
-		} else {
+		}
+		else {
 			this.hide();
 		}
 	}
