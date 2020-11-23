@@ -668,6 +668,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		button.className = "showInfo";
 		button.innerHTML = `<img src="/img/info.svg" draggable="false">`;
 		button.addEventListener("click", this.toggle.bind(this));
+		button["targetFeedInfo"] = this;
 		return button;
 	}
 
