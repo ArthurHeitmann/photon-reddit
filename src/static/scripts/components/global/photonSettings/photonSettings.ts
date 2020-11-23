@@ -294,8 +294,10 @@ export default class Ph_PhotonSettings extends HTMLElement {
 		wrapper.className = "inputWrapper";
 		wrapper.innerHTML = `
 			<label for="${inputId}">${labelText}</label>
-			<input type="${type}" id ="${inputId}" class="${type}" value="${value}" name="${inputName}" ${checked ? "checked" : ""}>
-			<label for="${inputId}"></label>
+			<input type="${type}" id ="${inputId}" class="${type}" value="${value}" name="${inputName}" ${checked ? "checked" : ""}>${
+			["checkbox", "radio"].includes(type)
+			? `<label for="${inputId}"></label>`
+			: ""}
 		`;
 		return wrapper;
 	}
