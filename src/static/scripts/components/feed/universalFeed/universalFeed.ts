@@ -219,7 +219,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 	clearPrevious(loadPosition: LoadPosition) {
 		if (loadPosition === LoadPosition.Before) {
 			let last = this.children[this.childElementCount - 1];
-			while (last && last.getBoundingClientRect().y > window.innerHeight * 12) {
+			while (last && last.getBoundingClientRect().y > window.innerHeight * 7) {
 				last.remove();
 				last = this.children[this.childElementCount - 1];
 			}
@@ -227,7 +227,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 		}
 		else if (loadPosition === LoadPosition.After) {
 			let first = this.children[0];
-			while (first && first.getBoundingClientRect().y < window.innerHeight * -12) {
+			while (first && first.getBoundingClientRect().y < window.innerHeight * -5) {
 				first.remove();
 				first = this.children[0];
 			}
