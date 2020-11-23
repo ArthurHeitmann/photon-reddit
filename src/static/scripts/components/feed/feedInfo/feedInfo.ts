@@ -7,6 +7,7 @@ import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDow
 import { FlairData } from "../../misc/flair/flair.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import { FeedType } from "../universalFeed/universalFeed.js";
+import { clearAllFeedCachesOlderThan } from "./feedInfoCleanup.js";
 
 interface StoredFeedInfo extends StoredData {
 	feedType: FeedType;
@@ -691,3 +692,11 @@ export default class Ph_FeedInfo extends HTMLElement {
 }
 
 customElements.define("ph-feed-info", Ph_FeedInfo);
+
+// wait 10 seconds to avoid additional lag
+setTimeout(() => {
+		// every 10 minutes remove all cached feed infos, that haven't been used in 2 days
+		clearAllFeedCachesOlderThan(1000 * 60 * 60 * 24 * 2);
+		setInterval(() => clearAllFeedCachesOlderThan(1000 * 60 * 60 * 24 * 2), 1000 * 60 * 10);
+	}
+, 10 * 1000);
