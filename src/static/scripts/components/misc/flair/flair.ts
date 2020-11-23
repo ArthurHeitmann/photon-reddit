@@ -51,7 +51,7 @@ export default class Ph_Flair extends HTMLElement {
 			console.log(data);
 		}
 
-		if (!this.innerText || /^\s*$/.test(this.innerText))
+		if ((!this.innerText || /^\s*$/.test(this.innerText)) && this.$tag("img").length === 0)
 			this.classList.add("empty");
 	}
 

@@ -1,5 +1,4 @@
 import { save, vote, VoteDirection, voteDirectionFromLikes } from "../../api/api.js";
-import { mainURL } from "../../utils/consts.js";
 import { hasPostsBeenSeen, markPostAsSeen } from "../../utils/globals.js";
 import { elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
@@ -288,7 +287,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 	share([ _, shareType ]) {
 		switch (shareType) {
 			case "post link":
-				navigator.clipboard.writeText(mainURL + this.link);
+				navigator.clipboard.writeText(location.origin + this.link);
 				break;
 			case "reddit link":
 				navigator.clipboard.writeText("reddit.com" + this.link);

@@ -45,6 +45,20 @@
 			&:empty {
 				display: none !important;
 			}
+
+			.commentsSorter {
+				margin-left: auto;
+
+				> .dropDownButton {
+					display: flex;
+					align-items: center;
+
+					> img {
+						height: 2em;
+						margin-left: .5rem;
+					}
+				}
+			}
 		}
 	}
 

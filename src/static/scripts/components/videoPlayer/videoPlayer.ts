@@ -322,7 +322,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 			{src: "/img/mute.svg", key: "mute"},
 			{src: "/img/audio.svg", key: "audio"},
 		]), volumeWrapper);
-		muteButton.setAttribute("data-tooltip", "Shortcut: M");
+		muteButton.parentElement.setAttribute("data-tooltip", "Shortcut: M");
 		muteButton.parentElement.addEventListener("click", () => this.video.toggleMute());
 		const volumeSlider = new Ph_ProgressBar(true, 20);
 		volumeSlider.setAttribute("data-tooltip", "Shortcut: Arrow Up/Down or Scroll");

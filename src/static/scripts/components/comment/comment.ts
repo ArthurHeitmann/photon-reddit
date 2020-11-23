@@ -7,7 +7,6 @@ import {
 	VoteDirection,
 	voteDirectionFromLikes
 } from "../../api/api.js";
-import { mainURL } from "../../utils/consts.js";
 import { thisUser } from "../../utils/globals.js";
 import { elementWithClassInTree, linksToInlineImages, linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
@@ -336,7 +335,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 	share([_, shareType]) {
 		switch (shareType) {
 			case "comment link":
-				navigator.clipboard.writeText(`${mainURL + this.link}?context=3`);
+				navigator.clipboard.writeText(`${location.origin + this.link}?context=3`);
 				break;
 			case "reddit link":
 				navigator.clipboard.writeText(`reddit.com${this.link}?context=3`);

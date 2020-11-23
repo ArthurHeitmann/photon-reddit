@@ -2,22 +2,8 @@
 .commentsFeed {
 	display: flex;
 	flex-direction: column;
-	overflow-x: auto;		// TODO fix to uch nested comments causing an overflow
-	overflow-y: hidden;		// TODO why is it overflowing here though?
-
-	.commentsSorter {
-		margin-left: auto;
-
-		> .dropDownButton {
-			display: flex;
-			align-items: center;
-
-			> img {
-				height: 2em;
-				margin-left: .5rem;
-			}
-		}
-	}
+	overflow-x: auto;
+	overflow-y: hidden;		// TODO why is it overflowing here?
 
 	.parentCommentsLink {
 		display: block;
