@@ -169,7 +169,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 				<span>ago</span>
 					${ commentData.data["edited"]
 					? `	<span>|</span><span>edited</span>
-						<div class="time" data-tooltip="${new Date(commentData.data["edited"] * 1000).toString()}">${timePassedSinceStr(commentData.data["edited"])}</div> 
+						<span class="time" data-tooltip="${new Date(commentData.data["edited"] * 1000).toString()}">${timePassedSinceStr(commentData.data["edited"])}</span> 
 						<span>ago</span>`
 					: ""
 					}

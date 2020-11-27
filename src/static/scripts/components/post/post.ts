@@ -139,7 +139,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 					<span>ago</span>
 					${ postData.data["edited"]
 					? `	<span>|</span><span>edited</span> 
-						<div class="time" data-tooltip="${new Date(postData.data["edited"] * 1000).toString()}">${timePassedSinceStr(postData.data["edited"])}</div>
+						<span class="time" data-tooltip="${new Date(postData.data["edited"] * 1000).toString()}">${timePassedSinceStr(postData.data["edited"])}</span>
 						<span>ago</span>`
 					: ""
 					}
