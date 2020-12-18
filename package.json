@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node --experimental-modules src/app.mjs",
-    "build": "tsc src/ && sass src/static --style compact --no-source-map",
+    "build": "tsc && sass src/static --style compressed --no-source-map",
     "watch-sass": " sass --watch src/static",
     "watch-sass-wsl2": " sass --watch --poll src/static",
     "watch-tsc": "tsc -w",
@@ -24,6 +24,7 @@
     "@types/express": "^4.16.1",
     "@types/node": "^14.11.5",
     "copyfiles": "^2.3.0",
+    "node-sass": "^5.0.0",
     "sass": "^1.26.11",
     "ts-loader": "^8.0.4",
     "typescript": "^3.9.7"
