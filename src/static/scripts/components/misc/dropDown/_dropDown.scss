@@ -113,7 +113,7 @@
 		visibility: hidden;
 		transition: all .15s ease, color .25s ease, padding .25s ease, border .25s ease;
 
-		@for $i from 1 through 15 {
+		@for $i from 1 through 30 {
 			&:nth-child(#{$i}n) {
 				transition-delay: #{$i * 0.03 - .03}s;
 			}
