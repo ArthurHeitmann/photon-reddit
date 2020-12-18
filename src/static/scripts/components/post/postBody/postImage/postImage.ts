@@ -180,12 +180,10 @@ export default class Ph_PostImage extends HTMLElement {
 		fullscreenBtn.addEventListener("click", this.toggleFullscreen.bind(this));
 		this.addEventListener("fullscreenchange", e => document.fullscreenElement || this.onClose());
 
-		this.addEventListener("keydown", (e: KeyboardEvent) => {
+		this.addEventListener("keyup", (e: KeyboardEvent) => {
 			if (e.code == "ArrowUp" || e.code == "ArrowRight" || e.code == "ArrowDown" || e.code == "ArrowLeft") {
 				e.preventDefault();
 			}
-		});
-		this.addEventListener("keyup", (e: KeyboardEvent) => {
 			switch (e.code) {
 				case "KeyF":
 					this.toggleFullscreen();

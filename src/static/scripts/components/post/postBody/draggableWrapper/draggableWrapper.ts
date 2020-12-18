@@ -22,26 +22,26 @@ export default class Ph_DraggableWrapper extends HTMLElement {
 		elem.addEventListener("mouseup", this.mouseUpRef = e => this.endDrag(e));
 		elem.addEventListener("mouseleave", this.mouseLeaveRef = e => this.endDrag(e));
 		elem.addEventListener("wheel", this.wheelRef = e => this.onZoom(e), { passive: false });
-		elem.addEventListener("keyup", this.keyRef = e => {
-			switch (e.code) {
-				case "ArrowUp":
-					this.addMoveXY(0, 50);
-					e.preventDefault();
-					break;
-				case "ArrowRight":
-					this.addMoveXY(-50, 0);
-					e.preventDefault();
-					break;
-				case "ArrowDown":
-					this.addMoveXY(0, -50);
-					e.preventDefault();
-					break;
-				case "ArrowLeft":
-					this.addMoveXY(50, 0);
-					e.preventDefault();
-					break;
-			}
-		}, { passive: false });
+		// elem.addEventListener("keyup", this.keyRef = e => {
+		// 	switch (e.code) {
+		// 		case "ArrowUp":
+		// 			this.addMoveXY(0, 50);
+		// 			e.preventDefault();
+		// 			break;
+		// 		case "ArrowRight":
+		// 			this.addMoveXY(-50, 0);
+		// 			e.preventDefault();
+		// 			break;
+		// 		case "ArrowDown":
+		// 			this.addMoveXY(0, -50);
+		// 			e.preventDefault();
+		// 			break;
+		// 		case "ArrowLeft":
+		// 			this.addMoveXY(50, 0);
+		// 			e.preventDefault();
+		// 			break;
+		// 	}
+		// }, { passive: false });
 		this.activatedElem = elem;
 	}
 
