@@ -697,6 +697,6 @@ customElements.define("ph-feed-info", Ph_FeedInfo);
 // wait 10 seconds to avoid additional lag
 setTimeout(() => {
 		clearAllOldData();
-		setInterval(() => clearAllOldData(), 1000 * 60 * 10);
+		setInterval(() => clearAllOldData(), 1000 * 60 * 60);		// clear cache every 60 minutes
 	}
 , 10 * 1000);
