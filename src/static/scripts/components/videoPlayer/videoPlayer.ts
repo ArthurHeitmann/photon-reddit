@@ -75,7 +75,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 				if (postData.data["media"] && postData.data["media"]["reddit_video"]) {
 					const helperUrl = postData.data["media"]["reddit_video"]["fallback_url"];
 					const resolutions = [1080, 720, 480, 360, 240, 96];
-					if (/DASH_\d+\?source=fallback$/.test(helperUrl)) {
+					if (/DASH_\d+\?source=fallback/.test(helperUrl)) {
 						const maxRes = helperUrl.match(/(?<=DASH_)\d+/)[0];
 						const resOptions = resolutions.slice(resolutions.indexOf(parseInt(maxRes)));
 						this.video = new Ph_VideoAudio(
@@ -88,7 +88,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 						]
 						);
 					}
-					else if (/DASH_\d+\.mp4\?source=fallback$/.test(helperUrl)) {
+					else if (/DASH_\d+\.mp4\?source=fallback/.test(helperUrl)) {
 						const maxRes = helperUrl.match(/(?<=DASH_)\d+/)[0];
 						const resOptions = resolutions.slice(resolutions.indexOf(parseInt(maxRes)));
 						this.video = new Ph_VideoAudio(
@@ -100,7 +100,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 							{src: postData.data["url"] + "/audio", type: "video/mp4"},
 						]);
 					}
-					else if (/DASH_[\d_]+[KM]\.mp4\?source=fallback$/.test(helperUrl)) {
+					else if (/DASH_[\d_]+[KM]\.mp4\?source=fallback/.test(helperUrl)) {
 						this.video = new Ph_VideoAudio([
 							{src: postData.data["url"] + "/DASH_4_8_M.mp4", type: "video/mp4"},
 							{src: postData.data["url"] + "/DASH_2_4_M.mp4", type: "video/mp4"},
@@ -113,7 +113,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 							{src: postData.data["url"] + "/audio", type: "video/mp4"},
 						]);
 					}
-					else if (/DASH_[\d_]+[KM]\?source=fallback$/.test(helperUrl)) {
+					else if (/DASH_[\d_]+[KM]\?source=fallback/.test(helperUrl)) {
 						this.video = new Ph_VideoAudio([
 							{src: postData.data["url"] + "/DASH_4_8_M", type: "video/mp4"},
 							{src: postData.data["url"] + "/DASH_2_4_M", type: "video/mp4"},
