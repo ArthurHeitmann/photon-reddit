@@ -99,10 +99,11 @@ export default class Ph_UniversalFeed extends HTMLElement {
 				feedBaseUrl = "/user/" + requestUrl.match(/\/(u|user)\/([^/?]+)/)[2];
 			}
 			else {
-				new Ph_Toast(Level.Error, `Unknown feed for ${requestUrl}`)
-				console.error(`Unknown feed for ${requestUrl}`);
-				title.innerText = `Unknown feed for ${requestUrl}`;
-				feedType = FeedType.misc;
+				return;
+				// new Ph_Toast(Level.Error, `Unknown feed for ${requestUrl}`)
+				// console.error(`Unknown feed for ${requestUrl}`);
+				// title.innerText = `Unknown feed for ${requestUrl}`;
+				// feedType = FeedType.misc;
 			}
 			headerElements.push(title);
 			if (feedType !== FeedType.misc)
