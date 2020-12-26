@@ -3,7 +3,7 @@ import { initialAccessToken, refreshAccessToken } from "./static/scripts/login/l
 import fetch from "node-fetch";
 const app = express();
 app.use(express.static('src/static'));
-const port = 8080;
+const port = process.env.PORT || 8080;
 const __dirname = process.cwd();
 // redirect from certain reddit api request
 app.get("/redirect", (req, res) => {
