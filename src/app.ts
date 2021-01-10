@@ -13,7 +13,7 @@ function checkSslAndWww(req: express.Request, res: express.Response, next: expre
 	if ((env === "development" || req.headers['x-forwarded-proto'] === "https") && !(/^www\./.test(req.hostname)))
 		next();
 	else
-		res.redirect(`https://${req.hostname}${req.originalUrl}`)
+		res.redirect(`https://${req.hostname.replace(/^www\./, "")}${req.originalUrl}`)
 }
 
 app.use(checkSslAndWww);
