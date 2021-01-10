@@ -1,13 +1,26 @@
 import express from "express";
 import fetch from "node-fetch";
-import { initialAccessToken, refreshAccessToken } from "./static/scripts/login/loginRedirect.js";
+import { initialAccessToken, refreshAccessToken, appId, redirectURI } from "./loginRedirect.js";
 
 const app = express();
 app.use(express.static('src/static'));
-const port = 8080;
+const port = process.env.PORT || 8080;
 
 const __dirname = process.cwd();
+const tokenDuration = "permanent";
+const scope = ["identity", "edit", "flair", "history", "modconfig", "modflair", "modlog", "modposts", "modwiki", "mysubreddits", "privatemessages", "read", "report", "save", "submit", "subscribe", "vote", "wikiedit", "wikiread"];
 
+app.get("/login", (req, res) => {
+	const loginUrl = "https://www.reddit.com/api/v1/authorize?" +
+		`client_id=${ encodeURIComponent(appId) }&` +
+		`response_type=code&` +
+		`state=initialLogin&` +
+		`redirect_uri=${ encodeURIComponent(redirectURI) }&` +
+		`duration=${ tokenDuration }&` +
+		`scope=${ encodeURIComponent(scope.join(" ")) }`;
+
+	res.redirect(loginUrl);
+});
 
 // redirect from certain reddit api request
 app.get("/redirect", (req, res) => {

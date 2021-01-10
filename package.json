@@ -2,21 +2,25 @@
   "name": "reddit-photon",
   "version": "0.0.1",
   "description": "",
-  "main": "src/index.js",
+  "main": "src/app.js",
   "type": "module",
   "scripts": {
-    "start": "node --experimental-modules src/app.mjs",
+    "start": "node src/app.js",
     "build": "tsc && sass src/static --style compressed --no-source-map",
     "watch-sass": " sass --watch src/static",
     "watch-sass-wsl2": " sass --watch --poll src/static",
     "watch-tsc": "tsc -w",
     "watch": "npm run watch-sass & npm run watch-tsc",
-    "watch-wsl2": "npm run watch-sass-wsl2 & npm run watch-tsc"
+    "watch-wsl2": "npm run watch-sass-wsl2 & npm run watch-tsc",
+    "rename-compiled-node": "renamer --regex --find '\\.js$' --replace '.mjs' src/*"
   },
   "compilerOption": {
     "typesRoot": [
       "src/static/scripts/types"
     ]
+  },
+  "engines": {
+    "node": "14.x"
   },
   "author": "",
   "license": "MIT",
@@ -25,6 +29,7 @@
     "@types/node": "^14.11.5",
     "copyfiles": "^2.3.0",
     "node-sass": "^5.0.0",
+    "renamer": "0.7.0",
     "sass": "^1.26.11",
     "ts-loader": "^8.0.4",
     "typescript": "^3.9.7"
