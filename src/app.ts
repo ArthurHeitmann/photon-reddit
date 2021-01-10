@@ -14,9 +14,9 @@ function checkSsl(req: Request, res: Response, next: NextFunction) {
 	// @ts-ignore
 	console.log(`${req.hostname}|${req.originalUrl}`);
 	// @ts-ignore
-	console.log(req.secure);
+	console.log(req.protocol);
 	// @ts-ignore
-	if (req.secure || req.hostname === "localhost")
+	if (req.protocol === "https" || req.hostname === "localhost")
 		next();
 	else {
 		// @ts-ignore
