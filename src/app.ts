@@ -9,15 +9,14 @@ const __dirname = process.cwd();
 const tokenDuration = "permanent";
 const scope = ["identity", "edit", "flair", "history", "modconfig", "modflair", "modlog", "modposts", "modwiki", "mysubreddits", "privatemessages", "read", "report", "save", "submit", "subscribe", "vote", "wikiedit", "wikiread"];
 
-function checkSsl(req: express.Request, res: express.Response, next: express.NextFunction) {
-	if (env === "development" || req.headers['x-forwarded-proto'] === "https")
+function checkSslAndWww(req: express.Request, res: express.Response, next: express.NextFunction) {
+	if ((env === "development" || req.headers['x-forwarded-proto'] === "https") && !(/^www\./.test(req.hostname)))
 		next();
-	else {
+	else
 		res.redirect(`https://${req.hostname}${req.originalUrl}`)
-	}
 }
 
-app.use(checkSsl);
+app.use(checkSslAndWww);
 app.use(express.static('src/static'));
 
 app.get("/login", (req, res) => {
@@ -84,7 +83,7 @@ app.get("/getIframeSrc", (req, res) => {
 
 const indexFile = __dirname + "/src/static/index.html"
 // catch all paths and check ssl, since app.use middleware doesn't seem to get called here
-app.get('*', checkSsl, (req, res) => {
+app.get('*', checkSslAndWww, (req, res) => {
 	res.sendFile(indexFile);
 });
 
