@@ -3,15 +3,14 @@ import fetch from "node-fetch";
 import { initialAccessToken, refreshAccessToken, appId, redirectURI } from "./loginRedirect.js";
 
 const app = express();
-app.use(express.static('src/static'));
 const port = process.env.PORT || 8080;
-
 const env = process.env.NODE_ENV || 'development';
 const __dirname = process.cwd();
 const tokenDuration = "permanent";
 const scope = ["identity", "edit", "flair", "history", "modconfig", "modflair", "modlog", "modposts", "modwiki", "mysubreddits", "privatemessages", "read", "report", "save", "submit", "subscribe", "vote", "wikiedit", "wikiread"];
 
 function checkSsl(req: express.Request, res: express.Response, next: express.NextFunction) {
+	console.log();
 	if (env === "development" || req.headers['x-forwarded-proto'] === "https")
 		next();
 	else {
@@ -20,6 +19,7 @@ function checkSsl(req: express.Request, res: express.Response, next: express.Nex
 }
 
 app.use(checkSsl);
+app.use(express.static('src/static'));
 
 app.get("/login", (req, res) => {
 	const loginUrl = "https://www.reddit.com/api/v1/authorize?" +
