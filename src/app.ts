@@ -6,22 +6,20 @@ const app = express();
 app.use(express.static('src/static'));
 const port = process.env.PORT || 8080;
 
+const env = process.env.NODE_ENV || 'development';
 const __dirname = process.cwd();
 const tokenDuration = "permanent";
 const scope = ["identity", "edit", "flair", "history", "modconfig", "modflair", "modlog", "modposts", "modwiki", "mysubreddits", "privatemessages", "read", "report", "save", "submit", "subscribe", "vote", "wikiedit", "wikiread"];
 
-function checkSsl(req: Request, res: Response, next: NextFunction) {
-	console.log(req.headers['x-forwarded-proto']);
-	// @ts-ignore
-	if (req.headers['x-forwarded-proto'] === "https" || req.hostname === "localhost")
+function checkSsl(req: express.Request, res: express.Response, next: express.NextFunction) {
+	if (env === "development" || req.headers['x-forwarded-proto'] === "https")
 		next();
 	else {
-		// @ts-ignore
 		res.redirect(`https://${req.hostname}${req.originalUrl}`)
 	}
 }
 
-app.use(checkSsl as unknown as RequestHandler);
+app.use(checkSsl);
 
 app.get("/login", (req, res) => {
 	const loginUrl = "https://www.reddit.com/api/v1/authorize?" +
@@ -86,11 +84,10 @@ app.get("/getIframeSrc", (req, res) => {
 });
 
 const indexFile = __dirname + "/src/static/index.html"
-// catch all paths
-app.get('*', (req, res) => {
+// catch all paths and check ssl, since app.use middleware doesn't seem to get called here
+app.get('*', checkSsl, (req, res) => {
 	res.sendFile(indexFile);
 });
-
 
 app.listen(port, () => {
 	console.log(`Started app on port ${port}!`)
