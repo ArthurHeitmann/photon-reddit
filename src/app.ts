@@ -11,17 +11,19 @@ const tokenDuration = "permanent";
 const scope = ["identity", "edit", "flair", "history", "modconfig", "modflair", "modlog", "modposts", "modwiki", "mysubreddits", "privatemessages", "read", "report", "save", "submit", "subscribe", "vote", "wikiedit", "wikiread"];
 
 function checkSsl(req: Request, res: Response, next: NextFunction) {
-	// @ts-ignore
-	console.log(`${req.hostname}|${req.originalUrl}`);
-	// @ts-ignore
-	console.log(req.protocol);
-	// @ts-ignore
-	if (req.protocol === "https" || req.hostname === "localhost")
-		next();
-	else {
-		// @ts-ignore
-		res.redirect(`https://${req.hostname}${req.originalUrl}`)
-	}
+	console.log(req.headers['x-forwarded-proto']);
+	next();
+	// // @ts-ignore
+	// console.log(`${req.hostname}|${req.originalUrl}`);
+	// // @ts-ignore
+	// console.log(req.protocol);
+	// // @ts-ignore
+	// if (req.protocol === "https" || req.hostname === "localhost")
+	// 	next();
+	// else {
+	// 	// @ts-ignore
+	// 	res.redirect(`https://${req.hostname}${req.originalUrl}`)
+	// }
 
 }
 
