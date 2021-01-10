@@ -12,7 +12,7 @@ const scope = ["identity", "edit", "flair", "history", "modconfig", "modflair", 
 
 function checkSsl(req: Request, res: Response, next: NextFunction) {
 	// @ts-ignore
-	console.log(req.hostname);
+	console.log(`https://${req.hostname}|${req.originalUrl}`);
 	// @ts-ignore
 	if (req.secure || req.hostname === "localhost")
 		next();
