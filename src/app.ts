@@ -1,4 +1,4 @@
-import express from "express";
+import express, { NextFunction, RequestHandler } from "express";
 import fetch from "node-fetch";
 import { initialAccessToken, refreshAccessToken, appId, redirectURI } from "./loginRedirect.js";
 
@@ -9,6 +9,21 @@ const port = process.env.PORT || 8080;
 const __dirname = process.cwd();
 const tokenDuration = "permanent";
 const scope = ["identity", "edit", "flair", "history", "modconfig", "modflair", "modlog", "modposts", "modwiki", "mysubreddits", "privatemessages", "read", "report", "save", "submit", "subscribe", "vote", "wikiedit", "wikiread"];
+
+function checkSsl(req: Request, res: Response, next: NextFunction) {
+	// @ts-ignore
+	console.log(req.hostname);
+	// @ts-ignore
+	if (req.secure || req.hostname === "localhost")
+		next();
+	else {
+		// @ts-ignore
+		res.redirect(`https://${req.hostname}${req.originalUrl}`)
+	}
+
+}
+
+app.use(checkSsl as unknown as RequestHandler);
 
 app.get("/login", (req, res) => {
 	const loginUrl = "https://www.reddit.com/api/v1/authorize?" +

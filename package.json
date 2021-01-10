@@ -11,8 +11,7 @@
     "watch-sass-wsl2": " sass --watch --poll src/static",
     "watch-tsc": "tsc -w",
     "watch": "npm run watch-sass & npm run watch-tsc",
-    "watch-wsl2": "npm run watch-sass-wsl2 & npm run watch-tsc",
-    "rename-compiled-node": "renamer --regex --find '\\.js$' --replace '.mjs' src/*"
+    "watch-wsl2": "npm run watch-sass-wsl2 & npm run watch-tsc"
   },
   "compilerOption": {
     "typesRoot": [
@@ -23,15 +22,14 @@
     "node": "14.x"
   },
   "author": "",
-  "license": "MIT",
+  "license": "GPL-3.0-only",
   "devDependencies": {
-    "@types/express": "^4.16.1",
-    "@types/node": "^14.11.5",
-    "copyfiles": "^2.3.0",
+    "@types/express": "^4.17.9",
+    "@types/node": "^14.14.20",
+    "copyfiles": "^2.4.1",
     "node-sass": "^5.0.0",
-    "renamer": "0.7.0",
-    "sass": "^1.26.11",
-    "ts-loader": "^8.0.4",
+    "sass": "^1.32.2",
+    "ts-loader": "^8.0.14",
     "typescript": "^3.9.7"
   },
   "dependencies": {
