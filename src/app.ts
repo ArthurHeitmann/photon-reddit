@@ -12,19 +12,13 @@ const scope = ["identity", "edit", "flair", "history", "modconfig", "modflair", 
 
 function checkSsl(req: Request, res: Response, next: NextFunction) {
 	console.log(req.headers['x-forwarded-proto']);
-	next();
-	// // @ts-ignore
-	// console.log(`${req.hostname}|${req.originalUrl}`);
-	// // @ts-ignore
-	// console.log(req.protocol);
-	// // @ts-ignore
-	// if (req.protocol === "https" || req.hostname === "localhost")
-	// 	next();
-	// else {
-	// 	// @ts-ignore
-	// 	res.redirect(`https://${req.hostname}${req.originalUrl}`)
-	// }
-
+	// @ts-ignore
+	if (req.headers['x-forwarded-proto'] === "https" || req.hostname === "localhost")
+		next();
+	else {
+		// @ts-ignore
+		res.redirect(`https://${req.hostname}${req.originalUrl}`)
+	}
 }
 
 app.use(checkSsl as unknown as RequestHandler);
