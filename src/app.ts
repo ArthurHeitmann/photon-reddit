@@ -10,7 +10,6 @@ const tokenDuration = "permanent";
 const scope = ["identity", "edit", "flair", "history", "modconfig", "modflair", "modlog", "modposts", "modwiki", "mysubreddits", "privatemessages", "read", "report", "save", "submit", "subscribe", "vote", "wikiedit", "wikiread"];
 
 function checkSsl(req: express.Request, res: express.Response, next: express.NextFunction) {
-	console.log();
 	if (env === "development" || req.headers['x-forwarded-proto'] === "https")
 		next();
 	else {
