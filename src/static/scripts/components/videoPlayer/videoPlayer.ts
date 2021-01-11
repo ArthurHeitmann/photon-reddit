@@ -349,7 +349,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		// video src
 		const srcText = document.createElement("div");
 		controls.appendChild(srcText);
-		srcText.innerHTML = `<a href="${this.url}" target="_blank">${this.url.match(/([\w.\.]+)\//)[1]}</a>`;
+		srcText.innerHTML = `<a href="${this.url}" target="_blank">${this.url.match(/([\w.\.]+)\//)[1]}</a>`;	// TODO escape attribute
 
 		// reset view
 		this.resetViewBtn = controls.appendMakeImageButton("/img/reset.svg");

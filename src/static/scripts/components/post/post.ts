@@ -1,6 +1,6 @@
 import { save, vote, VoteDirection, voteDirectionFromLikes } from "../../api/api.js";
 import { hasPostsBeenSeen, markPostAsSeen } from "../../utils/globals.js";
-import { elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff.js";
+import { elementWithClassInTree, escapeHTML, linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
 import { numberToShort as numberToShort, numberToShortStr, timePassedSinceStr } from "../../utils/utils.js";
 import Ph_FeedItem from "../feed/feedItem/feedItem.js";
@@ -151,7 +151,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 					</div>
 				</div>
 				<div class="bottom flex">
-						<div class="title">${postData.data["title"]}</div>
+					<div class="title">${escapeHTML(postData.data["title"])}</div>
 				</div>
 			</div>
 		`;
