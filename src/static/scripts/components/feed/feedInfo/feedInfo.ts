@@ -1,4 +1,4 @@
-import { redditApiRequest, subscribe } from "../../../api/api.js";
+import { redditApiRequest, subscribe } from "../../../api/redditApi.js";
 import { isLoggedIn, MultiReddit, StoredData } from "../../../utils/globals.js";
 import { classInElementTree, linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiType } from "../../../utils/types.js";

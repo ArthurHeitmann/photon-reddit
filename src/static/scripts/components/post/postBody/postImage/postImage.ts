@@ -4,7 +4,7 @@ import { globalSettings, ImageLoadingPolicy, PhotonSettings } from "../../../glo
 import Ph_ControlsBar from "../../../misc/controlsBar/controlsBar.js";
 import Ph_DraggableWrapper from "../draggableWrapper/draggableWrapper.js";
 
-interface GalleryInitData {
+export interface GalleryInitData {
 	originalUrl: string,
 	previewUrl?: string,
 	caption: string

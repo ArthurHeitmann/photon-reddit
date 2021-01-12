@@ -1,4 +1,4 @@
-import { searchSubreddits, searchUser } from "../../../api/api.js";
+import { searchSubreddits, searchUser } from "../../../api/redditApi.js";
 import { pushLinkToHistoryComb, pushLinkToHistorySep } from "../../../state/stateManager.js";
 import { elementWithClassInTree, linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiType, SortPostsTimeFrame, SortSearchOrder } from "../../../utils/types.js";

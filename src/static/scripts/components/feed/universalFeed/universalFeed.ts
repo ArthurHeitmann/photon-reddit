@@ -1,4 +1,4 @@
-import { redditApiRequest } from "../../../api/api.js";
+import { redditApiRequest } from "../../../api/redditApi.js";
 import { viewsStack } from "../../../state/stateManager.js";
 import { elementWithClassInTree } from "../../../utils/htmlStuff.js";
 import { RedditApiType } from "../../../utils/types.js";

@@ -1,8 +1,9 @@
+import { getImgurAlbumContents } from "../../../api/imgurAPI.js";
 import { linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiData, RedditApiType } from "../../../utils/types.js";
 import { replaceRedditLinks } from "../../../utils/utils.js";
 import Ph_VideoPlayer from "../../videoPlayer/videoPlayer.js";
-import Ph_PostImage from "./postImage/postImage.js";
+import Ph_PostImage, { GalleryInitData } from "./postImage/postImage.js";
 import Ph_PostText from "./postText/postText.js";
 
 export default class Ph_PostBody extends HTMLElement {
@@ -54,6 +55,22 @@ export default class Ph_PostBody extends HTMLElement {
 						</iframe>
 					</div>`;
 				break;
+			case PostType.Imgur:
+				this.classList.add("fullScale");
+				if (/imgur\.com\/(a|album|gallery)\/[^/]+$/.test(postData.data["url"])) {
+					getImgurAlbumContents(postData.data["url"]).then(contents => {
+						this.appendChild(new Ph_PostImage(
+							contents.map(content => <GalleryInitData> {
+								originalUrl: content.link,
+								caption: content.caption
+							}))
+						)
+					});
+				}
+				else {
+
+				}
+				break;
 			default:
 				this.classList.add("padded");
 				this.innerText = `Unknown post type ${this.getPostType(postData.data)}`;
@@ -85,6 +102,8 @@ export default class Ph_PostBody extends HTMLElement {
 			return PostType.Image;
 		else if (postData["post_hint"] == "hosted:video")
 			return PostType.Video;
+		else if (/^(https?:\/\/)?imgur\.com\/\w+(\/\w+)?/.test(postData["url"]))
+			return PostType.Imgur;
 		else if (postData["post_hint"] == "rich:video")
 			return PostType.EmbeddedVideo;
 		else if (/^(https?:\/\/)?(www\.)?twitter\.com\/[^/]+\/status\/\d+/.test(postData["url"]))
@@ -103,4 +122,5 @@ enum PostType {
 	EmbeddedVideo,
 	Text,
 	Tweet,
+	Imgur
 }

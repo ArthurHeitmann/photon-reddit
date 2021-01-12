@@ -1,4 +1,4 @@
-import { comment } from "../../../../api/api.js";
+import { comment } from "../../../../api/redditApi.js";
 import Ph_Toast, { Level } from "../../toast/toast.js";
 import Votable from "../../votable/votable.js";
 import Ph_MarkdownForm from "../markdownForm.js";

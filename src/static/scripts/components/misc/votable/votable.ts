@@ -1,4 +1,4 @@
-import { VoteDirection } from "../../../api/api.js";
+import { VoteDirection } from "../../../api/redditApi.js";
 
 export default interface Votable {
 	totalVotes: number;

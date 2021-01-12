@@ -6,7 +6,7 @@ import {
 	vote,
 	VoteDirection,
 	voteDirectionFromLikes
-} from "../../api/api.js";
+} from "../../api/redditApi.js";
 import { thisUser } from "../../utils/globals.js";
 import { elementWithClassInTree, linksToInlineImages, linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";

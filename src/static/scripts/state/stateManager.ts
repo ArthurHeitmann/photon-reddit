@@ -1,4 +1,4 @@
-import { redditApiRequest } from "../api/api.js";
+import { redditApiRequest } from "../api/redditApi.js";
 import Ph_UniversalFeed from "../components/feed/universalFeed/universalFeed.js";
 import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
 import Ph_PostAndComments from "../components/postAndComments/postAndComments.js";

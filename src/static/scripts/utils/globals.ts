@@ -1,4 +1,4 @@
-import { redditApiRequest } from "../api/api.js";
+import { redditApiRequest } from "../api/redditApi.js";
 import { RedditApiType } from "./types.js";
 import { stringSortComparer } from "./utils.js";
 

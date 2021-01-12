@@ -1,4 +1,4 @@
-import { save, vote, VoteDirection, voteDirectionFromLikes } from "../../api/api.js";
+import { save, vote, VoteDirection, voteDirectionFromLikes } from "../../api/redditApi.js";
 import { hasPostsBeenSeen, markPostAsSeen } from "../../utils/globals.js";
 import { elementWithClassInTree, escapeHTML, linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
