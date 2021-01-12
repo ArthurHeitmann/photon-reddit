@@ -55,6 +55,32 @@ export default class Ph_PostBody extends HTMLElement {
 						</iframe>
 					</div>`;
 				break;
+			case PostType.Imgur:
+				this.classList.add("fullScale");
+				if (/imgur\.com\/(a|album|gallery)\/[^/]+$/.test(postData.data["url"])) {
+					getImgurAlbumContents(postData.data["url"]).then(contents => {
+						this.appendChild(new Ph_PostImage(
+							contents.map(content => <GalleryInitData> {
+								originalUrl: content.link,
+								caption: content.caption
+							}))
+						)
+					});
+				}
+				else {
+					getImgurContent(postData.data["url"]).then(content => {
+						if (content.type === ImgurContentType.Image) {
+							this.appendChild(new Ph_PostImage([{
+								originalUrl: content.link,
+								caption: content.caption
+							}]));
+						}
+						else {
+							 // this.appendChild(new Ph_VideoPlayer())
+						}
+					})
+				}
+				break;
 			default:
 				this.classList.add("padded");
 				this.innerText = `Unknown post type ${this.getPostType(postData.data)}`;
