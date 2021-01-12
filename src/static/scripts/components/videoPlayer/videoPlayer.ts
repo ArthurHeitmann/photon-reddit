@@ -172,7 +172,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		return videoOut;
 	}
 
-	constructor() {
+	constructor(video?: Ph_VideoWrapper) {
 		super();
 
 		this.classList.add("videoPlayer");
@@ -185,6 +185,9 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		]);
 		this.overlayIcon.classList.add("initialIcon");
 		this.appendChild(this.overlayIcon);
+
+		if (video)
+			this.init(video);
 	}
 
 	init(video: Ph_VideoWrapper) {

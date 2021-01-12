@@ -6,7 +6,7 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 	lastNon0Volume: number;
 	noAudioProgressCallback: () => void;
 
-	constructor(sourcesArray?: { src?: string, type: string }[], sourcesHtml?: string[]) {
+	constructor(sourcesArray?: { src: string, type: string }[], sourcesHtml?: string[]) {
 		super();
 
 		this.video = document.createElement("video");

@@ -2,6 +2,7 @@ import { getImgurAlbumContents, getImgurContent, ImgurContentType } from "../../
 import { linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiData, RedditApiType } from "../../../utils/types.js";
 import { replaceRedditLinks } from "../../../utils/utils.js";
+import Ph_SimpleVideo from "../../videoPlayer/simpleVideo/simpleVideo.js";
 import Ph_VideoPlayer from "../../videoPlayer/videoPlayer.js";
 import Ph_PostImage, { GalleryInitData } from "./postImage/postImage.js";
 import Ph_PostText from "./postText/postText.js";
@@ -76,7 +77,10 @@ export default class Ph_PostBody extends HTMLElement {
 							}]));
 						}
 						else {
-							 // this.appendChild(new Ph_VideoPlayer())
+							 this.appendChild(new Ph_VideoPlayer(new Ph_SimpleVideo([{
+								 src: content.link,
+								 type: "video/mp4"
+							 }])))
 						}
 					})
 				}
