@@ -1,4 +1,4 @@
-import { getImgurAlbumContents } from "../../../api/imgurAPI.js";
+import { getImgurAlbumContents, getImgurContent, ImgurContentType } from "../../../api/imgurAPI.js";
 import { linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiData, RedditApiType } from "../../../utils/types.js";
 import { replaceRedditLinks } from "../../../utils/utils.js";
@@ -44,7 +44,7 @@ export default class Ph_PostBody extends HTMLElement {
 				break;
 			case PostType.Video:
 				this.classList.add("fullScale");
-				this.appendChild(new Ph_VideoPlayer(postData));
+				this.appendChild(Ph_VideoPlayer.fromPostData(postData));
 				break;
 			case PostType.Tweet:
 				this.classList.add("fullScale");
@@ -54,22 +54,6 @@ export default class Ph_PostBody extends HTMLElement {
  							src="https://twitframe.com/show?url=${encodeURIComponent(postData.data["url"])}&theme=dark&align=center">
 						</iframe>
 					</div>`;
-				break;
-			case PostType.Imgur:
-				this.classList.add("fullScale");
-				if (/imgur\.com\/(a|album|gallery)\/[^/]+$/.test(postData.data["url"])) {
-					getImgurAlbumContents(postData.data["url"]).then(contents => {
-						this.appendChild(new Ph_PostImage(
-							contents.map(content => <GalleryInitData> {
-								originalUrl: content.link,
-								caption: content.caption
-							}))
-						)
-					});
-				}
-				else {
-
-				}
 				break;
 			default:
 				this.classList.add("padded");

@@ -1,4 +1,4 @@
-import { classInElementTree, elementWithClassInTree } from "../../utils/htmlStuff.js";
+import { classInElementTree, elementWithClassInTree, escapeHTML } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
 import { secondsToVideoTime } from "../../utils/utils.js";
 import Ph_ControlsBar from "../misc/controlsBar/controlsBar.js";
@@ -17,7 +17,6 @@ import Ph_VideoAudio from "./videoAudio/videoAudio.js";
 import Ph_VideoWrapper from "./videoWrapper.js";
 
 export default class Ph_VideoPlayer extends HTMLElement {
-	postData: RedditApiType;
 	video: Ph_VideoWrapper;
 	overlayIcon: Ph_SwitchingImage;
 	url: string;
@@ -26,30 +25,18 @@ export default class Ph_VideoPlayer extends HTMLElement {
 	draggableWrapper: Ph_DraggableWrapper;
 	resetViewBtn: HTMLButtonElement;
 
-	constructor(postData: RedditApiType) {
-		super();
+	static fromPostData(postData: RedditApiType): Ph_VideoPlayer {
+		const videoOut = new Ph_VideoPlayer();
+		videoOut.url = postData.data["url"];
 
-		this.postData = postData;
-		this.url = postData.data["url"];
-		this.classList.add("videoPlayer");
-		this.setAttribute("tabindex", "0");
-
-		this.overlayIcon = new Ph_SwitchingImage([
-			{src: "/img/loading.svg", key: "loading"},
-			{src: "/img/playVideo.svg", key: "ready"},
-			{src: "", key: "none"},
-		]);
-		this.overlayIcon.classList.add("initialIcon");
-		this.appendChild(this.overlayIcon);
-
-		switch (this.url.match(/^https?:\/\/w?w?w?\.?([\w\.]+)/)[1]) {
+		switch (postData.data["url"].match(/^https?:\/\/w?w?w?\.?([\w\.]+)/)[1]) {
 			case "imgur.com":
 			case "m.imgur.com":
 			case "i.imgur.com":
-				const typelessUrl = this.url.match(/^https?:\/\/([im])?\.?imgur\.com\/\w+/)[0];
-				this.video = new Ph_SimpleVideo([
+				const typelessUrl = postData.data["url"].match(/^https?:\/\/([im])?\.?imgur\.com\/\w+/)[0];
+				videoOut.init(new Ph_SimpleVideo([
 					{src: typelessUrl + ".mp4", type: "video/mp4"},
-				]);
+				]));
 				break;
 			case "gfycat.com":
 				let capitalizedPath;
@@ -62,12 +49,12 @@ export default class Ph_VideoPlayer extends HTMLElement {
 				else {
 					throw `Invalid gfycat oembed link ${postData.data["media"]["oembed"]["thumbnail_url"]}`;
 				}
-				this.video = new Ph_SimpleVideo([
+				videoOut.init(new Ph_SimpleVideo([
 					{src: `https://thumbs.gfycat.com/${capitalizedPath}-mobile.mp4`, type: "video/mp4"},
 					{src: `https://giant.gfycat.com/${capitalizedPath}.webm`, type: "video/webm"},
 					{src: `https://giant.gfycat.com/${capitalizedPath}.mp4`, type: "video/mp4"},
 					{src: `https://thumbs.gfycat.com/${capitalizedPath}-mobile.mp4`, type: "video/mp4"},
-				]);
+				]));
 				break;
 			case "v.redd.it":
 				// wtf is this inconsistency v.redd.it ??????!
@@ -78,30 +65,30 @@ export default class Ph_VideoPlayer extends HTMLElement {
 					if (/DASH_\d+\?source=fallback/.test(helperUrl)) {
 						const maxRes = helperUrl.match(/(?<=DASH_)\d+/)[0];
 						const resOptions = resolutions.slice(resolutions.indexOf(parseInt(maxRes)));
-						this.video = new Ph_VideoAudio(
+						videoOut.init(new Ph_VideoAudio(
 							resOptions.map(res => ({src: `${postData.data["url"]}/DASH_${res}`, type: "video/mp4"})),
 							[
-							{src: postData.data["url"] + "/DASH_audio.mp4", type: "video/mp4"},
-							{src: postData.data["url"] + "/DASH_audio", type: "video/mp4"},
-							{src: postData.data["url"] + "/audio.mp4", type: "video/mp4"},
-							{src: postData.data["url"] + "/audio", type: "video/mp4"},
-						]
-						);
+								{src: postData.data["url"] + "/DASH_audio.mp4", type: "video/mp4"},
+								{src: postData.data["url"] + "/DASH_audio", type: "video/mp4"},
+								{src: postData.data["url"] + "/audio.mp4", type: "video/mp4"},
+								{src: postData.data["url"] + "/audio", type: "video/mp4"},
+							]
+						));
 					}
 					else if (/DASH_\d+\.mp4\?source=fallback/.test(helperUrl)) {
 						const maxRes = helperUrl.match(/(?<=DASH_)\d+/)[0];
 						const resOptions = resolutions.slice(resolutions.indexOf(parseInt(maxRes)));
-						this.video = new Ph_VideoAudio(
+						videoOut.init(new Ph_VideoAudio(
 							resOptions.map(res => <any> {src: `${postData.data["url"]}/DASH_${res}.mp4`, type: "video/mp4"}),
 							[
-							{src: postData.data["url"] + "/DASH_audio.mp4", type: "video/mp4"},
-							{src: postData.data["url"] + "/DASH_audio", type: "video/mp4"},
-							{src: postData.data["url"] + "/audio.mp4", type: "video/mp4"},
-							{src: postData.data["url"] + "/audio", type: "video/mp4"},
-						]);
+								{src: postData.data["url"] + "/DASH_audio.mp4", type: "video/mp4"},
+								{src: postData.data["url"] + "/DASH_audio", type: "video/mp4"},
+								{src: postData.data["url"] + "/audio.mp4", type: "video/mp4"},
+								{src: postData.data["url"] + "/audio", type: "video/mp4"},
+							]));
 					}
 					else if (/DASH_[\d_]+[KM]\.mp4\?source=fallback/.test(helperUrl)) {
-						this.video = new Ph_VideoAudio([
+						videoOut.init(new Ph_VideoAudio([
 							{src: postData.data["url"] + "/DASH_4_8_M.mp4", type: "video/mp4"},
 							{src: postData.data["url"] + "/DASH_2_4_M.mp4", type: "video/mp4"},
 							{src: postData.data["url"] + "/DASH_1_2_M.mp4", type: "video/mp4"},
@@ -111,10 +98,10 @@ export default class Ph_VideoPlayer extends HTMLElement {
 							{src: postData.data["url"] + "/DASH_audio", type: "video/mp4"},
 							{src: postData.data["url"] + "/audio.mp4", type: "video/mp4"},
 							{src: postData.data["url"] + "/audio", type: "video/mp4"},
-						]);
+						]));
 					}
 					else if (/DASH_[\d_]+[KM]\?source=fallback/.test(helperUrl)) {
-						this.video = new Ph_VideoAudio([
+						videoOut.init(new Ph_VideoAudio([
 							{src: postData.data["url"] + "/DASH_4_8_M", type: "video/mp4"},
 							{src: postData.data["url"] + "/DASH_2_4_M", type: "video/mp4"},
 							{src: postData.data["url"] + "/DASH_1_2_M", type: "video/mp4"},
@@ -124,7 +111,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 							{src: postData.data["url"] + "/DASH_audio", type: "video/mp4"},
 							{src: postData.data["url"] + "/audio.mp4", type: "video/mp4"},
 							{src: postData.data["url"] + "/audio", type: "video/mp4"},
-						]);
+						]));
 					}
 					else {
 						new Ph_Toast(Level.Error, "A wild new v.redd.it standard has appeared!");
@@ -133,7 +120,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 					}
 				}
 				else {
-					this.video = new Ph_VideoAudio([
+					videoOut.init(new Ph_VideoAudio([
 						{src: postData.data["url"] + "/DASH_1080.mp4", type: "video/mp4"},
 						{src: postData.data["url"] + "/DASH_1080", type: "video/mp4"},
 						{src: postData.data["url"] + "/DASH_720.mp4", type: "video/mp4"},
@@ -155,36 +142,58 @@ export default class Ph_VideoPlayer extends HTMLElement {
 						{src: postData.data["url"] + "/DASH_audio", type: "video/mp4"},
 						{src: postData.data["url"] + "/audio.mp4", type: "video/mp4"},
 						{src: postData.data["url"] + "/audio", type: "video/mp4"},
-					]);
+					]));
 				}
 				break;
 			case "clips.twitch.tv":
 				const twitchUrl = postData.data["media"]["oembed"]["thumbnail_url"].match(/(.*)-social-preview.jpg$/)[1];
-				this.video = new Ph_SimpleVideo([{src: twitchUrl + ".mp4", type: "video/mp4"}]);
+				videoOut.init(new Ph_SimpleVideo([{src: twitchUrl + ".mp4", type: "video/mp4"}]));
 				break;
 			case "redgifs.com":
-				const iframeUrl = this.url.replace(/\/watch\//, "/ifr/");
+				const iframeUrl = postData.data["url"].replace(/\/watch\//, "/ifr/");
 				fetch(`/getIframeSrc?url=${encodeURIComponent(iframeUrl)}`).then(res => res.json().then(src => {
-					this.video = new Ph_SimpleVideo(null, src["src"]);
-					this.makeControls();
+					videoOut.init(new Ph_SimpleVideo(null, src["src"]));
 				}));
 				break;
 			default:
-				if (/\.gif(\?.*)?$/.test(this.url)) {
-					this.video = new Ph_GifVideo(this.url);
+				if (/\.gif(\?.*)?$/.test(postData.data["url"])) {
+					videoOut.init(new Ph_GifVideo(postData.data["url"]));
 					break;
 				}
-				else if (/\.mp4(\?.*)?$/.test(this.url)) {
-					this.video = new Ph_SimpleVideo([{src: this.url, type: "video/mp4"}]);
+				else if (/\.mp4(\?.*)?$/.test(postData.data["url"])) {
+					videoOut.init(new Ph_SimpleVideo([{src: postData.data["url"], type: "video/mp4"}]));
 					break;
 				}
-				this.innerText = `Unknown video provider for ${postData.data["url"]}`;
+				console.error(`Unknown video provider for ${postData.data["url"]}`);
+				new Ph_Toast(Level.Error, `Unknown video provider for ${escapeHTML(postData.data["url"])}`);
 				break;
 		}
 
-		if (this.video) {
+		return videoOut;
+	}
+
+	constructor() {
+		super();
+
+		this.classList.add("videoPlayer");
+		this.setAttribute("tabindex", "0");
+
+		this.overlayIcon = new Ph_SwitchingImage([
+			{src: "/img/loading.svg", key: "loading"},
+			{src: "/img/playVideo.svg", key: "ready"},
+			{src: "", key: "none"},
+		]);
+		this.overlayIcon.classList.add("initialIcon");
+		this.appendChild(this.overlayIcon);
+	}
+
+	init(video: Ph_VideoWrapper) {
+		this.video = video;
+
+		if (this.video)
 			this.makeControls();
-		}
+		else
+			this.innerText = "No video supplied";
 	}
 
 	makeControls() {
@@ -347,9 +356,11 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		controls.appendSpacer();
 
 		// video src
-		const srcText = document.createElement("div");
-		controls.appendChild(srcText);
-		srcText.innerHTML = `<a href="${this.url}" target="_blank">${this.url.match(/([\w.\.]+)\//)[1]}</a>`;	// TODO escape attribute
+		if (this.url) {
+			const srcText = document.createElement("div");
+			controls.appendChild(srcText);
+			srcText.innerHTML = `<a href="${this.url}" target="_blank">${this.url.match(/([\w.\.]+)\//)[1]}</a>`;	// TODO escape attribute
+		}
 
 		// reset view
 		this.resetViewBtn = controls.appendMakeImageButton("/img/reset.svg");
@@ -375,10 +386,10 @@ export default class Ph_VideoPlayer extends HTMLElement {
 					{displayHTML: "16.00x", value: 16.00, onSelectCallback: this.setVideoSpeed.bind(this)},
 				]
 			},
-			{
-				displayHTML: `<span data-tooltip="Shortcut: I">Popout</span>`,
-				onSelectCallback: this.popoutVideo.bind(this)
-			},
+			// {
+			// 	displayHTML: `<span data-tooltip="Shortcut: I">Popout</span>`,
+			// 	onSelectCallback: this.popoutVideo.bind(this)
+			// },
 		], `<img src="/img/settings2.svg" draggable="false">`, DirectionX.right, DirectionY.top, false);
 		this.controlsDropDown.classList.add("settings");
 		this.controlsDropDown.$class("dropDownButton")[0].classList.add("imgBtn");
@@ -439,11 +450,11 @@ export default class Ph_VideoPlayer extends HTMLElement {
 	}
 
 	popoutVideo() {
-		window.open(
-			`/mediaViewer.html?url=${encodeURIComponent(this.postData.data["permalink"])}`,
-			"_blank",
-			`location=no,status=no,menubar=no,width=${this.video.getDimensions()[0]},height=${this.video.getDimensions()[1]}`
-		);
+		// window.open(
+		// 	`/mediaViewer.html?url=${encodeURIComponent(this.postData.data["permalink"])}`,
+		// 	"_blank",
+		// 	`location=no,status=no,menubar=no,width=${this.video.getDimensions()[0]},height=${this.video.getDimensions()[1]}`
+		// );
 	}
 
 	toggleFullscreen(): boolean {
