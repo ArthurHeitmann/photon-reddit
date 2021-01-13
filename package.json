@@ -6,7 +6,6 @@
   "type": "module",
   "scripts": {
     "start": "node src/app.js",
-    "start-dev": "nodemon src/app.js",
     "build": "tsc && sass src/static --style compressed --no-source-map",
     "watch-sass": " sass --watch src/static",
     "watch-sass-wsl2": " sass --watch --poll src/static",
@@ -26,16 +25,10 @@
   "license": "GPL-3.0-only",
   "devDependencies": {
     "@types/express": "^4.17.9",
-    "@types/node": "^14.14.20",
-    "copyfiles": "^2.4.1",
-    "node-sass": "^5.0.0",
-    "nodemon": "^2.0.7",
     "sass": "^1.32.2",
-    "ts-loader": "^8.0.14",
     "typescript": "^3.9.7"
   },
   "dependencies": {
-    "esm": "^3.2.25",
     "express": "^4.16.4",
     "express-rate-limit": "^5.2.3",
     "helmet": "^4.3.1",
