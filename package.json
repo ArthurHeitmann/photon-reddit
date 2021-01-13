@@ -37,6 +37,8 @@
   "dependencies": {
     "esm": "^3.2.25",
     "express": "^4.16.4",
+    "express-rate-limit": "^5.2.3",
+    "helmet": "^4.3.1",
     "node-fetch": "^2.6.1"
   }
 }
