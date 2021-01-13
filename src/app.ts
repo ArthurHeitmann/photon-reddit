@@ -1,7 +1,7 @@
-import express, { NextFunction, RequestHandler } from "express";
+import express from "express";
 import helmet from "helmet";
-// const RateLimit = require("express-rate-limit") as (options) => (req, res, next) => void;
 import RateLimit from "express-rate-limit";
+import expressAsyncHandler from "express-async-handler";
 import fetch from "node-fetch";
 import { initialAccessToken, refreshAccessToken, appId, redirectURI } from "./loginRedirect.js";
 
@@ -40,11 +40,11 @@ function checkSslAndWww(req: express.Request, res: express.Response, next: expre
 		res.redirect(`https://${req.hostname.replace(/^www\./, "")}${req.originalUrl}`)
 }
 
-app.use(express.static('src/static'));
 app.use(helmet({
 	contentSecurityPolicy: false
 }));
 app.use(checkSslAndWww);
+app.use(express.static('src/static'));
 
 app.get("/login", RateLimit(basicRateLimitConfig), (req, res) => {
 	const loginUrl = "https://www.reddit.com/api/v1/authorize?" +
@@ -59,54 +59,61 @@ app.get("/login", RateLimit(basicRateLimitConfig), (req, res) => {
 });
 
 // redirect from certain reddit api request
-app.get("/redirect", RateLimit(redditTokenRateLimitConfig), (req, res) => {
+app.get("/redirect", RateLimit(redditTokenRateLimitConfig), expressAsyncHandler(async (req, res) => {
 	if (req.query["state"] && req.query["state"] === "initialLogin") {
-		initialAccessToken(req.query["code"].toString()).then(
-			(data: Object) => res.redirect(
-				`/setAccessToken?accessToken=${encodeURIComponent(data["access_token"])}&refreshToken=${encodeURIComponent(data["refresh_token"])}`)
-		).catch(error => {
-			console.error(`Error getting access token ${JSON.stringify(error, null, 4)}`);
-			res.send(`error getting access token ${JSON.stringify(error, null, 4)}`);
-		});
+		try {
+			const data = await initialAccessToken(req.query["code"].toString());
+			res.redirect(
+				`/setAccessToken?accessToken=${encodeURIComponent(data["access_token"])}&refreshToken=${encodeURIComponent(data["refresh_token"])}`);
+		} catch (e) {
+			console.error(`Error getting access token ${JSON.stringify(e, null, 4)}`);
+			res.send(`error getting access token ${JSON.stringify(e, null, 4)}`);
+		}
 	}
 	else {
 		res.setHeader('Content-Type', 'application/json');
 		res.send('{ "error": "¯\\_(ツ)_/¯"}');
 	}
-});
+}));
 
 
-app.get("/refreshToken", RateLimit(redditTokenRateLimitConfig), (req, res) => {
+app.get("/refreshToken", RateLimit(redditTokenRateLimitConfig), expressAsyncHandler(async (req, res) => {
 	res.setHeader('Content-Type', 'application/json');
 	if (req.query["refreshToken"]) {
-		refreshAccessToken(req.query["refreshToken"].toString()).then(
-			(data: Object) => 
-				res.send(`{ "accessToken": "${encodeURIComponent(data["access_token"])}" }`)
-		).catch(error => {
-			console.error(`Error getting access token ${JSON.stringify(error, null, 4)}`);
-			res.send(`error getting access token ${JSON.stringify(error, null, 4)}`);
-		});
+		try {
+			const data = await refreshAccessToken(req.query["refreshToken"].toString());
+			res.send(`{ "accessToken": "${encodeURIComponent(data["access_token"])}" }`);
+		} catch (e) {
+			console.error(`Error getting access token ${JSON.stringify(e, null, 4)}`);
+			res.send(`error getting access token ${JSON.stringify(e, null, 4)}`);
+		}
 	}
 	else {
 		res.send('{ "error": "¯\\_(ツ)_/¯"}');
 	}
-});
-
+}));
 
 const setAccessTokenFile = __dirname + "/src/static/setAccessToken.html"
 app.get("/setAccessToken", (req, res) => {
 	res.sendFile(setAccessTokenFile);
 });
 
-app.get("/getIframeSrc", RateLimit(getIframeSrcRateLimitConfig), (req, res) => {
-	fetch(req.query["url"].toString()).then(resp => resp.text().then(text => {
-		let matches: string[] = text.match(/<source\s+src="[^<>\]!+"]*"\s+type="[\w\/]+"\s*\/?>/g);
-		matches = matches.map(src => src.replace(/\s+/g, " "));
-		res.send(JSON.stringify({
-			"src": matches
-		}));
+app.get("/getIframeSrc", RateLimit(getIframeSrcRateLimitConfig), expressAsyncHandler(async (req, res) => {
+	const response = await fetch(req.query["url"].toString());
+	const html = await response.text();
+	let matches: string[] = html.match(/<source\s+src="[^<>\]!+"]*"\s+type="[\w\/]+"\s*\/?>/g);
+	matches = matches.map(src => src.replace(/\s+/g, " "));
+	res.send(JSON.stringify({
+		"src": matches
 	}));
-});
+}));
+
+app.get("/scripts/libs/follow.js", expressAsyncHandler(async (req, res) => {
+	const plausibleJsRequest = await fetch("https://plausible.io/js/plausible.js");
+	const plausibleJs = await plausibleJsRequest.text();
+	res.set("content-type", "application/javascript");
+	res.send(plausibleJs);
+}));
 
 const indexFile = __dirname + "/src/static/index.html"
 // catch all paths and check ssl, since app.use middleware doesn't seem to get called here
