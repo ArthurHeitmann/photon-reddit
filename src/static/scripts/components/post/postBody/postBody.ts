@@ -37,11 +37,11 @@ export default class Ph_PostBody extends HTMLElement {
 					// TODO escape attributes
 					this.innerHTML = `
 						<div class="linkPreviewWrapper">
-							<a href="${postData.data["url"]}" target="_blank">${postData.data["url"]}</a>
+							<a href="${postData.data["url"]}" target="_blank" rel="noopener">${postData.data["url"]}</a>
 							<img src="${postData.data["preview"]["images"][0]["source"]["url"]}">
 						</div>`;
 				else
-					this.innerHTML = `<a href="${postData.data["url"]}" target="_blank">${postData.data["url"]}</a>`						// TODO escape attribute
+					this.innerHTML = `<a href="${postData.data["url"]}" target="_blank" rel="noopener">${postData.data["url"]}</a>`						// TODO escape attribute
 				break;
 			case PostType.Video:
 				this.classList.add("fullScale");

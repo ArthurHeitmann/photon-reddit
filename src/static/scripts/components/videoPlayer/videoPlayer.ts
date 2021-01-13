@@ -362,7 +362,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		if (this.url) {
 			const srcText = document.createElement("div");
 			controls.appendChild(srcText);
-			srcText.innerHTML = `<a href="${this.url}" target="_blank">${this.url.match(/([\w.\.]+)\//)[1]}</a>`;	// TODO escape attribute
+			srcText.innerHTML = `<a href="${this.url}" target="_blank" rel="noopener">${this.url.match(/([\w.\.]+)\//)[1]}</a>`;	// TODO escape attribute
 		}
 
 		// reset view

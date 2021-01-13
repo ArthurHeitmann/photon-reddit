@@ -85,8 +85,10 @@ function setLinkOnClick(elem: HTMLAnchorElement) {
 		if (elem.href && elem.getAttribute("href")[0] !== "#")
 			elem.onclick = linkOnClick;
 	}
-	else
+	else {
 		elem.target = "_blank";
+		elem.rel = "noopener";
+	}
 }
 
 function linkOnClick(e) {
