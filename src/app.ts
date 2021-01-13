@@ -11,6 +11,8 @@ const env = process.env.NODE_ENV || 'development';
 const __dirname = process.cwd();
 const tokenDuration = "permanent";
 const scope = ["identity", "edit", "flair", "history", "modconfig", "modflair", "modlog", "modposts", "modwiki", "mysubreddits", "privatemessages", "read", "report", "save", "submit", "subscribe", "vote", "wikiedit", "wikiread"];
+
+// Configure middlewares
 const commonRateLimitConfig = {
 	message: "A little fast hugh?",
 	headers: false
@@ -39,7 +41,9 @@ function checkSslAndWww(req: express.Request, res: express.Response, next: expre
 }
 
 app.use(express.static('src/static'));
-app.use(helmet());
+app.use(helmet({
+	contentSecurityPolicy: false
+}));
 app.use(checkSslAndWww);
 
 app.get("/login", RateLimit(basicRateLimitConfig), (req, res) => {
