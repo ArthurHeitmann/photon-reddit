@@ -1,13 +1,19 @@
+import { config } from "dotenv";
+const env = process.env.NODE_ENV || 'development';
+if (env !== "production")
+	config();
+
 import express from "express";
 import helmet from "helmet";
 import RateLimit from "express-rate-limit";
 import expressAsyncHandler from "express-async-handler";
 import fetch from "node-fetch";
-import { initialAccessToken, refreshAccessToken, appId, redirectURI } from "./loginRedirect.js";
+import { initialAccessToken, refreshAccessToken, appId, redirectURI } from "./serverScripts/loginRedirect.js";
+import { analyticsRoute } from "./serverScripts/analytics.js";
+import bodyParser from "body-parser";
 
 const app = express();
 const port = process.env.PORT || 8080;
-const env = process.env.NODE_ENV || 'development';
 const __dirname = process.cwd();
 const tokenDuration = "permanent";
 const scope = ["identity", "edit", "flair", "history", "modconfig", "modflair", "modlog", "modposts", "modwiki", "mysubreddits", "privatemessages", "read", "report", "save", "submit", "subscribe", "vote", "wikiedit", "wikiread"];
@@ -32,6 +38,11 @@ const getIframeSrcRateLimitConfig = {
 	max: 15,
 	...commonRateLimitConfig
 };
+const analyticsRateLimitConfig = {
+	windowMs: 40 * 1000,
+	max: 15,
+	...commonRateLimitConfig
+};
 
 function checkSslAndWww(req: express.Request, res: express.Response, next: express.NextFunction) {
 	if ((env === "development" || req.headers['x-forwarded-proto'] === "https") && !(/^www\./.test(req.hostname)))
@@ -46,6 +57,7 @@ app.use(helmet({
 app.use(checkSslAndWww);
 app.use(express.static('src/static'));
 
+app.use(bodyParser.json());
 app.get("/login", RateLimit(basicRateLimitConfig), (req, res) => {
 	const loginUrl = "https://www.reddit.com/api/v1/authorize?" +
 		`client_id=${ encodeURIComponent(appId) }&` +
@@ -108,12 +120,14 @@ app.get("/getIframeSrc", RateLimit(getIframeSrcRateLimitConfig), expressAsyncHan
 	}));
 }));
 
-app.get("/scripts/libs/follow.js", expressAsyncHandler(async (req, res) => {
+app.get("/scripts/libs/follow.js", RateLimit(basicRateLimitConfig), expressAsyncHandler(async (req, res) => {
 	const plausibleJsRequest = await fetch("https://plausible.io/js/plausible.js");
 	const plausibleJs = await plausibleJsRequest.text();
 	res.set("content-type", "application/javascript");
 	res.send(plausibleJs);
 }));
+
+app.post("/analytic", RateLimit(analyticsRateLimitConfig), expressAsyncHandler(analyticsRoute));
 
 const indexFile = __dirname + "/src/static/index.html"
 // catch all paths and check ssl, since app.use middleware doesn't seem to get called here
