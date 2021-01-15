@@ -55,12 +55,11 @@ app.use(helmet({
 	contentSecurityPolicy: false
 }));
 app.use(checkSslAndWww);
-app.use(express.static('src/static', {
+app.use(express.static('src/static', env !== "production" ? {} : {
 	maxAge: "1d",
 	setHeaders: (res, path, stat) => {
-		console.log(path);
 		if (/\.(html|js)$/.test(path))
-			res.setHeader("Cache-Control", `public, max-age=3600`)
+			res.setHeader("Cache-Control", `public, max-age=1200`);
 	}
 }));
 
@@ -127,19 +126,12 @@ app.get("/getIframeSrc", RateLimit(getIframeSrcRateLimitConfig), expressAsyncHan
 	}));
 }));
 
-app.get("/scripts/libs/follow.js", RateLimit(basicRateLimitConfig), expressAsyncHandler(async (req, res) => {
-	const plausibleJsRequest = await fetch("https://plausible.io/js/plausible.js");
-	const plausibleJs = await plausibleJsRequest.text();
-	res.set("content-type", "application/javascript");
-	res.send(plausibleJs);
-}));
-
 app.post("/analytic", RateLimit(analyticsRateLimitConfig), expressAsyncHandler(analyticsRoute));
 
 const indexFile = __dirname + "/src/static/index.html"
 // catch all paths and check ssl, since app.use middleware doesn't seem to get called here
 app.get('*', [RateLimit(basicRateLimitConfig), checkSslAndWww], (req, res) => {
-	res.sendFile(indexFile);
+	res.sendFile(indexFile).setHeader("Cache-Control", `public, max-age=1200`);
 });
 
 app.listen(port, () => {
