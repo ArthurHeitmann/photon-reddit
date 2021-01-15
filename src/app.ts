@@ -55,7 +55,14 @@ app.use(helmet({
 	contentSecurityPolicy: false
 }));
 app.use(checkSslAndWww);
-app.use(express.static('src/static'));
+app.use(express.static('src/static', {
+	maxAge: "1d",
+	setHeaders: (res, path, stat) => {
+		console.log(path);
+		if (/\.(html|js)$/.test(path))
+			res.setHeader("Cache-Control", `public, max-age=3600`)
+	}
+}));
 
 app.use(bodyParser.json());
 app.get("/login", RateLimit(basicRateLimitConfig), (req, res) => {
