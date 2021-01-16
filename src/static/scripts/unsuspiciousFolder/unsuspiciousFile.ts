@@ -41,7 +41,7 @@ function loadClientId(id?: string) {
 	if (id)
 		clientId = id;
 	else {
-		const clientData = JSON.parse(atob(localStorage["clientIdData"])) as ClientIdData;
+		const clientData = JSON.parse(localStorage["clientIdData"]) as ClientIdData;
 		clientId = clientData.id;
 	}
 }
