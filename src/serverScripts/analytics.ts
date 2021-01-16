@@ -86,7 +86,7 @@ async function getPopularPathsInTimeFrame(timeFrame: number, limit: number) {
 		const rows = await connection.query(`
 			SELECT path, COUNT(path) AS cnt
 			FROM trackedEvents
-			WHERE timeMillisUtc >= ${connection.escape(timeFrame)}
+			WHERE timeMillisUtc >= ${connection.escape(Date.now() - timeFrame)}
 			GROUP BY path
 			LIMIT ${connection.escape(limit)}
 			;
@@ -94,7 +94,7 @@ async function getPopularPathsInTimeFrame(timeFrame: number, limit: number) {
 		const rows2 = await connection.query(`
 			SELECT COUNT(*) as cnt
 			FROM trackedEvents
-			WHERE timeMillisUtc >= ${connection.escape(timeFrame)}
+			WHERE timeMillisUtc >= ${connection.escape(Date.now() - timeFrame)}
 			;
 		`);
 		const totalRows = rows2[0]["cnt"];
