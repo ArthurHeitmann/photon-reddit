@@ -64,6 +64,50 @@ async function getEventsInTimeFrame(timeFrame: number, resolution: number): Prom
 	}
 }
 
+async function getUniqueClientIdsInTimeFrame(timeFrame: number) {
+	const connection = await pool.getConnection();
+	try {
+		const rows = await connection.query(`
+			SELECT COUNT(DISTINCT(clientId)) as cnt
+			FROM trackedEvents
+			WHERE timeMillisUtc >= ${connection.escape(Date.now() - timeFrame)}
+			;
+		`);
+		return rows[0]["cnt"];
+	}
+	finally {
+		connection.release();
+	}
+}
+
+async function getPopularPathsInTimeFrame(timeFrame: number, limit: number) {
+	const connection = await pool.getConnection();
+	try {
+		const rows = await connection.query(`
+			SELECT path, COUNT(path) AS cnt
+			FROM trackedEvents
+			WHERE timeMillisUtc >= ${connection.escape(timeFrame)}
+			GROUP BY path
+			LIMIT ${connection.escape(limit)}
+			;
+		`);
+		const rows2 = await connection.query(`
+			SELECT COUNT(*) as cnt
+			FROM trackedEvents
+			WHERE timeMillisUtc >= ${connection.escape(timeFrame)}
+			;
+		`);
+		const totalRows = rows2[0]["cnt"];
+		const percentRows = rows.filter(elem => !(elem instanceof Array));
+		for (const row of percentRows)
+			row["cnt"] /= totalRows;
+		return percentRows;
+	}
+	finally {
+		connection.release();
+	}
+}
+
 export async function analyticsRoute(req: express.Request, res: express.Response, next: express.NextFunction) {
 	const { clientId, path, referer, timeMillisUtc } = req.body;
 	if (!clientId || typeof clientId !== "string" || clientId.length > 128) {
@@ -106,6 +150,43 @@ export async function eventsByTime(req: express.Request, res: express.Response, 
 	}
 	try {
 		const values = await getEventsInTimeFrame(timeFrame, resolution);
+		res.send(values);
+	}
+	catch (e) {
+		res.status(400).send("nope")
+	}
+}
+
+export async function uniqueClientsByTime(req: express.Request, res: express.Response, next: express.NextFunction) {
+	const timeFrame = parseInt(req.query["timeFrame"].toString());
+	if (timeFrame <= 0 || !isFinite(timeFrame) || typeof timeFrame !== "number") {
+		res.send("Invalid parameters").status(400);
+		return;
+	}
+
+	try {
+		const values = await getUniqueClientIdsInTimeFrame(timeFrame);
+		res.send(values.toString());
+	}
+	catch (e) {
+		res.status(400).send("nope")
+	}
+}
+
+export async function popularPathsByTime(req: express.Request, res: express.Response, next: express.NextFunction) {
+	const timeFrame = parseInt(req.query["timeFrame"].toString());
+	const limit = parseInt(req.query["limit"].toString());
+	if (timeFrame <= 0 || !isFinite(timeFrame) || typeof timeFrame !== "number") {
+		res.send("Invalid parameters").status(400);
+		return;
+	}
+	if (limit <= 0 || !isFinite(limit) || typeof limit !== "number" || limit > 50) {
+		res.send("Invalid parameters").status(400);
+		return;
+	}
+
+	try {
+		const values = await getPopularPathsInTimeFrame(timeFrame, limit);
 		res.send(values);
 	}
 	catch (e) {
