@@ -15,24 +15,29 @@ const pool = mariadb.createPool({
 	connectionLimit: 5
 });
 
-async function trackEvent(sessionId: string, path: string, referrer: string, timeMillisUtc: number) {
+async function trackEvent(clientId: string, path: string, referrer: string, timeMillisUtc: number) {
 	const connection = await pool.getConnection();
-	await connection.query(`
+	try {
+		await connection.query(`
 		INSERT INTO trackedEvents 
 		    (clientId, path, referer, timeMillisUtc) 
 		    VALUES (
-		    	${connection.escape(sessionId)}, 
+		    	${connection.escape(clientId)}, 
 		    	${connection.escape(path)}, 
 		    	${connection.escape(referrer)}, 
 		    	${connection.escape(timeMillisUtc)}
 			)
 		;
 	`);
+	}
+	finally {
+		connection.release();
+	}
 }
 
 export async function analyticsRoute(req: express.Request, res: express.Response, next: express.NextFunction) {
-	const { sessionId, path, referer, timeMillisUtc } = req.body;
-	if (!sessionId || typeof sessionId !== "string" || sessionId.length > 128) {
+	const { clientId, path, referer, timeMillisUtc } = req.body;
+	if (!clientId || typeof clientId !== "string" || clientId.length > 128) {
 		res.send("Invalid parameters").status(400);
 		return;
 	}
@@ -49,7 +54,7 @@ export async function analyticsRoute(req: express.Request, res: express.Response
 		return;
 	}
 	try {
-		await trackEvent(sessionId, path, referer || "", timeMillisUtc,);
+		await trackEvent(clientId, path, referer || "", timeMillisUtc,);
 		res.send("yep");
 	}
 	catch (e) {

@@ -62,8 +62,8 @@ app.use(express.static('src/static', env !== "production" ? {} : {
 			res.setHeader("Cache-Control", `public, max-age=1200`);
 	}
 }));
-
 app.use(bodyParser.json());
+
 app.get("/login", RateLimit(basicRateLimitConfig), (req, res) => {
 	const loginUrl = "https://www.reddit.com/api/v1/authorize?" +
 		`client_id=${ encodeURIComponent(appId) }&` +
@@ -126,7 +126,8 @@ app.get("/getIframeSrc", RateLimit(getIframeSrcRateLimitConfig), expressAsyncHan
 	}));
 }));
 
-app.post("/analytic", RateLimit(analyticsRateLimitConfig), expressAsyncHandler(analyticsRoute));
+//unsuspicious to avoid adblocker blocking
+app.post("/unsuspiciousPath", RateLimit(analyticsRateLimitConfig), expressAsyncHandler(analyticsRoute));
 
 const indexFile = __dirname + "/src/static/index.html"
 // catch all paths and check ssl, since app.use middleware doesn't seem to get called here
