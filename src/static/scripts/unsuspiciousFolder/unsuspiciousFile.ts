@@ -3,6 +3,9 @@
 import { ViewChangeData } from "../historyState/viewsStack.js";
 
 window.addEventListener("viewChange", (e: CustomEvent) => {
+	if (location.hostname === "localhost")
+		return;
+	
 	const viewChangeData: ViewChangeData = e.detail;
 	if (viewChangeData.newLoad) {
 		fetch("/unsuspiciousPath", {

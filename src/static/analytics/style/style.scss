@@ -1,0 +1,40 @@
+@use '../../style/defaults';
+@use '../../style/helperClasses';
+@use '../../style/shadow';
+@use '../../style/vars';
+@use '../../scripts/components/misc/dropDown/dropDown';
+
+html, body {
+	min-height: 100%;
+	background: vars.$background;
+}
+
+#mainContent {
+	width: 100%;
+	padding: .5rem;
+
+	> h1 {
+	}
+
+	#optionsRow {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+
+		> .dropDown {
+			width: max-content;
+			background: vars.$background-el1;
+
+			> button {
+				height: 2rem;
+				line-height: 2rem;
+				border: 1px solid vars.$text;
+				border-radius: 1rem;
+			}
+
+			> .areaWrapper, > .areaWrapper > .dropDownArea {
+				width: 100%;
+			}
+		}
+	}
+}

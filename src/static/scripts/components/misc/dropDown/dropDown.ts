@@ -1,9 +1,7 @@
-import Ph_UniversalFeed from "../../feed/universalFeed/universalFeed.js";
 import Ph_DropDownArea from "./dropDownArea/dropDownArea.js";
 import { DropDownEntryParam } from "./dropDownEntry/dropDownEntry.js";
 
 export default class Ph_DropDown extends HTMLElement {
-	feed: Ph_UniversalFeed;
 	toggleButton: HTMLButtonElement;
 
 	constructor(entryParams: DropDownEntryParam[], toggleButtonHTML: string, dirX: DirectionX, dirY: DirectionY, sameLineY: boolean) {
