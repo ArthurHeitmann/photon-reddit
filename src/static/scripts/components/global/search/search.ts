@@ -1,5 +1,6 @@
 import { searchSubreddits, searchUser } from "../../../api/redditApi.js";
-import { pushLinkToHistoryComb, pushLinkToHistorySep } from "../../../state/stateManager.js";
+import { pushLinkToHistoryComb, pushLinkToHistorySep } from "../../../historyState/historyStateManager.js";
+import { ViewChangeData } from "../../../historyState/viewsStack.js";
 import { elementWithClassInTree, linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiType, SortPostsTimeFrame, SortSearchOrder } from "../../../utils/types.js";
 import { throttle } from "../../../utils/utils.js";
@@ -157,7 +158,7 @@ export default class Ph_Search extends HTMLElement {
 		}
 
 		window.addEventListener("viewChange", (e: CustomEvent) => {
-			const subMatches = (e.detail as Ph_ViewState).state.url.match(/^\/r\/[^\/]+/);
+			const subMatches = (e.detail as ViewChangeData).viewState.state.url.match(/^\/r\/[^\/]+/);
 			this.currentSubreddit = subMatches && subMatches[0] || null;
 			limitToLabel.innerText = `Limit to ${this.currentSubreddit || "all"}`;
 			if (this.flairSearch) {

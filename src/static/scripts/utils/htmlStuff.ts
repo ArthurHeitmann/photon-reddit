@@ -1,5 +1,5 @@
 import Ph_PostImage from "../components/post/postBody/postImage/postImage.js";
-import { pushLinkToHistoryComb } from "../state/stateManager.js";
+import { pushLinkToHistoryComb } from "../historyState/historyStateManager.js";
 
 export function $id(id) {
 	return document.getElementById(id);

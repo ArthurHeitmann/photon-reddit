@@ -1,5 +1,5 @@
 import { redditApiRequest } from "../../../api/redditApi.js";
-import { viewsStack } from "../../../state/stateManager.js";
+import { viewsStack } from "../../../historyState/historyStateManager.js";
 import { PostSorting, RedditApiType, SortPostsOrder, SortPostsTimeFrame } from "../../../utils/types.js";
 import { splitPathQuery } from "../../../utils/utils.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";

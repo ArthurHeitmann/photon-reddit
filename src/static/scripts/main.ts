@@ -1,6 +1,6 @@
 import Ph_Header from "./components/global/header/header.js";
 import { checkTokenExpiry, initiateLogin, isAccessTokenValid } from "./login/login.js";
-import { pushLinkToHistorySep } from "./state/stateManager.js";
+import { pushLinkToHistorySep } from "./historyState/historyStateManager.js";
 import { thisUser } from "./utils/globals.js";
 import { $id, linksToSpa } from "./utils/htmlStuff.js";
 

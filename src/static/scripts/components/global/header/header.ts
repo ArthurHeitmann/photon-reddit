@@ -1,3 +1,4 @@
+import { ViewChangeData } from "../../../historyState/viewsStack.js";
 import { $class } from "../../../utils/htmlStuff.js";
 import { SVGAnimateElement } from "../../../utils/types.js";
 import Ph_DropDownArea from "../../misc/dropDown/dropDownArea/dropDownArea.js";
@@ -18,7 +19,8 @@ export default class Ph_Header extends HTMLElement {
 	constructor() {
 		super();
 
-		window.addEventListener("viewChange", (e: CustomEvent) => this.setFeedElements((e.detail as Ph_ViewState).headerElements));
+		window.addEventListener("viewChange", (e: CustomEvent) =>
+			this.setFeedElements((e.detail as ViewChangeData).viewState.headerElements));
 	}
 
 	connectedCallback() {
