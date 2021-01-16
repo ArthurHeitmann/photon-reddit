@@ -9,7 +9,7 @@ import RateLimit from "express-rate-limit";
 import expressAsyncHandler from "express-async-handler";
 import fetch from "node-fetch";
 import { initialAccessToken, refreshAccessToken, appId, redirectURI } from "./serverScripts/loginRedirect.js";
-import { analyticsRoute } from "./serverScripts/analytics.js";
+import { analyticsRoute, eventsByTime } from "./serverScripts/analytics.js";
 import bodyParser from "body-parser";
 
 const app = express();
@@ -58,8 +58,8 @@ app.use(checkSslAndWww);
 app.use(express.static('src/static', env !== "production" ? {} : {
 	maxAge: "1d",
 	setHeaders: (res, path, stat) => {
-		if (/\.(html|js)$/.test(path))
-			res.setHeader("Cache-Control", `public, max-age=1200`);
+		if (/\.(html|js|css)$/.test(path))
+			res.setHeader("Cache-Control", `public, max-age=${env === "production" ? 1200 : 5}`);
 	}
 }));
 app.use(bodyParser.json());
@@ -128,6 +128,8 @@ app.get("/getIframeSrc", RateLimit(getIframeSrcRateLimitConfig), expressAsyncHan
 
 //unsuspicious to avoid adblocker blocking
 app.post("/unsuspiciousPath", RateLimit(analyticsRateLimitConfig), expressAsyncHandler(analyticsRoute));
+
+app.get("/eventsByTime", eventsByTime);
 
 const indexFile = __dirname + "/src/static/index.html"
 // catch all paths and check ssl, since app.use middleware doesn't seem to get called here
