@@ -131,7 +131,7 @@ app.post("/analytic", RateLimit(analyticsRateLimitConfig), expressAsyncHandler(a
 const indexFile = __dirname + "/src/static/index.html"
 // catch all paths and check ssl, since app.use middleware doesn't seem to get called here
 app.get('*', [RateLimit(basicRateLimitConfig), checkSslAndWww], (req, res) => {
-	res.sendFile(indexFile).setHeader("Cache-Control", `public, max-age=1200`);
+	res.sendFile(indexFile);
 });
 
 app.listen(port, () => {
