@@ -55,8 +55,8 @@ body {
 	transition: all .25s ease;
 
 	&:hover {
-		color: lightcoral;
-		border-color: lightcoral;
+		color: vars.$primary;
+		border-color: vars.$primary;
 	}
 }
 
@@ -69,7 +69,7 @@ a {
 	}
 
 	&.subreddit *, &.user * {
-		color: lightcoral;
+		color: vars.$primary;
 	}
 }
 
@@ -159,7 +159,7 @@ input.checkbox {
 	display: none;
 
 	&:checked + label {
-		background: lightcoral;
+		background: vars.$primary;
 
 		&::before {
 			opacity: 1;
@@ -209,10 +209,10 @@ input.radio {
 	display: none;
 
 	&:checked + label {
-		background: lightcoral;
+		background: vars.$primary;
 
 		&:hover {
-			background: lightcoral;
+			background: vars.$primary;
 		}
 	}
 

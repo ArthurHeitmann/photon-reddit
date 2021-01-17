@@ -88,6 +88,18 @@
 				}
 			}
 		}
+
+		#loginButton {
+			background: vars.$primaryContrast;
+			height: 2.5rem;
+			padding: 0 .75rem;
+			border-radius: 1.25rem;
+			transition: background-color .25s ease;
+
+			&:hover {
+				background: vars.$primary;
+			}
+		}
 	}
 
 	.expander {

@@ -51,7 +51,7 @@
 		--active-bg: #ffffff78;
 
 		&.checked {
-			color: lightcoral;
+			color: vars.$primary;
 			opacity: 1;
 		}
 

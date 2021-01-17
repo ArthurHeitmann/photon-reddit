@@ -140,12 +140,12 @@
 			}
 
 			* {
-				color: lightcoral;
+				color: vars.$primary;
 			}
 		}
 
 		&:active {
-			border: 1px solid lightcoral;
+			border: 1px solid vars.$primary;
 		}
 
 		img.nextMenu {

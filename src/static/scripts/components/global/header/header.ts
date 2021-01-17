@@ -38,7 +38,7 @@ export default class Ph_Header extends HTMLElement {
 				</div>
 				<div>
 					<a href="/" class="home"><div>Photon</div></a>
-					<button id="loginButton" hidden>Login with Reddit</button>
+					<button id="loginButton" hidden>Login</button>
 					<button class="showSettingsButton transparentButtonAlt"><img src="/img/settings1.svg" alt="show settings" draggable="false"></button>
 				</div>
 				<div class="feedSpecific"></div>

@@ -145,8 +145,8 @@
 		}
 
 		&:hover:not(:disabled) {
-			border-color: lightcoral;
-			color: lightcoral;
+			border-color: vars.$primary;
+			color: vars.$primary;
 		}
 
 		&:active {

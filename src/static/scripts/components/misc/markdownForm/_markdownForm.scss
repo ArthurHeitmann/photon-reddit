@@ -1,3 +1,4 @@
+@use "../../../../style/vars";
 
 .markdownForm {
 	display: block;
@@ -50,7 +51,7 @@
 			}
 
 			&.submitBtn {
-				background: #e65d5d;
+				background: vars.$primaryContrast;
 			}
 
 			&.cancelBtn {

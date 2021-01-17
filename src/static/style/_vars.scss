@@ -3,6 +3,8 @@
 	--text-color: #e4e4e4;
 	--scale: 1.0;
 	--shadow-color: #0000009c;
+	--primary: lightcoral;
+	--primary-contrast: #e65d5d;
 }
 
 $background: var(--bg-color);
@@ -14,3 +16,5 @@ $post-padding: 2rem;
 $b-r: $post-padding / 2;
 $controls-height: 3rem;
 $controls-bg: #121212ad;
+$primary: var(--primary);
+$primaryContrast: var(--primary-contrast);

@@ -8,7 +8,7 @@
 	> .progress {
 		height: 100%;
 		width: calc(100% * var(--progress));
-		background: lightcoral;
+		background: vars.$primary;
 	}
 
 	.accessibilitySpacer {
