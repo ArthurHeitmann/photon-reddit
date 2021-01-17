@@ -3,11 +3,11 @@ import { $class } from "../../../utils/htmlStuff.js";
 import { SVGAnimateElement } from "../../../utils/types.js";
 import Ph_DropDownArea from "../../misc/dropDown/dropDownArea/dropDownArea.js";
 import Ph_UserDropDown from "../../misc/userDropDown/userDropDown.js";
-import { Ph_ViewState } from "../../viewState/viewState.js";
 import Ph_PhotonSettings from "../photonSettings/photonSettings.js";
 import Ph_Search from "../search/search.js";
 
 export default class Ph_Header extends HTMLElement {
+	isExpanded: boolean = false;
 	search: Ph_Search;
 	userDropDown: Ph_UserDropDown;
 	headerHideVisualizer = $class("headerHideVisualizer");
@@ -81,36 +81,48 @@ export default class Ph_Header extends HTMLElement {
 		this.hideTimeout = null;
 	}
 
-	headerMouseEnter(e: MouseEvent) {
+	headerMouseEnter() {
 		if (this.hideTimeout !== null) {
 			this.clearHideTimeout();
 			return;
 		}
+
+		this.expand();
+	}
+
+	expand() {
+		if (this.isExpanded)
+			return;
 
 		for (const anim of this.headerShowVisualizer) {
 			(anim as SVGAnimateElement).beginElement();
 		}
 		this.classList.add("hover");
 		this.clearHideTimeout();
+
+		this.isExpanded = true;
 	}
 
 	headerMouseLeave(e?: MouseEvent) {
 		if (e && e.relatedTarget === null) {
-			this.hideTimeout = setTimeout(() => {
-				for (const anim of this.headerHideVisualizer) {
-					(anim as SVGAnimateElement).beginElement();
-				}
-				this.classList.remove("hover");
-				this.minimizeAll();
-			}, 10000);
+			this.hideTimeout = setTimeout(this.hide.bind(this), 10000);
 		} else {
-			for (const anim of this.headerHideVisualizer) {
-				(anim as SVGAnimateElement).beginElement();
-			}
-			this.classList.remove("hover");
+			this.hide();
 			this.clearHideTimeout();
-			this.minimizeAll();
 		}
+	}
+
+	hide() {
+		if (!this.isExpanded)
+			return;
+
+		for (const anim of this.headerHideVisualizer) {
+			(anim as SVGAnimateElement).beginElement();
+		}
+		this.classList.remove("hover");
+		this.minimizeAll();
+
+		this.isExpanded = false;
 	}
 
 	minimizeAll(exclude: HTMLElement[] = []) {
