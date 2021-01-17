@@ -8,6 +8,7 @@ import Ph_Search from "../search/search.js";
 
 export default class Ph_Header extends HTMLElement {
 	isExpanded: boolean = false;
+	isPinned: boolean = false;
 	search: Ph_Search;
 	userDropDown: Ph_UserDropDown;
 	headerHideVisualizer = $class("headerHideVisualizer");
@@ -30,6 +31,11 @@ export default class Ph_Header extends HTMLElement {
 
 		this.innerHTML = `
 			<div class="actions">
+				<div class="leftItems">
+					<button class="transparentButtonAlt pinToggleButton" data-tooltip="Pin top bar">
+						<img src="/img/pin.svg" alt="pin">
+					</button>
+				</div>
 				<div>
 					<a href="/" class="home"><div>Photon</div></a>
 					<button id="loginButton" hidden>Login with Reddit</button>
@@ -65,6 +71,15 @@ export default class Ph_Header extends HTMLElement {
 			this.settings.toggle();
 			this.headerMouseLeave();
 		});
+
+		this.$class("pinToggleButton")[0].addEventListener("click", e => {
+			(e.currentTarget as HTMLElement).classList.toggle("pinned");
+			this.isPinned = !this.isPinned;
+		});
+
+		if (localStorage["firstTimeFlag"] !== "set") {
+			setTimeout(this.headerMouseEnter.bind(this), 1500);
+		}
 	}
 
 	setFeedElements(elements: HTMLElement[]) {
@@ -104,6 +119,9 @@ export default class Ph_Header extends HTMLElement {
 	}
 
 	headerMouseLeave(e?: MouseEvent) {
+		if (this.isPinned)
+			return;
+
 		if (e && e.relatedTarget === null) {
 			this.hideTimeout = setTimeout(this.hide.bind(this), 10000);
 		} else {

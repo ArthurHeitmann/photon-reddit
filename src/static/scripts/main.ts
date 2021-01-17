@@ -28,6 +28,9 @@ async function init(): Promise<void> {
 			await thisUser.fetch();
 		loadPosts();
 	}
+
+	if (!localStorage["firstTimeFlag"])
+		localStorage["firstTimeFlag"] = "set";
 }
 
 function loadPosts() {
