@@ -37,7 +37,7 @@ export default class Ph_Header extends HTMLElement {
 					</button>
 				</div>
 				<div>
-					<a href="/" class="home"><div>Photon</div></a>
+					<a href="/" class="home"><img src="/img/logo.png" alt="home"></a>
 					<button id="loginButton" hidden>Login</button>
 					<button class="showSettingsButton transparentButtonAlt"><img src="/img/settings1.svg" alt="show settings" draggable="false"></button>
 				</div>
