@@ -84,7 +84,7 @@ async function getPopularPathsInTimeFrame(timeFrame: number, limit: number) {
 	const connection = await pool.getConnection();
 	try {
 		const rows = await connection.query(`
-			SELECT path, COUNT(path) AS cnt
+			SELECT path, COUNT(path) AS percent
 			FROM trackedEvents
 			WHERE timeMillisUtc >= ${connection.escape(Date.now() - timeFrame)}
 			GROUP BY path
@@ -99,8 +99,10 @@ async function getPopularPathsInTimeFrame(timeFrame: number, limit: number) {
 		`);
 		const totalRows = rows2[0]["cnt"];
 		const percentRows = rows.filter(elem => !(elem instanceof Array));
-		for (const row of percentRows)
-			row["cnt"] /= totalRows;
+		for (const row of percentRows) {
+			row["percent"] /= totalRows;
+			row["path"] = row["path"].replace(/(?<=^(\/[^\/]+){2})\/.*/, "");
+		}
 		return percentRows;
 	}
 	finally {
@@ -135,6 +137,19 @@ export async function analyticsRoute(req: express.Request, res: express.Response
 		res.send("nope").status(400);
 		return;
 	}
+}
+
+export async function analyticsQueryMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
+	const pw = req.headers.cookie?.split("; ")
+		.find((cookie: string) => cookie.startsWith("analyticsPw"))
+		?.split("=")[1];
+
+	if (!pw || pw !== process.env.analyticsPw) {
+		res.status(401);
+		return;
+	}
+
+	next();
 }
 
 export async function eventsByTime(req: express.Request, res: express.Response, next: express.NextFunction) {

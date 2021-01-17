@@ -9,7 +9,13 @@ import RateLimit from "express-rate-limit";
 import expressAsyncHandler from "express-async-handler";
 import fetch from "node-fetch";
 import { initialAccessToken, refreshAccessToken, appId, redirectURI } from "./serverScripts/loginRedirect.js";
-import { analyticsRoute, eventsByTime, popularPathsByTime, uniqueClientsByTime } from "./serverScripts/analytics.js";
+import {
+	analyticsQueryMiddleware,
+	analyticsRoute,
+	eventsByTime,
+	popularPathsByTime,
+	uniqueClientsByTime
+} from "./serverScripts/analytics.js";
 import bodyParser from "body-parser";
 
 const app = express();
@@ -129,11 +135,11 @@ app.get("/getIframeSrc", RateLimit(getIframeSrcRateLimitConfig), expressAsyncHan
 //unsuspicious to avoid adblocker blocking
 app.post("/unsuspiciousPath", RateLimit(analyticsRateLimitConfig), expressAsyncHandler(analyticsRoute));
 
-app.get("/eventsByTime", eventsByTime);
+app.get("/eventsByTime", [RateLimit(basicRateLimitConfig), analyticsQueryMiddleware], eventsByTime);
 
-app.get("/uniqueClientsByTime", uniqueClientsByTime);
+app.get("/uniqueClientsByTime", [RateLimit(basicRateLimitConfig), analyticsQueryMiddleware], uniqueClientsByTime);
 
-app.get("/popularPathsByTime", popularPathsByTime);
+app.get("/popularPathsByTime", [RateLimit(basicRateLimitConfig), analyticsQueryMiddleware], popularPathsByTime);
 
 const indexFile = __dirname + "/src/static/index.html"
 // catch all paths and check ssl, since app.use middleware doesn't seem to get called here
