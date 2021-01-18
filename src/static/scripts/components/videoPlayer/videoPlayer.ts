@@ -376,7 +376,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		});
 		controls.appendChild(this.resetViewBtn);
 
-		// photonSettings
+		// settings
 		this.controlsDropDown = new Ph_DropDown([
 			{
 				displayHTML: "Speed", nestedEntries: [
@@ -412,7 +412,11 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		fullscreenButton.setAttribute("data-tooltip", "Shortcut: F");
 		fullscreenButton.parentElement.addEventListener("click", () => this.toggleFullscreen());
 		this.addEventListener("fullscreenchange",
-			() => fullscreenButton.activate(document.fullscreenElement ? "minimize" : "fullscreen")
+			() => {
+				fullscreenButton.activate(document.fullscreenElement ? "minimize" : "fullscreen");
+				if (!document.fullscreenElement)
+					this.onExitFullscreen();
+			}
 		);
 
 		// progress bar
@@ -462,21 +466,30 @@ export default class Ph_VideoPlayer extends HTMLElement {
 	}
 
 	toggleFullscreen(): boolean {
-		this.classList.toggle("fullscreen");
 		if (document.fullscreenElement) {
 			document.exitFullscreen();
-			this.resetViewBtn.click();
-			this.draggableWrapper.deactivate();
-			this.resetViewBtn.classList.add("hide");
+			this.onExitFullscreen();
 			return false;
 		}
 		else if (this.requestFullscreen) {
 			this.requestFullscreen();
-			this.draggableWrapper.activateWith(this.video);
-			this.resetViewBtn.classList.remove("hide");
+			this.onEnterFullscreen();
 			return true;
 		}
 		throw "can't enter fullscreen";
+	}
+
+	onEnterFullscreen() {
+		this.draggableWrapper.activateWith(this.video);
+		this.resetViewBtn.classList.remove("hide");
+		this.classList.add("fullscreen");
+	}
+
+	onExitFullscreen() {
+		this.resetViewBtn.click();
+		this.draggableWrapper.deactivate();
+		this.resetViewBtn.classList.add("hide");
+		this.classList.remove("fullscreen");
 	}
 }
 

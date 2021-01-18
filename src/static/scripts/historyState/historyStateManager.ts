@@ -12,6 +12,12 @@ export const viewsStack: ViewsStack = new ViewsStack();
 viewsStack.setNextIsReplace();
 
 window.addEventListener("popstate", (e: PopStateEvent) => {
+	if (document.fullscreenElement) {
+		// works when previous history state has same domain
+		e.preventDefault();
+		document.exitFullscreen();
+		return;
+	}
 	if (!e.state)
 		return
 	if (e.state.index > viewsStack.position()) {
