@@ -43,11 +43,11 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		this.permalink = postData.data["permalink"];
 		this.classList.add("post");
 
-		if (isInFeed && globalSettings.hideSeenPosts && hasPostsBeenSeen(this.fullName))
+		if (isInFeed && globalSettings.hideSeenPosts && !postData.data["stickied"] && hasPostsBeenSeen(this.fullName))
 			this.classList.add("hide");
 		window.addEventListener("settingsChanged", (e: CustomEvent) => {
 			const changed: PhotonSettings = e.detail;
-			if (changed.hideSeenPosts === undefined)
+			if (changed.hideSeenPosts === undefined || postData.data["stickied"])
 				return
 			if (changed.hideSeenPosts && hasPostsBeenSeen(this.fullName))
 				this.classList.add("hide");
