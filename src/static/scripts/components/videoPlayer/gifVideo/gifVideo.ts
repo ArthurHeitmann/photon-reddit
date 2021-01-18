@@ -23,6 +23,10 @@ export default class Ph_GifVideo extends Ph_VideoWrapper {
 			this.pause();
 			this.dispatchEvent(new Event("ph-ready"));
 		}, { once: true });
+		this.gifImg.addEventListener("dragstart", e => {
+			e.preventDefault();
+			return false;
+		});
 
 		this.canvasWrapper = document.createElement("div");
 		this.appendChild(this.canvasWrapper);
