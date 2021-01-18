@@ -1,4 +1,5 @@
-import { classInElementTree, elementWithClassInTree, escapeHTML } from "../../utils/htmlStuff.js";
+import { escapeHTML } from "../../utils/htmlStatics.js";
+import { classInElementTree, elementWithClassInTree} from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
 import { secondsToVideoTime } from "../../utils/utils.js";
 import Ph_ControlsBar from "../misc/controlsBar/controlsBar.js";

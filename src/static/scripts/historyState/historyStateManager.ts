@@ -4,7 +4,7 @@ import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
 import Ph_PostAndComments from "../components/postAndComments/postAndComments.js";
 import Ph_ViewStateLoader from "../components/viewState/viewStateLoader/viewStateLoader.js";
 import Ph_Wiki from "../components/wiki/wiki.js";
-import { $id } from "../utils/htmlStuff.js";
+import { $id } from "../utils/htmlStatics.js";
 import { splitPathQuery } from "../utils/utils.js";
 import ViewsStack from "./viewsStack.js";
 

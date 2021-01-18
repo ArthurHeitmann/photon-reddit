@@ -1,6 +1,6 @@
 import Ph_DropDown, { DirectionX, DirectionY } from "../../scripts/components/misc/dropDown/dropDown.js";
 import { DropDownEntryParam } from "../../scripts/components/misc/dropDown/dropDownEntry/dropDownEntry.js";
-import { $class, $css, $id, escapeHTML } from "../../scripts/utils/htmlStuff.js";
+import { $class, $css, $id, escapeHTML } from "../../scripts/utils/htmlStatics.js";
 import { numberToShort } from "../../scripts/utils/utils.js";
 
 let timeFrame = 1000 * 60 * 60 * 24;

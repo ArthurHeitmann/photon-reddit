@@ -1,6 +1,7 @@
 import { save, vote, VoteDirection, voteDirectionFromLikes } from "../../api/redditApi.js";
 import { hasPostsBeenSeen, markPostAsSeen } from "../../utils/globals.js";
-import { elementWithClassInTree, escapeHTML, linksToSpa } from "../../utils/htmlStuff.js";
+import { escapeHTML } from "../../utils/htmlStatics.js";
+import { elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
 import { numberToShort as numberToShort, numberToShortStr, timePassedSinceStr } from "../../utils/utils.js";
 import Ph_FeedItem from "../feed/feedItem/feedItem.js";

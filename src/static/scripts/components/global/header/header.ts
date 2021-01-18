@@ -1,5 +1,5 @@
 import { ViewChangeData } from "../../../historyState/viewsStack.js";
-import { $class } from "../../../utils/htmlStuff.js";
+import { $class } from "../../../utils/htmlStatics.js";
 import { SVGAnimateElement } from "../../../utils/types.js";
 import Ph_DropDownArea from "../../misc/dropDown/dropDownArea/dropDownArea.js";
 import Ph_UserDropDown from "../../misc/userDropDown/userDropDown.js";

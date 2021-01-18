@@ -1,4 +1,4 @@
-import { $tag } from "../../utils/htmlStuff.js";
+import { $tag } from "../../utils/htmlStatics.js";
 import { HistoryState } from "../../utils/types";
 import Ph_Header from "../global/header/header.js";
 

@@ -3,8 +3,9 @@ import Ph_Header from "./components/global/header/header.js";
 import Ph_Toast, { Level } from "./components/misc/toast/toast.js";
 import { pushLinkToHistorySep } from "./historyState/historyStateManager.js";
 import { checkTokenExpiry, initiateLogin, isAccessTokenValid } from "./login/login.js";
+import { $id } from "./utils/htmlStatics.js";
 import { thisUser } from "./utils/globals.js";
-import { $id, linksToSpa } from "./utils/htmlStuff.js";
+import { linksToSpa } from "./utils/htmlStuff.js";
 
 async function init(): Promise<void> {
 	$id("mainWrapper").insertAdjacentElement("afterbegin", new Ph_Header());

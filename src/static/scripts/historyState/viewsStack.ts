@@ -1,6 +1,6 @@
 import { globalSettings } from "../components/global/photonSettings/photonSettings.js";
 import { Ph_ViewState } from "../components/viewState/viewState.js";
-import { $tag } from "../utils/htmlStuff.js";
+import { $tag } from "../utils/htmlStatics.js";
 import { HistoryState } from "../utils/types.js";
 import { pushLinkToHistoryComb, PushType } from "./historyStateManager.js";
 
