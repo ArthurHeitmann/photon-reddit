@@ -86,6 +86,7 @@
 			.title {
 				line-height: vars.$controls-height;
 				max-width: 60%;
+				max-height: vars.$controls-height;
 				overflow: hidden;
 				text-overflow: ellipsis;
 				white-space: nowrap;
