@@ -1,8 +1,7 @@
 {
   "name": "reddit-photon",
-  "version": "0.0.1",
-  "description": "",
-  "main": "src/app.js",
+  "version": "1.0.0",
+  "description": "A fast and modern Reddit web client",
   "type": "module",
   "scripts": {
     "start": "node src/app.js",
@@ -22,8 +21,12 @@
   "engines": {
     "node": "14.x"
   },
-  "author": "",
+  "author": "ArthurH",
   "license": "GPL-3.0-only",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ArthurHeitmann/reddit-photon.git"
+  },
   "devDependencies": {
     "@types/express": "^4.17.9",
     "nodemon": "^2.0.7",

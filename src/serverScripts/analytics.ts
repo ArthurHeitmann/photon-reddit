@@ -129,7 +129,7 @@ export async function analyticsRoute(req: express.Request, res: express.Response
 		return;
 	}
 	try {
-		await trackEvent(clientId, path, referer || "", timeMillisUtc,);
+		await trackEvent(clientId, path.toLowerCase(), referer.toLowerCase() || "", timeMillisUtc,);
 		res.send("yep");
 	}
 	catch (e) {
