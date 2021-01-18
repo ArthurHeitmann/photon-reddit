@@ -5,7 +5,7 @@ export default class Ph_Toast extends HTMLElement {
 
 		this.className = "toast";
 		this.style.setProperty("--theme", levelConfig[level].color);
-
+		// TODO html check
 		this.innerHTML = `
 			<img src="${levelConfig[level].img}" alt="${levelConfig[level].text}" class="levelImg" draggable="false">
 			<div class="textWrapper">

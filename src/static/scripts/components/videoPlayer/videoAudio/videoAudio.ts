@@ -1,3 +1,4 @@
+import { escapeAttrDQ } from "../../../utils/htmlStatics.js";
 import { clamp } from "../../../utils/utils.js";
 import Ph_VideoWrapper from "../videoWrapper.js";
 
@@ -13,14 +14,14 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 		this.video = document.createElement("video");
 		this.video.setAttribute("loop", "");
 		for (const source of videoSources)
-			this.video.insertAdjacentHTML("beforeend", `<source src="${source.src}" type="${source.type}">`);
+			this.video.insertAdjacentHTML("beforeend", `<source src="${escapeAttrDQ(source.src)}" type="${escapeAttrDQ(source.type)}">`);
 		this.appendChild(this.video);
 		
 		this.audio = document.createElement("video");
 		this.audio.setAttribute("loop", "");
 		this.audio.classList.add("hide");
 		for (const source of audioSources)
-			this.audio.insertAdjacentHTML("beforeend", `<source src="${source.src}" type="${source.type}">`);
+			this.audio.insertAdjacentHTML("beforeend", `<source src="${escapeAttrDQ(source.src)}" type="${escapeAttrDQ(source.type)}">`);
 		this.appendChild(this.audio);
 
 		// pause (and play again) audio when video is buffering (and pray that the audio will never buffer)

@@ -259,7 +259,7 @@ export default class Ph_PhotonSettings extends HTMLElement {
 	private makeGeneralInputGroup(groupTitle: string, elements: HTMLElement[]): HTMLElement {
 		const wrapper = document.createElement("div");
 		wrapper.className = "inputGroup";
-		wrapper.innerHTML = `<div>${groupTitle}</div>`;
+		wrapper.innerHTML = `<div>${groupTitle}</div>`;		// TODO html check
 		wrapper.append(...elements);
 		return wrapper;
 	}
@@ -273,7 +273,7 @@ export default class Ph_PhotonSettings extends HTMLElement {
 	) {
 		const wrapper = document.createElement("div");
 		wrapper.className = "inputGroup";
-		wrapper.innerHTML = `<div>${groupText}</div>`;
+		wrapper.innerHTML = `<div>${groupText}</div>`;				// TODO html check
 		for (const radioParam of radioParams) {
 			const group = wrapper.appendChild(this.makeCustomLabeledInput(
 				"radio",
@@ -291,7 +291,7 @@ export default class Ph_PhotonSettings extends HTMLElement {
 
 	private makeCustomLabeledInput(type: string, labelText: string, value: string, inputId: string, inputName: string = "", checked?: boolean) {
 		const wrapper = document.createElement("div");
-		wrapper.className = "inputWrapper";
+		wrapper.className = "inputWrapper";							// TODO html check
 		wrapper.innerHTML = `
 			<label for="${inputId}">${labelText}</label>
 			<input type="${type}" id ="${inputId}" class="${type}" value="${value}" name="${inputName}" ${checked ? "checked" : ""}>${

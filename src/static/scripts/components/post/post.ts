@@ -1,6 +1,6 @@
 import { save, vote, VoteDirection, voteDirectionFromLikes } from "../../api/redditApi.js";
 import { hasPostsBeenSeen, markPostAsSeen } from "../../utils/globals.js";
-import { escapeHTML } from "../../utils/htmlStatics.js";
+import { escapeAttrDQ, escapeHTML } from "../../utils/htmlStatics.js";
 import { elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
 import { numberToShort as numberToShort, numberToShortStr, timePassedSinceStr } from "../../utils/utils.js";
@@ -128,13 +128,12 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			<div class="header">
 				<div class="top flex">
 					<span>Posted in</span>
-					<a href="/${postData.data["subreddit_name_prefixed"]}" class="subreddit">
-						<img src="#" alt="" class="subredditIcon"/>
-						<span>${postData.data["subreddit_name_prefixed"]}</span>
+					<a href="/${escapeAttrDQ(postData.data["subreddit_name_prefixed"])}" class="subreddit">
+						<span>${escapeHTML(postData.data["subreddit_name_prefixed"])}</span>
 					</a>
 					<span>by</span>
-					<a href="/user/${postData.data["author"]}" class="user${userAdditionClasses}">
-						<span>u/${postData.data["author"]}</span>
+					<a href="/user/${escapeAttrDQ(postData.data["author"])}" class="user${userAdditionClasses}">
+						<span>u/${escapeHTML(postData.data["author"])}</span>
 					</a>
 					<span class="time" data-tooltip="${new Date(postData.data["created_utc"] * 1000).toString()}">${timePassedSinceStr(postData.data["created_utc"])}</span>
 					<span>ago</span>

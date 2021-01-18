@@ -132,7 +132,7 @@ export default class Ph_Search extends HTMLElement {
 
 		function makeLabelCheckboxPair(labelText: string, checkboxId: string, defaultChecked: boolean, appendTo: HTMLElement): { checkbox: HTMLInputElement, label: HTMLLabelElement } {
 			const wrapper = document.createElement("div");
-			wrapper.innerHTML = `<label for="${checkboxId}">${labelText}</label>`;
+			wrapper.innerHTML = `<label for="${checkboxId}">${labelText}</label>`;			// TODO html check
 			const checkbox = document.createElement("input");
 			checkbox.type = "checkbox";
 			checkbox.id = checkboxId;

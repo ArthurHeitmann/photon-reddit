@@ -75,3 +75,11 @@ export function escapeHTML(unsafeHTML: string): string {
 	dummy.innerText = unsafeHTML;
 	return dummy.innerHTML;
 }
+
+export function escapeAttrDQ(unsafeAttribute: string): string {
+	return unsafeAttribute.replace(`"`, `\\"`)
+}
+
+export function escapeAttrSQ(unsafeAttribute: string): string {
+	return unsafeAttribute.replace(`'`, `\\'`)
+}

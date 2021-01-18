@@ -1,5 +1,6 @@
 import { redditApiRequest, subscribe } from "../../../api/redditApi.js";
 import { isLoggedIn, MultiReddit, StoredData } from "../../../utils/globals.js";
+import { escapeAttrDQ, escapeHTML } from "../../../utils/htmlStatics.js";
 import { classInElementTree, linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiType } from "../../../utils/types.js";
 import { numberToShort, replaceRedditLinks, stringSortComparer, throttle } from "../../../utils/utils.js";
@@ -255,7 +256,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 			<div>Created: ${new Date(this.loadedInfo.data["created_utc"] * 1000).toDateString()}</div>
 			<div>Moderators:</div>
 			${(this.loadedInfo.data.mods as SubredditModerator[])
-			.map(mod => `<div><a href="/user/${mod.name}">${mod.name}</a></div>`)
+			.map(mod => `<div><a href="/user/${escapeAttrDQ(mod.name)}">${escapeHTML(mod.name)}</a></div>`)
 			.join("\n")}	
 		`;
 		replaceRedditLinks(miscText);
@@ -350,7 +351,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		if (this.loadedInfo.data.multis.length > 0) {
 			miscText.insertAdjacentHTML("beforeend", `
 				<div>User Multireddits:</div>
-				${this.loadedInfo.data.multis.map(multi => `<div><a href="${multi.data.path}">${multi.data.display_name}</a></div>`).join("")}
+				${this.loadedInfo.data.multis.map(multi => `<div><a href="${escapeAttrDQ(multi.data.path)}">${escapeHTML(multi.data.display_name)}</a></div>`).join("")}
 			`);
 		}
 		replaceRedditLinks(miscText);
@@ -418,7 +419,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 				Created: ${new Date(this.loadedInfo.data["created_utc"] * 1000).toDateString()}
 			</div>
 			<div>
-				By: <a href="/user/${this.loadedInfo.data["owner"]}">u/${this.loadedInfo.data["owner"]}</a>
+				By: <a href="/user/${escapeAttrDQ(this.loadedInfo.data["owner"])}">u/${escapeHTML(this.loadedInfo.data["owner"])}</a>
 			</div>
 		`);
 		headerBar.appendChild(overviewBar);
@@ -453,7 +454,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		wrapper.appendChild(content);
 		for (let entry of entries) {
 			const switchBtn = document.createElement("button");
-			switchBtn.innerHTML = entry.titleHTML;
+			switchBtn.innerHTML = entry.titleHTML;							// TODO html check
 			switchBtn.addEventListener("click", () => {
 				content.firstElementChild?.remove();
 				content.appendChild(entry.content);
@@ -568,7 +569,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		removeSubButton.className = "removeSub transparentButton";
 		removeSubredditBar.appendChild(removeSubButton);
 		const addSubText = document.createElement("div");
-		addSubText.innerHTML = `<a href="/r/${sub}">r/${sub}</a>`;
+		addSubText.innerHTML = `<a href="/r/${escapeAttrDQ(sub)}">r/${escapeHTML(sub)}</a>`;
 		removeSubredditBar.appendChild(addSubText);
 		removeSubButton.addEventListener("click",
 			e => this.removeSubFromMulti(

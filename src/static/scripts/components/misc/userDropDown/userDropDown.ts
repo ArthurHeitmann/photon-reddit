@@ -1,4 +1,5 @@
 import { thisUser } from "../../../utils/globals.js";
+import { escapeAttrDQ, escapeHTML } from "../../../utils/htmlStatics.js";
 import { elementWithClassInTree, linksToSpa } from "../../../utils/htmlStuff.js";
 import Ph_Header from "../../global/header/header.js";
 
@@ -32,9 +33,9 @@ export default class Ph_UserDropDown extends HTMLElement {
 	private makeSubredditGroup(subs: SubGroupData[], groupName: string): HTMLElement {
 		const group = document.createElement("div");
 		group.className = "subGroup";
-		group.innerHTML = `<div class="name">${groupName}</div>`;
+		group.innerHTML = `<div class="name">${groupName}</div>`;			// TODO html check
 		subs.forEach(sub => group.insertAdjacentHTML("beforeend",
-			`<div class="sub"><a href="${sub.path}">${sub.name || sub.path}</a></div>`));
+			`<div class="sub"><a href="${escapeAttrDQ(sub.path)}">${escapeHTML(sub.name || sub.path)}</a></div>`));
 		linksToSpa(group);
 		return group;
 	}

@@ -1,4 +1,4 @@
-import { escapeHTML } from "../../utils/htmlStatics.js";
+import { escapeAttrDQ, escapeHTML } from "../../utils/htmlStatics.js";
 import { classInElementTree, elementWithClassInTree} from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
 import { secondsToVideoTime } from "../../utils/utils.js";
@@ -363,7 +363,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		if (this.url) {
 			const srcText = document.createElement("div");
 			controls.appendChild(srcText);
-			srcText.innerHTML = `<a href="${this.url}" target="_blank" rel="noopener">${this.url.match(/([\w.\.]+)\//)[1]}</a>`;	// TODO escape attribute
+			srcText.innerHTML = `<a href="${escapeAttrDQ(this.url)}" target="_blank" rel="noopener">${escapeHTML(this.url.match(/([\w.\.]+)\//)[1])}</a>`;	// TODO escape attribute
 		}
 
 		// reset view

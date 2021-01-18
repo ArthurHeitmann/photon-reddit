@@ -1,3 +1,4 @@
+import { escapeAttrDQ } from "../../../utils/htmlStatics.js";
 import { clamp } from "../../../utils/utils.js";
 import Ph_VideoWrapper from "../videoWrapper.js";
 
@@ -14,11 +15,11 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 		this.appendChild(this.video);
 		if (sourcesArray) {
 			for (const source of sourcesArray)
-				this.video.insertAdjacentHTML("beforeend", `<source src="${source.src}" type="${source.type}">`);
+				this.video.insertAdjacentHTML("beforeend", `<source src="${escapeAttrDQ(source.src)}" type="${escapeAttrDQ(source.type)}">`);
 		}
 		else if (sourcesHtml) {
 			for (const source of sourcesHtml)
-				this.video.insertAdjacentHTML("beforeend", source);
+				this.video.insertAdjacentHTML("beforeend", source);		// TODO html check
 		}
 		else
 			throw "Invalid video sources"
