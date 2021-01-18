@@ -1,12 +1,15 @@
 // unsuspicious to adblock blocking
 
+import { globalSettings } from "../components/global/photonSettings/photonSettings.js";
 import { ViewChangeData } from "../historyState/viewsStack.js";
 
 window.addEventListener("viewChange", (e: CustomEvent) => {
-	if (location.hostname === "localhost")
+	if (location.hostname === "localhost" || globalSettings.isIncognitoEnabled)
 		return;
 	
 	const viewChangeData: ViewChangeData = e.detail;
+	if (/analytics\/analytics\.html$/.test(viewChangeData.viewState.state.url))
+		return;
 	if (viewChangeData.newLoad) {
 		fetch("/unsuspiciousPath", {
 			method: "POST",
