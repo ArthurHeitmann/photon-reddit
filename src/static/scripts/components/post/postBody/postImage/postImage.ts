@@ -83,10 +83,12 @@ export default class Ph_PostImage extends HTMLElement {
 			}
 
 			if (img.previewUrl && globalSettings.imageLoadingPolicy !== ImageLoadingPolicy.alwaysOriginal) {
+				imgData.previewImg.alt = img.previewUrl;
 				imgData.previewImg.src = img.previewUrl;
 				imgData.previewImg.draggable = false;
 			}
 			else if (img.originalUrl) {
+				imgData.originalImg.alt = img.originalUrl;
 				imgData.originalImg.src = img.originalUrl;
 				imgData.originalImg.draggable = false;
 			}
@@ -157,6 +159,7 @@ export default class Ph_PostImage extends HTMLElement {
 		this.controls.appendSpacer();
 		// loading icon
 		this.loadingIcon = document.createElement("img");
+		this.loadingIcon.alt = "loading";
 		this.loadingIcon.src = "/img/loading.svg";
 		this.loadingIcon.draggable = false;
 		this.loadingIcon.className = "loading";
@@ -238,6 +241,7 @@ export default class Ph_PostImage extends HTMLElement {
 				galleryImg.previewImg.remove();
 				galleryImg.previewImg = undefined;
 			}, { once: true });
+			galleryImg.originalImg.alt = galleryImg.originalSrc;
 			galleryImg.originalImg.src = galleryImg.originalSrc;
 			galleryImg.originalImg.draggable = false;
 
@@ -287,6 +291,7 @@ export default class Ph_PostImage extends HTMLElement {
 		if (this.isFullscreen() && this.galleryData[this.currentImageIndex].originalImg === null && globalSettings.imageLoadingPolicy !== ImageLoadingPolicy.alwaysPreview) {
 			const origImg = document.createElement("img");
 			origImg.draggable = false;
+			origImg.alt = this.galleryData[this.currentImageIndex].originalSrc;
 			origImg.src = this.galleryData[this.currentImageIndex].originalSrc;
 			this.galleryData[this.currentImageIndex].originalImg = origImg;
 			const currIndex = this.currentImageIndex;

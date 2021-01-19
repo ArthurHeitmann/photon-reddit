@@ -32,6 +32,7 @@ export default class Ph_Flair extends HTMLElement {
 					case "emoji":
 						const flairImg = document.createElement("img");
 						flairImg.src = flairPart["u"];
+						flairImg.alt = "flairImg";
 						flairImg.setAttribute("data-tooltip", flairPart["a"]);
 						this.append(flairImg);
 						break;

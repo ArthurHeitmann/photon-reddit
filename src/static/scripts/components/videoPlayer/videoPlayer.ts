@@ -394,7 +394,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 			// 	displayHTML: `<span data-tooltip="Shortcut: I">Popout</span>`,
 			// 	onSelectCallback: this.popoutVideo.bind(this)
 			// },
-		], `<img src="/img/settings2.svg" draggable="false">`, DirectionX.right, DirectionY.top, false);
+		], `<img src="/img/settings2.svg" draggable="false" alt="settings">`, DirectionX.right, DirectionY.top, false);
 		this.controlsDropDown.classList.add("settings");
 		this.controlsDropDown.$class("dropDownButton")[0].classList.add("imgBtn");
 		controls.appendChild(this.controlsDropDown);

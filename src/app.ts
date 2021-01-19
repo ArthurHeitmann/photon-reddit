@@ -58,6 +58,7 @@ app.use(helmet({
 app.use(checkSslAndWww);
 app.use(express.static('src/static', env !== "production" ? {} : {
 	maxAge: "1d",
+
 	setHeaders: (res, path, stat) => {
 		if (/\.(html|js|css)$/.test(path))
 			res.setHeader("Cache-Control", `public, max-age=${env === "production" ? 1200 : 5}`);

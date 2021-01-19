@@ -63,7 +63,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 				let nextChildren = commentData.data["children"] as unknown as string[];
 				loadMoreButton.addEventListener("click", async () => {
 					loadMoreButton.disabled = true;
-					loadMoreButton.innerHTML = `<img src="/img/loading.svg">`;
+					loadMoreButton.innerHTML = `<img src="/img/loading.svg" alt="loading">`;
 					try {
 						const loadedComments = await this.loadMoreComments(nextChildren, moreId);
 
@@ -175,7 +175,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 					: ""
 					}
 					${ 	isLocked 
-						? `<span class="locked" data-tooltip="${lockedReason}"><img src="/img/locked.svg"></span>`
+						? `<span class="locked" data-tooltip="${lockedReason}"><img src="/img/locked.svg" alt="locked"></span>`
 						: ""
 					}
 			</div>

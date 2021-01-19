@@ -3,6 +3,3 @@ Disallow: /r/
 Disallow: /u/
 Disallow: /user/
 Disallow: /m/
-Disallow: /img/
-Disallow: /scripts/
-Disallow: /style/

@@ -145,7 +145,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 					}
 					<div class="flairWrapper">					
 						${ 	isLocked
-							? `<span data-tooltip="${lockedReason}" class="locked"><img src="/img/locked.svg"</span>`
+							? `<span data-tooltip="${lockedReason}" class="locked"><img src="/img/locked.svg" alt="locked"></span>`
 							: ""
 						}
 					</div>

@@ -28,6 +28,7 @@ export default class Ph_ControlsBar extends HTMLElement {
 		const img = document.createElement("img");
 		img.draggable = false;
 		if (padded) img.className = "padded";
+		img.alt = imgSrc;
 		img.src = imgSrc;
 		btn.appendChild(img);
 		this.appendChild(btn);

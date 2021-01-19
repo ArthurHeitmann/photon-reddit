@@ -55,6 +55,7 @@ export default class Ph_SearchFeedSorter extends HTMLElement {
 
 	handleSortSelect(valueChain: any[]) {
 		const loadingIcon = document.createElement("img");
+		loadingIcon.alt = "loading";
 		loadingIcon.src = "/img/loading.svg";
 		this.dropdown.toggleButton.appendChild(loadingIcon);
 

@@ -49,6 +49,7 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 
 
 		const loadingIcon = document.createElement("img");
+		loadingIcon.alt = "loading";
 		loadingIcon.src = "/img/loading.svg";
 		this.dropdown.toggleButton.appendChild(loadingIcon);
 

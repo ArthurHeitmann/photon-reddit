@@ -38,7 +38,7 @@ export default class Ph_PostBody extends HTMLElement {
 					this.innerHTML = `
 						<div class="linkPreviewWrapper">
 							<a href="${escADQ(postData.data["url"])}" target="_blank" rel="noopener">${escHTML(postData.data["url"])}</a>
-							<img src="${escADQ(postData.data["preview"]["images"][0]["source"]["url"])}">
+							<img src="${escADQ(postData.data["preview"]["images"][0]["source"]["url"])}" alt="preview">
 						</div>`;
 				else
 					this.innerHTML = `<a href="${escADQ(postData.data["url"])}" target="_blank" rel="noopener">${escHTML(postData.data["url"])}</a>`;

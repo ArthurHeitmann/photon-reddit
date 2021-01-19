@@ -11,6 +11,7 @@ export default class Ph_SwitchingImage extends HTMLElement {
 
 		for (let src of imgDictionary) {
 			this.dict[src.key] = document.createElement("img");
+			this.dict[src.key].alt = src.src;
 			this.dict[src.key].src = src.src;
 			this.dict[src.key].className = "hide";
 			this.appendChild(this.dict[src.key]);

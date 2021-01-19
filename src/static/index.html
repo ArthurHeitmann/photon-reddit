@@ -1,22 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 	<meta charset='utf-8'>
 	<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	<meta name="Description" content="A fast and modern reddit desktop client.">
+	<meta name="theme-color" content="#121212">
 	<title>Reddit Photon</title>
 	<meta name='viewport' content='width=device-width, initial-scale=1'>
 	<link rel="manifest" href="/manifest.json">
-	<link rel='stylesheet' type='text/css' media='screen' href='/style/main.css'>
 	<link rel="apple-touch-icon" sizes="180x180" href="/img/appIcons/apple-touch-icon.png">
 	<link rel="icon" type="image/png" sizes="32x32" href="/img/appIcons/favicon-32x32.png">
 	<link rel="icon" type="image/png" sizes="16x16" href="/img/appIcons/favicon-16x16.png">
-	<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,600;0,800;1,800&display=swap" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+	<link rel='stylesheet' type='text/css' href='/style/main.css' media="none" onload="this.media='all'">
+	<link href="https://fonts.googleapis.com" rel="preconnect">
+	<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,600;0,800;1,800&display=swap" rel="stylesheet" media="none" onload="this.media='all'">
+	<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@500&display=swap" rel="stylesheet" media="none" onload="this.media='all'">
 </head>
 <body class="overflow-hide">
 	<div class="flex f-direction-column f-align-center" id="mainWrapper">
 		<main class="relative w100"></main>
 	</div>
+	<noscript>Photon Reddit needs Javascript to work. Please enable it in your browser</noscript>
 	<script src='/scripts/main.js' type="module"></script>
 </body>
 </html>

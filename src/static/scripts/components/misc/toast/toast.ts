@@ -13,14 +13,14 @@ export default class Ph_Toast extends HTMLElement {
 				<div class="info">${displayHtml}</div>
 			</div>
 			<button class="closeButton transparentButtonAlt">
-				<img src="/img/close.svg" draggable="false">
+				<img src="/img/close.svg" draggable="false" alt="close">
 			</button>
 		`;
 
 		if (options.onConfirm !== undefined) {
 			const confirmBtn = document.createElement("button");
 			confirmBtn.className = "confirmButton transparentButtonAlt";
-			confirmBtn.innerHTML = `<img src="/img/check.svg" draggable="false">`;
+			confirmBtn.innerHTML = `<img src="/img/check.svg" draggable="false" class="confirm">`;
 			confirmBtn.addEventListener("click", () => {
 				this.removeSelf();
 				options.onConfirm();

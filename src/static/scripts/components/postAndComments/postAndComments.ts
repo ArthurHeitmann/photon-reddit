@@ -98,6 +98,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 		params.set("sort", valueChain[0]);
 
 		const loadingIcon = document.createElement("img");
+		loadingIcon.alt = "loading";
 		loadingIcon.src = "/img/loading.svg";
 		this.sorter.toggleButton.appendChild(loadingIcon);
 

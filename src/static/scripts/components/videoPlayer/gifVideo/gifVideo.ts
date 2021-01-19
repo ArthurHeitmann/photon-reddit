@@ -13,6 +13,7 @@ export default class Ph_GifVideo extends Ph_VideoWrapper {
 		this.gifSrc = src;
 
 		this.gifImg = document.createElement("img");
+		this.gifImg.alt = src;
 		this.gifImg.src = src;
 		this.gifImg.draggable = false;
 		this.appendChild(this.gifImg);

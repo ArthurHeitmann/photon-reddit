@@ -182,6 +182,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		if (iconUrl) {
 			const profileImg = document.createElement("img");
 			profileImg.src = iconUrl;
+			profileImg.alt = "profile";
 			profileImg.className = "profileImg";
 			headerBar.appendChild(profileImg);
 		}
@@ -219,7 +220,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 							onSelectCallback: ([_, multiPath]) => this.addSubToMulti(this.feedUrl, multiPath.replace(/\/?$/, ""), false)
 						}))
 				}],
-				`<img src="/img/kebab.svg" draggable="false">`,
+				`<img src="/img/kebab.svg" draggable="false" alt="menu">`,
 				DirectionX.left,
 				DirectionY.bottom,
 				false
@@ -309,6 +310,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		if (iconUrl) {
 			const profileImg = document.createElement("img");
 			profileImg.src = iconUrl;
+			profileImg.alt = "profile";
 			profileImg.className = "profileImg";
 			headerBar.appendChild(profileImg);
 		}
@@ -319,7 +321,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		overviewBar.appendChild(userActionsWrapper);
 		userActionsWrapper.appendChild(new Ph_DropDown(
 			[],
-			`<img src="/img/kebab.svg" draggable="false">`,
+			`<img src="/img/kebab.svg" alt="menu" draggable="false">`,
 			DirectionX.left,
 			DirectionY.bottom,
 			false
@@ -395,6 +397,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		if (iconUrl) {
 			const profileImg = document.createElement("img");
 			profileImg.src = iconUrl;
+			profileImg.alt = "profile";
 			profileImg.className = "profileImg";
 			headerBar.appendChild(profileImg);
 		}
@@ -405,7 +408,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		overviewBar.appendChild(userActionsWrapper);
 		userActionsWrapper.appendChild(new Ph_DropDown(
 			[],
-			`<img src="/img/kebab.svg" draggable="false">`,
+			`<img src="/img/kebab.svg" draggable="false" alt="menu">`,
 			DirectionX.left,
 			DirectionY.bottom,
 			false
@@ -479,6 +482,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 	private makeBannerImage(bannerUrl: string, appendTo: HTMLElement, bgColo: string): void {
 		const bannerImg = document.createElement("img");
 		bannerImg.src = bannerUrl;
+		bannerImg.alt = "banner";
 		bannerImg.className = "bannerImg";
 		if (this.loadedInfo.data["banner_background_color"])
 			bannerImg.style.setProperty("--banner-bg", this.loadedInfo.data["banner_background_color"]);
@@ -667,7 +671,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 	makeShowInfoButton(): HTMLElement {
 		const button = document.createElement("button");
 		button.className = "showInfo";
-		button.innerHTML = `<img src="/img/info.svg" draggable="false">`;
+		button.innerHTML = `<img src="/img/info.svg" draggable="false" alt="info">`;
 		button.addEventListener("click", this.toggle.bind(this));
 		button["targetFeedInfo"] = this;
 		return button;

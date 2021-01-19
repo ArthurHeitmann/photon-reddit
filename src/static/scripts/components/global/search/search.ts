@@ -61,6 +61,7 @@ export default class Ph_Search extends HTMLElement {
 
 		this.searchBar = document.createElement("input");
 		this.searchBar.type = "text";
+		this.searchBar.id = "quickSearch";
 		this.appendChild(this.searchBar);
 		this.searchBar.addEventListener("keypress", e => e.code === "Enter" && this.search(e));
 		this.searchBar.addEventListener("input", this.onTextEnter.bind(this));
@@ -68,12 +69,12 @@ export default class Ph_Search extends HTMLElement {
 
 		const toggleDropdownBtn = document.createElement("button")
 		toggleDropdownBtn.className = "toggleDropdownButton transparentButton";
-		toggleDropdownBtn.innerHTML = `<img src="/img/downArrow.svg" draggable="false">`;
+		toggleDropdownBtn.innerHTML = `<label for="quickSearch"><img src="/img/downArrow.svg" draggable="false" alt="expand"></label>`;
 		this.appendChild(toggleDropdownBtn);
 
 		const searchButton = document.createElement("button");
 		searchButton.className = "searchButton transparentButton";
-		searchButton.innerHTML = `<img src="/img/search.svg" draggable="false">`;
+		searchButton.innerHTML = `<img src="/img/search.svg" draggable="false" alt="search">`;
 		this.appendChild(searchButton);
 		searchButton.addEventListener("click", this.search.bind(this));
 

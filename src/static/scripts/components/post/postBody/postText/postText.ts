@@ -23,7 +23,7 @@ export default class Ph_PostText extends HTMLElement {
 
 				this.expandButton = document.createElement("button");
 				this.expandButton.classList.add("expandButton");
-				this.expandButton.innerHTML = `<img src="/img/downArrow.svg" draggable="false">`;
+				this.expandButton.innerHTML = `<img src="/img/downArrow.svg" draggable="false" alt="more">`;
 				this.expandButton.addEventListener("click", this.expand.bind(this));
 				this.appendChild(this.expandButton);
 			}

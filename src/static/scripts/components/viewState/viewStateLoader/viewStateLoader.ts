@@ -5,7 +5,7 @@ import { Ph_ViewState } from "../viewState.js";
 export default class Ph_ViewStateLoader extends Ph_ViewState {
 	constructor(state: HistoryState) {
 		super(state);
-		this.innerHTML = `<img src="/img/loading.svg" alt="loading..." class="loadingIcon">`;
+		this.innerHTML = `<img src="/img/loading.svg" alt="loading class="loadingIcon">`;
 	}
 
 	finishWith(elem: HTMLElement) {
