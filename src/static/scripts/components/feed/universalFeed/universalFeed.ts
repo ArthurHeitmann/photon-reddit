@@ -52,7 +52,8 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			while (!scrollElement.classList.contains("overflow-y-auto"))
 				scrollElement = this.parentElement;
 
-			scrollElement.addEventListener("wheel", throttle(this.onScroll.bind(this), 500), { passive: true });
+			const scrollChecker = throttle(this.onScroll.bind(this), 1000);
+			scrollElement.addEventListener("scroll", scrollChecker, { passive: true });
 		}, 0);
 
 		// find first FeedItem, once it has been added
