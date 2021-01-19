@@ -1,4 +1,4 @@
-import { getImgurAlbumContents, getImgurContent, ImgurContentType } from "../../../api/imgurAPI.js";
+import { getImgurAlbumContents, getImgurContent, ImgurContentType } from "../../../api/imgurApi.js";
 import { escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiData, RedditApiType } from "../../../utils/types.js";

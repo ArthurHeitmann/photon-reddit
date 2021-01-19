@@ -39,11 +39,6 @@ const redditTokenRateLimitConfig = {
 	max: 5,
 	...commonRateLimitConfig
 };
-const getIframeSrcRateLimitConfig = {
-	windowMs: 60 * 1000,
-	max: 15,
-	...commonRateLimitConfig
-};
 const analyticsRateLimitConfig = {
 	windowMs: 40 * 1000,
 	max: 15,
@@ -121,22 +116,6 @@ const setAccessTokenFile = __dirname + "/src/static/setAccessToken.html"
 app.get("/setAccessToken", (req, res) => {
 	res.sendFile(setAccessTokenFile);
 });
-
-app.get("/getIframeSrc", RateLimit(getIframeSrcRateLimitConfig), expressAsyncHandler(async (req, res) => {
-	const response = await fetch(req.query["url"].toString());
-	const html = await response.text();
-	let matches: string[] = html.match(/<source\s+src="[^<>\]!+"]*"\s+type="[\w\/]+"\s*\/?>/g);
-	matches = matches.map(src => src.replace(/\s+/g, " "));
-	for (let match of matches) {
-		if (!/^<source ([a-z]+="[^"]+")+ \/>/.test(match)) {
-			res.status(500).send("Unsafe sources! Aborted");
-			return;
-		}
-	}
-	res.send(JSON.stringify({
-		"src": matches
-	}));
-}));
 
 //unsuspicious to avoid adblocker blocking
 app.post("/unsuspiciousPath", RateLimit(analyticsRateLimitConfig), expressAsyncHandler(analyticsRoute));

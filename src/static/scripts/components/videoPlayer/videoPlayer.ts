@@ -1,3 +1,4 @@
+import { getRedgifsMp4SrcFromUrl } from "../../api/redgifsApi.js";
 import { escADQ, escHTML } from "../../utils/htmlStatics.js";
 import { classInElementTree, elementWithClassInTree} from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
@@ -151,10 +152,9 @@ export default class Ph_VideoPlayer extends HTMLElement {
 				videoOut.init(new Ph_SimpleVideo([{src: twitchUrl + ".mp4", type: "video/mp4"}]));
 				break;
 			case "redgifs.com":
-				const iframeUrl = postData.data["url"].replace(/\/watch\//, "/ifr/");
-				fetch(`/getIframeSrc?url=${encodeURIComponent(iframeUrl)}`).then(res => res.json().then(src => {
-					videoOut.init(new Ph_SimpleVideo(null, src["src"]));
-				}));
+				getRedgifsMp4SrcFromUrl(postData.data["url"])
+					.then(mp4Url => videoOut.init(new Ph_SimpleVideo([ { src: mp4Url, type: "video/mp4" } ])))
+					.catch(() => videoOut.init(null));
 				break;
 			default:
 				if (/\.gif(\?.*)?$/.test(postData.data["url"])) {
