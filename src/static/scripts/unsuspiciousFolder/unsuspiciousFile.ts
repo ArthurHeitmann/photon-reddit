@@ -11,6 +11,8 @@ window.addEventListener("viewChange", (e: CustomEvent) => {
 	if (/analytics\/analytics\.html$/.test(viewChangeData.viewState.state.url))
 		return;
 	if (viewChangeData.newLoad) {
+		// only truck path up to subreddit name
+		const path = viewChangeData.viewState.state.url.replace(/(?<=^\/[^/]+\/[^/]+)\/.*/, "");
 		fetch("/unsuspiciousPath", {
 			method: "POST",
 			headers: [
@@ -18,8 +20,8 @@ window.addEventListener("viewChange", (e: CustomEvent) => {
 			],
 			body: JSON.stringify({
 				"clientId": clientId,
-				"path": viewChangeData.viewState.state.url,
-				"referer": referer,
+				"path": path.toLowerCase(),
+				"referer": referer.toLowerCase(),
 				"timeMillisUtc": Date.now()
 			})
 		});
