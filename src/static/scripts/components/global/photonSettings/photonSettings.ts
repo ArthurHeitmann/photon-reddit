@@ -1,5 +1,6 @@
 import { clearSeenPosts } from "../../../utils/globals.js";
 import "../../../utils/htmlStuff.js";
+import { escADQ } from "../../../utils/htmlStatics.js";
 import { deepClone, isObjectEmpty } from "../../../utils/utils.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 
@@ -259,7 +260,7 @@ export default class Ph_PhotonSettings extends HTMLElement {
 	private makeGeneralInputGroup(groupTitle: string, elements: HTMLElement[]): HTMLElement {
 		const wrapper = document.createElement("div");
 		wrapper.className = "inputGroup";
-		wrapper.innerHTML = `<div>${groupTitle}</div>`;		// TODO html check
+		wrapper.innerHTML = `<div>${groupTitle}</div>`;
 		wrapper.append(...elements);
 		return wrapper;
 	}
@@ -273,7 +274,7 @@ export default class Ph_PhotonSettings extends HTMLElement {
 	) {
 		const wrapper = document.createElement("div");
 		wrapper.className = "inputGroup";
-		wrapper.innerHTML = `<div>${groupText}</div>`;				// TODO html check
+		wrapper.innerHTML = `<div>${groupText}</div>`;
 		for (const radioParam of radioParams) {
 			const group = wrapper.appendChild(this.makeCustomLabeledInput(
 				"radio",
@@ -291,12 +292,12 @@ export default class Ph_PhotonSettings extends HTMLElement {
 
 	private makeCustomLabeledInput(type: string, labelText: string, value: string, inputId: string, inputName: string = "", checked?: boolean) {
 		const wrapper = document.createElement("div");
-		wrapper.className = "inputWrapper";							// TODO html check
+		wrapper.className = "inputWrapper";
 		wrapper.innerHTML = `
-			<label for="${inputId}">${labelText}</label>
-			<input type="${type}" id ="${inputId}" class="${type}" value="${value}" name="${inputName}" ${checked ? "checked" : ""}>${
+			<label for="${escADQ(inputId)}">${labelText}</label>
+			<input type="${escADQ(type)}" id="${escADQ(inputId)}" class="${escADQ(type)}" value="${escADQ(value)}" name="${escADQ(inputName)}" ${checked ? "checked" : ""}>${
 			["checkbox", "radio"].includes(type)
-			? `<label for="${inputId}"></label>`
+			? `<label for="${escADQ(inputId)}"></label>`
 			: ""}
 		`;
 		return wrapper;

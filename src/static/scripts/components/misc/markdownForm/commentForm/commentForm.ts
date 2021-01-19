@@ -1,4 +1,5 @@
 import { comment } from "../../../../api/redditApi.js";
+import { escHTML } from "../../../../utils/htmlStatics.js";
 import Ph_Toast, { Level } from "../../toast/toast.js";
 import Votable from "../../votable/votable.js";
 import Ph_MarkdownForm from "../markdownForm.js";
@@ -24,7 +25,7 @@ export default class Ph_CommentForm extends Ph_MarkdownForm {
 				console.error(response);
 				console.error(JSON.stringify(response));
 				for (let error of response.json.errors)
-					new Ph_Toast(Level.Error, error instanceof Array ? error.join(" | ") : JSON.stringify(error));
+					new Ph_Toast(Level.Error, error instanceof Array ? error.join(" | ") : escHTML(JSON.stringify(error)));
 				return;
 			}
 

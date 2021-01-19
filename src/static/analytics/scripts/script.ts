@@ -1,6 +1,6 @@
 import Ph_DropDown, { DirectionX, DirectionY } from "../../scripts/components/misc/dropDown/dropDown.js";
 import { DropDownEntryParam } from "../../scripts/components/misc/dropDown/dropDownEntry/dropDownEntry.js";
-import { $class, $css, $id, escapeHTML } from "../../scripts/utils/htmlStatics.js";
+import { $class, $css, $id, escHTML } from "../../scripts/utils/htmlStatics.js";
 import { numberToShort } from "../../scripts/utils/utils.js";
 
 let timeFrame = 1000 * 60 * 60 * 24;
@@ -79,7 +79,7 @@ async function loadPopularPaths() {
 				<div class="bar" style="--percent: ${path.percent / highestPercentage}"></div>
 				<div class="label">
 					<span class="percentage">${(path.percent * 100).toFixed(1)} %</span>
-					<span>${escapeHTML(path.path)}</span>
+					<span>${escHTML(path.path)}</span>
 				</div>
 			</div>
 		`;

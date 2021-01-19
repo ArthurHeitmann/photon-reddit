@@ -127,6 +127,12 @@ app.get("/getIframeSrc", RateLimit(getIframeSrcRateLimitConfig), expressAsyncHan
 	const html = await response.text();
 	let matches: string[] = html.match(/<source\s+src="[^<>\]!+"]*"\s+type="[\w\/]+"\s*\/?>/g);
 	matches = matches.map(src => src.replace(/\s+/g, " "));
+	for (let match of matches) {
+		if (!/^<source ([a-z]+="[^"]+")+ \/>/.test(match)) {
+			res.status(500).send("Unsafe sources! Aborted");
+			return;
+		}
+	}
 	res.send(JSON.stringify({
 		"src": matches
 	}));

@@ -70,16 +70,13 @@ Object.defineProperty(HTMLElement.prototype, "$cssAr", {
 	}
 });
 
-export function escapeHTML(unsafeHTML: string): string {
+export function escHTML(unsafeHTML: string): string {
 	const dummy = document.createElement("div");
 	dummy.innerText = unsafeHTML;
 	return dummy.innerHTML;
 }
 
-export function escapeAttrDQ(unsafeAttribute: string): string {
+// escape attribute text, where attribute is a string "double quotation marks"
+export function escADQ(unsafeAttribute: string): string {
 	return unsafeAttribute.replace(`"`, `\\"`)
-}
-
-export function escapeAttrSQ(unsafeAttribute: string): string {
-	return unsafeAttribute.replace(`'`, `\\'`)
 }

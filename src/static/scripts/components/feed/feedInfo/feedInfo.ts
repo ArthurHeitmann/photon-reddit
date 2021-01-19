@@ -1,6 +1,6 @@
 import { redditApiRequest, subscribe } from "../../../api/redditApi.js";
 import { isLoggedIn, MultiReddit, StoredData } from "../../../utils/globals.js";
-import { escapeAttrDQ, escapeHTML } from "../../../utils/htmlStatics.js";
+import { escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { classInElementTree, linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiType } from "../../../utils/types.js";
 import { numberToShort, replaceRedditLinks, stringSortComparer, throttle } from "../../../utils/utils.js";
@@ -72,7 +72,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		/*else */
 		if (!isValid) {
 			this.removeInfo();
-			new Ph_Toast(Level.Error, `Corrupted feed info for ${this.feedUrl}`);
+			new Ph_Toast(Level.Error, `Corrupted feed info for ${escHTML(this.feedUrl)}`);
 			console.error(`Corrupted feed info for ${this.feedUrl} (${JSON.stringify(this.loadedInfo)})`);
 			throw "Corrupted feed info";
 		}
@@ -110,7 +110,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 			// break;
 			default:
 				this.innerText = `Unknown feed type ${this.loadedInfo.feedType} for ${this.feedUrl}`;
-				new Ph_Toast(Level.Warning, `Unknown feed type ${this.loadedInfo.feedType} for ${this.feedUrl}`);
+				new Ph_Toast(Level.Warning, `Unknown feed type ${this.loadedInfo.feedType} for ${escHTML(this.feedUrl)}`);
 				break;
 		}
 	}
@@ -256,7 +256,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 			<div>Created: ${new Date(this.loadedInfo.data["created_utc"] * 1000).toDateString()}</div>
 			<div>Moderators:</div>
 			${(this.loadedInfo.data.mods as SubredditModerator[])
-			.map(mod => `<div><a href="/user/${escapeAttrDQ(mod.name)}">${escapeHTML(mod.name)}</a></div>`)
+			.map(mod => `<div><a href="/user/${escADQ(mod.name)}">${escHTML(mod.name)}</a></div>`)
 			.join("\n")}	
 		`;
 		replaceRedditLinks(miscText);
@@ -351,7 +351,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		if (this.loadedInfo.data.multis.length > 0) {
 			miscText.insertAdjacentHTML("beforeend", `
 				<div>User Multireddits:</div>
-				${this.loadedInfo.data.multis.map(multi => `<div><a href="${escapeAttrDQ(multi.data.path)}">${escapeHTML(multi.data.display_name)}</a></div>`).join("")}
+				${this.loadedInfo.data.multis.map(multi => `<div><a href="${escADQ(multi.data.path)}">${escHTML(multi.data.display_name)}</a></div>`).join("")}
 			`);
 		}
 		replaceRedditLinks(miscText);
@@ -419,7 +419,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 				Created: ${new Date(this.loadedInfo.data["created_utc"] * 1000).toDateString()}
 			</div>
 			<div>
-				By: <a href="/user/${escapeAttrDQ(this.loadedInfo.data["owner"])}">u/${escapeHTML(this.loadedInfo.data["owner"])}</a>
+				By: <a href="/user/${escADQ(this.loadedInfo.data["owner"])}">u/${escHTML(this.loadedInfo.data["owner"])}</a>
 			</div>
 		`);
 		headerBar.appendChild(overviewBar);
@@ -454,7 +454,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		wrapper.appendChild(content);
 		for (let entry of entries) {
 			const switchBtn = document.createElement("button");
-			switchBtn.innerHTML = entry.titleHTML;							// TODO html check
+			switchBtn.innerHTML = entry.titleHTML;
 			switchBtn.addEventListener("click", () => {
 				content.firstElementChild?.remove();
 				content.appendChild(entry.content);
@@ -569,7 +569,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		removeSubButton.className = "removeSub transparentButton";
 		removeSubredditBar.appendChild(removeSubButton);
 		const addSubText = document.createElement("div");
-		addSubText.innerHTML = `<a href="/r/${escapeAttrDQ(sub)}">r/${escapeHTML(sub)}</a>`;
+		addSubText.innerHTML = `<a href="/r/${escADQ(sub)}">r/${escHTML(sub)}</a>`;
 		removeSubredditBar.appendChild(addSubText);
 		removeSubButton.addEventListener("click",
 			e => this.removeSubFromMulti(
@@ -585,7 +585,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		if (subName === "")
 			return;
 		if (sourceIsMulti && this.loadedInfo.data.subreddits.includes(subName)) {
-			new Ph_Toast(Level.Warning, `r/${subName} already exists in ${multiPath}`, { timeout: 6000 });
+			new Ph_Toast(Level.Warning, `r/${escHTML(subName)} already exists in ${escHTML(multiPath)}`, { timeout: 6000 });
 			return;
 		}
 		try {
@@ -598,7 +598,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 				{ method: "PUT" }
 			);
 			if (response["explanation"]) {
-				new Ph_Toast(Level.Error, response["explanation"], { timeout: 6000 });
+				new Ph_Toast(Level.Error, escHTML(response["explanation"]), { timeout: 6000 });
 				return;
 			}
 			if (!response["name"])
@@ -630,7 +630,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 	private async removeSubFromMulti(subName: string, multiPath: string, editSubBar: HTMLElement) {
 		subName = subName.replace(/^\/?r\//, "");
 		if (!this.loadedInfo.data.subreddits.includes(subName)) {
-			new Ph_Toast(Level.Warning, `r/${subName} does not exist in ${multiPath}`, { timeout: 6000 });
+			new Ph_Toast(Level.Warning, `r/${escHTML(subName)} does not exist in ${escHTML(multiPath)}`, { timeout: 6000 });
 			return;
 		}
 		try {

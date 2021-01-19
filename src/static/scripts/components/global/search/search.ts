@@ -1,6 +1,7 @@
 import { searchSubreddits, searchUser } from "../../../api/redditApi.js";
 import { pushLinkToHistoryComb, pushLinkToHistorySep } from "../../../historyState/historyStateManager.js";
 import { ViewChangeData } from "../../../historyState/viewsStack.js";
+import { escADQ } from "../../../utils/htmlStatics.js";
 import { elementWithClassInTree, linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiType, SortPostsTimeFrame, SortSearchOrder } from "../../../utils/types.js";
 import { throttle } from "../../../utils/utils.js";
@@ -132,7 +133,7 @@ export default class Ph_Search extends HTMLElement {
 
 		function makeLabelCheckboxPair(labelText: string, checkboxId: string, defaultChecked: boolean, appendTo: HTMLElement): { checkbox: HTMLInputElement, label: HTMLLabelElement } {
 			const wrapper = document.createElement("div");
-			wrapper.innerHTML = `<label for="${checkboxId}">${labelText}</label>`;			// TODO html check
+			wrapper.innerHTML = `<label for="${escADQ(checkboxId)}">${labelText}</label>`;
 			const checkbox = document.createElement("input");
 			checkbox.type = "checkbox";
 			checkbox.id = checkboxId;

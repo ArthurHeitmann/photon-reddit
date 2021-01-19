@@ -19,7 +19,7 @@ export default class Ph_DropDownEntry extends HTMLButtonElement {
 		if (param.displayElement)
 			this.label.appendChild(param.displayElement);
 		else
-			this.label.innerHTML = param.displayHTML;			// TODO html check
+			this.label.innerHTML = param.displayHTML;
 		this.appendChild(this.label);
 
 		if (param.nestedEntries && param.nestedEntries.length > 0) {

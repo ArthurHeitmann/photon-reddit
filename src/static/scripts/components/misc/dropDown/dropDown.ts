@@ -12,7 +12,7 @@ export default class Ph_DropDown extends HTMLElement {
 		if (typeof toggleButtonHTML === "string") {
 			this.toggleButton = document.createElement("button");
 			this.toggleButton.className = "button dropDownButton";
-			this.toggleButton.innerHTML = toggleButtonHTML;					// TODO html check
+			this.toggleButton.innerHTML = toggleButtonHTML;
 			this.appendChild(this.toggleButton);
 		}
 

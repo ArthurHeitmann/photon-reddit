@@ -8,7 +8,7 @@ import {
 	voteDirectionFromLikes
 } from "../../api/redditApi.js";
 import { thisUser } from "../../utils/globals.js";
-import { escapeAttrDQ } from "../../utils/htmlStatics.js";
+import { escADQ } from "../../utils/htmlStatics.js";
 import { elementWithClassInTree, linksToInlineImages, linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
 import { isObjectEmpty, numberToShort, replaceRedditLinks, timePassedSinceStr } from "../../utils/utils.js";
@@ -52,7 +52,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 			this.appendChild(loadMoreButton);
 
 			if (commentData.data["children"].length === 0) {
-				loadMoreButton.innerHTML = `<a href="${escapeAttrDQ(post.permalink)}${escapeAttrDQ(commentData.data["parent_id"].slice(3))}">Continue thread</a>`;
+				loadMoreButton.innerHTML = `<a href="${escADQ(post.permalink)}${escADQ(commentData.data["parent_id"].slice(3))}">Continue thread</a>`;
 				linksToSpa(loadMoreButton);
 			}
 			else {
@@ -161,7 +161,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 		mainPart.className = "w100";
 		mainPart.innerHTML = `
 			<div class="header flex">
-				<a href="/user/${escapeAttrDQ(commentData.data["author"])}" class="user${userAdditionClasses}">
+				<a href="/user/${escADQ(commentData.data["author"])}" class="user${userAdditionClasses}">
 					<span>u/${commentData.data["author"]}</span>
 				</a>
 				<span class="time" data-tooltip="${new Date(commentData.data["created_utc"] * 1000).toString()}">

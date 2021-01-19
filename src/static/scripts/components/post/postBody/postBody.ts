@@ -1,5 +1,5 @@
 import { getImgurAlbumContents, getImgurContent, ImgurContentType } from "../../../api/imgurAPI.js";
-import { escapeAttrDQ, escapeHTML } from "../../../utils/htmlStatics.js";
+import { escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiData, RedditApiType } from "../../../utils/types.js";
 import { replaceRedditLinks } from "../../../utils/utils.js";
@@ -30,19 +30,18 @@ export default class Ph_PostBody extends HTMLElement {
 			case PostType.EmbeddedVideo:
 				this.classList.add("fullScale");
 				const iframeSrc = postData.data["media_embed"]["content"].match(/src="([^"]+)"/)[1]; 
-				this.innerHTML = `<div class="aspect-ratio-16-9-wrapper"><iframe src="${escapeAttrDQ(iframeSrc)}" allowfullscreen></iframe></div>`;		// TODO escape attribute
+				this.innerHTML = `<div class="aspect-ratio-16-9-wrapper"><iframe src="${escADQ(iframeSrc)}" allowfullscreen></iframe></div>`;
 				break;
 			case PostType.Link:
 				this.classList.add("padded");
 				if (postData.data["preview"])
-					// TODO escape attributes
 					this.innerHTML = `
 						<div class="linkPreviewWrapper">
-							<a href="${escapeAttrDQ(postData.data["url"])}" target="_blank" rel="noopener">${escapeHTML(postData.data["url"])}</a>
-							<img src="${postData.data["preview"]["images"][0]["source"]["url"]}">
+							<a href="${escADQ(postData.data["url"])}" target="_blank" rel="noopener">${escHTML(postData.data["url"])}</a>
+							<img src="${escADQ(postData.data["preview"]["images"][0]["source"]["url"])}">
 						</div>`;
 				else
-					this.innerHTML = `<a href="${escapeAttrDQ(postData.data["url"])}" target="_blank" rel="noopener">${escapeHTML(postData.data["url"])}</a>`						// TODO escape attribute
+					this.innerHTML = `<a href="${escADQ(postData.data["url"])}" target="_blank" rel="noopener">${escHTML(postData.data["url"])}</a>`;
 				break;
 			case PostType.Video:
 				this.classList.add("fullScale");
