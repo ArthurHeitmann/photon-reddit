@@ -67,7 +67,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 	connectedCallback() {
 		const headerElements: HTMLElement[] = [];
 
-		if (this.userPrefixed !== this.subredditPrefixed) {
+		if (this.userPrefixed !== this.subredditPrefixed && this.userPrefixed !== "u/[deleted]") {
 			const userTitle = document.createElement("div");
 			userTitle.className = "feedTitle";
 			userTitle.innerText = this.userPrefixed;
