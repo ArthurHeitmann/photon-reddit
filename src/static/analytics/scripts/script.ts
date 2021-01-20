@@ -22,14 +22,14 @@ function setTimeFrame([millis]) {
 }
 
 async function loadUniqueClients() {
-	const r = await fetch(`/uniqueClientsByTime?timeFrame=${timeFrame}`);
+	const r = await fetch(`/data/uniqueClients?timeFrame=${timeFrame}`);
 	const uniqueClients = await r.text();
 	$css(".uniqueClients .replaceHere")[0].innerText = uniqueClients.toString();
 }
 
 async function loadEventsGraph() {
 	const resolution = 15;
-	const r = await fetch(`/eventsByTime?timeFrame=${timeFrame}&resolution=${resolution}`);
+	const r = await fetch(`/data/events?timeFrame=${timeFrame}&resolution=${resolution}`);
 	const uniqueClients: number[] = await r.json();
 
 	const highestScaleFactor = Math.max(...uniqueClients) * 1.2 || 1;
@@ -69,7 +69,7 @@ async function loadEventsGraph() {
 }
 
 async function loadPopularPaths() {
-	const r = await fetch(`/popularPathsByTime?timeFrame=${timeFrame}&limit=10`);
+	const r = await fetch(`/data/popularPaths?timeFrame=${timeFrame}&limit=10`);
 	const popularPaths: { path: string, percent: number }[] = await r.json();
 	let newHtml = "";
 	const highestPercentage = popularPaths[0]?.percent;

@@ -13,7 +13,7 @@ window.addEventListener("viewChange", (e: CustomEvent) => {
 	if (viewChangeData.newLoad) {
 		// only truck path up to subreddit name
 		const path = viewChangeData.viewState.state.url.replace(/(?<=^\/[^/]+\/[^/]+)\/.*/, "");
-		fetch("/unsuspiciousPath", {
+		fetch("/data/event", {
 			method: "POST",
 			headers: [
 				["Content-Type", "application/json"]

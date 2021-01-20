@@ -4,7 +4,12 @@ if (env !== "production")
 	config();
 
 import express from "express";
+import expressAsyncHandler from "express-async-handler";
 import mariadb from "mariadb";
+import RateLimit from "express-rate-limit";
+import { analyticsRateLimitConfig, basicRateLimitConfig } from "./consts.js";
+
+export const analyticsRouter =  express.Router();
 
 const pool = mariadb.createPool({
 	host: process.env.DB_HOST,
@@ -110,7 +115,7 @@ async function getPopularPathsInTimeFrame(timeFrame: number, limit: number) {
 	}
 }
 
-export async function analyticsRoute(req: express.Request, res: express.Response, next: express.NextFunction) {
+analyticsRouter.post("/event", RateLimit(analyticsRateLimitConfig), expressAsyncHandler(async (req, res) => {
 	const { clientId, path, referer, timeMillisUtc } = req.body;
 	if (!clientId || typeof clientId !== "string" || clientId.length > 128) {
 		res.send("Invalid parameters").status(400);
@@ -137,9 +142,9 @@ export async function analyticsRoute(req: express.Request, res: express.Response
 		res.send("nope").status(400);
 		return;
 	}
-}
+}));
 
-export async function analyticsQueryMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
+async function analyticsQueryMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
 	const pw = req.headers.cookie?.split("; ")
 		.find((cookie: string) => cookie.startsWith("analyticsPw"))
 		?.split("=")[1];
@@ -152,7 +157,7 @@ export async function analyticsQueryMiddleware(req: express.Request, res: expres
 	next();
 }
 
-export async function eventsByTime(req: express.Request, res: express.Response, next: express.NextFunction) {
+analyticsRouter.get("/events", RateLimit(basicRateLimitConfig), analyticsQueryMiddleware, expressAsyncHandler(async (req, res) => {
 	const timeFrame = parseInt(req.query["timeFrame"].toString());
 	const resolution = parseInt(req.query["resolution"].toString());
 	if (timeFrame <= 0 || !isFinite(timeFrame) || typeof timeFrame !== "number") {
@@ -170,9 +175,9 @@ export async function eventsByTime(req: express.Request, res: express.Response, 
 	catch (e) {
 		res.status(400).send("nope")
 	}
-}
+}));
 
-export async function uniqueClientsByTime(req: express.Request, res: express.Response, next: express.NextFunction) {
+analyticsRouter.get("/uniqueClients", RateLimit(basicRateLimitConfig), analyticsQueryMiddleware, expressAsyncHandler(async (req, res) => {
 	const timeFrame = parseInt(req.query["timeFrame"].toString());
 	if (timeFrame <= 0 || !isFinite(timeFrame) || typeof timeFrame !== "number") {
 		res.send("Invalid parameters").status(400);
@@ -186,9 +191,9 @@ export async function uniqueClientsByTime(req: express.Request, res: express.Res
 	catch (e) {
 		res.status(400).send("nope")
 	}
-}
+}));
 
-export async function popularPathsByTime(req: express.Request, res: express.Response, next: express.NextFunction) {
+analyticsRouter.get("/popularPaths", RateLimit(basicRateLimitConfig), analyticsQueryMiddleware, expressAsyncHandler(async (req, res) => {
 	const timeFrame = parseInt(req.query["timeFrame"].toString());
 	const limit = parseInt(req.query["limit"].toString());
 	if (timeFrame <= 0 || !isFinite(timeFrame) || typeof timeFrame !== "number") {
@@ -207,4 +212,4 @@ export async function popularPathsByTime(req: express.Request, res: express.Resp
 	catch (e) {
 		res.status(400).send("nope")
 	}
-}
+}));

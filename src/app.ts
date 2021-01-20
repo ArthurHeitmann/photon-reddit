@@ -1,49 +1,22 @@
-import { config } from "dotenv";
-const env = process.env.NODE_ENV || 'development';
-if (env !== "production")
-	config();
-
 import express from "express";
 import helmet from "helmet";
 import RateLimit from "express-rate-limit";
 import expressAsyncHandler from "express-async-handler";
 import fetch from "node-fetch";
-import { initialAccessToken, refreshAccessToken, appId, redirectURI } from "./serverScripts/loginRedirect.js";
+import { analyticsRouter } from "./serverScripts/analytics.js";
 import {
-	analyticsQueryMiddleware,
-	analyticsRoute,
-	eventsByTime,
-	popularPathsByTime,
-	uniqueClientsByTime
-} from "./serverScripts/analytics.js";
+	__dirname,
+	basicRateLimitConfig,
+	env,
+	port,
+	redditTokenRateLimitConfig,
+	scope,
+	tokenDuration
+} from "./serverScripts/consts.js";
+import { initialAccessToken, refreshAccessToken, appId, redirectURI } from "./serverScripts/loginRedirect.js";
 import bodyParser from "body-parser";
 
 const app = express();
-const port = process.env.PORT || 8080;
-const __dirname = process.cwd();
-const tokenDuration = "permanent";
-const scope = ["identity", "edit", "flair", "history", "modconfig", "modflair", "modlog", "modposts", "modwiki", "mysubreddits", "privatemessages", "read", "report", "save", "submit", "subscribe", "vote", "wikiedit", "wikiread"];
-
-// Configure middlewares
-const commonRateLimitConfig = {
-	message: "A little fast hugh?",
-	headers: false
-}
-const basicRateLimitConfig = {
-	windowMs: 30 * 1000,
-	max: 30,
-	...commonRateLimitConfig
-};
-const redditTokenRateLimitConfig = {
-	windowMs: 60 * 1000,
-	max: 5,
-	...commonRateLimitConfig
-};
-const analyticsRateLimitConfig = {
-	windowMs: 40 * 1000,
-	max: 15,
-	...commonRateLimitConfig
-};
 
 function checkSslAndWww(req: express.Request, res: express.Response, next: express.NextFunction) {
 	if ((env === "development" || req.headers['x-forwarded-proto'] === "https") && !(/^www\./.test(req.hostname)))
@@ -57,12 +30,7 @@ app.use(helmet({
 }));
 app.use(checkSslAndWww);
 app.use(express.static('src/static', env !== "production" ? {} : {
-	maxAge: "1d",
-
-	setHeaders: (res, path, stat) => {
-		if (/\.(html|js|css)$/.test(path))
-			res.setHeader("Cache-Control", `public, max-age=${env === "production" ? 1200 : 5}`);
-	}
+	maxAge: env === "production" ? "1d" : "0"
 }));
 app.use(bodyParser.json());
 
@@ -78,13 +46,13 @@ app.get("/login", RateLimit(basicRateLimitConfig), (req, res) => {
 	res.redirect(loginUrl);
 });
 
-// redirect from certain reddit api request
+// redirect from certain reddit api requests (like login)
 app.get("/redirect", RateLimit(redditTokenRateLimitConfig), expressAsyncHandler(async (req, res) => {
 	if (req.query["state"] && req.query["state"] === "initialLogin") {
 		try {
 			const data = await initialAccessToken(req.query["code"].toString());
 			res.redirect(
-				`/setAccessToken?accessToken=${encodeURIComponent(data["access_token"])}&refreshToken=${encodeURIComponent(data["refresh_token"])}`);
+				`/setAccessToken.html?accessToken=${encodeURIComponent(data["access_token"])}&refreshToken=${encodeURIComponent(data["refresh_token"])}`);
 		} catch (e) {
 			console.error(`Error getting access token ${JSON.stringify(e, null, 4)}`);
 			res.send(`error getting access token ${JSON.stringify(e, null, 4)}`);
@@ -95,7 +63,6 @@ app.get("/redirect", RateLimit(redditTokenRateLimitConfig), expressAsyncHandler(
 		res.send('{ "error": "¯\\_(ツ)_/¯"}');
 	}
 }));
-
 
 app.get("/refreshToken", RateLimit(redditTokenRateLimitConfig), expressAsyncHandler(async (req, res) => {
 	res.setHeader('Content-Type', 'application/json');
@@ -113,19 +80,8 @@ app.get("/refreshToken", RateLimit(redditTokenRateLimitConfig), expressAsyncHand
 	}
 }));
 
-const setAccessTokenFile = __dirname + "/src/static/setAccessToken.html"
-app.get("/setAccessToken", (req, res) => {
-	res.sendFile(setAccessTokenFile);
-});
-
-//unsuspicious to avoid adblocker blocking
-app.post("/unsuspiciousPath", RateLimit(analyticsRateLimitConfig), expressAsyncHandler(analyticsRoute));
-
-app.get("/eventsByTime", [RateLimit(basicRateLimitConfig), analyticsQueryMiddleware], eventsByTime);
-
-app.get("/uniqueClientsByTime", [RateLimit(basicRateLimitConfig), analyticsQueryMiddleware], uniqueClientsByTime);
-
-app.get("/popularPathsByTime", [RateLimit(basicRateLimitConfig), analyticsQueryMiddleware], popularPathsByTime);
+// /data instead of /analytics used to avoid getting blocked by adblockers
+app.use("/data", analyticsRouter);
 
 const indexFile = __dirname + "/src/static/index.html"
 // catch all paths and check ssl, since app.use middleware doesn't seem to get called here
