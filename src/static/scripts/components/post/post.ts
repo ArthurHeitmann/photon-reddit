@@ -30,7 +30,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 	isLocked: boolean;
 
 	constructor(postData: RedditApiType, isInFeed: boolean) {
-		super(postData, isInFeed);
+		super(postData.data["name"], postData.data["permalink"], isInFeed);
 
 		if (postData.kind !== "t3")
 			throw "Invalid comment data type";

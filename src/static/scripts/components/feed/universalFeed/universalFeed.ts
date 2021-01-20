@@ -6,6 +6,7 @@ import { RedditApiType } from "../../../utils/types.js";
 import { throttle } from "../../../utils/utils.js";
 import Ph_Comment from "../../comment/comment.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
+import Ph_Message from "../../misc/message/message.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Ph_Post from "../../post/post.js";
 import { Ph_ViewState } from "../../viewState/viewState.js";
@@ -79,7 +80,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			const headerElements = [];
 			const title = document.createElement("div");
 			title.className = "feedTitle";
-			let feedType: FeedType;
+			let feedType: FeedType = FeedType.misc;
 			let feedBaseUrl: string;
 			if (/^\/?(\?.*)?$/.test(requestUrl) || /^\/r\/(all|popular|random)/.test(requestUrl)) {	// home
 				feedType = FeedType.misc;
@@ -171,6 +172,8 @@ export default class Ph_UniversalFeed extends HTMLElement {
 				return post;
 			case "t1":
 				return new Ph_Comment(itemData, false, true, null);
+			case "t4":
+				return new Ph_Message(itemData);
 			default:
 				new Ph_Toast(Level.Error, `Unknown feed item "${escHTML(itemData.kind)}"`);
 				throw `What is this feed item? ${JSON.stringify(itemData, null, 4)}`;

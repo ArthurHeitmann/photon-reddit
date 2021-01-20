@@ -4,11 +4,11 @@ export default class Ph_FeedItem extends HTMLElement {
 	itemId: string;
 	link: string;
 
-	constructor(itemData: RedditApiType, isInFeed: boolean) {
+	constructor(id: string, link: string, isInFeed: boolean) {
 		super();
 
-		this.itemId = itemData.data["name"];
-		this.link = itemData.data["permalink"];
+		this.itemId = id;
+		this.link = link || "";
 
 		this.classList.add("feedItem");
 

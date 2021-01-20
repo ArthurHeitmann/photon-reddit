@@ -39,7 +39,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 	bodyMarkdown: string;
 
 	constructor(commentData: RedditApiType, isChild: boolean, isInFeed: boolean, post: Ph_Post) {
-		super(commentData, isInFeed);
+		super(commentData.data["name"], commentData.data["permalink"] || commentData.data["context"], isInFeed);
 
 		this.classList.add("comment");
 		if (!isChild) {
@@ -93,7 +93,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 
 		this.fullName = commentData.data["name"];
 		this.currentVoteDirection = voteDirectionFromLikes(commentData.data["likes"]);
-		this.totalVotes = parseInt(commentData.data["ups"]) + -parseInt(this.currentVoteDirection);
+		this.totalVotes = parseInt(commentData.data["ups"] || 0) + -parseInt(this.currentVoteDirection);
 		this.isSaved = commentData.data["saved"];
 
 		if (!isInFeed && !isChild && commentData.data["parent_id"] && commentData.data["parent_id"].slice(0, 3) === "t1_") {
