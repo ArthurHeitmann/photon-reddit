@@ -78,5 +78,5 @@ export function escHTML(unsafeHTML: string): string {
 
 // escape attribute text, where attribute is a string "double quotation marks"
 export function escADQ(unsafeAttribute: string): string {
-	return unsafeAttribute.replace(`"`, `\\"`)
+	return unsafeAttribute?.replace(`"`, `\\"`)
 }

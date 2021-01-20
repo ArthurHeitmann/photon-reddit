@@ -101,13 +101,6 @@ export default class Ph_UniversalFeed extends HTMLElement {
 				feedType = FeedType.user;
 				feedBaseUrl = "/user/" + requestUrl.match(/\/(u|user)\/([^/?]+)/)[2];
 			}
-			else {
-				// return;
-				// new Ph_Toast(Level.Error, `Unknown feed for ${requestUrl}`)
-				// console.error(`Unknown feed for ${requestUrl}`);
-				// title.innerText = `Unknown feed for ${requestUrl}`;
-				// feedType = FeedType.misc;
-			}
 			headerElements.push(title);
 			if (feedType !== FeedType.misc)
 				headerElements.push(new Ph_FeedInfo(feedType, feedBaseUrl).makeShowInfoButton());
@@ -135,7 +128,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 
 		for (const postData of posts.data.children) {
 			try {
-				this.appendChild(this.makeFeedItem(postData));
+				this.appendChild(this.makeFeedItem(postData, posts.data.children.length));
 			}
 			catch (e) {
 				console.error(e);
@@ -163,7 +156,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 		}
 	}
 
-	makeFeedItem(itemData: RedditApiType): HTMLElement {
+	makeFeedItem(itemData: RedditApiType, totalItemCount: number): HTMLElement {
 		switch (itemData.kind) {
 			case "t3":
 				const post = new Ph_Post(itemData, true);
@@ -173,7 +166,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			case "t1":
 				return new Ph_Comment(itemData, false, true, null);
 			case "t4":
-				return new Ph_Message(itemData);
+				return new Ph_Message(itemData, totalItemCount !== 1);
 			default:
 				new Ph_Toast(Level.Error, `Unknown feed item "${escHTML(itemData.kind)}"`);
 				throw `What is this feed item? ${JSON.stringify(itemData, null, 4)}`;
@@ -252,7 +245,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 				if (!this.shouldAddFeedItem(postData))
 					continue;
 				try {
-					this.appendChild(this.makeFeedItem(postData));
+					this.appendChild(this.makeFeedItem(postData, posts.data.children.length));
 				}
 				catch (e) {
 					console.error(e);
@@ -266,7 +259,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 		else {
 			for (const postData of posts.data.children.reverse()) {
 				try {
-					const newPost = this.makeFeedItem(postData);
+					const newPost = this.makeFeedItem(postData, posts.data.children.length);
 					this.insertAdjacentElement("afterbegin", newPost);
 				}
 				catch (e) {
@@ -286,7 +279,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 
 		for (const item of posts) {
 			try {
-				this.appendChild(this.makeFeedItem(item));
+				this.appendChild(this.makeFeedItem(item, posts.length));
 			}
 			catch (e) {
 				console.error(e);

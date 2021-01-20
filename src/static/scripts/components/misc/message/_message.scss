@@ -1,3 +1,24 @@
 @use "../../../../style/vars";
 
+.message {
+	padding: 1rem;
 
+	.header {
+		flex-wrap: wrap;
+		margin-bottom: .25rem;
+		align-items: center;
+
+		> * {
+			margin: 0 .125rem;
+		}
+
+		> span {
+			font-size: .8em;
+			margin: 0 0.1rem;
+		}
+
+		.replies {
+			margin-left: auto;
+		}
+	}
+}
