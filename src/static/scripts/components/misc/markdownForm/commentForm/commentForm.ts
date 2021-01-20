@@ -1,18 +1,18 @@
 import { comment } from "../../../../api/redditApi.js";
 import { escHTML } from "../../../../utils/htmlStatics.js";
 import Ph_Toast, { Level } from "../../toast/toast.js";
-import Votable from "../../votable/votable.js";
+import Votable, { FullName } from "../../../../types/votable.js";
 import Ph_MarkdownForm from "../markdownForm.js";
 
 export default class Ph_CommentForm extends Ph_MarkdownForm {
-	constructor(votable: Votable, hasCancelBtn: boolean) {
+	constructor(thing: FullName, hasCancelBtn: boolean) {
 		super("Submit comment", hasCancelBtn);
 
 		this.addEventListener("ph-submit", async () => {
 			this.submitCommentBtn.disabled = true;
 			let response;
 			try {
-				response = await comment(votable, this.commentTextField.value);
+				response = await comment(thing, this.commentTextField.value);
 			}
 			catch (e) {
 				console.error("Error making comment request");

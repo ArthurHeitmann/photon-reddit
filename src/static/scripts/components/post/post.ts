@@ -10,7 +10,7 @@ import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.j
 import Ph_DropDownEntry from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_Flair from "../misc/flair/flair.js";
 import Ph_Toast, { Level } from "../misc/toast/toast.js";
-import Votable from "../misc/votable/votable.js";
+import Votable from "../../types/votable.js";
 import Ph_VoteButton from "../misc/voteButton/voteButton.js";
 import Ph_PostBody from "./postBody/postBody.js";
 

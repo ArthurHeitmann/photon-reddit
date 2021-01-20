@@ -1,5 +1,5 @@
 import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
-import Votable from "../components/misc/votable/votable.js";
+import Votable, { FullName } from "../types/votable.js";
 import { checkTokenExpiry } from "../login/login.js";
 import { isLoggedIn, thisUser, } from "../utils/globals.js";
 import { RedditApiType } from "../utils/types.js";
@@ -136,7 +136,7 @@ export async function save(votable: Votable): Promise<boolean> {
 	}
 }
 
-export async function comment(votable: Votable, text: string): Promise<{
+export async function comment(thing: FullName, text: string): Promise<{
 	json: {
 		data: {
 			things: RedditApiType[]
@@ -147,7 +147,7 @@ export async function comment(votable: Votable, text: string): Promise<{
 	return await redditApiRequest("/api/comment", [
 		["api_type", "json"],
 		["text", text],
-		["thing_id", votable.fullName]
+		["thing_id", thing.fullName]
 	], true, { method: "POST" });
 }
 

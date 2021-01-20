@@ -20,7 +20,7 @@ import Ph_Flair from "../misc/flair/flair.js";
 import Ph_CommentForm from "../misc/markdownForm/commentForm/commentForm.js";
 import Ph_MarkdownForm from "../misc/markdownForm/markdownForm.js";
 import Ph_Toast, { Level } from "../misc/toast/toast.js";
-import Votable from "../misc/votable/votable.js";
+import Votable from "../../types/votable.js";
 import Ph_VoteButton from "../misc/voteButton/voteButton.js";
 import Ph_Post from "../post/post.js";
 

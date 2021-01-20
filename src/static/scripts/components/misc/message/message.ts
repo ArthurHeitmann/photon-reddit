@@ -1,13 +1,21 @@
-import { escADQ } from "../../../utils/htmlStatics.js";
+import { comment } from "../../../api/redditApi.js";
+import { FullName } from "../../../types/votable.js";
+import { thisUser } from "../../../utils/globals.js";
+import { escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiType } from "../../../utils/types.js";
 import { replaceRedditLinks, timePassedSinceStr } from "../../../utils/utils.js";
 import Ph_FeedItem from "../../feed/feedItem/feedItem.js";
+import Ph_MarkdownForm from "../markdownForm/markdownForm.js";
 import Ph_Toast, { Level } from "../toast/toast.js";
 
-export default class Ph_Message extends Ph_FeedItem {
+export default class Ph_Message extends Ph_FeedItem implements FullName {
+	fullName: string;
+	lastMessageFromOther: Ph_Message;
+
 	constructor(messageData: RedditApiType, isInFeed: boolean, isReply: boolean = false) {
 		super(messageData.data["name"],isInFeed ? `/message/messages/${messageData.data["id"]}` : null, !isReply);
+		this.fullName = this.itemId;
 
 		this.classList.add("message");
 
@@ -28,6 +36,7 @@ export default class Ph_Message extends Ph_FeedItem {
 		this.appendChild(mainPart);
 		mainPart.classList.add("w100");
 		mainPart.innerHTML = `
+			<h3 class="subjectLine">${escHTML(messageData.data["subject"])}</h3>
 			<div class="header flex">
 				${
 					messageData.data["author"] 
@@ -68,16 +77,44 @@ export default class Ph_Message extends Ph_FeedItem {
 			</div>
 		`;
 
-		if (!isInFeed && messageData.data["replies"]) {
-			for (const reply of messageData.data["replies"]["data"]["children"]) {
-				mainPart.appendChild(document.createElement("hr"));
-				mainPart.appendChild(new Ph_Message(reply, false, true));
+		this.lastMessageFromOther = this;
+		if (!isInFeed) {
+			if (messageData.data["replies"]) {
+				for (const reply of messageData.data["replies"]["data"]["children"]) {
+					mainPart.appendChild(document.createElement("hr"));
+					const message = new Ph_Message(reply, false, true);
+					mainPart.appendChild(message);
+					if (reply.data["author"] !== thisUser.name)
+						this.lastMessageFromOther = message;
+				}
+			}
+
+			if (!isReply) {
+				const replyForm = new Ph_MarkdownForm("Send", false);
+				mainPart.appendChild(replyForm);
+				replyForm.addEventListener("ph-submit", async () => {
+					const response = await comment(this.lastMessageFromOther, replyForm.commentTextField.value);
+					if (response.json.errors.length) {
+						for (let error of response.json.errors) {
+							new Ph_Toast(Level.Error, error instanceof Array ? error.join(" | ") : escHTML(JSON.stringify(error)));
+						}
+						console.error(response);
+						throw "Error replying to message";
+					}
+					replyForm.insertAdjacentElement("beforebegin", document.createElement("hr"));
+					const newMessageData = response.json.data.things[0];
+					const message = new Ph_Message(newMessageData, false, true);
+					replyForm.insertAdjacentElement("beforebegin", message);
+					if (newMessageData.data["author"] !== thisUser.name)
+						this.lastMessageFromOther = message;
+				});
 			}
 		}
 
 		linksToSpa(this);
 		replaceRedditLinks(this)
 	}
+
 }
 
 customElements.define("ph-message", Ph_Message);
