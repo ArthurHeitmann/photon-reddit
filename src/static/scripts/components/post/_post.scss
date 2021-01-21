@@ -14,6 +14,11 @@
 		}
 
 		.header {
+			img.pinned {
+				transform: translateX(calc(-100% - 0.5rem)) translateY(0.1rem) rotate(45deg);
+				position: absolute;
+			}
+
 			margin: vars.$post-padding;
 		}
 

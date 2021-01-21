@@ -125,6 +125,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		mainPart.innerHTML = `
 			<div class="header">
 				<div class="top flex">
+					${ this.isPinned ? `<img class="pinned" src="/img/pin.svg" alt="pinned" draggable="false">` : "" }
 					<span>Posted in</span>
 					<a href="/${escADQ(postData.data["subreddit_name_prefixed"])}" class="subreddit">
 						<span>${escHTML(postData.data["subreddit_name_prefixed"])}</span>

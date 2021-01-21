@@ -161,6 +161,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 		mainPart.className = "w100";
 		mainPart.innerHTML = `
 			<div class="header flex">
+				${ commentData.data["stickied"] ? `<img class="pinned" src="/img/pin.svg" alt="pinned" draggable="false">` : "" }
 				<a href="/user/${escADQ(commentData.data["author"])}" class="user${userAdditionClasses}">
 					<span>u/${commentData.data["author"]}</span>
 				</a>
