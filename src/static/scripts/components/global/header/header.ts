@@ -75,9 +75,14 @@ export default class Ph_Header extends HTMLElement {
 		this.$class("pinToggleButton")[0].addEventListener("click", e => {
 			(e.currentTarget as HTMLElement).classList.toggle("pinned");
 			this.isPinned = !this.isPinned;
+			localStorage["isHeaderPinned"] = this.isPinned.toString();
 		});
 
-		if (localStorage["firstTimeFlag"] !== "set") {
+		if (localStorage["isHeaderPinned"] === "true") {
+			this.isPinned = true;
+			this.headerMouseEnter();
+		}
+		else if (localStorage["firstTimeFlag"] !== "set") {
 			setTimeout(this.headerMouseEnter.bind(this), 1500);
 		}
 	}
@@ -122,12 +127,7 @@ export default class Ph_Header extends HTMLElement {
 		if (this.isPinned)
 			return;
 
-		if (e && e.relatedTarget === null) {
-			this.hideTimeout = setTimeout(this.hide.bind(this), 10000);
-		} else {
-			this.hide();
-			this.clearHideTimeout();
-		}
+		this.hideTimeout = setTimeout(this.hide.bind(this), e && e.relatedTarget === null ? 10000 : 750);
 	}
 
 	hide() {
@@ -141,6 +141,7 @@ export default class Ph_Header extends HTMLElement {
 		this.minimizeAll();
 
 		this.isExpanded = false;
+		this.clearHideTimeout();
 	}
 
 	minimizeAll(exclude: HTMLElement[] = []) {
