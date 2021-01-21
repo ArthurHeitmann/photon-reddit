@@ -23,8 +23,8 @@ export default class Ph_Search extends HTMLElement {
 	resultsWrapper: HTMLDivElement;
 	quickSearchThrottled: () => void;
 	searchPrefix: string;	// r/ or user
-	subModeBtn: HTMLDivElement;
-	userModeBtn: HTMLDivElement;
+	subModeBtn: HTMLLabelElement;
+	userModeBtn: HTMLLabelElement;
 	currentSubreddit: string = null;
 
 	constructor() {
@@ -36,11 +36,13 @@ export default class Ph_Search extends HTMLElement {
 
 		this.quickSearchThrottled = throttle(this.quickSearch.bind(this), 750, { leading: false, trailing: true });
 
-		this.subModeBtn = document.createElement("div");
+		this.subModeBtn = document.createElement("label");
 		this.subModeBtn.className = "modeButton transparentButtonAlt";
+		this.subModeBtn.setAttribute("for", "quickSearch")
 		this.subModeBtn.innerText = "r/";
 		this.appendChild(this.subModeBtn);
-		this.userModeBtn = document.createElement("div");
+		this.userModeBtn = document.createElement("label");
+		this.userModeBtn.setAttribute("for", "quickSearch")
 		this.userModeBtn.className = "modeButton transparentButtonAlt";
 		this.userModeBtn.innerText = "u/";
 		this.appendChild(this.userModeBtn);
@@ -69,7 +71,7 @@ export default class Ph_Search extends HTMLElement {
 
 		const toggleDropdownBtn = document.createElement("button")
 		toggleDropdownBtn.className = "toggleDropdownButton transparentButton";
-		toggleDropdownBtn.innerHTML = `<label for="quickSearch"><img src="/img/downArrow.svg" draggable="false" alt="expand"></label>`;
+		toggleDropdownBtn.innerHTML = `<button><img src="/img/downArrow.svg" draggable="false" alt="expand"></button>`;
 		this.appendChild(toggleDropdownBtn);
 
 		const searchButton = document.createElement("button");

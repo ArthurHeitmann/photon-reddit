@@ -36,7 +36,7 @@ export default class Ph_Header extends HTMLElement {
 						<img src="/img/pin.svg" alt="pin">
 					</button>
 				</div>
-				<div>
+				<div class="mainItems">
 					<a href="/" class="home" draggable="false"><img src="/img/logo.svg" alt="home" draggable="false"></a>
 					<button id="loginButton" hidden>Login</button>
 					<button class="showSettingsButton transparentButtonAlt"><img src="/img/settings1.svg" alt="show settings" draggable="false"></button>
