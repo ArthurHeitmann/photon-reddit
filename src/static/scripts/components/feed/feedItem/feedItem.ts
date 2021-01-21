@@ -3,12 +3,14 @@ import { RedditApiType } from "../../../utils/types.js";
 export default class Ph_FeedItem extends HTMLElement {
 	itemId: string;
 	link: string;
+	isInFeed: boolean;
 
 	constructor(id: string, link: string, isInFeed: boolean) {
 		super();
 
 		this.itemId = id;
 		this.link = link;
+		this.isInFeed = isInFeed;
 
 		this.classList.add("feedItem");
 

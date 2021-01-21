@@ -260,6 +260,8 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			for (const postData of posts.data.children.reverse()) {
 				try {
 					const newPost = this.makeFeedItem(postData, posts.data.children.length);
+					if (newPost instanceof Ph_Post)
+						newPost.forceShowWhenSeen();
 					this.insertAdjacentElement("afterbegin", newPost);
 				}
 				catch (e) {

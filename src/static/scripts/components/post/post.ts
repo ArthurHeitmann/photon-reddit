@@ -28,6 +28,9 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 	currentVoteDirection: VoteDirection;
 	isSaved: boolean;
 	isLocked: boolean;
+	postBody: Ph_PostBody;
+	isPinned: boolean;
+	isNsfw: boolean;
 
 	constructor(postData: RedditApiType, isInFeed: boolean) {
 		super(postData.data["name"], postData.data["permalink"], isInFeed);
@@ -41,19 +44,14 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		this.isSaved = postData.data["saved"];
 		this.url = postData.data["url"];
 		this.permalink = postData.data["permalink"];
+		this.isPinned = postData.data["stickied"];
+		this.isNsfw = postData.data["over_18"];
 		this.classList.add("post");
 
-		if (isInFeed && globalSettings.hideSeenPosts && !postData.data["stickied"] && hasPostsBeenSeen(this.fullName))
+		if (this.shouldPostBeHidden())
 			this.classList.add("hide");
-		window.addEventListener("settingsChanged", (e: CustomEvent) => {
-			const changed: PhotonSettings = e.detail;
-			if (changed.hideSeenPosts === undefined || postData.data["stickied"])
-				return
-			if (changed.hideSeenPosts && hasPostsBeenSeen(this.fullName))
-				this.classList.add("hide");
-			else if (globalSettings.nsfwPolicy !== NsfwPolicy.never)
-				this.classList.remove("hide");
-		});
+
+		window.addEventListener("settingsChanged", this.onSettingsChanged.bind(this));
 
 		// actions bar
 		this.actionBar = document.createElement("div");
@@ -63,7 +61,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		actionWrapper.className = "wrapper";
 		// vote up button
 		this.voteUpButton = new Ph_VoteButton(true);
-		this.voteUpButton.addEventListener("click", e => this.vote(VoteDirection.up));
+		this.voteUpButton.addEventListener("click", () => this.vote(VoteDirection.up));
 		actionWrapper.appendChild(this.voteUpButton);
 		// current votes
 		this.currentUpvotes = document.createElement("div");
@@ -71,7 +69,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		actionWrapper.appendChild(this.currentUpvotes);
 		// vote down button
 		this.voteDownButton = new Ph_VoteButton(false);
-		this.voteDownButton.addEventListener("click", e => this.vote(VoteDirection.down));
+		this.voteDownButton.addEventListener("click", () => this.vote(VoteDirection.down));
 		actionWrapper.appendChild(this.voteDownButton);
 		this.setVotesState(this.currentVoteDirection);
 		// additional actions drop down
@@ -89,7 +87,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		// go to comments link
 		const commentsLink = document.createElement("a");
 		commentsLink.className = "commentsLink transparentButtonAlt";
-		commentsLink.href = postData.data["permalink"];
+		commentsLink.href = this.permalink;
 		commentsLink.setAttribute("data-tooltip", postData.data["num_comments"]);
 		const numbOfComments = numberToShortStr(postData.data["num_comments"]);
 		let commentsSizeClass = "";
@@ -156,8 +154,8 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			</div>
 		`;
 
-		const postBody = new Ph_PostBody(postData);
-		mainPart.appendChild(postBody);
+		this.postBody = new Ph_PostBody(postData);
+		mainPart.appendChild(this.postBody);
 		this.appendChild(mainPart);
 
 		mainPart.$class("flairWrapper")[0]
@@ -167,36 +165,19 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		const makeCoverNFlair = (flairColor: string, flairText: string, makeCover: boolean) => {
 			mainPart.$class("flairWrapper")[0]
 				.appendChild(new Ph_Flair({type: "text", backgroundColor: flairColor, text: flairText}));
-			if (makeCover && !this.cover && isInFeed && !this.isEmpty(postBody)) {
-				postBody.classList.add("covered");
-				this.cover = postBody.appendChild(this.makeContentCover());
+			if (makeCover && !this.cover && isInFeed && !this.isEmpty(this.postBody)) {
+				this.postBody.classList.add("covered");
+				this.cover = this.postBody.appendChild(this.makeContentCover());
 			}
 			else
 				this.cover = null;
 		}
-		if (postData.data["over_18"]) {
+		if (this.isNsfw) {
 			this.classList.add("nsfw");
 			if (globalSettings.nsfwPolicy === NsfwPolicy.never)
 				this.classList.add("hide");
 			else
 				makeCoverNFlair("darkred", "NSFW", globalSettings.nsfwPolicy === NsfwPolicy.covered);
-
-			window.addEventListener("settingsChanged", (e: CustomEvent) => {
-				const nsfwPolicy: NsfwPolicy = (e.detail as PhotonSettings).nsfwPolicy;
-				if (!nsfwPolicy)		// this setting hasn't been changed
-					return;
-				if (this.cover)			// previously cover as enabled, due to change can't be covered --> remove it
-					this.cover.click();
-				if (nsfwPolicy === NsfwPolicy.never)		// hide this post
-					this.classList.add("hide");
-				else if (!globalSettings.hideSeenPosts) {										// show this post
-					this.classList.remove("hide");
-					if (nsfwPolicy === NsfwPolicy.covered && isInFeed && !this.isEmpty(postBody)) {		// add cover
-						postBody.classList.add("covered");
-						this.cover = postBody.appendChild(this.makeContentCover());
-					}
-				}
-			});
 		}
 		if (postData.data["spoiler"]) {
 			this.classList.add("spoiler");
@@ -225,6 +206,34 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		return element.innerHTML === "" || Boolean(element.$css(".postText > *:empty").length > 0)
 	}
 
+	private onSettingsChanged(e: CustomEvent) {
+		const changed: PhotonSettings = e.detail;
+		if (this.shouldPostBeHidden())
+			this.classList.add("hide");
+		else
+			this.classList.remove("hide");
+
+		const nsfwPolicy: NsfwPolicy = changed.nsfwPolicy;
+		if (!nsfwPolicy)		// this setting hasn't been changed
+			return;
+		if (this.cover)			// previously cover as enabled, due to change can't be covered --> remove it
+			this.cover.click();
+		else if (!globalSettings.hideSeenPosts) {										// show this post
+			this.classList.remove("hide");
+			if (nsfwPolicy === NsfwPolicy.covered && this.isInFeed && !this.isEmpty(this.postBody)) {		// add cover
+				this.postBody.classList.add("covered");
+				this.cover = this.postBody.appendChild(this.makeContentCover());
+			}
+		}
+	}
+
+	private shouldPostBeHidden(ignoreSeenSettings: boolean = false): boolean {
+		return (
+			!this.isPinned && globalSettings.hideSeenPosts && !ignoreSeenSettings && hasPostsBeenSeen(this.fullName)
+			|| this.isNsfw && globalSettings.nsfwPolicy === NsfwPolicy.never
+		);
+	}
+
 	makeContentCover(): HTMLElement {
 		const cover = document.createElement("div");
 		cover.className = "cover";
@@ -237,6 +246,11 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		})
 		cover.appendChild(removeBtn);
 		return cover;
+	}
+
+	forceShowWhenSeen() {
+		if (!this.shouldPostBeHidden(true) && this.classList.contains("hidden"))
+			this.classList.remove("hidden");
 	}
 
 	async vote(dir: VoteDirection): Promise<void> {
