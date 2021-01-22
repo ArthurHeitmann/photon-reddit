@@ -230,8 +230,10 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 
 	private shouldPostBeHidden(ignoreSeenSettings: boolean = false): boolean {
 		return (
-			!this.isPinned && globalSettings.hideSeenPosts && !ignoreSeenSettings && hasPostsBeenSeen(this.fullName)
-			|| this.isNsfw && globalSettings.nsfwPolicy === NsfwPolicy.never
+			this.isInFeed && (
+				!this.isPinned && globalSettings.hideSeenPosts && !ignoreSeenSettings && hasPostsBeenSeen(this.fullName)
+				|| this.isNsfw && globalSettings.nsfwPolicy === NsfwPolicy.never
+			)
 		);
 	}
 
