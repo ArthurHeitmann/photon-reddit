@@ -72,6 +72,7 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 
 	const requestData = await redditApiRequest(path, params, false);
 	if (requestData["error"]) {
+		stateLoader.error()
 		new Ph_Toast(Level.Error, "Error making request to reddit");
 		throw `Error making request to reddit (${path}, ${JSON.stringify(params)})`;
 	}

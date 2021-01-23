@@ -14,6 +14,20 @@ export default class Ph_ViewStateLoader extends Ph_ViewState {
 		this.appendChild(elem);
 	}
 
+	error() {
+		this.innerHTML = `
+			<div>
+				<h2>Oh no an error occurred!</h2>
+				<div>What could have happened?</div>
+				<ul>
+					<li>You entered an invalid Url</li>
+					<li>Some internal error occurred. Check the browser logs.</li>
+					<li>Reddit is having problems. Check <a href="https://www.redditstatus.com" target="_blank">redditstatus.com</a></li>
+				</ul>
+			</div>
+		`;
+	}
+
 	onBackAreaClick(e: MouseEvent) {
 		if (e.currentTarget !== e.target || !viewsStack.hasPreviousLoaded())
 			return;
