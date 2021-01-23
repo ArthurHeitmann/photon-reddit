@@ -183,7 +183,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 	onScroll(e: Event = undefined, skipEmptyCheck = false) {
 		// stop if empty or is loading or for some reason close to empty (normal feed will have very large scrollHeight)
 		if (!skipEmptyCheck && (this.children.length <= 0 || this.isLoading || this.scrollHeight < window.innerHeight)) {
-			if (this.isLoading)
+			if (this.isLoading || elementWithClassInTree(this.parentElement, "viewState").classList.contains("hide"))
 				return;
 			new Ph_Toast(
 				Level.Warning,
