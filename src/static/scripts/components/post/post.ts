@@ -1,4 +1,5 @@
 import { save, vote, VoteDirection, voteDirectionFromLikes } from "../../api/redditApi.js";
+import Votable from "../../types/votable.js";
 import { hasPostsBeenSeen, markPostAsSeen } from "../../utils/globals.js";
 import { escADQ, escHTML } from "../../utils/htmlStatics.js";
 import { elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff.js";
@@ -10,7 +11,6 @@ import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.j
 import Ph_DropDownEntry from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_Flair from "../misc/flair/flair.js";
 import Ph_Toast, { Level } from "../misc/toast/toast.js";
-import Votable from "../../types/votable.js";
 import Ph_VoteButton from "../misc/voteButton/voteButton.js";
 import Ph_PostBody from "./postBody/postBody.js";
 
@@ -320,7 +320,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 	}
 
 	crossPost() {
-
+		new Ph_Toast(Level.Info, "Currently not supported", { timeout: 5000 });
 	}
 }
 

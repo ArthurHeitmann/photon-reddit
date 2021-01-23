@@ -13,7 +13,7 @@ viewsStack.setNextIsReplace();
 
 window.addEventListener("popstate", (e: PopStateEvent) => {
 	if (document.fullscreenElement) {
-		// works when previous history state has same domain
+		// works only when previous history state has same domain
 		e.preventDefault();
 		document.exitFullscreen();
 		return;
@@ -27,10 +27,6 @@ window.addEventListener("popstate", (e: PopStateEvent) => {
 	else if (e.state.index < viewsStack.position()) {
 		for(let i = viewsStack.position() - e.state.index; i > 0; --i) 
 			viewsStack.back();
-	}
-	else {
-		// new Ph_Toast(Level.Error, "Weird navigation error");
-		// throw "Equal historyState";
 	}
 });
 
@@ -49,15 +45,16 @@ export function pushLinkToHistoryComb(pathAndQuery: string, pushType: PushType =
 }
 
 export async function pushLinkToHistorySep(path: string, query: string = "?", pushType: PushType = PushType.PushAfter): Promise<void> {
-	const stateLoader: Ph_ViewStateLoader = new Ph_ViewStateLoader(viewsStack.makeHistoryState(
-		path, path + query, 1
-	));
-
+	// don't load new page if next history state has same url
 	const nextState = viewsStack.nextState();
 	if (nextState && nextState.state.url == (path + query)) {
 		history.forward();
 		return;
 	}
+
+	const stateLoader: Ph_ViewStateLoader = new Ph_ViewStateLoader(viewsStack.makeHistoryState(
+		path, path + query, 1
+	));
 
 	if (pushType === PushType.PushAfter)
 		viewsStack.pushAfter(stateLoader);
@@ -65,11 +62,13 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 		viewsStack.pushBefore(stateLoader);
 
 
+	// convert query string to key value string[][]
 	const urlParams = new URLSearchParams(query);
 	const params: string[][] = [];
 	for (const param of urlParams.entries())
 		params.push(param);
 
+	// make request to reddit
 	const requestData = await redditApiRequest(path, params, false);
 	if (requestData["error"]) {
 		stateLoader.error()
@@ -77,21 +76,25 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 		throw `Error making request to reddit (${path}, ${JSON.stringify(params)})`;
 	}
 
+	// result is a posts comments
 	if (requestData instanceof Array) {		// --> [0]: post [1]: comments
 		stateLoader.finishWith(new Ph_PostAndComments(requestData));
 		viewsStack.setCurrentStateTitle(`Photon: ${requestData[0]["data"]["children"][0]["data"]["title"]}`);
 	}
 	else if (requestData["kind"]) {
+		// result is some sort of generic feed
 		if (requestData["kind"] === "Listing") {
 			stateLoader.finishWith(new Ph_UniversalFeed(requestData, path + query));
 			viewsStack.setCurrentStateTitle(`Photon:  ${(path.length > 3) ? path.slice(1) : "Home"}`);
 		}
+		// result is a wiki page
 		else if (requestData["kind"] === "wikipage") {
 			stateLoader.finishWith(new Ph_Wiki(requestData));
 			viewsStack.setCurrentStateTitle(`Photon: ${path.match(/r\/[^/]+/)[0]} Wiki`);
 		}
 	}
 
+	// if url has a hash to an element, scroll it into view
 	if (location.hash)
 		$id(location.hash.slice(1)).scrollIntoView();
 }
