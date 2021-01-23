@@ -7,9 +7,15 @@ import { numberToShort, replaceRedditLinks, stringSortComparer, throttle } from 
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import { FlairData } from "../../misc/flair/flair.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
-import { FeedType } from "../universalFeed/universalFeed.js";
 import { clearAllOldData } from "./feedInfoCleanup.js";
 
+export enum FeedType {
+	subreddit,
+	multireddit,
+	user,
+	messages,
+	misc,
+}
 interface StoredFeedInfo extends StoredData {
 	feedType: FeedType;
 }
@@ -40,6 +46,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 	loadedInfo: StoredFeedInfo;
 	feedUrl: string;
 	static refreshEveryNMs = 2 * 60 * 60 * 1000;		// 2 hours
+	static supportedFeedType: FeedType[] = [FeedType.subreddit, FeedType.user, FeedType.multireddit];
 
 	constructor(feedType: FeedType, feedUrl: string) {
 		super();

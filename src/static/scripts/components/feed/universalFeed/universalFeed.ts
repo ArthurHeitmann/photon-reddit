@@ -10,22 +10,24 @@ import Ph_Message from "../../misc/message/message.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Ph_Post from "../../post/post.js";
 import { Ph_ViewState } from "../../viewState/viewState.js";
-import Ph_FeedInfo from "../feedInfo/feedInfo.js";
+import Ph_FeedInfo, { FeedType } from "../feedInfo/feedInfo.js";
 import Ph_SearchFeedSorter from "../sorting/searchFeedSorter.js";
 import Ph_UniversalFeedSorter from "../sorting/universalFeedSorter.js";
-
-export enum FeedType {
-	subreddit,
-	multireddit,
-	user,
-	misc,
-}
 
 export enum UserSection {
 	Overview = "",
 	Posts = "submitted",
 	Comments = "comments",
 	Gilded = "gilded",
+}
+
+export enum MessageSection {
+	all = "inbox",
+	unread = "unread",
+	messages = "messages",
+	commentReplies = "comments",
+	postReplies = "selfreply",
+	mentions = "mentions"
 }
 
 export default class Ph_UniversalFeed extends HTMLElement {
@@ -101,8 +103,10 @@ export default class Ph_UniversalFeed extends HTMLElement {
 				feedType = FeedType.user;
 				feedBaseUrl = "/user/" + requestUrl.match(/\/(u|user)\/([^/?]+)/)[2];
 			}
+			else if (/^\/message\//.test(requestUrl))
+				feedType = FeedType.messages;
 			headerElements.push(title);
-			if (feedType !== FeedType.misc)
+			if (Ph_FeedInfo.supportedFeedType.includes(feedType))
 				headerElements.push(new Ph_FeedInfo(feedType, feedBaseUrl).makeShowInfoButton());
 			if (feedType === FeedType.user) {
 				headerElements.push(new Ph_DropDown(
@@ -117,6 +121,22 @@ export default class Ph_UniversalFeed extends HTMLElement {
 					DirectionY.bottom,
 					false
 				))
+			}
+			else if (feedType === FeedType.messages) {
+				headerElements.push(new Ph_DropDown(
+					[
+						{ displayHTML: "All", value: MessageSection.all, onSelectCallback: this.setMessageSection.bind(this) },
+						{ displayHTML: "Unread", value: MessageSection.unread, onSelectCallback: this.setMessageSection.bind(this) },
+						{ displayHTML: "Messages", value: MessageSection.messages, onSelectCallback: this.setMessageSection.bind(this) },
+						{ displayHTML: "Comment Replies", value: MessageSection.commentReplies, onSelectCallback: this.setMessageSection.bind(this) },
+						{ displayHTML: "Post Replies", value: MessageSection.postReplies, onSelectCallback: this.setMessageSection.bind(this) },
+						{ displayHTML: "Username mentions", value: MessageSection.mentions, onSelectCallback: this.setMessageSection.bind(this) },
+					],
+					"Sections",
+					DirectionX.left,
+					DirectionY.bottom,
+					false
+				));
 			}
 			if (this.isSearchFeed)
 				headerElements.push(new Ph_SearchFeedSorter(this));
@@ -152,6 +172,25 @@ export default class Ph_UniversalFeed extends HTMLElement {
 		} catch (e) {
 			new Ph_Toast(Level.Error, "Error getting user section items");
 			console.error("Error getting user section items");
+			console.error(e);
+		}
+	}
+
+	async setMessageSection(section: MessageSection) {
+		this.requestUrl = this.requestUrl.replace(/^(\/message)\/[^\/]*/, `$1/${section}`);
+		try {
+			const sectionItems: RedditApiType = await redditApiRequest(
+				this.requestUrl,
+				[],
+				false
+			);
+			this.beforeData = sectionItems.data.before;
+			this.afterData = sectionItems.data.after;
+			this.replaceChildren(sectionItems.data.children);
+			viewsStack.changeCurrentUrl(this.requestUrl);
+		} catch (e) {
+			console.error("Error getting message section items");
+			new Ph_Toast(Level.Error, "Error getting message section items");
 			console.error(e);
 		}
 	}

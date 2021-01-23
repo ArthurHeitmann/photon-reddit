@@ -1,8 +1,7 @@
 import { elementWithClassInTree, linksToInlineImages, linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
 import { replaceRedditLinks } from "../../utils/utils.js";
-import Ph_FeedInfo from "../feed/feedInfo/feedInfo.js";
-import { FeedType } from "../feed/universalFeed/universalFeed.js";
+import Ph_FeedInfo, { FeedType } from "../feed/feedInfo/feedInfo.js";
 import { Ph_ViewState } from "../viewState/viewState.js";
 
 export default class Ph_Wiki extends HTMLElement {
