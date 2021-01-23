@@ -6,7 +6,7 @@ if (env !== "production")
 export const port = process.env.PORT || 8080;
 export const __dirname = process.cwd();
 export const tokenDuration = "permanent";
-export const scope = ["identity", "edit", "flair", "history", "modconfig", "modflair", "modlog", "modposts", "modwiki", "mysubreddits", "privatemessages", "read", "report", "save", "submit", "subscribe", "vote", "wikiedit", "wikiread"];
+export const scope = ["edit", "flair", "history", "identity", "mysubreddits", "privatemessages", "read", "save", "submit", "subscribe", "vote", "wikiread"];
 
 // Configure middlewares
 export const commonRateLimitConfig = {
