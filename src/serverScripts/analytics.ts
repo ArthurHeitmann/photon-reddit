@@ -93,6 +93,7 @@ async function getPopularPathsInTimeFrame(timeFrame: number, limit: number) {
 			FROM trackedEvents
 			WHERE timeMillisUtc >= ${connection.escape(Date.now() - timeFrame)}
 			GROUP BY path
+			ORDER BY percent DESC
 			LIMIT ${connection.escape(limit)}
 			;
 		`);
