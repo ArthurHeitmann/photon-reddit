@@ -81,6 +81,21 @@
 				width: 1.5rem;
 				height: 1.5rem;
 			}
+
+			.unreadBadge {
+				position: absolute;
+				top: -.25rem;
+				right: -.25rem;
+				background: var(--primary-contrast);
+				min-width: 1rem;
+				padding: 0 .125rem;
+				height: 1rem;
+				border-radius: .5rem;
+				color: var(--text-color);
+				font-size: 0.7rem;
+				line-height: 1rem;
+				text-align: center;
+			}
 		}
 
 		.separated {
