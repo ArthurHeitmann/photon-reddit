@@ -4,7 +4,7 @@ import { globalSettings } from "../components/global/photonSettings/photonSettin
 import { ViewChangeData } from "../historyState/viewsStack.js";
 
 window.addEventListener("viewChange", (e: CustomEvent) => {
-	if (location.hostname === "localhost" || globalSettings.isIncognitoEnabled)
+	if (location.hostname === "localhost")
 		return;
 	
 	const viewChangeData: ViewChangeData = e.detail;
@@ -20,8 +20,8 @@ window.addEventListener("viewChange", (e: CustomEvent) => {
 			],
 			body: JSON.stringify({
 				"clientId": clientId,
-				"path": path.toLowerCase(),
-				"referer": referer.toLowerCase(),
+				"path": globalSettings.isIncognitoEnabled ? "/i" : path.toLowerCase(),
+				"referer": globalSettings.isIncognitoEnabled ? "" : referer.toLowerCase(),
 				"timeMillisUtc": Date.now()
 			})
 		});
