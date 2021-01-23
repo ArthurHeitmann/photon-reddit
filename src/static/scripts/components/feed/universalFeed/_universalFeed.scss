@@ -1,7 +1,8 @@
+@use "../../../../style/vars";
 
 @media (orientation: landscape) {
 	.universalFeed {
-		width: 50%;
+		width: vars.$widthM;
 	}
 }
 

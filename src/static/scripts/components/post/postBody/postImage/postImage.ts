@@ -2,6 +2,7 @@ import { elementWithClassInTree } from "../../../../utils/htmlStuff.js";
 import { RedditApiType } from "../../../../utils/types";
 import { globalSettings, ImageLoadingPolicy, PhotonSettings } from "../../../global/photonSettings/photonSettings.js";
 import Ph_ControlsBar from "../../../misc/controlsBar/controlsBar.js";
+import Ph_Toast, { Level } from "../../../misc/toast/toast.js";
 import Ph_DraggableWrapper from "../draggableWrapper/draggableWrapper.js";
 
 export interface GalleryInitData {
@@ -92,8 +93,9 @@ export default class Ph_PostImage extends HTMLElement {
 				imgData.originalImg.src = img.originalUrl;
 				imgData.originalImg.draggable = false;
 			}
-			else
-				throw "No image URL given";
+			else {
+				new Ph_Toast(Level.Error, "No image URL given")
+			}
 
 			if (!hasUnloadedOriginals && imgData.previewImg && imgData.originalSrc)
 				hasUnloadedOriginals = true;

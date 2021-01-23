@@ -19,6 +19,6 @@
 
 @media (orientation: landscape) {
 	.postAndComments, {
-		width: 60%;
+		width: vars.$widthL;
 	}
 }

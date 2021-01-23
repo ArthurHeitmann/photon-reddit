@@ -2,10 +2,12 @@ import { viewsStack } from "../../../historyState/historyStateManager.js";
 import { thisUser } from "../../../utils/globals.js";
 import { escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { elementWithClassInTree, linksToSpa } from "../../../utils/htmlStuff.js";
+import { numberToShort } from "../../../utils/utils.js";
 import Ph_Header from "../../global/header/header.js";
 import Ph_Toast, { Level } from "../toast/toast.js";
 
 export default class Ph_UserDropDown extends HTMLElement {
+	private unreadBadge: HTMLDivElement;
 	constructor() {
 		super();
 
@@ -22,13 +24,14 @@ export default class Ph_UserDropDown extends HTMLElement {
 
 		window.addEventListener("ph-ready", () => {
 			dropDownArea.appendChild(this.makeSubredditGroup(
-				thisUser.multiReddits.map(multi => ({name: multi.display_name, path: multi.path})),
+				thisUser.multireddits.map(multi => ({name: multi.display_name, path: multi.path})),
 				"Custom Feeds"
 			));
 			dropDownArea.appendChild(this.makeSubredditGroup(
 				thisUser.subreddits.map(sub => <SubGroupData> {name: sub, path: `/${sub}`}),
 				"Subscribed"
 			));
+			this.setUnreadCount(thisUser.inboxUnread);
 		});
 	}
 
@@ -45,13 +48,11 @@ export default class Ph_UserDropDown extends HTMLElement {
 	private makeActionBar(): HTMLElement {
 		const actions = document.createElement("div");
 		actions.className = "actionBar separated";
-		function makeAction(imgSrc: string, tooltip: string, onClick: string | (() => void), linkInNewTab?: boolean): HTMLElement {
+		function makeAction(imgSrc: string, tooltip: string, onClick: string | (() => void)): HTMLElement {
 			let item: HTMLElement;
 			if (typeof onClick === "string") {
 				item = document.createElement("a");
 				item.setAttribute("href", onClick);
-				if (linkInNewTab)
-					item.setAttribute("target", "_blank");
 			}
 			else if (typeof onClick === "function") {
 				item = document.createElement("button");
@@ -77,6 +78,9 @@ export default class Ph_UserDropDown extends HTMLElement {
 			"Inbox",
 			"/message/inbox"
 		);
+		this.unreadBadge = document.createElement("div");
+		this.unreadBadge.className = "unreadBadge hide";
+		inboxAction.appendChild(this.unreadBadge);
 		actions.appendChild(inboxAction);
 		// clear previous states
 		const clearAction = makeAction(
@@ -89,12 +93,19 @@ export default class Ph_UserDropDown extends HTMLElement {
 		const aboutAction = makeAction(
 			"/img/info.svg",
 			"About",
-			"/about.html",
-			true
+			"/about"
 		);
 		actions.appendChild(aboutAction);
 
 		return actions
+	}
+
+	setUnreadCount(unreadCount: number) {
+		this.unreadBadge.innerText = numberToShort(unreadCount);
+		if (unreadCount === 0)
+			this.unreadBadge.classList.add("hide");
+		else
+			this.unreadBadge.classList.remove("hide");
 	}
 
 	minimize() {

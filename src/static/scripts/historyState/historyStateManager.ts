@@ -1,6 +1,8 @@
 import { redditApiRequest } from "../api/redditApi.js";
 import Ph_UniversalFeed from "../components/feed/universalFeed/universalFeed.js";
 import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
+import Ph_About from "../components/photon/about/about.js";
+import Ph_SubmitPostForm from "../components/post/submit/submitPostForm.js";
 import Ph_PostAndComments from "../components/postAndComments/postAndComments.js";
 import Ph_ViewStateLoader from "../components/viewState/viewStateLoader/viewStateLoader.js";
 import Ph_Wiki from "../components/wiki/wiki.js";
@@ -68,6 +70,10 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 	for (const param of urlParams.entries())
 		params.push(param);
 
+	// maybe handle special unusual paths instead
+	if (handleSpecialPaths(path, params, stateLoader))
+		return;
+
 	// make request to reddit
 	const requestData = await redditApiRequest(path, params, false);
 	if (requestData["error"]) {
@@ -97,4 +103,16 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 	// if url has a hash to an element, scroll it into view
 	if (location.hash)
 		$id(location.hash.slice(1)).scrollIntoView();
+}
+
+function handleSpecialPaths(path: string, query: string[][], stateLoader: Ph_ViewStateLoader): boolean {
+	if (/^\/about$/.test(path)) {
+		stateLoader.finishWith(new Ph_About());
+		return true;
+	}
+	else if (/^(\/r\/[^/]+)?\/submit/.test(path)) {
+		stateLoader.finishWith(new Ph_SubmitPostForm());
+		return true;
+	}
+	return false;
 }

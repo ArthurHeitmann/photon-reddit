@@ -24,11 +24,14 @@ export type MultiReddit = typeof _MultiReddit;
 export class User {
 	name: string;
 	subreddits: string[] = [];
-	multiReddits: MultiReddit[] = [];
+	multireddits: MultiReddit[] = [];
+	inboxUnread: number = 0;
 	private static refreshEveryNMs = 2 * 60 * 60 * 1000;
 
 	async fetch() {
-		thisUser.name = (await redditApiRequest("/api/v1/me", [], true))["name"];
+		const userData = await redditApiRequest("/api/v1/me", [], true);
+		thisUser.name = userData["name"];
+		thisUser.inboxUnread = userData["inbox_count"];
 
 		if (localStorage.subreddits) {
 			try {
@@ -51,7 +54,7 @@ export class User {
 				if (Date.now() - storedMultis.lastUpdatedMsUTC > User.refreshEveryNMs) {
 					await this.fetchMultis();
 				} else {
-					this.multiReddits = storedMultis.data;
+					this.multireddits = storedMultis.data;
 				}
 			} catch (e) {
 				await this.fetchMultis();
@@ -86,7 +89,7 @@ export class User {
 
 	private async fetchMultis() {
 		// my first attempt at functional programming lol
-		this.multiReddits = <MultiReddit[]>
+		this.multireddits = <MultiReddit[]>
 			(await redditApiRequest("/api/multi/mine", [], true) as RedditApiType[])
 				.map(multi => multi.data)						// simplify, by only using the data property
 				.map(multi => Object.entries(multi))													// split
@@ -95,7 +98,7 @@ export class User {
 
 		localStorage.multis = JSON.stringify(<StoredData> {
 			lastUpdatedMsUTC: Date.now(),
-			data: this.multiReddits
+			data: this.multireddits
 		});
 	}
 }
