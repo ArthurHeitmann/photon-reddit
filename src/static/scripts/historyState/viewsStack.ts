@@ -2,6 +2,7 @@ import { globalSettings } from "../components/global/photonSettings/photonSettin
 import { Ph_ViewState } from "../components/viewState/viewState.js";
 import { $tag } from "../utils/htmlStatics.js";
 import { HistoryState } from "../utils/types.js";
+import { deepClone } from "../utils/utils.js";
 import { pushLinkToHistoryComb, PushType } from "./historyStateManager.js";
 
 interface ViewsType {
@@ -140,12 +141,22 @@ export default class ViewsStack {
 		history.state.title = title;
 	}
 
-	position(): number {
-		return this.pos;
-	}
-
 	nextState(): Ph_ViewState {
 		return this.views[this.pos + 1] || null;
+	}
+
+	clear() {
+		const viewIds: string[] = Object.keys(this.views);
+		for (let i of viewIds) {
+			if (i === this.pos.toString())
+				continue;
+			this.views[i].remove();
+			delete this.views[i];
+		}
+	}
+
+	position(): number {
+		return this.pos;
 	}
 
 	makeHistoryState(title: string, url: string, posOffset: number): HistoryState {

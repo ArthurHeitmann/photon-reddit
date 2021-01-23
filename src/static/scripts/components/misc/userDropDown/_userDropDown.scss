@@ -59,7 +59,31 @@
 		transform: scale(.9) translateY(-1.5rem);
 		transition: all .25s ease;
 
-		> .subGroup {
+		> .actionBar {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			flex-wrap: wrap;
+
+			[data-tooltip] {
+				&::after {
+					top: unset;
+					bottom: 0;
+					transform: translateX(-50%) translateY(85%) scale(.5);
+				}
+
+				&:hover::after {
+					transform: translateX(-50%) translateY(100%) scale(1);
+				}
+			}
+
+			img {
+				width: 1.5rem;
+				height: 1.5rem;
+			}
+		}
+
+		.separated {
 			position: relative;
 
 			&:not(:last-child) {
@@ -76,7 +100,9 @@
 					background: vars.$text;
 				}
 			}
+		}
 
+		> .subGroup {
 			> .sub {
 				> a {
 					text-overflow: ellipsis;

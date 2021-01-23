@@ -105,9 +105,7 @@ export default class Ph_Header extends HTMLElement {
 	headerMouseEnter() {
 		if (this.hideTimeout !== null) {
 			this.clearHideTimeout();
-			return;
 		}
-
 		this.expand();
 	}
 
