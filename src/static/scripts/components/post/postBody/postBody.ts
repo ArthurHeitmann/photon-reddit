@@ -1,4 +1,4 @@
-import { getImgurAlbumContents, getImgurContent, ImgurContentType } from "../../../api/imgurApi.js";
+import { getImgurAlbumContents, getImgurContent, ImgurContent, ImgurContentType } from "../../../api/imgurApi.js";
 import { escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiData, RedditApiType } from "../../../utils/types.js";
@@ -59,13 +59,20 @@ export default class Ph_PostBody extends HTMLElement {
 			case PostType.Imgur:
 				this.classList.add("fullScale");
 				if (/imgur\.com\/(a|album|gallery)\/[^/]+$/.test(postData.data["url"])) {
-					getImgurAlbumContents(postData.data["url"]).then(contents => {
-						this.appendChild(new Ph_PostImage(
-							contents.map(content => <GalleryInitData> {
-								originalUrl: content.link,
-								caption: content.caption
-							}))
-						)
+					getImgurAlbumContents(postData.data["url"]).then((contents: ImgurContent[]) => {
+						if (contents.length === 1 && contents[0].type === ImgurContentType.Video) {
+							this.appendChild(new Ph_VideoPlayer(
+								new Ph_SimpleVideo([{ src: contents[0].link, type: "video/mp4" }])
+							));
+						}
+						else {
+							this.appendChild(new Ph_PostImage(
+								contents.map(content => <GalleryInitData> {
+									originalUrl: content.link,
+									caption: content.caption
+								}))
+							);
+						}
 					});
 				}
 				else {
