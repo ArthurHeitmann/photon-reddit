@@ -54,7 +54,7 @@ export default class ViewsStack {
 				history.pushState(state.state, state.state.title, state.state.url);
 		}
 
-		window.dispatchEvent(new CustomEvent("viewChange", {
+		window.dispatchEvent(new CustomEvent("ph-view-change", {
 			detail: <ViewChangeData> {
 				viewState: this.views[this.pos],
 				newLoad: true,
@@ -101,7 +101,7 @@ export default class ViewsStack {
 		this.views[this.pos++].classList.add("hide");
 		this.views[this.pos].classList.remove("hide");
 
-		window.dispatchEvent(new CustomEvent("viewChange", {
+		window.dispatchEvent(new CustomEvent("ph-view-change", {
 			detail: <ViewChangeData> {
 				viewState: this.views[this.pos],
 				newLoad: false,
@@ -112,7 +112,7 @@ export default class ViewsStack {
 	back() {
 		if (this.views[this.pos - 1] == undefined) {						// probably a page reload,
 			pushLinkToHistoryComb(history.state.url, PushType.PushBefore);	// need to create to html elements
-			window.dispatchEvent(new CustomEvent("viewChange", {
+			window.dispatchEvent(new CustomEvent("ph-view-change", {
 				detail: <ViewChangeData> {
 					viewState: this.views[this.pos],
 					newLoad: true,
@@ -124,7 +124,7 @@ export default class ViewsStack {
 		this.views[this.pos--].classList.add("hide");
 		this.views[this.pos].classList.remove("hide");
 
-		window.dispatchEvent(new CustomEvent("viewChange", {
+		window.dispatchEvent(new CustomEvent("ph-view-change", {
 			detail: <ViewChangeData> {
 				viewState: this.views[this.pos],
 				newLoad: false,

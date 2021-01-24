@@ -694,13 +694,13 @@ export default class Ph_FeedInfo extends HTMLElement {
 	show() {
 		this.classList.remove("remove");
 		setTimeout(() => window.addEventListener("click", this.focusLossHideRef), 0);
-		window.addEventListener("viewChange", this.hideRef);
+		window.addEventListener("ph-view-change", this.hideRef);
 	}
 
 	hide() {
 		this.classList.add("remove");
 		window.removeEventListener("click", this.focusLossHideRef);
-		window.removeEventListener("viewChange", this.hideRef);
+		window.removeEventListener("ph-view-change", this.hideRef);
 	}
 }
 

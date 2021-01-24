@@ -161,7 +161,7 @@ export default class Ph_Search extends HTMLElement {
 			this.limitToSubreddit.checked = currParams.get("restrict_sr") === "true";
 		}
 
-		window.addEventListener("viewChange", (e: CustomEvent) => {
+		window.addEventListener("ph-view-change", (e: CustomEvent) => {
 			const subMatches = (e.detail as ViewChangeData).viewState.state.url.match(/^\/r\/[^\/]+/);
 			this.currentSubreddit = subMatches && subMatches[0] || null;
 			limitToLabel.innerText = `Limit to ${this.currentSubreddit || "all"}`;

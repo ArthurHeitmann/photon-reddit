@@ -20,7 +20,7 @@ export default class Ph_Header extends HTMLElement {
 	constructor() {
 		super();
 
-		window.addEventListener("viewChange", (e: CustomEvent) =>
+		window.addEventListener("ph-view-change", (e: CustomEvent) =>
 			this.setFeedElements((e.detail as ViewChangeData).viewState.headerElements));
 	}
 

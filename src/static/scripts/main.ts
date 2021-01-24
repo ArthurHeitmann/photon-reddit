@@ -36,7 +36,7 @@ async function init(): Promise<void> {
 }
 
 function loadPosts() {
-	window.dispatchEvent(new Event("ph-ready"));
+	window.dispatchEvent(new Event("ph-page-ready"));
 	if (history.state?.url)
 		pushLinkToHistorySep(extractPath(history.state.url) + extractHash(history.state.url), extractQuery(history.state.url));
 	else

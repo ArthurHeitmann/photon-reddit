@@ -201,7 +201,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 	}
 
 	makeControls() {
-		window.addEventListener("viewChange", () => this.video.pause());
+		window.addEventListener("ph-view-change", () => this.video.pause());
 
 		setTimeout(() => {
 			elementWithClassInTree(this.parentElement, "post").addEventListener("ph-intersection", (e: CustomEvent) => {

@@ -3,7 +3,7 @@
 import { globalSettings } from "../components/global/photonSettings/photonSettings.js";
 import { ViewChangeData } from "../historyState/viewsStack.js";
 
-window.addEventListener("viewChange", (e: CustomEvent) => {
+window.addEventListener("ph-view-change", (e: CustomEvent) => {
 	if (location.hostname === "localhost")
 		return;
 	

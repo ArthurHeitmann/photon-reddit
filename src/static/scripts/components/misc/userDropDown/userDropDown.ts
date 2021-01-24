@@ -22,7 +22,7 @@ export default class Ph_UserDropDown extends HTMLElement {
 		dropDownArea.appendChild(this.makeSubredditGroup([{ path: "/r/popular", name: "r/popular" }, { path: "/r/all", name: "r/all" }], "Reddit Feeds"));
 		this.appendChild(dropDownArea);
 
-		window.addEventListener("ph-ready", () => {
+		window.addEventListener("ph-page-ready", () => {
 			dropDownArea.appendChild(this.makeSubredditGroup(
 				thisUser.multireddits.map(multi => ({name: multi.display_name, path: multi.path})),
 				"Custom Feeds"
