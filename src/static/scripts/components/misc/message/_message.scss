@@ -3,6 +3,10 @@
 .message {
 	padding: 1rem;
 
+	&.unread {
+		border-color: vars.$text;
+	}
+
 	.header {
 		flex-wrap: wrap;
 		margin-bottom: .25rem;
@@ -21,4 +25,13 @@
 			margin-left: auto;
 		}
 	}
+}
+
+.markReadAll {
+	width: 2rem;
+	height: 2rem;
+	background-image: url("/img/check.svg");
+	background-size: contain;
+
+
 }

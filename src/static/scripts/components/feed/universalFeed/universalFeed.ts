@@ -123,24 +123,11 @@ export default class Ph_UniversalFeed extends HTMLElement {
 				))
 			}
 			else if (feedType === FeedType.messages) {
-				headerElements.push(new Ph_DropDown(
-					[
-						{ displayHTML: "All", value: MessageSection.all, onSelectCallback: this.setMessageSection.bind(this) },
-						{ displayHTML: "Unread", value: MessageSection.unread, onSelectCallback: this.setMessageSection.bind(this) },
-						{ displayHTML: "Messages", value: MessageSection.messages, onSelectCallback: this.setMessageSection.bind(this) },
-						{ displayHTML: "Comment Replies", value: MessageSection.commentReplies, onSelectCallback: this.setMessageSection.bind(this) },
-						{ displayHTML: "Post Replies", value: MessageSection.postReplies, onSelectCallback: this.setMessageSection.bind(this) },
-						{ displayHTML: "Username mentions", value: MessageSection.mentions, onSelectCallback: this.setMessageSection.bind(this) },
-					],
-					"Sections",
-					DirectionX.left,
-					DirectionY.bottom,
-					false
-				));
+				headerElements.push(...Ph_Message.getMessageFeedHeaderElements(this.setMessageSection.bind(this)));
 			}
 			if (this.isSearchFeed)
 				headerElements.push(new Ph_SearchFeedSorter(this));
-			else
+			else if (feedType !== FeedType.messages)
 				headerElements.push(new Ph_UniversalFeedSorter(this));
 			(elementWithClassInTree(this.parentElement, "viewState") as Ph_ViewState).setHeaderElements(headerElements);
 		}, 0);

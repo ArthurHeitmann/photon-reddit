@@ -5,7 +5,7 @@ import { isLoggedIn, thisUser, } from "../utils/globals.js";
 import { RedditApiType } from "../utils/types.js";
 import { isObjectEmpty, splitPathQuery } from "../utils/utils.js";
 
-export async function redditApiRequest(pathAndQuery, params: string[][], requiresLogin: boolean, options = {}) {
+export async function redditApiRequest(pathAndQuery, params: string[][], requiresLogin: boolean, options: RequestInit = {}) {
 	if (requiresLogin && !isLoggedIn) {
 		new Ph_Toast(Level.Error, "You need to be logged in to use this feature");
 		throw "This feature requires to be logged in";
@@ -37,7 +37,7 @@ async function simpleApiRequest(pathAndQuery, params: string[][]) {
 	}
 }
 
-async function oath2Request(pathAndQuery, params: string[][], options: Object, attempt = 0) {
+async function oath2Request(pathAndQuery, params: string[][], options: RequestInit, attempt = 0) {
 	pathAndQuery = fixUrl(pathAndQuery, attempt);
 	const [path, query] = splitPathQuery(pathAndQuery);
 
