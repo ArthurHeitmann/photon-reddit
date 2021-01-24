@@ -121,7 +121,7 @@ export default class Ph_PostBody extends HTMLElement {
 		else if (/https?:\/\/clips.twitch.tv\/[\w-]+/.test(postData["url"]) && postData["media"])
 			return PostType.Video;
 		else if (postData["post_hint"] == "image" ||
-			/\.(png|jpg|jpeg|svg)$/.test(postData["url"]) ||
+			/(?<!#.*)\.(png|jpg|jpeg|svg)$/.test(postData["url"]) ||
 			postData["gallery_data"])
 			return PostType.Image;
 		else if (postData["post_hint"] == "hosted:video")

@@ -42,7 +42,7 @@ export function elementWithClassInTree(elem: HTMLElement, className: string): HT
 export function linksToInlineImages(elem: HTMLElement) {
 	const links = elem.$tag("a");
 	for (let link of links) {
-		if (!(/^[^?]+\.(png|jpg|jpeg|gif)(\?.*)?$/).test((link as HTMLAnchorElement).href)) {
+		if (!(/^[^?]+(?<!#.*)\.(png|jpg|jpeg|gif)(\?.*)?$/).test((link as HTMLAnchorElement).href)) {
 			continue;
 		}
 
