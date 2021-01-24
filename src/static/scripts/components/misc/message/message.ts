@@ -16,6 +16,7 @@ export default class Ph_Message extends Ph_FeedItem implements FullName {
 	fullName: string;
 	lastMessageFromOther: Ph_Message;
 	isRead: boolean;
+	canBeRead: boolean;
 
 	constructor(messageData: RedditApiType, isInFeed: boolean, isReply: boolean = false) {
 		super(messageData.data["name"],isInFeed ? `/message/messages/${messageData.data["id"]}` : null, !isReply);
@@ -30,6 +31,7 @@ export default class Ph_Message extends Ph_FeedItem implements FullName {
 		}
 
 		this.setIsRead(!messageData.data["new"])
+		this.canBeRead = messageData.data["dest"] === thisUser.name;
 
 		let userAdditionClasses = "";
 		if (messageData.data["distinguished"] === "moderator") {
@@ -81,7 +83,12 @@ export default class Ph_Message extends Ph_FeedItem implements FullName {
 			<div class="content">
 				${messageData.data["body_html"]}
 			</div>
+			${ this.canBeRead
+			? `<button class="markRead transparentButtonAlt" data-tooltip="Toggle Mark Read"></button>`
+			: ""
+			}
 		`;
+		mainPart.$class("markRead")[0]?.addEventListener("click", this.onToggleRead.bind(this));
 
 		this.lastMessageFromOther = this;
 		if (!isInFeed) {
@@ -121,6 +128,33 @@ export default class Ph_Message extends Ph_FeedItem implements FullName {
 		replaceRedditLinks(this)
 	}
 
+	async onToggleRead() {
+		let path = "";
+		if (this.isRead)
+			path = "/api/unread_message" ;
+		else
+			path = "/api/read_message" ;
+		const r = await redditApiRequest(
+			path,
+			[["id", this.fullName]],
+			true,
+			{ method: "POST" }
+		);
+		if (r["error"]) {
+			new Ph_Toast(Level.Error, "Failed to change read status");
+			console.error("Failed to change read status");
+			console.error(r);
+			return;
+		}
+		if (this.isRead)
+			thisUser.inboxUnread++;
+		else
+			thisUser.inboxUnread--;
+		($class("userDropDown")[0] as Ph_UserDropDown).setUnreadCount(thisUser.inboxUnread);
+		// TODO low prio: replace this. with loop over all messages in dom tree with this full name
+		this.setIsRead(!this.isRead);
+	}
+
 	setIsRead(read: boolean) {
 		this.isRead = read;
 		this.updateIsReadStatus();
@@ -152,7 +186,7 @@ export default class Ph_Message extends Ph_FeedItem implements FullName {
 		));
 		if (!Ph_Message.markReadAllButton) {
 			Ph_Message.markReadAllButton = document.createElement("button");
-			Ph_Message.markReadAllButton.className = "markReadAll transparentButtonAlt";
+			Ph_Message.markReadAllButton.className = "markRead transparentButtonAlt";
 			Ph_Message.markReadAllButton.addEventListener("click", Ph_Message.readAllMessages);
 			Ph_Message.markReadAllButton.setAttribute("data-tooltip", "Read All Messages");
 		}
@@ -172,7 +206,8 @@ export default class Ph_Message extends Ph_FeedItem implements FullName {
 		for (const message of $css(".message.unread")) {
 			(message as Ph_Message).setIsRead(true);
 		}
-		($class("userDropDown")[0] as Ph_UserDropDown).setUnreadCount(0);
+		thisUser.inboxUnread = 0;
+		($class("userDropDown")[0] as Ph_UserDropDown).setUnreadCount(thisUser.inboxUnread);
 	}
 }
 
