@@ -27,8 +27,14 @@ async function simpleApiRequest(pathAndQuery, params: string[][]) {
 		parameters.append(param[0], param[1]);
 	parameters.append("raw_json", "1");
 
+	const fetchOptions: RequestInit = {
+		headers: new Headers ({
+			"User-Agent": `web:photon reddit:1.0.0 (by /u/RaiderBDev) ${navigator.userAgent}`		// currently doesn't work in chromium
+		}),
+	};
+
 	try {
-		const response = await fetch(`https://www.reddit.com${path}?${parameters.toString()}`);
+		const response = await fetch(`https://www.reddit.com${path}?${parameters.toString()}`, fetchOptions);
 		const responseText = await response.text()
 		return response ? JSON.parse(responseText) : {};
 	} catch (e) {
@@ -49,6 +55,7 @@ async function oath2Request(pathAndQuery, params: string[][], options: RequestIn
 		...options,
 		headers: new Headers ({
 			Authorization: `Bearer ${ localStorage["accessToken"] }`,
+			"User-Agent": `web:photon reddit:1.0.0 (by /u/RaiderBDev) ${navigator.userAgent}`		// currently doesn't work in chromium
 		}),
 	};
 	let parametersStr = parameters.toString();
