@@ -1,7 +1,5 @@
 import fetch from "node-fetch";
-
-export const appId = "N3bHM42Rmlc3sQ";
-export const redirectURI = "https://photon-reddit.com/redirect";
+import { appId, redirectURI } from "./config.js";
 
 
 async function getAccessToken(params: URLSearchParams): Promise<string> {

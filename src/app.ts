@@ -4,6 +4,7 @@ import RateLimit from "express-rate-limit";
 import expressAsyncHandler from "express-async-handler";
 import fetch from "node-fetch";
 import { analyticsRouter } from "./serverScripts/analytics.js";
+import { appId, redirectURI } from "./serverScripts/config.js";
 import {
 	__dirname,
 	basicRateLimitConfig,
@@ -13,7 +14,7 @@ import {
 	scope,
 	tokenDuration
 } from "./serverScripts/consts.js";
-import { initialAccessToken, refreshAccessToken, appId, redirectURI } from "./serverScripts/loginRedirect.js";
+import { initialAccessToken, refreshAccessToken } from "./serverScripts/loginRedirect.js";
 import bodyParser from "body-parser";
 
 const app = express();
