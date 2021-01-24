@@ -94,7 +94,10 @@ export default class Ph_PostImage extends HTMLElement {
 				imgData.originalImg.draggable = false;
 			}
 			else {
-				new Ph_Toast(Level.Error, "No image URL given")
+				if (!imgData.originalImg)
+					imgData.originalImg = document.createElement("img");
+				imgData.originalImg.src= "/img/error.svg";
+				new Ph_Toast(Level.Error, "No image URL given");
 			}
 
 			if (!hasUnloadedOriginals && imgData.previewImg && imgData.originalSrc)
