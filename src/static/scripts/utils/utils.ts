@@ -164,3 +164,18 @@ export function ceilTo(number: number, precision: number): number {
 export function stringSortComparer(s1: string, s2): number {
 	return s1.toLowerCase().localeCompare(s2.toLowerCase());
 }
+
+export function extractPath(uri: string):string {
+	const matches = uri.match(/(?<!\/)\/(?!\/)[^?#]*/);
+	return matches && matches[0] || "";
+}
+
+export function extractQuery(uri: string): string {
+	const matches = uri.match(/\?[^#]*/);
+	return matches && matches[0] || "";
+}
+
+export function extractHash(uri: string): string {
+	const matches = uri.match(/#.*$/);
+	return matches && matches[0] || "";
+}

@@ -10,9 +10,9 @@ export function clearAllOldData() {
 		const feedInfo = JSON.parse(localStorage[localStorageKey]) as StoredData;
 		if (now - feedInfo.lastUpdatedMsUTC < globalSettings.clearFeedCacheAfterMs)			// skip if has been accessed recently
 			continue;
-		const currentFeedUrlMatches = location.pathname.match(/^\/(u|user)\/([^/]+)/);
+		const currentFeedUrlMatches = history.state.url.match(/^\/(u|user)\/([^/]+)/);
 		if (localStorageKey[1] === "r" 							// skip if this is currently active feed
-			? location.pathname.startsWith(localStorageKey)
+			? history.state.url.startsWith(localStorageKey)
 			: currentFeedUrlMatches && currentFeedUrlMatches.length > 1 && currentFeedUrlMatches[2] === localStorageKey.match(/^\/(u|user)\/([^/]+)/)[2]
 		)
 			continue;

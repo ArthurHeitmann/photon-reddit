@@ -2,6 +2,7 @@ import { redditApiRequest } from "../../api/redditApi.js";
 import { viewsStack } from "../../historyState/historyStateManager.js";
 import { elementWithClassInTree } from "../../utils/htmlStuff.js";
 import { RedditApiType, SortCommentsOrder } from "../../utils/types.js";
+import { extractPath, extractQuery } from "../../utils/utils.js";
 import Ph_Comment from "../comment/comment.js";
 import Ph_CommentsFeed from "../feed/commentsFeed/commentsFeed.js";
 import Ph_FeedInfo, { FeedType } from "../feed/feedInfo/feedInfo.js";
@@ -45,7 +46,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 		this.comments = new Ph_CommentsFeed(data[1], this.post);
 		this.appendChild(this.comments);
 
-		const commentLinkMatches = location.pathname.match(new RegExp(this.post.permalink + "(\\w*)"));
+		const commentLinkMatches = history.state.url.match(new RegExp(this.post.permalink + "(\\w*)"));
 		if (commentLinkMatches && commentLinkMatches.length > 1 && commentLinkMatches[1]) {
 			this.comments.$css(`[data-id=${commentLinkMatches[1]}]`)[0].classList.add("highlight");
 			this.comments.insertParentLink(this.post.permalink, "Load all comments");
@@ -91,9 +92,8 @@ export default class Ph_PostAndComments extends HTMLElement {
 	}
 
 	async handleSort(valueChain: any[]) {
-		const path = location.pathname;
-		const query = location.search;
-		const params = new URLSearchParams(query);
+		const path = extractPath(history.state.url);
+		const params = new URLSearchParams(extractQuery(history.state.url));
 		params.set("sort", valueChain[0]);
 
 		const loadingIcon = document.createElement("img");

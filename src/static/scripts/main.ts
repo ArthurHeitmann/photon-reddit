@@ -6,6 +6,7 @@ import { checkTokenExpiry, initiateLogin, isAccessTokenValid } from "./login/log
 import { $id } from "./utils/htmlStatics.js";
 import { thisUser } from "./utils/globals.js";
 import { linksToSpa } from "./utils/htmlStuff.js";
+import { extractHash, extractPath, extractQuery } from "./utils/utils.js";
 
 async function init(): Promise<void> {
 	$id("mainWrapper").insertAdjacentElement("afterbegin", new Ph_Header());
@@ -36,7 +37,10 @@ async function init(): Promise<void> {
 
 function loadPosts() {
 	window.dispatchEvent(new Event("ph-ready"));
-	pushLinkToHistorySep(location.pathname + location.hash, location.search || "");
+	if (history.state?.url)
+		pushLinkToHistorySep(extractPath(history.state.url) + extractHash(history.state.url), extractQuery(history.state.url));
+	else
+		pushLinkToHistorySep(location.pathname + location.hash, location.search || "");
 }
 
 function checkIfAnalyticsFileLoaded() {

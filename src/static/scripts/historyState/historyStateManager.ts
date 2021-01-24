@@ -7,7 +7,7 @@ import Ph_PostAndComments from "../components/postAndComments/postAndComments.js
 import Ph_ViewStateLoader from "../components/viewState/viewStateLoader/viewStateLoader.js";
 import Ph_Wiki from "../components/wiki/wiki.js";
 import { $id } from "../utils/htmlStatics.js";
-import { splitPathQuery } from "../utils/utils.js";
+import { extractHash, splitPathQuery } from "../utils/utils.js";
 import ViewsStack from "./viewsStack.js";
 
 export const viewsStack: ViewsStack = new ViewsStack();
@@ -101,8 +101,9 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 	}
 
 	// if url has a hash to an element, scroll it into view
-	if (location.hash)
-		$id(location.hash.slice(1)).scrollIntoView();
+	const hash = extractHash(history.state.url);
+	if (hash)
+		$id(hash.slice(1)).scrollIntoView();
 }
 
 function handleSpecialPaths(path: string, query: string[][], stateLoader: Ph_ViewStateLoader): boolean {

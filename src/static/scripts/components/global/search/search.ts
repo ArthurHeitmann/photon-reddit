@@ -4,7 +4,7 @@ import { ViewChangeData } from "../../../historyState/viewsStack.js";
 import { escADQ } from "../../../utils/htmlStatics.js";
 import { elementWithClassInTree, linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiType, SortPostsTimeFrame, SortSearchOrder } from "../../../utils/types.js";
-import { throttle } from "../../../utils/utils.js";
+import { extractPath, extractQuery, throttle } from "../../../utils/utils.js";
 import Ph_FeedInfo from "../../feed/feedInfo/feedInfo.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import Ph_Flair, { FlairData } from "../../misc/flair/flair.js";
@@ -153,12 +153,12 @@ export default class Ph_Search extends HTMLElement {
 		const { checkbox: limitToCheckbox, label: limitToLabel } = makeLabelCheckboxPair("Limit to", "limitToSubreddit", true, expandedOptions);
 		this.limitToSubreddit = limitToCheckbox;
 
-		if (/\/search\/?$/.test(location.pathname)) {
-			const currParams = new URLSearchParams(location.search);
+		if (/\/search\/?$/.test(extractPath(history.state && history.state.url || location.pathname))) {
+			const currParams = new URLSearchParams(location.search || extractQuery(history.state.url));
 			this.searchBar.value = currParams.get("q");
 			this.searchOrder = SortSearchOrder[currParams.get("sort")];
 			this.searchTimeFrame = SortPostsTimeFrame[currParams.get("t")];
-			this.limitToSubreddit.checked = Boolean(currParams.get("restrict_sr"));
+			this.limitToSubreddit.checked = currParams.get("restrict_sr") === "true";
 		}
 
 		window.addEventListener("viewChange", (e: CustomEvent) => {
@@ -337,7 +337,7 @@ export default class Ph_Search extends HTMLElement {
 		}
 
 		let url = "/search";
-		const currentSubMatches = location.pathname.match(/\/r\/([^/]+)/);
+		const currentSubMatches = history.state.url.match(/\/r\/([^/]+)/);
 		if (currentSubMatches && currentSubMatches[1])
 			url = currentSubMatches[1].replace(/\/?$/, "/search");
 
