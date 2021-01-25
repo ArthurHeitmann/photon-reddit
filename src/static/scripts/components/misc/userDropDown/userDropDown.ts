@@ -1,4 +1,4 @@
-import { viewsStack } from "../../../historyState/historyStateManager.js";
+import { pushLinkToHistoryComb, pushLinkToHistorySep, viewsStack } from "../../../historyState/historyStateManager.js";
 import { thisUser } from "../../../utils/globals.js";
 import { escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { elementWithClassInTree, linksToSpa } from "../../../utils/htmlStuff.js";
@@ -69,7 +69,15 @@ export default class Ph_UserDropDown extends HTMLElement {
 		const postAction = makeAction(
 			"/img/edit.svg",
 			"Submit Post",
-			() => new Ph_Toast(Level.Info, "Not yet supported", { timeout: 5000 })
+			() => {
+				let submitUrl: string;
+				const currentSubMatch = history.state.url.match(/\/r\/\w+/);
+				if (currentSubMatch)
+					submitUrl = `${currentSubMatch}/submit`;
+				else
+					submitUrl = "/submit";
+				pushLinkToHistoryComb(submitUrl);
+			}
 		);
 		actions.appendChild(postAction);
 		// messages

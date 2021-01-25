@@ -3,6 +3,7 @@ import { escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiData, RedditApiType } from "../../../utils/types.js";
 import { replaceRedditLinks } from "../../../utils/utils.js";
+import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Ph_SimpleVideo from "../../videoPlayer/simpleVideo/simpleVideo.js";
 import Ph_VideoPlayer from "../../videoPlayer/videoPlayer.js";
 import Ph_PostImage, { GalleryInitData } from "./postImage/postImage.js";
@@ -60,10 +61,12 @@ export default class Ph_PostBody extends HTMLElement {
 				this.classList.add("fullScale");
 				if (/imgur\.com\/(a|album|gallery)\/[^/]+$/.test(postData.data["url"])) {
 					getImgurAlbumContents(postData.data["url"]).then((contents: ImgurContent[]) => {
-						if (contents.length === 1 && contents[0].type === ImgurContentType.Video) {
+						if (contents[0].type === ImgurContentType.Video) {
 							this.appendChild(new Ph_VideoPlayer(
 								new Ph_SimpleVideo([{ src: contents[0].link, type: "video/mp4" }])
 							));
+							if (contents.length > 1)
+								new Ph_Toast(Level.Warning, "Imgur album with video and more than 1 items --> only displaying video");
 						}
 						else {
 							this.appendChild(new Ph_PostImage(
