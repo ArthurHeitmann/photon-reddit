@@ -107,7 +107,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 				feedType = FeedType.messages;
 			headerElements.push(title);
 			if (Ph_FeedInfo.supportedFeedType.includes(feedType))
-				headerElements.push(new Ph_FeedInfo(feedType, feedBaseUrl).makeShowInfoButton());
+				headerElements.push(Ph_FeedInfo.getInfoButton(feedType, feedBaseUrl));
 			if (feedType === FeedType.user) {
 				headerElements.push(new Ph_DropDown(
 					[

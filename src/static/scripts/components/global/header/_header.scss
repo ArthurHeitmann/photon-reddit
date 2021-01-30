@@ -41,7 +41,7 @@
 					width: 100%;
 					height: 100%;
 					opacity: .4;
-					transform: rotate(45deg);
+					transform: rotate(0deg);
 					transition: all ease .125s;
 
 					&:hover {
@@ -50,7 +50,7 @@
 				}
 
 				&.pinned img {
-					transform: rotate(0);
+					transform: rotate(45deg);
 				}
 			}
 		}

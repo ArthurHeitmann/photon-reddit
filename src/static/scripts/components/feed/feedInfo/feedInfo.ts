@@ -8,6 +8,7 @@ import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDow
 import { FlairData } from "../../misc/flair/flair.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import { clearAllOldData } from "./feedInfoCleanup.js";
+import Ph_BetterButton from "../../global/betterElements/betterButton.js";
 
 export enum FeedType {
 	subreddit,
@@ -41,12 +42,48 @@ interface SubredditModerator {
 }
 
 export default class Ph_FeedInfo extends HTMLElement {
-	focusLossHideRef: (e: MouseEvent) => void;
-	hideRef: () => void;
+	hasLoaded: boolean = false;
 	loadedInfo: StoredFeedInfo;
 	feedUrl: string;
+	focusLossHideRef: (e: MouseEvent) => void;
+	hideRef: () => void;
 	static refreshEveryNMs = 2 * 60 * 60 * 1000;		// 2 hours
 	static supportedFeedType: FeedType[] = [FeedType.subreddit, FeedType.user, FeedType.multireddit];
+	private static loadedInfos: { [feedUrl: string]: { feedInfo: Ph_FeedInfo, references: number } } = {};
+
+	static getInfoButton(feedType: FeedType, feedUrl: string): HTMLButtonElement {
+		const button = new Ph_BetterButton();
+		button.className = "showInfo";
+		button.innerHTML = `<img src="/img/info.svg" draggable="false" alt="info">`;
+		button.setAttribute("data-feed-url", feedUrl);
+
+		const info = new Ph_FeedInfo(feedType, feedUrl);
+		if (!(feedUrl in Ph_FeedInfo.loadedInfos))
+			Ph_FeedInfo.loadedInfos[feedUrl] = { feedInfo: info, references: 0 };
+
+		button.addEventListener("click", info.toggle.bind(info));
+
+		button.addEventListener("ph-added", () => Ph_FeedInfo.onButtonAddedOrRemoved(button, true));
+		button.addEventListener("ph-removed", () => Ph_FeedInfo.onButtonAddedOrRemoved(button, false));
+
+		return button;
+	}
+
+	private static onButtonAddedOrRemoved(button: HTMLButtonElement, wasAdded: boolean) {
+			const feedUrl = button.getAttribute("data-feed-url");
+			const feedInfo = Ph_FeedInfo.loadedInfos[feedUrl];
+			if (wasAdded) {
+				feedInfo.references++;
+			}
+			else {
+				feedInfo.references--;
+			}
+
+			if (feedInfo.references === 0) {
+				feedInfo.feedInfo.remove();
+				delete Ph_FeedInfo.loadedInfos[feedUrl];
+			}
+	}
 
 	constructor(feedType: FeedType, feedUrl: string) {
 		super();
@@ -67,16 +104,12 @@ export default class Ph_FeedInfo extends HTMLElement {
 				lastUpdatedMsUTC: 1
 			};
 		}
-		this.getOrUpdateInfo();
 
 		document.body.appendChild(this);
 	}
 
 	async getOrUpdateInfo() {
 		const isValid = this.isLoadedInfoValid();
-		// if (isValid && this.loadedInfo.lastUpdatedMsUTC + Ph_FeedInfo.refreshEveryNMs > Date.now())
-		// 	return
-		/*else */
 		if (!isValid) {
 			this.removeInfo();
 			new Ph_Toast(Level.Error, `Corrupted feed info for ${escHTML(this.feedUrl)}`);
@@ -84,6 +117,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 			throw "Corrupted feed info";
 		}
 		if (!isValid || this.loadedInfo.lastUpdatedMsUTC + Ph_FeedInfo.refreshEveryNMs < Date.now()) {
+			this.classList.add("loading");
 			switch (this.loadedInfo.feedType) {
 				case FeedType.subreddit:
 					await this.loadSubredditInfo();
@@ -95,10 +129,10 @@ export default class Ph_FeedInfo extends HTMLElement {
 					await this.loadUserInfo();
 					break;
 				case FeedType.misc:
-				// break;
 				default:
 					break;
 			}
+			this.classList.remove("loading");
 		}
 		else
 			window.dispatchEvent(new CustomEvent("feedInfoReady", { detail: this }));
@@ -240,7 +274,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 			</div>
 			<div data-tooltip="${this.loadedInfo.data["active_user_count"]}">
 				Online: ${numberToShort(this.loadedInfo.data["active_user_count"])} &nbsp — &nbsp; 
-				${(this.loadedInfo.data["active_user_count"] / this.loadedInfo.data["subscribers"] * 100).toPrecision(1)} %
+				${(this.loadedInfo.data["active_user_count"] / this.loadedInfo.data["subscribers"] * 100).toFixed(1)} %
 			</div>
 		`);
 		headerBar.appendChild(overviewBar);
@@ -675,15 +709,6 @@ export default class Ph_FeedInfo extends HTMLElement {
 			Object.values(FeedType).includes(this.loadedInfo.feedType);
 	}
 
-	makeShowInfoButton(): HTMLElement {
-		const button = document.createElement("button");
-		button.className = "showInfo";
-		button.innerHTML = `<img src="/img/info.svg" draggable="false" alt="info">`;
-		button.addEventListener("click", this.toggle.bind(this));
-		button["targetFeedInfo"] = this;
-		return button;
-	}
-
 	toggle() {
 		if (this.classList.contains("remove"))
 			this.show();
@@ -695,6 +720,8 @@ export default class Ph_FeedInfo extends HTMLElement {
 		this.classList.remove("remove");
 		setTimeout(() => window.addEventListener("click", this.focusLossHideRef), 0);
 		window.addEventListener("ph-view-change", this.hideRef);
+		if (!this.hasLoaded)
+			this.getOrUpdateInfo();
 	}
 
 	hide() {

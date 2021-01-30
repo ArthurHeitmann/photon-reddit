@@ -44,7 +44,7 @@ async function simpleApiRequest(pathAndQuery, params: string[][]) {
 }
 
 async function oath2Request(pathAndQuery, params: string[][], options: RequestInit, attempt = 0) {
-	pathAndQuery = fixUrl(pathAndQuery, attempt);
+	pathAndQuery = fixUrl(pathAndQuery);
 	const [path, query] = splitPathQuery(pathAndQuery);
 
 	const parameters = new URLSearchParams(query);
@@ -69,26 +69,23 @@ async function oath2Request(pathAndQuery, params: string[][], options: RequestIn
 		const responseText = await response.text()
 		return response ? JSON.parse(responseText) : {};
 	} catch (e) {
-		// maybe the token has expired, try to refresh it; try again up to 3 times
-		if (attempt < 3 && await checkTokenExpiry())
+		// maybe the token has expired, try to refresh it; try again up to 2 times
+		if (attempt < 1 && await checkTokenExpiry())
 			return await oath2Request(path, params, options, attempt + 1);
 		else
 			return { error: e }
 	}
 }
 
-function fixUrl(url: string, attempt = 0) {
+function fixUrl(url: string) {
 	url = url.replace(/^\/u\//, "/user/");													// /u/... --> /user/...
 	url = url.replace(/(\/(u|user)\/[^/]+\/)posts\/?/, "$1submitted/")						// /user/.../posts --> /user/.../submitted
 	url = url.replace(/(?<=^\/r\/[^/]+\/wiki)\/?(?=(\?.*)?$)/, "/index");					// /r/.../wiki --> /r/.../wiki/index
-	url = url.replace(/#[^?]*/, "")														// ...#...?... --> ...?...
+	url = url.replace(/#[^?]*/, "");														// ...#...?... --> ...?...
+	url = url.replace(/(?<=^\/\w+\/[^/]+\/)w(?=(#|\?|\/).*)/, "wiki");														// /.../.../wiki --> /.../.../wiki
 	if (new RegExp(`^/(u|user)/${thisUser.name}/m/([^/]+)`, "i").test(url))							// private multi reddits have CORS problems
 		url = url.replace(/^\/user\/[^/]+\/m\//, "/me/m/")									// /user/thisUser/m/... --> /me/m/...
 	return url;
-}
-
-export async function mySubreddits() {
-	return await redditApiRequest("subreddits/mine/subscriber", [], true);
 }
 
 export enum VoteDirection {

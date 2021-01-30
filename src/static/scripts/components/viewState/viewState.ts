@@ -22,11 +22,6 @@ export class Ph_ViewState extends HTMLElement {
 		this.appendChild(this.contentElement);
 	}
 
-	disconnectedCallback() {
-		for (const headerElement of this.headerElements)
-			headerElement["targetFeedInfo"]?.remove();
-	}
-
 	setHeaderElements(elements: HTMLElement[]) {
 		this.headerElements = elements;
 		this.header.setFeedElements(this.headerElements);

@@ -11,16 +11,11 @@
 	padding: 1rem;
 	display: flex;
 	flex-direction: column;
-	height: auto;
-
+	height: max-content;
 
 	.phInput {
 		height: 2rem;
 		line-height: 2rem;
-		background: #292929;
-		border: 1px solid #383838;
-		margin: .5rem 0;
-		padding: 0 .75rem;
 		display: flex;
 		align-items: center;
 
@@ -35,15 +30,18 @@
 				height: 1.5rem;
 			}
 
-			.subInfo {
-				height: 1.25rem;
+			.subInfoButtonWrapper {
+				height: 1.1rem;
 				--dim: 1.75rem;
-
-				> img {
-					height: 1.25rem;
-				}
 			}
 		}
+	}
+
+	.el2 {
+		background: #292929;
+		border: 1px solid #383838;
+		margin: .5rem 0;
+		padding: 0 .75rem;
 	}
 
 	.textarea.phInput {
@@ -59,5 +57,13 @@
 
 	.roundedL {
 		border-radius: 1rem;
+	}
+
+	.roundedM {
+		border-radius: 0.5rem;
+	}
+
+	.button {
+		background: vars.$background;
 	}
 }

@@ -24,6 +24,16 @@
 		visibility: hidden;
 	}
 
+	&.loading::after {
+		content: "";
+		margin: auto;
+		background-image: url(/img/loading.svg);
+		background-position: center;
+		background-size: contain;
+		width: 10rem;
+		height: 10rem;
+	}
+
 	> .refreshButton {
 		position: absolute;
 		z-index: 1;
@@ -286,6 +296,7 @@
 
 .showInfo {
 	height: 1.1rem;
+	display: block;
 
 	> img {
 		height: 1.1rem;

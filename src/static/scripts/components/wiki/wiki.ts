@@ -23,7 +23,7 @@ export default class Ph_Wiki extends HTMLElement {
 		title.className = "feedTitle";
 		title.innerText = subredditPath;
 		headerElements.push(title);
-		headerElements.push(new Ph_FeedInfo(FeedType.subreddit, subredditPath).makeShowInfoButton());
+		headerElements.push(Ph_FeedInfo.getInfoButton(FeedType.subreddit, subredditPath));
 		(elementWithClassInTree(this.parentElement, "viewState") as Ph_ViewState).setHeaderElements(headerElements);
 	}
 }

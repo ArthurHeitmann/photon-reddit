@@ -72,19 +72,19 @@ export default class Ph_PostAndComments extends HTMLElement {
 			userTitle.className = "feedTitle";
 			userTitle.innerText = this.userPrefixed;
 			headerElements.push(userTitle);
-			headerElements.push(new Ph_FeedInfo(
+			headerElements.push(Ph_FeedInfo.getInfoButton(
 				FeedType.user,
 				`/${this.userPrefixed}`
-			).makeShowInfoButton());
+			));
 		}
 		const subTitle = document.createElement("div");
 		subTitle.className = "feedTitle";
 		subTitle.innerText = this.subredditPrefixed;
 		headerElements.push(subTitle);
-		headerElements.push(new Ph_FeedInfo(
+		headerElements.push(Ph_FeedInfo.getInfoButton(
 			this.subredditPrefixed[0] === "r" ? FeedType.subreddit : FeedType.user,
 			`/${this.subredditPrefixed}`
-		).makeShowInfoButton());
+		));
 
 		headerElements.push(this.sorter);
 
