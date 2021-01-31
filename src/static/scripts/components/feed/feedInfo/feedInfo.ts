@@ -5,17 +5,18 @@ import { classInElementTree, linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiType } from "../../../utils/types.js";
 import { numberToShort, replaceRedditLinks, stringSortComparer, throttle } from "../../../utils/utils.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
+import { DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import { FlairData } from "../../misc/flair/flair.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import { clearAllOldData } from "./feedInfoCleanup.js";
 import Ph_BetterButton from "../../global/betterElements/betterButton.js";
 
 export enum FeedType {
-	subreddit,
-	multireddit,
-	user,
-	messages,
-	misc,
+	subreddit = "subreddit",
+	multireddit = "multireddit",
+	user = "user",
+	messages = "messages",
+	misc = "misc",
 }
 interface StoredFeedInfo extends StoredData {
 	feedType: FeedType;
@@ -56,12 +57,11 @@ export default class Ph_FeedInfo extends HTMLElement {
 		button.className = "showInfo";
 		button.innerHTML = `<img src="/img/info.svg" draggable="false" alt="info">`;
 		button.setAttribute("data-feed-url", feedUrl);
+		button.setAttribute("data-feed-type", FeedType[feedType]);
 
-		const info = new Ph_FeedInfo(feedType, feedUrl);
-		if (!(feedUrl in Ph_FeedInfo.loadedInfos))
-			Ph_FeedInfo.loadedInfos[feedUrl] = { feedInfo: info, references: 0 };
+		const info = Ph_FeedInfo.getOrMakeFeedInfo(feedUrl, feedType);
 
-		button.addEventListener("click", info.toggle.bind(info));
+		button.addEventListener("click", info.feedInfo.toggle.bind(info.feedInfo));
 
 		button.addEventListener("ph-added", () => Ph_FeedInfo.onButtonAddedOrRemoved(button, true));
 		button.addEventListener("ph-removed", () => Ph_FeedInfo.onButtonAddedOrRemoved(button, false));
@@ -69,9 +69,19 @@ export default class Ph_FeedInfo extends HTMLElement {
 		return button;
 	}
 
+	private static getOrMakeFeedInfo(feedUrl: string, feedType: FeedType): { feedInfo: Ph_FeedInfo, references: number } {
+		let info = Ph_FeedInfo[feedUrl]
+		if (!info)
+			Ph_FeedInfo[feedUrl] = info = { feedInfo: new Ph_FeedInfo(feedType, feedUrl), references: 0 };
+		if (!info.feedInfo.parentElement)
+			info.feedInfo.addToBody();
+		return info;
+	}
+
 	private static onButtonAddedOrRemoved(button: HTMLButtonElement, wasAdded: boolean) {
-			const feedUrl = button.getAttribute("data-feed-url");
-			const feedInfo = Ph_FeedInfo.loadedInfos[feedUrl];
+			const feedUrl: string = button.getAttribute("data-feed-url");
+			const feedType: FeedType = FeedType[button.getAttribute("data-feed-type")];
+			const feedInfo = Ph_FeedInfo.getOrMakeFeedInfo(feedUrl, feedType);
 			if (wasAdded) {
 				feedInfo.references++;
 			}
@@ -105,6 +115,10 @@ export default class Ph_FeedInfo extends HTMLElement {
 			};
 		}
 
+		this.addToBody();
+	}
+
+	addToBody() {
 		document.body.appendChild(this);
 	}
 
@@ -249,25 +263,29 @@ export default class Ph_FeedInfo extends HTMLElement {
 
 		});
 		subActionsWrapper.appendChild(subscribeButton);
+		const dropDownEntries: DropDownEntryParam[] = [];
+		dropDownEntries.push({displayHTML: `<a href="${this.feedUrl}">Visit</a>`})
+		dropDownEntries.push({displayHTML: `<a href="${this.feedUrl}/submit">Submit Post</a>`})
 		if (localStorage.multis) {
 			const userMultis = ((JSON.parse(localStorage.multis) as StoredData).data as MultiReddit[]);
-			subActionsWrapper.appendChild(new Ph_DropDown(
-				[{
-					displayHTML: "Add to Multireddit",
-					nestedEntries:
-						userMultis.map(multi => ({
-							displayHTML: multi.display_name,
-							value: multi.path,
-							onSelectCallback: ([_, multiPath]) => this.addSubToMulti(this.feedUrl, multiPath.replace(/\/?$/, ""), false)
-						}))
-				}],
-				`<img src="/img/kebab.svg" draggable="false" alt="menu">`,
-				DirectionX.left,
-				DirectionY.bottom,
-				false
-			))
-				.$class("dropDownButton")[0].classList.add("transparentButtonAlt");
+			dropDownEntries.push({
+				displayHTML: "Add to Multireddit",
+				nestedEntries:
+					userMultis.map(multi => ({
+						displayHTML: multi.display_name,
+						value: multi.path,
+						onSelectCallback: ([_, multiPath]) => this.addSubToMulti(this.feedUrl, multiPath.replace(/\/?$/, ""), false)
+					}))
+			});
 		}
+		subActionsWrapper.appendChild(new Ph_DropDown(
+			dropDownEntries,
+			`<img src="/img/kebab.svg" draggable="false" alt="menu">`,
+			DirectionX.left,
+			DirectionY.bottom,
+			false
+		))
+			.$class("dropDownButton")[0].classList.add("transparentButtonAlt");
 		overviewBar.insertAdjacentHTML("beforeend", `
 			<div data-tooltip="${this.loadedInfo.data["subscribers"]}">
 				Subscribers: ${numberToShort(this.loadedInfo.data["subscribers"])}
