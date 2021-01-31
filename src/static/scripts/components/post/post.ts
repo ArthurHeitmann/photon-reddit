@@ -22,7 +22,6 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 	url: string;
 	permalink: string;
 	cover: HTMLElement = null;
-	// Votable implementation
 	totalVotes: number;
 	fullName: string;
 	currentVoteDirection: VoteDirection;
@@ -31,6 +30,8 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 	postBody: Ph_PostBody;
 	isPinned: boolean;
 	isNsfw: boolean;
+	isSpoiler: boolean;
+	wasInitiallySeen: boolean;
 
 	constructor(postData: RedditApiType, isInFeed: boolean) {
 		super(postData.data["name"], postData.data["permalink"], isInFeed);
@@ -46,6 +47,8 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		this.permalink = postData.data["permalink"];
 		this.isPinned = postData.data["stickied"];
 		this.isNsfw = postData.data["over_18"];
+		this.isSpoiler = postData.data["spoiler"];
+		this.wasInitiallySeen = hasPostsBeenSeen(this.fullName);
 		this.classList.add("post");
 
 		if (this.shouldPostBeHidden())
@@ -180,7 +183,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			else
 				makeCoverNFlair("darkred", "NSFW", globalSettings.nsfwPolicy === NsfwPolicy.covered);
 		}
-		if (postData.data["spoiler"]) {
+		if (this.isSpoiler) {
 			this.classList.add("spoiler");
 			makeCoverNFlair("orange", "Spoiler", true);
 		}
@@ -209,7 +212,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 
 	private onSettingsChanged(e: CustomEvent) {
 		const changed: PhotonSettings = e.detail;
-		if (this.shouldPostBeHidden())
+		if (this.shouldPostBeHidden(false, changed))
 			this.classList.add("hide");
 		else
 			this.classList.remove("hide");
@@ -217,24 +220,37 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		const nsfwPolicy: NsfwPolicy = changed.nsfwPolicy;
 		if (!nsfwPolicy)		// this setting hasn't been changed
 			return;
-		if (this.cover)			// previously cover as enabled, due to change can't be covered --> remove it
+		if (this.cover && !this.isSpoiler && changed.nsfwPolicy !== undefined)
 			this.cover.click();
-		else if (!globalSettings.hideSeenPosts) {										// show this post
-			this.classList.remove("hide");
-			if (nsfwPolicy === NsfwPolicy.covered && this.isInFeed && !this.isEmpty(this.postBody)) {		// add cover
-				this.postBody.classList.add("covered");
-				this.cover = this.postBody.appendChild(this.makeContentCover());
-			}
+		if (this.isNsfw && nsfwPolicy === NsfwPolicy.covered && this.isInFeed && !this.isEmpty(this.postBody)) {		// add cover
+			this.postBody.classList.add("covered");
+			this.cover = this.postBody.appendChild(this.makeContentCover());
 		}
 	}
 
-	private shouldPostBeHidden(ignoreSeenSettings: boolean = false): boolean {
-		return (
-			this.isInFeed && (
-				!this.isPinned && globalSettings.hideSeenPosts && !ignoreSeenSettings && hasPostsBeenSeen(this.fullName)
-				|| this.isNsfw && globalSettings.nsfwPolicy === NsfwPolicy.never
-			)
-		);
+	private shouldPostBeHidden(ignoreSeenSettings: boolean = false, changedSettings?: PhotonSettings): boolean {
+		if (changedSettings === undefined) {
+			return (
+				this.isInFeed && (
+					!this.isPinned && globalSettings.hideSeenPosts && !ignoreSeenSettings && hasPostsBeenSeen(this.fullName)
+					|| this.isNsfw && globalSettings.nsfwPolicy === NsfwPolicy.never
+				)
+			);
+		}
+		else {
+			// the if notation might be a bit slower but is a lot more readable
+			if (!this.isInFeed)
+				return false;
+			if (this.isNsfw && globalSettings.nsfwPolicy === NsfwPolicy.never)
+				return true;
+			if (this.isPinned)
+				return false;
+			if (ignoreSeenSettings)
+				return false
+			if (changedSettings.hideSeenPosts !== undefined)
+				return changedSettings.hideSeenPosts && this.wasInitiallySeen && hasPostsBeenSeen(this.fullName);
+			return this.wasInitiallySeen;
+		}
 	}
 
 	makeContentCover(): HTMLElement {
