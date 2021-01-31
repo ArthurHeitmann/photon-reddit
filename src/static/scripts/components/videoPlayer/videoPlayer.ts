@@ -147,6 +147,14 @@ export default class Ph_VideoPlayer extends HTMLElement {
 					]));
 				}
 				break;
+			case "i.redd.it":
+				if (postData.data["preview"] && postData.data["preview"]["images"][0]["variants"]["mp4"]) {
+					videoOut.init(new Ph_SimpleVideo([{
+						src: postData.data["preview"]["images"][0]["variants"]["mp4"]["source"]["url"],
+						type: "video/mp4"
+					}]));
+					break;
+				}
 			case "clips.twitch.tv":
 				const twitchUrl = postData.data["media"]["oembed"]["thumbnail_url"].match(/(.*)-social-preview.jpg$/)[1];
 				videoOut.init(new Ph_SimpleVideo([{src: twitchUrl + ".mp4", type: "video/mp4"}]));
@@ -197,7 +205,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		if (this.video)
 			this.makeControls();
 		else
-			this.innerText = "No video supplied";
+			this.innerText = "No video supplied (maybe it was deleted)";
 	}
 
 	makeControls() {

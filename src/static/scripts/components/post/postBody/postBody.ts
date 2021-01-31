@@ -12,8 +12,8 @@ import Ph_PostText from "./postText/postText.js";
 export default class Ph_PostBody extends HTMLElement {
 	constructor(postData: RedditApiType) {
 		super();
-		if (postData.data["crosspost_parent_list"])		// is cross post ? use original post data
-			postData.data = { ...postData.data, ...postData.data["crosspost_parent_list"][0] };
+		// if (postData.data["crosspost_parent_list"])		// is cross post ? use original post data
+		// 	postData.data = { ...postData.data, ...postData.data["crosspost_parent_list"][0] };
 
 		this.classList.add("content");
 
