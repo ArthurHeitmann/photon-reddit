@@ -132,6 +132,16 @@
 
 		> :first-child {
 			transition: transform .25s ease;
+			width: 100%;
+			height: 100%;
+			text-align: initial;
+
+			> a {
+				width: 100%;
+				height: 100%;
+				display: block;
+
+			}
 		}
 
 		&:hover {
