@@ -89,7 +89,7 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 			throw `Error making sort request: ${JSON.stringify(request)}`;
 		}
 
-		this.feed.replaceChildren(request.data.children);
+		this.feed.replaceChildren(request.data.children, request.data.before, request.data.after);
 	}
 }
 

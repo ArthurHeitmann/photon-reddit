@@ -154,7 +154,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			);
 			this.beforeData = sectionItems.data.before;
 			this.afterData = sectionItems.data.after;
-			this.replaceChildren(sectionItems.data.children);
+			this.replaceChildren(sectionItems.data.children, sectionItems.data.before, sectionItems.data.after);
 			viewsStack.changeCurrentUrl(this.requestUrl);
 		} catch (e) {
 			new Ph_Toast(Level.Error, "Error getting user section items");
@@ -173,7 +173,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			);
 			this.beforeData = sectionItems.data.before;
 			this.afterData = sectionItems.data.after;
-			this.replaceChildren(sectionItems.data.children);
+			this.replaceChildren(sectionItems.data.children, sectionItems.data.before, sectionItems.data.after);
 			viewsStack.changeCurrentUrl(this.requestUrl);
 		} catch (e) {
 			console.error("Error getting message section items");
@@ -300,9 +300,11 @@ export default class Ph_UniversalFeed extends HTMLElement {
 		}
 	}
 
-	replaceChildren(posts: RedditApiType[]) {
+	replaceChildren(posts: RedditApiType[], beforeData: string, afterData: string) {
 		this.innerText = "";
 		this.allPostFullNames = [];
+		this.beforeData = beforeData;
+		this.afterData = afterData;
 		elementWithClassInTree(this.parentElement, "viewState")?.scrollTo(0, 0);
 
 		for (const item of posts) {
