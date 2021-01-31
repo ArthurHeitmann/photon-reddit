@@ -45,6 +45,12 @@ export function linksToInlineImages(elem: HTMLElement) {
 		if (!(/^[^?]+(?<!#.*)\.(png|jpg|jpeg|gif)(\?.*)?$/).test((link as HTMLAnchorElement).href)) {
 			continue;
 		}
+		else if ((/wikipedia\.org.*File:/).test((link as HTMLAnchorElement).href)) {
+			continue;
+		}
+		else if ((/preview\.redd\.it\/.*\.gif\?format=mp4/).test((link as HTMLAnchorElement).href)) {
+			continue;
+		}
 
 		const image = new Ph_PostImage([{originalUrl: (link as HTMLAnchorElement).href, caption: ""}]);
 		link.innerHTML = "";
