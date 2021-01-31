@@ -38,11 +38,11 @@ export default class Ph_PostBody extends HTMLElement {
 				if (postData.data["preview"])
 					this.innerHTML = `
 						<div class="linkPreviewWrapper">
-							<a href="${escADQ(postData.data["url"])}" target="_blank" rel="noopener">${escHTML(postData.data["url"])}</a>
+							<a href="${escADQ(postData.data["url"])}" rel="noopener">${escHTML(postData.data["url"])}</a>
 							<img src="${escADQ(postData.data["preview"]["images"][0]["source"]["url"])}" alt="preview">
 						</div>`;
 				else
-					this.innerHTML = `<a href="${escADQ(postData.data["url"])}" target="_blank" rel="noopener">${escHTML(postData.data["url"])}</a>`;
+					this.innerHTML = `<a href="${escADQ(postData.data["url"])}" rel="noopener">${escHTML(postData.data["url"])}</a>`;
 				break;
 			case PostType.Video:
 				this.classList.add("fullScale");
@@ -101,8 +101,6 @@ export default class Ph_PostBody extends HTMLElement {
 				break;
 			
 			}
-		for (const a of this.$tag("a"))
-			(a as HTMLAnchorElement).target = "_blank";
 
 		replaceRedditLinks(this);
 		linksToSpa(this);

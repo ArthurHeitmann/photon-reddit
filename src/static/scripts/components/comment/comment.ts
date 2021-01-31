@@ -188,10 +188,6 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 			.insertAdjacentElement("afterend", Ph_Flair.fromThingData(commentData.data, "author"));
 		linksToInlineImages(mainPart);
 
-		for (const a of mainPart.$tag("a")) {
-			(a as HTMLAnchorElement).target = "_blank";
-		}
-
 		this.childComments = document.createElement("div");
 		this.childComments.className = "replies";
 		mainPart.appendChild(this.childComments);
