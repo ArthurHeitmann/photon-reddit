@@ -34,11 +34,9 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 			this.audio.play();
 		});
 		this.video.addEventListener("loadeddata", () => this.dispatchEvent(new Event("ph-ready")));
-		this.video.addEventListener("play", () => this.audio.play()
-			.catch(() => undefined /* the pause() call from the line below will cause a weird exception */));
-		this.video.addEventListener("pause", () => this.audio.pause());
 		this.video.addEventListener("seeking", () => this.audio.currentTime = this.video.currentTime);
 		this.audio.addEventListener("play", () => this.video.play());
+		this.audio.addEventListener("pause", () => this.video.readyState !== 1 && this.video.pause());
 
 		// this mess is needed in order to know if the video has audio
 		this.video.addEventListener("timeupdate", this.noAudioProgressCallback = () => {
@@ -63,10 +61,12 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 
 	play(): void {
 		this.video.play().catch(() => undefined);
+		this.audio.play().catch(() => undefined);
 	}
 
 	pause(): void {
 		this.video.pause();
+		this.audio.pause();
 	}
 
 	togglePlay(): void {
