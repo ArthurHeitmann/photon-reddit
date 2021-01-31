@@ -126,7 +126,7 @@ a {
 	font-size: inherit;
 
 	&, * {
-		color: #7da3f9;
+		color: vars.$link-color;
 	}
 }
 
@@ -155,8 +155,19 @@ blockquote {
 	transition: background-color .5s ease;
 	transition-delay: 9999999s;
 
+	a {
+		color: vars.$text;
+		transition-delay: 9999999s;
+		transition: color .5s ease;
+	}
+
 	&:hover {
 		background: inherit;
 		transition-delay: 0s;
+
+		a {
+			color: vars.$link-color;
+			transition-delay: 0s;
+		}
 	}
 }
