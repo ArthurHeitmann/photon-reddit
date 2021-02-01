@@ -66,4 +66,29 @@
 	.button {
 		background: vars.$background;
 	}
+
+	.sectionSelection {
+		width: calc(100% + 2rem);
+		margin: 1rem 0 1rem -1rem;
+		height: 3rem;
+		font-size: 1.24rem;
+		display: flex;
+		padding: 0;
+		border-right-width: 0;
+		border-left-width: 0;
+
+		> button {
+			line-height: 3rem;
+			flex-grow: 1;
+			transition: background-color .25s ease;
+
+			&:hover {
+				background: #333333;
+			}
+
+			&.selected, &:active {
+				background: #404040;
+			}
+		}
+	}
 }

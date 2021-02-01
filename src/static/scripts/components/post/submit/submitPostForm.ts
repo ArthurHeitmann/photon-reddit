@@ -3,6 +3,16 @@ import { thisUser } from "../../../utils/globals.js";
 import Ph_FeedInfo, { FeedType } from "../../feed/feedInfo/feedInfo.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 
+enum SubmitPostType {
+	text = "Text",
+	link = "Link",
+}
+
+interface SubmitTypeSection {
+	type: SubmitPostType,
+	element: HTMLElement
+}
+
 export default class Ph_SubmitPostForm extends HTMLElement {
 	subInput: HTMLDivElement;
 	validIndicator: HTMLImageElement;
@@ -13,6 +23,10 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 	textInput: HTMLDivElement;
 	submitButton: HTMLButtonElement;
 	isCommunityNameValid: boolean = false;
+	allPossibleTypeSections: SubmitTypeSection[] = [];
+	currentSection: SubmitTypeSection;
+	sectionSelection: HTMLDivElement;
+	allowedTypes: SubmitPostType[];
 
 	constructor() {
 		super();
@@ -37,17 +51,31 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		this.titleInput = this.makeTextInput("", "Title");
 		this.appendChild(this.titleInput);
 
-		this.linkUrlInput = this.makeTextInput("", "Url");
-		this.appendChild(this.linkUrlInput);
-
 		this.textInput = this.makeTextInput("postthis.textInput", "Text", true);
-		this.appendChild(this.textInput);
+		this.textInput.classList.add("hide");
+		this.allPossibleTypeSections.push({ type: SubmitPostType.text, element: this.textInput });
+
+		this.linkUrlInput = this.makeTextInput("", "Url");
+		this.linkUrlInput.classList.add("hide");
+		this.allPossibleTypeSections.push({ type: SubmitPostType.link, element: this.linkUrlInput });
+
+		this.sectionSelection = document.createElement("div");
+		this.sectionSelection.className = "sectionSelection el2";
+		this.appendChild(this.sectionSelection);
+		for (const section of this.allPossibleTypeSections) {
+			const sectionButton = document.createElement("button");
+			sectionButton.innerText = section.type;
+			sectionButton.addEventListener("click", this.onSectionClick.bind(this));
+			this.sectionSelection.appendChild(sectionButton);
+			this.appendChild(section.element);
+		}
+		this.setAllowedTypes([]);
 
 		this.submitButton = document.createElement("button");
 		this.submitButton.innerText = "Submit";
 		this.submitButton.className = "button";
 		this.appendChild(this.submitButton);
-		this.submitButton.addEventListener("click", this.onSubmitPost.bind(this))
+		this.submitButton.addEventListener("click", this.onSubmitPost.bind(this));
 
 		if (/^\/r\/\w+\/submit/.test(history.state.url)) {
 			const subMatches = history.state.url.match(/(?<=^\/r\/)\w+/);
@@ -72,6 +100,20 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		input.placeholder = placeHolderText;
 		wrapper.appendChild(input)
 		return wrapper;
+	}
+
+	private onSectionClick(e: Event) {
+		this.select(e.currentTarget as HTMLButtonElement);
+	}
+
+	select(button: HTMLButtonElement) {
+		const clickedSection = this.allPossibleTypeSections
+			.find(section => section.type === button.innerText);
+		this.currentSection?.element.classList.add("hide");
+		clickedSection.element.classList.remove("hide");
+		this.currentSection = clickedSection;
+		this.sectionSelection.$class("selected")[0]?.classList.remove("selected");
+		button.classList.add("selected");
 	}
 
 	private async onSubmitPost() {
@@ -116,6 +158,20 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 				this.subSubmitText.classList.add("hide");
 			this.subInfoButton.innerText = "";
 			this.subInfoButton.appendChild(Ph_FeedInfo.getInfoButton(FeedType.subreddit, community));
+			await Ph_FeedInfo.loadedInfos[community].feedInfo.forceLoad();
+			const subData = Ph_FeedInfo.loadedInfos[community].feedInfo.loadedInfo.data;
+			if (subData["submission_type"] === "any")
+				this.setAllowedTypes([ SubmitPostType.text, SubmitPostType.link ]);
+			else if (subData["submission_type"] === "self")
+				this.setAllowedTypes([ SubmitPostType.text ]);
+			else if (subData["submission_type"] === "link")
+				this.setAllowedTypes([ SubmitPostType.link ]);
+			else {
+				console.error("Invalid submission type for ");
+				console.error(subData);
+				new Ph_Toast(Level.Error, "Couldn't get submission type");
+				throw "Invalid submission type";
+			}
 		}
 		else {
 			const r = await redditApiRequest(`${community}/about`, [], false);
@@ -128,7 +184,22 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 			this.subInfoButton.innerText = "";
 			this.subInfoButton.appendChild(Ph_FeedInfo.getInfoButton(FeedType.user, community));
 		}
-		// info button
+	}
+
+	setAllowedTypes(sections: SubmitPostType[]) {
+		this.allowedTypes = sections;
+		for (const button of this.sectionSelection.children) {
+			if (sections.includes(<SubmitPostType> (button as HTMLElement).innerText))
+				button.classList.remove("hide");
+			else
+				button.classList.add("hide");
+		}
+		if (sections.length === 0)
+			return;
+		this.sectionSelection.$class("selected")[0]?.classList.remove("selected");
+		const firstAllowedButton = Array.from(this.sectionSelection.children)
+			.find(btn => sections.includes(<SubmitPostType> (btn as HTMLElement).innerText));
+		this.select(firstAllowedButton as HTMLButtonElement);
 	}
 
 	setCommunityIsValid() {
@@ -144,6 +215,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		this.validIndicator.alt = "Wrong Name";
 		this.subSubmitText.classList.add("hide");
 		this.subInfoButton.innerText = "";
+		this.setAllowedTypes([]);
 	}
 
 	setCommunityIsNeutral() {

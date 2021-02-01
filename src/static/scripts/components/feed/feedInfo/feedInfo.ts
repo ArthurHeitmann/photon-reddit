@@ -50,7 +50,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 	hideRef: () => void;
 	static refreshEveryNMs = 2 * 60 * 60 * 1000;		// 2 hours
 	static supportedFeedType: FeedType[] = [FeedType.subreddit, FeedType.user, FeedType.multireddit];
-	private static loadedInfos: { [feedUrl: string]: { feedInfo: Ph_FeedInfo, references: number } } = {};
+	static loadedInfos: { [feedUrl: string]: { feedInfo: Ph_FeedInfo, references: number } } = {};
 
 	static getInfoButton(feedType: FeedType, feedUrl: string): HTMLButtonElement {
 		const button = new Ph_BetterButton();
@@ -70,9 +70,9 @@ export default class Ph_FeedInfo extends HTMLElement {
 	}
 
 	private static getOrMakeFeedInfo(feedUrl: string, feedType: FeedType): { feedInfo: Ph_FeedInfo, references: number } {
-		let info = Ph_FeedInfo[feedUrl]
+		let info = Ph_FeedInfo.loadedInfos[feedUrl]
 		if (!info)
-			Ph_FeedInfo[feedUrl] = info = { feedInfo: new Ph_FeedInfo(feedType, feedUrl), references: 0 };
+			Ph_FeedInfo.loadedInfos[feedUrl] = info = { feedInfo: new Ph_FeedInfo(feedType, feedUrl), references: 0 };
 		if (!info.feedInfo.parentElement)
 			info.feedInfo.addToBody();
 		return info;
@@ -713,6 +713,11 @@ export default class Ph_FeedInfo extends HTMLElement {
 		}
 	}
 
+	async forceLoad() {
+		if (!this.hasLoaded)
+			await this.getOrUpdateInfo();
+	}
+
 	saveInfo() {
 		localStorage.setItem(this.feedUrl, JSON.stringify(this.loadedInfo));
 		window.dispatchEvent(new CustomEvent("feedInfoReady", { detail: this }));
@@ -738,8 +743,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		this.classList.remove("remove");
 		setTimeout(() => window.addEventListener("click", this.focusLossHideRef), 0);
 		window.addEventListener("ph-view-change", this.hideRef);
-		if (!this.hasLoaded)
-			this.getOrUpdateInfo();
+		this.forceLoad();
 	}
 
 	hide() {
