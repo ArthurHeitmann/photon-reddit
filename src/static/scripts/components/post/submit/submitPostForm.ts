@@ -36,6 +36,12 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 	textSubmitText: string = "Submit";
 	linkSubmitText: string = "Submit";
 	selectedFlairId: string;
+	nsfwButton: HTMLButtonElement;
+	spoilerButton: HTMLButtonElement;
+	isNsfw: boolean = false;
+	forceNsfw: boolean = false;
+	isSpoiler: boolean = false;
+	isSpoilerAllowed: boolean = false;
 
 	constructor() {
 		super();
@@ -84,6 +90,21 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		bottomBar.className = "bottomBar";
 		this.appendChild(bottomBar);
 
+		this.nsfwButton = this.makeSpecialButton("NSFW", "nsfw", bottomBar, () => {
+			this.isNsfw = !this.isNsfw || this.forceNsfw;
+			if (this.isNsfw)
+				this.nsfwButton.classList.add("selected");
+			else
+				this.nsfwButton.classList.remove("selected");
+		});
+		this.spoilerButton = this.makeSpecialButton("Spoiler", "spoiler", bottomBar, () => {
+			this.isSpoiler = !this.isSpoiler && this.isSpoilerAllowed;
+			if (this.isSpoiler)
+				this.spoilerButton.classList.add("selected");
+			else
+				this.spoilerButton.classList.remove("selected");
+		});
+
 		this.flairSelectorWrapper = document.createElement("div");
 		this.flairSelectorWrapper.className = "flairSelectorWrapper";
 		bottomBar.appendChild(this.flairSelectorWrapper);
@@ -117,6 +138,15 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		input.placeholder = placeHolderText;
 		wrapper.appendChild(input)
 		return wrapper;
+	}
+
+	private makeSpecialButton(text: string, className: string, appendTo: HTMLElement, onClick: () => void): HTMLButtonElement {
+		const btn = document.createElement("button");
+		btn.className = `specialButton ${className}`;
+		btn.innerText = text;
+		btn.addEventListener("click", onClick);
+		appendTo.appendChild(btn);
+		return btn;
 	}
 
 	private onSectionClick(e: Event) {
@@ -168,6 +198,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		community = community.replace(/^\/?/, "/");
 
 		if (community.startsWith("/r/")) {
+			// check if valid
 			const r = await redditApiRequest(`${community}/api/submit_text`, [], false);
 			if (r["kind"] === "listing" || r["error"]) {
 				new Ph_Toast(Level.Error, "Subreddit not found", {timeout: 2500});
@@ -175,6 +206,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 				return;
 			}
 			this.setCommunityIsValid();
+			// set submit text
 			if (r["submit_text"]) {
 				this.subSubmitText.innerHTML = r["submit_text_html"];
 				replaceRedditLinks(this.subSubmitText);
@@ -182,12 +214,15 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 			}
 			else
 				this.subSubmitText.classList.add("hide");
+			// load detailed sub info
 			this.subInfoButton.innerText = "";
 			this.subInfoButton.appendChild(Ph_FeedInfo.getInfoButton(FeedType.subreddit, community));
 			await Ph_FeedInfo.loadedInfos[community].feedInfo.forceLoad();
 			const subData = Ph_FeedInfo.loadedInfos[community].feedInfo.loadedInfo.data;
+			// submit button text
 			this.textSubmitText = subData["submit_text_label"] || "Submit";
 			this.linkSubmitText = subData["submit_link_label"] || "Submit";
+			// allowed submission types
 			if (subData["submission_type"] === "any")
 				this.setAllowedTypes([ SubmitPostType.text, SubmitPostType.link ]);
 			else if (subData["submission_type"] === "self")
@@ -200,6 +235,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 				new Ph_Toast(Level.Error, "Couldn't get submission type");
 				throw "Invalid submission type";
 			}
+			// flair selection
 			const flairs: {}[] = await redditApiRequest(`${community}/api/link_flair_v2`, [], true);
 			this.flairSelectorWrapper.innerText = "";
 			if (!flairs["error"]) {
@@ -227,7 +263,13 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 					));
 				}
 			}
-
+			// nsfw & spoiler
+			this.forceNsfw = subData["over18"];
+			if (this.forceNsfw && !this.isNsfw)
+				this.nsfwButton.click();
+			this.isSpoilerAllowed = subData["spoilers_enabled"];
+			if (!this.isSpoilerAllowed && this.isSpoiler)
+				this.spoilerButton.click();
 		}
 		else {
 			const r = await redditApiRequest(`${community}/about`, [], false);

@@ -60,6 +60,30 @@
 				background-color: #292929 !important;
 			}
 		}
+
+		.specialButton {
+			height: 2rem;
+			border-radius: 1rem;
+			border: 2px solid var(--special-color);
+			padding: 0 1.25rem;
+			transition: all .25s ease;
+
+			&:not(.selected):hover {
+				color: var(--special-color);
+			}
+
+			&.selected {
+				background: var(--special-color);
+			}
+
+			&.nsfw {
+				--special-color: darkred;
+			}
+
+			&.spoiler {
+				--special-color: orange;
+			}
+		}
 	}
 
 	.el2 {
