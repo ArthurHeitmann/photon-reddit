@@ -42,6 +42,12 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 	forceNsfw: boolean = false;
 	isSpoiler: boolean = false;
 	isSpoilerAllowed: boolean = false;
+	linkIsImageButton: HTMLButtonElement;
+	linkIsVideoButton: HTMLButtonElement;
+	isImage: boolean = false;
+	isVideo: boolean = false;
+	imagesAllowed: boolean = true;
+	videosAllowed: boolean = true;
 
 	constructor() {
 		super();
@@ -72,6 +78,10 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 
 		this.linkUrlInput = this.makeTextInput("", "Url");
 		this.linkUrlInput.classList.add("hide");
+		this.linkIsImageButton = this.makeLinkTypeButton(true, false);
+		this.linkUrlInput.appendChild(this.linkIsImageButton);
+		this.linkIsVideoButton = this.makeLinkTypeButton(false, true);
+		this.linkUrlInput.appendChild(this.linkIsVideoButton);
 		this.allPossibleTypeSections.push({ type: SubmitPostType.link, element: this.linkUrlInput });
 
 		this.sectionSelection = document.createElement("div");
@@ -147,6 +157,37 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		btn.addEventListener("click", onClick);
 		appendTo.appendChild(btn);
 		return btn;
+	}
+
+	private makeLinkTypeButton(isImage: boolean, isVideo: boolean): HTMLButtonElement {
+		if (isImage === isVideo)
+			throw "must be image xor video";
+		const button = document.createElement("button");
+		button.className = "linkTypeButton transparentButtonAlt";
+		button.innerHTML = `<img src="/img/file${isImage ? "Image" : "Video"}.svg" alt="link is ${isImage ? "image" : "video"}">`;
+		button.setAttribute("data-tooltip", `Link is a${isImage ? "n image" : " video"}`);
+		button.addEventListener("click", (e) => {
+			const btn = e.currentTarget as HTMLButtonElement;
+			if (btn.classList.contains("selected")) {
+				btn.classList.remove("selected");
+				if (isImage)	this.isImage = false;
+				else			this.isVideo = false;
+			}
+			else if (!(isImage && !this.imagesAllowed || isVideo && !this.videosAllowed)) {
+				btn.classList.add("selected");
+				if (isImage) {
+					this.isImage = true;
+					if (this.isVideo)
+						this.linkIsVideoButton.click();
+				}
+				else {
+					this.isVideo = true;
+					if (this.isImage)
+						this.linkIsImageButton.click();
+				}
+			}
+		});
+		return button;
 	}
 
 	private onSectionClick(e: Event) {
@@ -235,6 +276,12 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 				new Ph_Toast(Level.Error, "Couldn't get submission type");
 				throw "Invalid submission type";
 			}
+			this.imagesAllowed = subData["allow_images"];
+			if (this.isImage)
+				this.linkIsImageButton.click();
+			this.videosAllowed = subData["allow_videos"];
+			if (this.isVideo)
+				this.linkIsVideoButton.click();
 			// flair selection
 			const flairs: {}[] = await redditApiRequest(`${community}/api/link_flair_v2`, [], true);
 			this.flairSelectorWrapper.innerText = "";
