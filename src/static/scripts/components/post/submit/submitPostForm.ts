@@ -1,6 +1,11 @@
 import { redditApiRequest } from "../../../api/redditApi.js";
 import { thisUser } from "../../../utils/globals.js";
+import { linksToSpa } from "../../../utils/htmlStuff.js";
+import { replaceRedditLinks } from "../../../utils/utils.js";
 import Ph_FeedInfo, { FeedType } from "../../feed/feedInfo/feedInfo.js";
+import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
+import { DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
+import Ph_Flair from "../../misc/flair/flair.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 
 enum SubmitPostType {
@@ -27,6 +32,10 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 	currentSection: SubmitTypeSection;
 	sectionSelection: HTMLDivElement;
 	allowedTypes: SubmitPostType[];
+	flairSelectorWrapper: HTMLDivElement;
+	textSubmitText: string = "Submit";
+	linkSubmitText: string = "Submit";
+	selectedFlairId: string;
 
 	constructor() {
 		super();
@@ -45,7 +54,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		this.appendChild(this.subInput);
 
 		this.subSubmitText = document.createElement("div");
-		this.subSubmitText.className = "el2 roundedM hide";
+		this.subSubmitText.className = "el2 roundedM hide subSubmitText";
 		this.appendChild(this.subSubmitText);
 
 		this.titleInput = this.makeTextInput("", "Title");
@@ -71,10 +80,18 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		}
 		this.setAllowedTypes([]);
 
+		const bottomBar = document.createElement("div");
+		bottomBar.className = "bottomBar";
+		this.appendChild(bottomBar);
+
+		this.flairSelectorWrapper = document.createElement("div");
+		this.flairSelectorWrapper.className = "flairSelectorWrapper";
+		bottomBar.appendChild(this.flairSelectorWrapper);
+
 		this.submitButton = document.createElement("button");
-		this.submitButton.innerText = "Submit";
-		this.submitButton.className = "button";
-		this.appendChild(this.submitButton);
+		this.submitButton.innerText = this.textSubmitText;
+		this.submitButton.className = "button submit";
+		bottomBar.appendChild(this.submitButton);
 		this.submitButton.addEventListener("click", this.onSubmitPost.bind(this));
 
 		if (/^\/r\/\w+\/submit/.test(history.state.url)) {
@@ -114,6 +131,12 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		this.currentSection = clickedSection;
 		this.sectionSelection.$class("selected")[0]?.classList.remove("selected");
 		button.classList.add("selected");
+		if (this.currentSection.type === SubmitPostType.text)
+			this.submitButton.innerText = this.textSubmitText;
+		else if (this.currentSection.type === SubmitPostType.link)
+			this.submitButton.innerText = this.linkSubmitText;
+		else
+			this.submitButton.innerText = "Submit";
 	}
 
 	private async onSubmitPost() {
@@ -152,14 +175,19 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 				return;
 			}
 			this.setCommunityIsValid();
-			if (r["submit_text"])
+			if (r["submit_text"]) {
 				this.subSubmitText.innerHTML = r["submit_text_html"];
+				replaceRedditLinks(this.subSubmitText);
+				linksToSpa(this.subSubmitText);
+			}
 			else
 				this.subSubmitText.classList.add("hide");
 			this.subInfoButton.innerText = "";
 			this.subInfoButton.appendChild(Ph_FeedInfo.getInfoButton(FeedType.subreddit, community));
 			await Ph_FeedInfo.loadedInfos[community].feedInfo.forceLoad();
 			const subData = Ph_FeedInfo.loadedInfos[community].feedInfo.loadedInfo.data;
+			this.textSubmitText = subData["submit_text_label"] || "Submit";
+			this.linkSubmitText = subData["submit_link_label"] || "Submit";
 			if (subData["submission_type"] === "any")
 				this.setAllowedTypes([ SubmitPostType.text, SubmitPostType.link ]);
 			else if (subData["submission_type"] === "self")
@@ -172,6 +200,34 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 				new Ph_Toast(Level.Error, "Couldn't get submission type");
 				throw "Invalid submission type";
 			}
+			const flairs: {}[] = await redditApiRequest(`${community}/api/link_flair_v2`, [], true);
+			this.flairSelectorWrapper.innerText = "";
+			if (!flairs["error"]) {
+				const flairDropdownEntries: DropDownEntryParam[] = [];
+				for (const flair of flairs) {
+					flairDropdownEntries.push({
+						displayElement: new Ph_Flair({
+							type: flair["type"],
+							richText: flair["richtext"],
+							text: flair["text"],
+							backgroundColor: flair["background_color"],
+							textColor: flair["text_color"]
+						}),
+						value: flair["id"],
+						onSelectCallback: this.selectFlair.bind(this)
+					});
+				}
+				if (flairDropdownEntries.length) {
+					this.flairSelectorWrapper.appendChild(new Ph_DropDown(
+						flairDropdownEntries,
+						"Select Flair",
+						DirectionX.left,
+						DirectionY.bottom,
+						false
+					));
+				}
+			}
+
 		}
 		else {
 			const r = await redditApiRequest(`${community}/about`, [], false);
@@ -184,6 +240,10 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 			this.subInfoButton.innerText = "";
 			this.subInfoButton.appendChild(Ph_FeedInfo.getInfoButton(FeedType.user, community));
 		}
+	}
+
+	selectFlair([flairId]) {
+		this.selectedFlairId = flairId;
 	}
 
 	setAllowedTypes(sections: SubmitPostType[]) {
@@ -215,6 +275,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		this.validIndicator.alt = "Wrong Name";
 		this.subSubmitText.classList.add("hide");
 		this.subInfoButton.innerText = "";
+		this.flairSelectorWrapper.innerText = "";
 		this.setAllowedTypes([]);
 	}
 

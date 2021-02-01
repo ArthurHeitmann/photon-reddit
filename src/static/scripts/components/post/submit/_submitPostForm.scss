@@ -37,6 +37,31 @@
 		}
 	}
 
+	.subSubmitText {
+		code {
+			max-width: 100%;
+			word-break: break-word;
+		}
+	}
+
+	.bottomBar {
+		display: flex;
+		justify-content: space-between;
+		flex-wrap: wrap;
+
+		.button.submit, .flairSelectorWrapper {
+			width: max-content;
+			max-width: 100%;
+		}
+
+		.flairSelectorWrapper {
+			.dropDownButton, .dropDownEntry {
+				border-color: #383838 !important;
+				background-color: #292929 !important;
+			}
+		}
+	}
+
 	.el2 {
 		background: #292929;
 		border: 1px solid #383838;
