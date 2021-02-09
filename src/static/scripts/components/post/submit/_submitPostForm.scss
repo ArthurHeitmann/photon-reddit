@@ -50,9 +50,14 @@
 		flex-wrap: wrap;
 		margin-top: 1rem;
 
-		.button.submit, .flairSelectorWrapper {
-			width: max-content;
-			max-width: 100%;
+		> .group {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+
+			> * {
+				margin: .25rem;
+			}
 		}
 
 		.flairSelectorWrapper {
@@ -83,6 +88,25 @@
 
 			&.spoiler {
 				--special-color: orange;
+			}
+		}
+
+		.notificationButton {
+			width: 1.8rem;
+			height: 1.8rem;
+			opacity: .3;
+			transition: all .25s ease;
+
+			&.selected {
+				opacity: 1;
+			}
+
+			&:hover:not(.selected) {
+				opacity: .75;
+			}
+
+			> img {
+				height: 1.8rem;
 			}
 		}
 	}

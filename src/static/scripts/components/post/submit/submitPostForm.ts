@@ -48,6 +48,10 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 	isVideo: boolean = false;
 	imagesAllowed: boolean = true;
 	videosAllowed: boolean = true;
+	notificationButton: HTMLButtonElement;
+	sendNotifications: boolean = true;
+	repostCheckButton: HTMLButtonElement;
+	checkForReposts: boolean = true;
 
 	constructor() {
 		super();
@@ -78,10 +82,40 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 
 		this.linkUrlInput = this.makeTextInput("", "Url");
 		this.linkUrlInput.classList.add("hide");
-		this.linkIsImageButton = this.makeLinkTypeButton(true, false);
+		this.linkIsImageButton = this.makeImageButton("/img/fileImage.svg", "Link is Image", "Link is Image", (e) => {
+			const btn = e.currentTarget as HTMLButtonElement;
+			if (btn.classList.contains("selected")) {
+				btn.classList.remove("selected");
+				this.isImage = false;
+			}
+			else if (this.imagesAllowed) {
+				btn.classList.add("selected");
+				this.isImage = true;
+				if (this.isVideo)
+					this.linkIsVideoButton.click();
+			}
+		});
 		this.linkUrlInput.appendChild(this.linkIsImageButton);
-		this.linkIsVideoButton = this.makeLinkTypeButton(false, true);
+		this.linkIsVideoButton = this.makeImageButton("/img/fileVideo.svg", "Link is Video", "Link is Video", (e) => {
+			const btn = e.currentTarget as HTMLButtonElement;
+			if (btn.classList.contains("selected")) {
+				btn.classList.remove("selected");
+				this.isVideo = false;
+			}
+			else if (this.videosAllowed) {
+				btn.classList.add("selected");
+				this.isVideo = true;
+				if (this.isImage)
+					this.linkIsImageButton.click();
+			}
+		});
 		this.linkUrlInput.appendChild(this.linkIsVideoButton);
+		this.repostCheckButton = this.makeImageButton("/img/refresh.svg", "check if repost", "Check if repost", () => {
+			this.repostCheckButton.classList.toggle("selected");
+			this.checkForReposts = this.repostCheckButton.classList.contains("selected");
+		})
+		this.repostCheckButton.classList.add("selected");
+		this.linkUrlInput.appendChild(this.repostCheckButton);
 		this.allPossibleTypeSections.push({ type: SubmitPostType.link, element: this.linkUrlInput });
 
 		this.sectionSelection = document.createElement("div");
@@ -98,16 +132,20 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 
 		const bottomBar = document.createElement("div");
 		bottomBar.className = "bottomBar";
-		this.appendChild(bottomBar);
+		this.appendChild(bottomBar)
 
-		this.nsfwButton = this.makeSpecialButton("NSFW", "nsfw", bottomBar, () => {
+		const leftItems = document.createElement("div");
+		leftItems.className = "group";
+		bottomBar.appendChild(leftItems);
+
+		this.nsfwButton = this.makeSpecialButton("NSFW", "nsfw", leftItems, () => {
 			this.isNsfw = !this.isNsfw || this.forceNsfw;
 			if (this.isNsfw)
 				this.nsfwButton.classList.add("selected");
 			else
 				this.nsfwButton.classList.remove("selected");
 		});
-		this.spoilerButton = this.makeSpecialButton("Spoiler", "spoiler", bottomBar, () => {
+		this.spoilerButton = this.makeSpecialButton("Spoiler", "spoiler", leftItems, () => {
 			this.isSpoiler = !this.isSpoiler && this.isSpoilerAllowed;
 			if (this.isSpoiler)
 				this.spoilerButton.classList.add("selected");
@@ -117,12 +155,24 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 
 		this.flairSelectorWrapper = document.createElement("div");
 		this.flairSelectorWrapper.className = "flairSelectorWrapper";
-		bottomBar.appendChild(this.flairSelectorWrapper);
+		leftItems.appendChild(this.flairSelectorWrapper);
+
+		const rightItems = document.createElement("div");
+		rightItems.className = "group";
+		bottomBar.appendChild(rightItems);
+
+		this.notificationButton = this.makeImageButton("/img/notification.svg", "send notifications", "Send Notifications", () => {
+			this.notificationButton.classList.toggle("selected");
+			this.sendNotifications = this.notificationButton.classList.contains("selected");
+		});
+		this.notificationButton.classList.add("notificationButton");
+		this.notificationButton.classList.add("selected");
+		rightItems.appendChild(this.notificationButton);
 
 		this.submitButton = document.createElement("button");
 		this.submitButton.innerText = this.textSubmitText;
 		this.submitButton.className = "button submit";
-		bottomBar.appendChild(this.submitButton);
+		rightItems.appendChild(this.submitButton);
 		this.submitButton.addEventListener("click", this.onSubmitPost.bind(this));
 
 		if (/^\/r\/\w+\/submit/.test(history.state.url)) {
@@ -159,34 +209,12 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		return btn;
 	}
 
-	private makeLinkTypeButton(isImage: boolean, isVideo: boolean): HTMLButtonElement {
-		if (isImage === isVideo)
-			throw "must be image xor video";
+	private makeImageButton(imgUrl: string, alt: string, tooltip: string, onClick: (e: MouseEvent) => void): HTMLButtonElement {
 		const button = document.createElement("button");
 		button.className = "linkTypeButton transparentButtonAlt";
-		button.innerHTML = `<img src="/img/file${isImage ? "Image" : "Video"}.svg" alt="link is ${isImage ? "image" : "video"}">`;
-		button.setAttribute("data-tooltip", `Link is a${isImage ? "n image" : " video"}`);
-		button.addEventListener("click", (e) => {
-			const btn = e.currentTarget as HTMLButtonElement;
-			if (btn.classList.contains("selected")) {
-				btn.classList.remove("selected");
-				if (isImage)	this.isImage = false;
-				else			this.isVideo = false;
-			}
-			else if (!(isImage && !this.imagesAllowed || isVideo && !this.videosAllowed)) {
-				btn.classList.add("selected");
-				if (isImage) {
-					this.isImage = true;
-					if (this.isVideo)
-						this.linkIsVideoButton.click();
-				}
-				else {
-					this.isVideo = true;
-					if (this.isImage)
-						this.linkIsImageButton.click();
-				}
-			}
-		});
+		button.innerHTML = `<img src="${imgUrl}" alt="${alt}">`;
+		button.setAttribute("data-tooltip", tooltip);
+		button.addEventListener("click", onClick);
 		return button;
 	}
 
