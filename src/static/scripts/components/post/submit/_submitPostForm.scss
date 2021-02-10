@@ -132,6 +132,14 @@
 		}
 	}
 
+	.button.submit {
+		&:disabled {
+			filter: contrast(.3);
+			opacity: .6;
+			cursor: default;
+		}
+	}
+
 	.el2 {
 		background: #292929;
 		border: 1px solid #383838;

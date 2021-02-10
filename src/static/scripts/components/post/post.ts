@@ -1,10 +1,15 @@
-import { save, vote, VoteDirection, voteDirectionFromLikes } from "../../api/redditApi.js";
+import { deleteThing, save, vote, VoteDirection, voteDirectionFromLikes } from "../../api/redditApi.js";
 import Votable from "../../types/votable.js";
-import { hasPostsBeenSeen, markPostAsSeen } from "../../utils/globals.js";
+import { hasPostsBeenSeen, markPostAsSeen, thisUser } from "../../utils/globals.js";
 import { escADQ, escHTML } from "../../utils/htmlStatics.js";
 import { elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
-import { numberToShort as numberToShort, numberToShortStr, timePassedSinceStr } from "../../utils/utils.js";
+import {
+	isObjectEmpty,
+	numberToShort as numberToShort,
+	numberToShortStr,
+	timePassedSinceStr
+} from "../../utils/utils.js";
 import Ph_FeedItem from "../feed/feedItem/feedItem.js";
 import { globalSettings, NsfwPolicy, PhotonSettings } from "../global/photonSettings/photonSettings.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
@@ -76,15 +81,18 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		actionWrapper.appendChild(this.voteDownButton);
 		this.setVotesState(this.currentVoteDirection);
 		// additional actions drop down
-		const moreDropDown = new Ph_DropDown([
+		const dropDownEntries = [
 			{ displayHTML: this.isSaved ? "Unsave" : "Save", onSelectCallback: this.toggleSave.bind(this) },
 			{ displayHTML: "Share", nestedEntries: [
-				{ displayHTML: "Copy Post Link", value: "post link", onSelectCallback: this.share.bind(this) },
-				{ displayHTML: "Copy Reddit Link", value: "reddit link", onSelectCallback: this.share.bind(this) },
-				{ displayHTML: "Copy Link", value: "link", onSelectCallback: this.share.bind(this) },
-				{ displayHTML: "Crosspost", onSelectCallback: this.crossPost.bind(this) },
-			] }
-		], "", DirectionX.left, DirectionY.bottom, true);
+					{ displayHTML: "Copy Post Link", value: "post link", onSelectCallback: this.share.bind(this) },
+					{ displayHTML: "Copy Reddit Link", value: "reddit link", onSelectCallback: this.share.bind(this) },
+					{ displayHTML: "Copy Link", value: "link", onSelectCallback: this.share.bind(this) },
+					{ displayHTML: "Crosspost", onSelectCallback: this.crossPost.bind(this) },
+				] }
+		];
+		if (thisUser && thisUser.name === postData.data["author"])
+			dropDownEntries.push({ displayHTML: "Delete", onSelectCallback: this.deletePost.bind(this) });
+		const moreDropDown = new Ph_DropDown(dropDownEntries, "", DirectionX.left, DirectionY.bottom, true);
 		moreDropDown.toggleButton.classList.add("transparentButtonAlt");
 		actionWrapper.appendChild(moreDropDown);
 		// go to comments link
@@ -333,6 +341,20 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 				throw "Invalid share type";
 				
 		}
+	}
+
+	async deletePost() {
+		const resp = await deleteThing(this);
+
+		if (!isObjectEmpty(resp) || resp["error"]) {
+			console.error("Error deleting post");
+			console.error(resp);
+			new Ph_Toast(Level.Error, "Error deleting post");
+			return;
+		}
+
+		this.postBody.innerText = "[deleted]";
+		this.postBody.className = "content padded";
 	}
 
 	crossPost() {

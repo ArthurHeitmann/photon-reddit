@@ -1,4 +1,5 @@
 import { redditApiRequest } from "../../../api/redditApi.js";
+import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager.js";
 import { thisUser } from "../../../utils/globals.js";
 import { linksToSpa } from "../../../utils/htmlStuff.js";
 import { replaceRedditLinks } from "../../../utils/utils.js";
@@ -42,10 +43,10 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 	forceNsfw: boolean = false;
 	isSpoiler: boolean = false;
 	isSpoilerAllowed: boolean = false;
-	linkIsImageButton: HTMLButtonElement;
-	linkIsVideoButton: HTMLButtonElement;
-	isImage: boolean = false;
-	isVideo: boolean = false;
+	// linkIsImageButton: HTMLButtonElement;
+	// linkIsVideoButton: HTMLButtonElement;
+	// isImage: boolean = false;
+	// isVideo: boolean = false;
 	imagesAllowed: boolean = true;
 	videosAllowed: boolean = true;
 	notificationButton: HTMLButtonElement;
@@ -82,34 +83,34 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 
 		this.linkUrlInput = this.makeTextInput("", "Url");
 		this.linkUrlInput.classList.add("hide");
-		this.linkIsImageButton = this.makeImageButton("/img/fileImage.svg", "Link is Image", "Link is Image", (e) => {
-			const btn = e.currentTarget as HTMLButtonElement;
-			if (btn.classList.contains("selected")) {
-				btn.classList.remove("selected");
-				this.isImage = false;
-			}
-			else if (this.imagesAllowed) {
-				btn.classList.add("selected");
-				this.isImage = true;
-				if (this.isVideo)
-					this.linkIsVideoButton.click();
-			}
-		});
-		this.linkUrlInput.appendChild(this.linkIsImageButton);
-		this.linkIsVideoButton = this.makeImageButton("/img/fileVideo.svg", "Link is Video", "Link is Video", (e) => {
-			const btn = e.currentTarget as HTMLButtonElement;
-			if (btn.classList.contains("selected")) {
-				btn.classList.remove("selected");
-				this.isVideo = false;
-			}
-			else if (this.videosAllowed) {
-				btn.classList.add("selected");
-				this.isVideo = true;
-				if (this.isImage)
-					this.linkIsImageButton.click();
-			}
-		});
-		this.linkUrlInput.appendChild(this.linkIsVideoButton);
+		// this.linkIsImageButton = this.makeImageButton("/img/fileImage.svg", "Link is Image", "Link is Image", (e) => {
+		// 	const btn = e.currentTarget as HTMLButtonElement;
+		// 	if (btn.classList.contains("selected")) {
+		// 		btn.classList.remove("selected");
+		// 		this.isImage = false;
+		// 	}
+		// 	else if (this.imagesAllowed) {
+		// 		btn.classList.add("selected");
+		// 		this.isImage = true;
+		// 		if (this.isVideo)
+		// 			this.linkIsVideoButton.click();
+		// 	}
+		// });
+		// this.linkUrlInput.appendChild(this.linkIsImageButton);
+		// this.linkIsVideoButton = this.makeImageButton("/img/fileVideo.svg", "Link is Video", "Link is Video", (e) => {
+		// 	const btn = e.currentTarget as HTMLButtonElement;
+		// 	if (btn.classList.contains("selected")) {
+		// 		btn.classList.remove("selected");
+		// 		this.isVideo = false;
+		// 	}
+		// 	else if (this.videosAllowed) {
+		// 		btn.classList.add("selected");
+		// 		this.isVideo = true;
+		// 		if (this.isImage)
+		// 			this.linkIsImageButton.click();
+		// 	}
+		// });
+		// this.linkUrlInput.appendChild(this.linkIsVideoButton);
 		this.repostCheckButton = this.makeImageButton("/img/refresh.svg", "check if repost", "Check if repost", () => {
 			this.repostCheckButton.classList.toggle("selected");
 			this.checkForReposts = this.repostCheckButton.classList.contains("selected");
@@ -172,6 +173,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		this.submitButton = document.createElement("button");
 		this.submitButton.innerText = this.textSubmitText;
 		this.submitButton.className = "button submit";
+		this.submitButton.disabled = true;
 		rightItems.appendChild(this.submitButton);
 		this.submitButton.addEventListener("click", this.onSubmitPost.bind(this));
 
@@ -239,19 +241,50 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 	}
 
 	private async onSubmitPost() {
-		// const params = [];
-		// params.push(["sr", this.subInput.value]);
-		// params.push(["kind", textRadio.checked ? "self" : "link"]);
-		// if (textRadio.checked)
-		// 	params.push(["text", this.textInput.value]);
-		// else
-		// 	params.push(["url", this.linkUrlInput.value]);
-		// params.push(["title", this.titleInput.value]);
-		//
-		// const r = redditApiRequest("/api/submit", params, true, { method: "POST" })
+		const params = [];
+		params.push(["sr", this.subInput.$tag("input")[0]["value"]]);
+		params.push(["title", this.titleInput.$tag("input")[0]["value"]]);
+		if (this.selectedFlairId !== null)
+			params.push(["flair_id", this.selectedFlairId]);
+		params.push(["nsfw", this.isNsfw]);
+		if (this.isSpoilerAllowed)
+			params.push(["spoiler", this.isSpoiler]);
+		params.push(["resubmit", !this.checkForReposts]);
+		params.push(["sendreplies", this.sendNotifications]);
+
+		switch (this.currentSection.type) {
+			case SubmitPostType.text:
+				params.push(["kind", "self"]);
+				params.push(["text", this.textInput.$tag("textarea")[0]["value"]])
+				break;
+			case SubmitPostType.link:
+				params.push(["kind", "link"]);
+				params.push(["url", this.linkUrlInput.$tag("input")[0]["value"]])
+				break;
+			default:
+				throw "Not implemented"
+		}
+
+		const r = await redditApiRequest("/api/submit", params, true, { method: "POST" });
+		if (r["error"]) {
+			new Ph_Toast(Level.Error, "Error posting");
+			console.error(r);
+			throw "error posting";
+		}
+		const jqueryArr: any[][] = r["jquery"];
+		const redirectIndex = jqueryArr.findIndex(value => value[3] === "redirect");
+		const errorMessageIndex = jqueryArr.findIndex(value => value[3] === "text");
+		if (errorMessageIndex !== -1) {
+			const msg = jqueryArr[errorMessageIndex + 1][3][0];
+			new Ph_Toast(Level.Error, msg);
+			return;
+		}
+		const path = jqueryArr[redirectIndex + 1][3][0].match(/(?<=reddit\.com).*/)[0];
+		pushLinkToHistoryComb(path);
 	}
 
 	private async onSubChange() {
+		this.submitButton.disabled = true;
 		let community = (this.subInput.$tag("input")[0] as HTMLInputElement).value;
 		if (!/^(r|u|user)\//.test(community)) {
 			new Ph_Toast(Level.Error, `Community must start with "r/" or "u/" or "user/"`, {timeout: 3500});
@@ -305,14 +338,15 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 				throw "Invalid submission type";
 			}
 			this.imagesAllowed = subData["allow_images"];
-			if (this.isImage)
-				this.linkIsImageButton.click();
+			// if (this.isImage)
+			// 	this.linkIsImageButton.click();
 			this.videosAllowed = subData["allow_videos"];
-			if (this.isVideo)
-				this.linkIsVideoButton.click();
+			// if (this.isVideo)
+			// 	this.linkIsVideoButton.click();
 			// flair selection
 			const flairs: {}[] = await redditApiRequest(`${community}/api/link_flair_v2`, [], true);
 			this.flairSelectorWrapper.innerText = "";
+			this.selectedFlairId = null;
 			if (!flairs["error"]) {
 				const flairDropdownEntries: DropDownEntryParam[] = [];
 				for (const flair of flairs) {
@@ -345,6 +379,8 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 			this.isSpoilerAllowed = subData["spoilers_enabled"];
 			if (!this.isSpoilerAllowed && this.isSpoiler)
 				this.spoilerButton.click();
+
+			this.submitButton.disabled = false;
 		}
 		else {
 			const r = await redditApiRequest(`${community}/about`, [], false);
