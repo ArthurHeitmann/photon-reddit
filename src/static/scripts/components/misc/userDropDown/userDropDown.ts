@@ -1,5 +1,5 @@
 import { pushLinkToHistoryComb, pushLinkToHistorySep, viewsStack } from "../../../historyState/historyStateManager.js";
-import { thisUser } from "../../../utils/globals.js";
+import { isLoggedIn, thisUser } from "../../../utils/globals.js";
 import { escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { elementWithClassInTree, linksToSpa } from "../../../utils/htmlStuff.js";
 import { numberToShort } from "../../../utils/utils.js";
@@ -61,10 +61,18 @@ export default class Ph_UserDropDown extends HTMLElement {
 			else
 				throw "Wut?";
 			item.classList.add("item");
+			item.classList.add("transparentButtonAlt");
 			item.setAttribute("data-tooltip", tooltip);
 			item.innerHTML = `<img src="${escADQ(imgSrc)}" alt="${tooltip}">`
 			return item;
 		}
+		// current user page
+		const userPage = makeAction(
+			"/img/user.svg",
+			"u/me",
+			() => pushLinkToHistoryComb(`/user/${thisUser.name}`)
+		);
+		actions.appendChild(userPage);
 		// create post
 		const postAction = makeAction(
 			"/img/edit.svg",
@@ -93,7 +101,7 @@ export default class Ph_UserDropDown extends HTMLElement {
 		// clear previous states
 		const clearAction = makeAction(
 			"/img/close.svg",
-			"Clear History",
+			"Unload Pages",
 			() => viewsStack.clear()
 		);
 		actions.appendChild(clearAction);

@@ -54,7 +54,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 
 	static getInfoButton(feedType: FeedType, feedUrl: string): HTMLButtonElement {
 		const button = new Ph_BetterButton();
-		button.className = "showInfo";
+		button.className = "showInfo transparentButtonAlt";
 		button.innerHTML = `<img src="/img/info.svg" draggable="false" alt="info">`;
 		button.setAttribute("data-feed-url", feedUrl);
 		button.setAttribute("data-feed-type", FeedType[feedType]);
