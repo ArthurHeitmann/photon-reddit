@@ -43,7 +43,7 @@ export default class Ph_PostImage extends HTMLElement {
 				galleryInitData.push({
 					caption: item["caption"] || postData.data["title"],
 					originalUrl: imgData["s"]["u"],
-					previewUrl: previews[previews.length - 1]["u"],
+					previewUrl: previews.length > 0 && previews[previews.length - 1]["u"] || undefined,
 				});
 			}
 		}
