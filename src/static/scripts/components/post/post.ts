@@ -165,9 +165,15 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 				</div>
 			</div>
 		`;
-
-		this.postBody = new Ph_PostBody(postData);
-		mainPart.appendChild(this.postBody);
+		try {
+			this.postBody = new Ph_PostBody(postData);
+			mainPart.appendChild(this.postBody);
+		}
+		catch (e) {
+			console.error(`Error making post for ${postData.data["permalink"]}`);
+			console.error(e);
+			new Ph_Toast(Level.Error, "Error making post");
+		}
 		this.appendChild(mainPart);
 
 		mainPart.$class("flairWrapper")[0]
