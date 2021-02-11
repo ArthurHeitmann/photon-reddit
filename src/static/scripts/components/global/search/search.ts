@@ -357,8 +357,8 @@ export default class Ph_Search extends HTMLElement {
 			window.open(`${url}?${paramsString}`).focus();
 		else {
 			pushLinkToHistorySep(
-				(this.currentSubreddit ?? "") + "/search",
-				"?" + paramsString
+				`${this.currentSubreddit ?? ""}/search`,
+				`?${paramsString}`
 			);
 		}
 	}

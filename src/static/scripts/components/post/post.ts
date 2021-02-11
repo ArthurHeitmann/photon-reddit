@@ -337,7 +337,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 				navigator.clipboard.writeText(location.origin + this.link);
 				break;
 			case "reddit link":
-				navigator.clipboard.writeText("reddit.com" + this.link);
+				navigator.clipboard.writeText(`reddit.com${this.link}`);
 				break;
 			case "link":
 				if (this.url)

@@ -12,7 +12,7 @@ window.addEventListener("load", async () => {
 	let fetchUrl = params.get("url");
 	let [path, query] = splitPathQuery(fetchUrl);
 	path = path.replace(/\/?.?j?s?o?n?$/, "/.json");
-	fetchUrl = "https://www.reddit.com" + path + query;
+	fetchUrl = `https://www.reddit.com${path}${query}`;
 	try {
 		const resp = await fetch(fetchUrl);
 		const data: RedditApiType[] = await resp.json();

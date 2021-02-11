@@ -93,15 +93,15 @@ export default class Ph_UniversalFeed extends HTMLElement {
 				feedBaseUrl = requestUrl.match(/\/r\/[^/?]+/)[0];
 			}
 			else if (/^\/(u|user)\/[^/]+\/m\/[^/]+/.test(requestUrl)) {				// multi
-				title.innerText = "Multireddit " + requestUrl.match(/\/m\/([^/]+)/)[1];
+				title.innerText = `Multireddit ${requestUrl.match(/\/m\/([^/]+)/)[1]}`;
 				feedType = FeedType.multireddit;
 				const matches = requestUrl.match(/\/(u|user)\/([^/]+)\/m\/([^/]+)/)
 				feedBaseUrl = `/user/${matches[2]}/m/${matches[3]}`;
 			}
 			else if (/^\/(u|user)\/[^/]+/.test(requestUrl)) {						// user
-				title.innerText = "u/" + requestUrl.match(/\/(u|user)\/([^/?]+)/)[2];
+				title.innerText = `u/${requestUrl.match(/\/(u|user)\/([^/?]+)/)[2]}`;
 				feedType = FeedType.user;
-				feedBaseUrl = "/user/" + requestUrl.match(/\/(u|user)\/([^/?]+)/)[2];
+				feedBaseUrl = `/user/${requestUrl.match(/\/(u|user)\/([^/?]+)/)[2]}`;
 			}
 			else if (/^\/message\//.test(requestUrl))
 				feedType = FeedType.messages;

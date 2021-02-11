@@ -443,7 +443,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		controls.appendChild(timeTextHover);
 		progressBar.addEventListener("mousemove", e => {
 			timeTextHover.innerText = secondsToVideoTime(e.offsetX / progressBar.offsetWidth * this.video.getMaxTime());
-			timeTextHover.style.left = e.offsetX + "px";
+			timeTextHover.style.left = `${e.offsetX}px`;
 		});
 		progressBar.addEventListener("mouseenter", () => {
 			timeTextHover.classList.add("show");
