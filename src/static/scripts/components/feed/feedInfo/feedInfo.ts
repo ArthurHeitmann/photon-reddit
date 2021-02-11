@@ -104,7 +104,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		this.hideRef = this.hide.bind(this);
 		this.className = "feedInfo remove";
 
-		const storedInfo = localStorage[feedUrl];
+		const storedInfo = localStorage[feedUrl.toLowerCase()];
 		if (storedInfo) {
 			this.loadedInfo = JSON.parse(storedInfo);
 		}
@@ -672,11 +672,11 @@ export default class Ph_FeedInfo extends HTMLElement {
 				this.loadedInfo.data.subreddits.sort(stringSortComparer);
 				this.saveInfo();
 			}
-			else if (localStorage[multiPath]) {
+			else if (localStorage[multiPath.toLowerCase()]) {
 				// force reload on next load
-				const multiData: StoredData = JSON.parse(localStorage[multiPath]);
+				const multiData: StoredData = JSON.parse(localStorage[multiPath.toLowerCase()]);
 				multiData.lastUpdatedMsUTC = 1;
-				localStorage[multiPath] = JSON.stringify(multiData);
+				localStorage[multiPath.toLowerCase()] = JSON.stringify(multiData);
 			}
 			if (subsList) {
 				const newSubIndex = this.loadedInfo.data.subreddits.indexOf(response["name"]);
@@ -720,12 +720,12 @@ export default class Ph_FeedInfo extends HTMLElement {
 	}
 
 	saveInfo() {
-		localStorage.setItem(this.feedUrl, JSON.stringify(this.loadedInfo));
+		localStorage.setItem(this.feedUrl.toLowerCase(), JSON.stringify(this.loadedInfo));
 		window.dispatchEvent(new CustomEvent("feedInfoReady", { detail: this }));
 	}
 
 	removeInfo() {
-		localStorage.removeItem(this.feedUrl);
+		localStorage.removeItem(this.feedUrl.toLowerCase());
 	}
 
 	isLoadedInfoValid(): boolean {

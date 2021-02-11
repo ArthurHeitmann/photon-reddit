@@ -4,7 +4,7 @@ import { globalSettings } from "../../global/photonSettings/photonSettings.js";
 export function clearAllOldData() {
 	const now = Date.now();
 	let removedCachedInfos = 0;
-	for (const localStorageKey of Object.keys(localStorage)) {
+	for (const localStorageKey in localStorage) {
 		if (!/^\/(r|u|user)\/[^/]+/.test(localStorageKey))		// skip if not feed info
 			continue;
 		const feedInfo = JSON.parse(localStorage[localStorageKey]) as StoredData;
