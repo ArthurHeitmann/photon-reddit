@@ -1,7 +1,7 @@
 import { pushLinkToHistoryComb, pushLinkToHistorySep, viewsStack } from "../../../historyState/historyStateManager.js";
 import { isLoggedIn, thisUser } from "../../../utils/globals.js";
 import { escADQ, escHTML } from "../../../utils/htmlStatics.js";
-import { elementWithClassInTree, linksToSpa } from "../../../utils/htmlStuff.js";
+import { elementWithClassInTree, isElementIn, linksToSpa } from "../../../utils/htmlStuff.js";
 import { numberToShort } from "../../../utils/utils.js";
 import Ph_Header from "../../global/header/header.js";
 import Ph_Toast, { Level } from "../toast/toast.js";
@@ -22,6 +22,10 @@ export default class Ph_UserDropDown extends HTMLElement {
 		dropDownArea.appendChild(this.makeSubredditGroup([{ path: "/r/popular", name: "r/popular" }, { path: "/r/all", name: "r/all" }], "Reddit Feeds"));
 		this.appendChild(dropDownArea);
 
+		window.addEventListener("click", e => {
+			if (!isElementIn(this, e.target as HTMLElement))
+				this.minimize();
+		});
 		window.addEventListener("ph-page-ready", () => {
 			dropDownArea.appendChild(this.makeSubredditGroup(
 				thisUser.multireddits.map(multi => ({name: multi.display_name, path: multi.path})),

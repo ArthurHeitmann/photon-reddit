@@ -8,7 +8,7 @@
 	height: 100%;
 	width: min(40vw, 35rem);
 	background: vars.$background-el1;
-	border-left: 1px solid #383838;
+	border-left: 1px solid vars.$border-color;
 	opacity: 1;
 	transform: translateX(0);
 	transition: all .25s ease;
@@ -111,7 +111,8 @@
 				align-items: center;
 
 				> .subscribeButton {
-					border: 1px solid vars.$text;
+					border: 1px solid vars.$border-color;
+					background: vars.$background;
 					padding: 0 .75rem;
 					height: 1.5rem;
 					border-radius: .75rem;
@@ -257,7 +258,7 @@
 		}
 
 		> input {
-			border-bottom: 1px solid #383838;
+			border-bottom: 1px solid vars.$border-color;
 		}
 
 		> .subsSearchResults {

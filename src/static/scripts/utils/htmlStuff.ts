@@ -39,6 +39,19 @@ export function elementWithClassInTree(elem: HTMLElement, className: string): HT
 	return elem && (elem.classList.contains(className) && elem || elementWithClassInTree(elem.parentElement, className));
 }
 
+export function isElementIn(container: HTMLElement, checkElement: HTMLElement): boolean {
+	if (container === checkElement)
+		return true;
+
+	const parent = checkElement.parentElement;
+	if (parent === null)
+		return false;
+	if (isElementIn(container, parent))
+		return true;
+
+	return false;
+}
+
 export function linksToInlineImages(elem: HTMLElement) {
 	const links = elem.$tag("a");
 	for (let link of links) {

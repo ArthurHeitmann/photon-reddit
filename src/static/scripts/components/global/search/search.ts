@@ -2,7 +2,7 @@ import { searchSubreddits, searchUser } from "../../../api/redditApi.js";
 import { pushLinkToHistoryComb, pushLinkToHistorySep } from "../../../historyState/historyStateManager.js";
 import { ViewChangeData } from "../../../historyState/viewsStack.js";
 import { escADQ } from "../../../utils/htmlStatics.js";
-import { elementWithClassInTree, linksToSpa } from "../../../utils/htmlStuff.js";
+import { elementWithClassInTree, isElementIn, linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiType, SortPostsTimeFrame, SortSearchOrder } from "../../../utils/types.js";
 import { extractPath, extractQuery, throttle } from "../../../utils/utils.js";
 import Ph_FeedInfo from "../../feed/feedInfo/feedInfo.js";
@@ -63,6 +63,7 @@ export default class Ph_Search extends HTMLElement {
 
 		this.searchBar = document.createElement("input");
 		this.searchBar.type = "text";
+		this.searchBar.autocomplete = "off";
 		this.searchBar.id = "quickSearch";
 		this.appendChild(this.searchBar);
 		this.searchBar.addEventListener("keypress", e => e.code === "Enter" && this.search(e));
@@ -161,6 +162,10 @@ export default class Ph_Search extends HTMLElement {
 			this.limitToSubreddit.checked = currParams.get("restrict_sr") === "true";
 		}
 
+		window.addEventListener("click", e => {
+			if (!isElementIn(this, e.target as HTMLElement))
+				this.minimize();
+		});
 		window.addEventListener("ph-view-change", (e: CustomEvent) => {
 			const subMatches = (e.detail as ViewChangeData).viewState.state.url.match(/^\/r\/[^\/]+/);
 			this.currentSubreddit = subMatches && subMatches[0] || null;

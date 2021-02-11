@@ -70,7 +70,13 @@ export default class Ph_Header extends HTMLElement {
 		this.addEventListener("mouseleave", this.headerMouseLeave);
 		this.$class("showSettingsButton")[0].addEventListener("click", () => {
 			this.settings.toggle();
-			this.headerMouseLeave();
+			this.hide();
+		});
+		window.addEventListener("ph-view-change", () => {
+			if (!this.isPinned)
+				this.hide();
+			else
+				this.minimizeAll();
 		});
 
 		this.$class("pinToggleButton")[0].addEventListener("click", e => {

@@ -75,7 +75,7 @@
 
 	&.isInFeed {
 		background: vars.$background-el1;
-		border: 1px solid #383838;
+		border: 1px solid vars.$border-color;
 		border-radius: vars.$b-r;
 		@extend %shadow-diffuse;
 

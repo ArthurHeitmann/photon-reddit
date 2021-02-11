@@ -48,7 +48,8 @@ body {
 }
 
 .button {
-	border: 1px solid vars.$text;
+	border: 1px solid vars.$border-color;
+	background: vars.$background-el1;
 	height: 2rem;
 	border-radius: 1rem;
 	padding: 0 .75rem;

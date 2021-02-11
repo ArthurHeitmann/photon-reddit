@@ -1,9 +1,10 @@
 import { redditApiRequest, subscribe } from "../../../api/redditApi.js";
 import { isLoggedIn, MultiReddit, StoredData } from "../../../utils/globals.js";
-import { escADQ, escHTML } from "../../../utils/htmlStatics.js";
+import { $class, escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { classInElementTree, linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiType } from "../../../utils/types.js";
 import { numberToShort, replaceRedditLinks, stringSortComparer, throttle } from "../../../utils/utils.js";
+import Ph_Header from "../../global/header/header.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import { DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import { FlairData } from "../../misc/flair/flair.js";
@@ -740,7 +741,11 @@ export default class Ph_FeedInfo extends HTMLElement {
 	}
 
 	show() {
+		if (this.parentElement === null)
+			this.addToBody();
+
 		this.classList.remove("remove");
+		($class("header")[0] as Ph_Header).hide();
 		setTimeout(() => window.addEventListener("click", this.focusLossHideRef), 0);
 		window.addEventListener("ph-view-change", this.hideRef);
 		this.forceLoad();
