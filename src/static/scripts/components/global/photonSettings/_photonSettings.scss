@@ -45,6 +45,10 @@
 			}
 		}
 
+		.save.button {
+			background: vars.$background;
+		}
+
 		> .mainWrapper {
 			display: flex;
 			flex-grow: 1;

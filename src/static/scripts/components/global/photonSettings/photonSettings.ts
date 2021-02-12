@@ -84,7 +84,7 @@ export default class Ph_PhotonSettings extends HTMLElement {
 		const bottomBar = document.createElement("div");
 		bottomBar.className = "bottomBar";
 		const saveButton = document.createElement("button");
-		saveButton.className = "button";
+		saveButton.className = "button save";
 		saveButton.innerText = "Save";
 		saveButton.addEventListener("click", () => {
 			if (isObjectEmpty(this.temporarySettings)) {
