@@ -1,6 +1,6 @@
 import { getRedgifsMp4SrcFromUrl } from "../../api/redgifsApi.js";
 import { escADQ, escHTML } from "../../utils/htmlStatics.js";
-import { classInElementTree, elementWithClassInTree} from "../../utils/htmlStuff.js";
+import { classInElementTree, elementWithClassInTree } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../utils/types.js";
 import { secondsToVideoTime } from "../../utils/utils.js";
 import Ph_ControlsBar from "../misc/controlsBar/controlsBar.js";
@@ -156,8 +156,19 @@ export default class Ph_VideoPlayer extends HTMLElement {
 					break;
 				}
 			case "clips.twitch.tv":
-				const twitchUrl = postData.data["media"]["oembed"]["thumbnail_url"].match(/(.*)-social-preview.jpg$/)[1];
-				videoOut.init(new Ph_SimpleVideo([{src: twitchUrl + ".mp4", type: "video/mp4"}]));
+				const twitchUrlMatches = postData.data["media"]["oembed"]["thumbnail_url"].match(/(.*)-social-preview.jpg$/);
+				if (twitchUrlMatches && twitchUrlMatches.length == 2)
+					videoOut.init(new Ph_SimpleVideo([{src: twitchUrlMatches[1] + ".mp4", type: "video/mp4"}]));
+				else {
+					fetch(`/youtube-dl?url=${encodeURIComponent(postData.data["url"])}`).then(async res => {
+						const clipMp4 = (await res.json())["url"];
+						videoOut.init(new Ph_SimpleVideo([{ src: clipMp4, type: "video/mp4" }]));
+					}).catch(err => {
+						new Ph_Toast(Level.Error, "Error getting Twitch clip");
+						console.error("Error getting twitch clip url");
+						console.error(err);
+					});
+				}
 				break;
 			case "redgifs.com":
 				getRedgifsMp4SrcFromUrl(postData.data["url"])

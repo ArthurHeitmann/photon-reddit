@@ -12,10 +12,11 @@ import {
 	port,
 	redditTokenRateLimitConfig,
 	scope,
-	tokenDuration
+	tokenDuration, youtube_dlRateLimitConfig
 } from "./serverScripts/consts.js";
 import { initialAccessToken, refreshAccessToken } from "./serverScripts/loginRedirect.js";
 import bodyParser from "body-parser";
+import youtube_dl from "youtube-dl";
 
 const app = express();
 
@@ -80,6 +81,12 @@ app.get("/refreshToken", RateLimit(redditTokenRateLimitConfig), expressAsyncHand
 		res.send('{ "error": "¯\\_(ツ)_/¯"}');
 	}
 }));
+
+app.get("/youtube-dl", RateLimit(youtube_dlRateLimitConfig), (req, res) => {
+	youtube_dl.getInfo(req.query["url"], [], (err, info) => {
+		res.json({ url: info.url });
+	});
+});
 
 // /data instead of /analytics used to avoid getting blocked by adblockers
 app.use("/data", analyticsRouter);

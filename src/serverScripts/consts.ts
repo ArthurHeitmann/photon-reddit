@@ -29,3 +29,9 @@ export const analyticsRateLimitConfig = {
 	message: "A little fast hugh?",
 	headers: false
 };
+export const youtube_dlRateLimitConfig = {
+	windowMs: 30 * 1000,
+	max: 40,
+	message: "A little fast hugh?",
+	headers: false
+};
