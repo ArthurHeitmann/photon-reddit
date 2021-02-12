@@ -1,3 +1,4 @@
+import { youtubeDl } from "../../api/photonApi.js";
 import { getRedgifsMp4SrcFromUrl } from "../../api/redgifsApi.js";
 import { escADQ, escHTML } from "../../utils/htmlStatics.js";
 import { classInElementTree, elementWithClassInTree } from "../../utils/htmlStuff.js";
@@ -41,22 +42,25 @@ export default class Ph_VideoPlayer extends HTMLElement {
 				]));
 				break;
 			case "gfycat.com":
-				let capitalizedPath;
-				if (/^https?:\/\/thumbs\.gfycat\.com\/./.test(postData.data["media"]["oembed"]["thumbnail_url"])) {
-					capitalizedPath = postData.data["media"]["oembed"]["thumbnail_url"].match(/^https?:\/\/thumbs\.gfycat\.com\/(\w+)/)[1];
-				}
-				else if (/^https?:\/\/i.embed.ly\/./.test(postData.data["media"]["oembed"]["thumbnail_url"])) {
-					capitalizedPath = postData.data["media"]["oembed"]["thumbnail_url"].match(/thumbs\.gfycat\.com%2F(\w+)/)[1];
+				if (postData.data["media"]) {
+					let capitalizedPath;
+					if (/^https?:\/\/thumbs\.gfycat\.com\/./.test(postData.data["media"]["oembed"]["thumbnail_url"])) {
+						capitalizedPath = postData.data["media"]["oembed"]["thumbnail_url"].match(/^https?:\/\/thumbs\.gfycat\.com\/(\w+)/)[1];
+					} else if (/^https?:\/\/i.embed.ly\/./.test(postData.data["media"]["oembed"]["thumbnail_url"])) {
+						capitalizedPath = postData.data["media"]["oembed"]["thumbnail_url"].match(/thumbs\.gfycat\.com%2F(\w+)/)[1];
+					} else {
+						throw `Invalid gfycat oembed link ${postData.data["media"]["oembed"]["thumbnail_url"]}`;
+					}
+					videoOut.init(new Ph_SimpleVideo([
+						{src: `https://thumbs.gfycat.com/${capitalizedPath}-mobile.mp4`, type: "video/mp4"},
+						{src: `https://giant.gfycat.com/${capitalizedPath}.webm`, type: "video/webm"},
+						{src: `https://giant.gfycat.com/${capitalizedPath}.mp4`, type: "video/mp4"},
+						{src: `https://thumbs.gfycat.com/${capitalizedPath}-mobile.mp4`, type: "video/mp4"},
+					]));
 				}
 				else {
-					throw `Invalid gfycat oembed link ${postData.data["media"]["oembed"]["thumbnail_url"]}`;
+					youtubeDl(postData.data["url"]).then(mp4Url => videoOut.init(new Ph_SimpleVideo([{ src: mp4Url, type: "video/mp4" }])))
 				}
-				videoOut.init(new Ph_SimpleVideo([
-					{src: `https://thumbs.gfycat.com/${capitalizedPath}-mobile.mp4`, type: "video/mp4"},
-					{src: `https://giant.gfycat.com/${capitalizedPath}.webm`, type: "video/webm"},
-					{src: `https://giant.gfycat.com/${capitalizedPath}.mp4`, type: "video/mp4"},
-					{src: `https://thumbs.gfycat.com/${capitalizedPath}-mobile.mp4`, type: "video/mp4"},
-				]));
 				break;
 			case "v.redd.it":
 				// wtf is this inconsistency v.redd.it ??????!
@@ -160,8 +164,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 				if (twitchUrlMatches && twitchUrlMatches.length == 2)
 					videoOut.init(new Ph_SimpleVideo([{src: twitchUrlMatches[1] + ".mp4", type: "video/mp4"}]));
 				else {
-					fetch(`/youtube-dl?url=${encodeURIComponent(postData.data["url"])}`).then(async res => {
-						const clipMp4 = (await res.json())["url"];
+					youtubeDl(postData.data["url"]).then(async clipMp4 => {
 						videoOut.init(new Ph_SimpleVideo([{ src: clipMp4, type: "video/mp4" }]));
 					}).catch(err => {
 						new Ph_Toast(Level.Error, "Error getting Twitch clip");

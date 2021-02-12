@@ -111,13 +111,12 @@ export default class Ph_PostBody extends HTMLElement {
 			return PostType.Text;
 		else if (new RegExp(
 			"^((https?://(i|m)?\.?imgur\\.com\/[\\w-]+.(gifv|mp4))|" +
-			"(https?://v.redd.it\/[\\w-]+)|" +
-			"(https?://w?w?w?\.?redgifs.com\/watch\/\\w+))|" +
-			"(\.(gif|mp4)(\\?.*)?$)"
+			"(https?://v.redd.it\\/[\\w-]+)|" +
+			"(https?://w?w?w?\\.?redgifs.com/watch/\\w+))|" +
+			"(https?://gfycat.com/[\\w-]+)|" +
+			"(\\.(gif|mp4)(\\?.*)?$)"
 		).test(postData["url"])
 		)
-			return PostType.Video;
-		else if (/https?:\/\/gfycat.com\/[\w-]+/.test(postData["url"]) && postData["media"])
 			return PostType.Video;
 		else if (/https?:\/\/clips.twitch.tv\/[\w-]+/.test(postData["url"]) && postData["media"])
 			return PostType.Video;
