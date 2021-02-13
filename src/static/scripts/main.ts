@@ -1,3 +1,9 @@
+/**
+ * Entrypoint
+ *
+ * This file gets loaded from index.html and imports all other files
+ */
+
 import { hasAnalyticsFileLoaded } from "./unsuspiciousFolder/unsuspiciousFile.js";
 import Ph_Header from "./components/global/header/header.js";
 import Ph_Toast, { Level } from "./components/misc/toast/toast.js";

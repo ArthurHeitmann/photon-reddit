@@ -1,4 +1,20 @@
-// unsuspicious to adblock blocking
+/**
+ * Some basic tracking
+ *
+ * What will be tracked:
+ *  - randomized user id (resets every 30 days)
+ *  - visited page
+ *  - previous page/referer
+ *  - time
+ *
+ *  will not track when:
+ *   - when running on localhost
+ *   - on analytics dashboards
+ *
+ *  Incognito mode (from the settings):
+ *   - url will only send "/i"
+ *   - referer will be empty
+ */
 
 import { globalSettings } from "../components/global/photonSettings/photonSettings.js";
 import { ViewChangeData } from "../historyState/viewsStack.js";
@@ -29,13 +45,43 @@ window.addEventListener("ph-view-change", (e: CustomEvent) => {
 	referer = location.origin + viewChangeData.viewState.state.url;
 })
 
-let clientId: string;
-let referer = document.referrer || "";
 interface ClientIdData {
 	id: string,
 	lastSetMillisUtc: number
 }
+/** 128 character long random string */
+let clientId: string;
+let referer = document.referrer || "";
 const clientIdAlphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+function init() {
+	// client data has never before been set
+	if (!localStorage["clientIdData"]) {
+		generateClientIdData();
+		loadClientId()
+	}
+	// client data has been set in localstorage, but doesn't have to be valid
+	else {
+		let clientIdData: ClientIdData;
+		try {
+			clientIdData = JSON.parse(localStorage["clientIdData"]) as ClientIdData;
+		}
+		catch (e) {
+			// invalid localstorage string, go with empty default
+			clientIdData = { lastSetMillisUtc: 0, id: "" };
+		}
+		// check if read data is valid & not expired
+		if (!clientIdData.lastSetMillisUtc || typeof clientIdData.lastSetMillisUtc !== "number"
+				|| clientIdData.lastSetMillisUtc > Date.now() ||										// if lastSet is corrupted
+				Date.now() - clientIdData.lastSetMillisUtc > 1000 * 60 * 60 * 24 * 30 ||				// or invalidate after 30 days
+				!clientIdData.id || clientIdData.id.length !== 128										// or is id corrupted
+		) {
+			generateClientIdData();
+		}
+		loadClientId(clientIdData.id);
+	}
+}
+
 function generateClientIdData() {
 	clientId = "";
 	for (let i = 0; i < 128; ++i)
@@ -45,34 +91,13 @@ function generateClientIdData() {
 		lastSetMillisUtc: Date.now()
 	})
 }
+
 function loadClientId(id?: string) {
 	if (id)
 		clientId = id;
 	else {
 		const clientData = JSON.parse(localStorage["clientIdData"]) as ClientIdData;
 		clientId = clientData.id;
-	}
-}
-function init() {
-	if (!localStorage["clientIdData"]) {
-		generateClientIdData();
-		loadClientId()
-	}
-	else {
-		let clientIdData: ClientIdData;
-		try {
-			clientIdData = JSON.parse(localStorage["clientIdData"]) as ClientIdData;
-		}
-		catch (e) {
-			clientIdData = { lastSetMillisUtc: 0, id: "" };
-		}
-		if (!clientIdData.lastSetMillisUtc || typeof clientIdData.lastSetMillisUtc !== "number"
-				|| clientIdData.lastSetMillisUtc > Date.now() ||									// if lastSet is corrupted
-			Date.now() - clientIdData.lastSetMillisUtc > 1000 * 60 * 60 * 24 * 30 ||				// or invalidate after 30 days
-			!clientIdData.id || clientIdData.id.length !== 128) {									// or is id corrupted
-			generateClientIdData();
-		}
-		loadClientId(clientIdData.id);
 	}
 }
 init();

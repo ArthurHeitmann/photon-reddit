@@ -1,29 +1,36 @@
 
-export function $id(id) {
+/** document.getElementById replacement */
+export function $id(id: string) {
 	return document.getElementById(id);
 }
 
-export function $class(c): HTMLCollection {
+/** document.getElementsByClassName shorthand */
+export function $class(c: string): HTMLCollection {
 	return document.getElementsByClassName(c);
 }
 
-export function $classAr(c): Array<HTMLElement> {
-	return <Array<HTMLElement>> Array.from(document.getElementsByClassName(c));
+/** Array.from(document.getElementsByClassName) shorthand */
+export function $classAr(c: string): Array<HTMLElement> {
+	return Array.from(document.getElementsByClassName(c) as HTMLCollectionOf<HTMLElement>);
 }
 
-export function $tag(tag) {
+/** document.getElementsByTagName shorthand */
+export function $tag(tag: string) {
 	return document.getElementsByTagName(tag);
 }
 
-export function $tagAr(tag): Array<HTMLElement> {
-	return Array.from(document.getElementsByTagName(tag));
+/** Array.from(document.getElementsByTagName) shorthand */
+export function $tagAr(tag: string): Array<HTMLElement> {
+	return Array.from(document.getElementsByTagName(tag) as HTMLCollectionOf<HTMLElement>);
 }
 
-export function $css(query) {
+/** document.querySelectorAll shorthand */
+export function $css(query: string) {
 	return document.querySelectorAll(query);
 }
 
-export function $cssAr(query): Array<HTMLElement> {
+/** Array.from(document.querySelectorAll) shorthand */
+export function $cssAr(query: string): Array<HTMLElement> {
 	return Array.from(document.querySelectorAll(query));
 }
 
@@ -70,13 +77,14 @@ Object.defineProperty(HTMLElement.prototype, "$cssAr", {
 	}
 });
 
+/** escapes any text; returned string can safely be put in element.innerHTML */
 export function escHTML(unsafeHTML: string): string {
 	const dummy = document.createElement("div");
 	dummy.innerText = unsafeHTML;
 	return dummy.innerHTML;
 }
 
-// escape attribute text, where attribute is a string "double quotation marks"
+/** escape attribute text, where attribute is a string "double quotation marks" */
 export function escADQ(unsafeAttribute: string): string {
 	return unsafeAttribute?.replace(`"`, `\\"`)
 }

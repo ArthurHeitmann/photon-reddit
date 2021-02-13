@@ -1,10 +1,10 @@
 import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
 import { isLoggedIn, setIsLoggedIn } from "../utils/globals.js";
+import { $id } from "../utils/htmlStatics.js";
 
 export function initiateLogin() {
 	location.href = "/login";
 }
-
 
 /**
  * @returns true: access token is still valid or was just successfully updates; 
