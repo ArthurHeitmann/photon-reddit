@@ -14,7 +14,7 @@ export class Ph_ViewState extends HTMLElement {
 		this.className = "viewState overflow-y-auto";
 
 		this.state = state;
-		this.header = $tag("ph-header")[0];
+		this.header = $tag("ph-header")[0] as Ph_Header;
 
 		this.contentElement = document.createElement("div");
 		this.contentElement.className =  "contentElement"

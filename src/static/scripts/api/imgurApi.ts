@@ -1,4 +1,8 @@
+/**
+ * Interface with imgur api
+ */
 
+/** clientId, should be fine here, shouldn't be a secret */
 const imgurClientID = "d3609b9bd045b8f";
 
 export enum ImgurContentType {

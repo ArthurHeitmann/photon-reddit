@@ -1,5 +1,5 @@
 import { redditApiRequest } from "../../api/redditApi.js";
-import { viewsStack } from "../../historyState/historyStateManager.js";
+import ViewsStack from "../../historyState/viewsStack.js";
 import { elementWithClassInTree } from "../../utils/htmlStuff.js";
 import { RedditApiType, SortCommentsOrder } from "../../utils/types.js";
 import { extractPath, extractQuery } from "../../utils/utils.js";
@@ -113,7 +113,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 				this.comments.appendChild(new Ph_Comment(comment, false, false, this.post));
 			}
 
-			viewsStack.changeCurrentUrl(newUrl);
+			ViewsStack.changeCurrentUrl(newUrl);
 		}
 		catch (e) {
 			console.error("Error sorting comments");

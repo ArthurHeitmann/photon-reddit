@@ -21,7 +21,7 @@ export function $classAr(c: string): Array<HTMLElement> {
 
 /** document.getElementsByTagName shorthand */
 export function $tag(tag: string) {
-	return document.getElementsByTagName(tag);
+	return document.getElementsByTagName(tag) as HTMLCollectionOf<HTMLElement>;
 }
 
 /** Array.from(document.getElementsByTagName) shorthand */
@@ -31,7 +31,7 @@ export function $tagAr(tag: string): Array<HTMLElement> {
 
 /** document.querySelectorAll shorthand */
 export function $css(query: string) {
-	return document.querySelectorAll(query);
+	return document.querySelectorAll(query) as NodeListOf<HTMLElement>;
 }
 
 /** Array.from(document.querySelectorAll) shorthand */

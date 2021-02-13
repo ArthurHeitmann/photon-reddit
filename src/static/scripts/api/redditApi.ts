@@ -1,3 +1,7 @@
+/**
+ * For communication with reddit
+ */
+
 import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
 import Votable, { FullName } from "../types/votable.js";
 import { checkTokenExpiry } from "../login/login.js";
@@ -5,6 +9,14 @@ import { isLoggedIn, thisUser, } from "../utils/globals.js";
 import { RedditApiType } from "../utils/types.js";
 import { isObjectEmpty, splitPathQuery } from "../utils/utils.js";
 
+/**
+ * Use this to make requests to reddit
+ *
+ * @param pathAndQuery
+ * @param params
+ * @param requiresLogin
+ * @param options
+ */
 export async function redditApiRequest(pathAndQuery, params: string[][], requiresLogin: boolean, options: RequestInit = {}) {
 	if (requiresLogin && !isLoggedIn) {
 		new Ph_Toast(Level.Error, "You need to be logged in to use this feature");
@@ -17,6 +29,7 @@ export async function redditApiRequest(pathAndQuery, params: string[][], require
 		return  await simpleApiRequest(pathAndQuery, params);
 }
 
+/** Makes request without oauth, by appending /.json to the end of the path */
 async function simpleApiRequest(pathAndQuery, params: string[][]) {
 	pathAndQuery = fixUrl(pathAndQuery);
 	let [path, query] = splitPathQuery(pathAndQuery);
@@ -37,6 +50,7 @@ async function simpleApiRequest(pathAndQuery, params: string[][]) {
 	}
 }
 
+/** Makes an authenticated request to reddit */
 async function oath2Request(pathAndQuery, params: string[][], options: RequestInit, attempt = 0) {
 	pathAndQuery = fixUrl(pathAndQuery);
 	const [path, query] = splitPathQuery(pathAndQuery);

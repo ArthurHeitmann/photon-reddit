@@ -1,4 +1,8 @@
+/**
+ * Interface with redgifs api
+ */
 
+/** */
 export async function getRedgifsMp4SrcFromUrl(url: string): Promise<string> {
 	const idMatches = url.match(/(?<=redgifs\.com\/\w+\/)\w+/);
 	if (!idMatches)

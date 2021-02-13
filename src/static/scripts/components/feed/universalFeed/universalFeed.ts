@@ -1,5 +1,5 @@
 import { redditApiRequest } from "../../../api/redditApi.js";
-import { viewsStack } from "../../../historyState/historyStateManager.js";
+import ViewsStack from "../../../historyState/viewsStack.js";
 import { escHTML } from "../../../utils/htmlStatics.js";
 import { elementWithClassInTree } from "../../../utils/htmlStuff.js";
 import { RedditApiType } from "../../../utils/types.js";
@@ -155,7 +155,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			this.beforeData = sectionItems.data.before;
 			this.afterData = sectionItems.data.after;
 			this.replaceChildren(sectionItems.data.children, sectionItems.data.before, sectionItems.data.after);
-			viewsStack.changeCurrentUrl(this.requestUrl);
+			ViewsStack.changeCurrentUrl(this.requestUrl);
 		} catch (e) {
 			new Ph_Toast(Level.Error, "Error getting user section items");
 			console.error("Error getting user section items");
@@ -174,7 +174,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			this.beforeData = sectionItems.data.before;
 			this.afterData = sectionItems.data.after;
 			this.replaceChildren(sectionItems.data.children, sectionItems.data.before, sectionItems.data.after);
-			viewsStack.changeCurrentUrl(this.requestUrl);
+			ViewsStack.changeCurrentUrl(this.requestUrl);
 		} catch (e) {
 			console.error("Error getting message section items");
 			new Ph_Toast(Level.Error, "Error getting message section items");

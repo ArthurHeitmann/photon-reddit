@@ -1,5 +1,5 @@
 import { redditApiRequest } from "../../../api/redditApi.js";
-import { viewsStack } from "../../../historyState/historyStateManager.js";
+import ViewsStack from "../../../historyState/viewsStack.js";
 import { RedditApiType, SortPostsTimeFrame, SortSearchOrder } from "../../../utils/types.js";
 import { splitPathQuery } from "../../../utils/utils.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
@@ -74,7 +74,7 @@ export default class Ph_SearchFeedSorter extends HTMLElement {
 
 		const paramsStr = params.toString();
 		const newUrl = path + (paramsStr ? `?${paramsStr}` : "");
-		viewsStack.changeCurrentUrl(newUrl);
+		ViewsStack.changeCurrentUrl(newUrl);
 		this.feed.requestUrl = newUrl;
 		const request: RedditApiType = await redditApiRequest(newUrl, [], false);
 		if (request["error"]) {

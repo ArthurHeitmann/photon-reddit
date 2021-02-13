@@ -1,10 +1,10 @@
-import { pushLinkToHistoryComb, pushLinkToHistorySep, viewsStack } from "../../../historyState/historyStateManager.js";
-import { isLoggedIn, thisUser } from "../../../utils/globals.js";
+import { pushLinkToHistoryComb, pushLinkToHistorySep } from "../../../historyState/historyStateManager.js";
+import ViewsStack from "../../../historyState/viewsStack.js";
+import { thisUser } from "../../../utils/globals.js";
 import { escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { elementWithClassInTree, isElementIn, linksToSpa } from "../../../utils/htmlStuff.js";
 import { numberToShort } from "../../../utils/utils.js";
 import Ph_Header from "../../global/header/header.js";
-import Ph_Toast, { Level } from "../toast/toast.js";
 
 export default class Ph_UserDropDown extends HTMLElement {
 	private unreadBadge: HTMLDivElement;
@@ -106,7 +106,7 @@ export default class Ph_UserDropDown extends HTMLElement {
 		const clearAction = makeAction(
 			"/img/close.svg",
 			"Unload Pages",
-			() => viewsStack.clear()
+			() => ViewsStack.clear()
 		);
 		actions.appendChild(clearAction);
 		// about

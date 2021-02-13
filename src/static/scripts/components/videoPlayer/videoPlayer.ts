@@ -1,4 +1,4 @@
-import { youtubeDl } from "../../api/photonApi.js";
+import { youtubeDlUrl } from "../../api/photonApi.js";
 import { getRedgifsMp4SrcFromUrl } from "../../api/redgifsApi.js";
 import { escADQ, escHTML } from "../../utils/htmlStatics.js";
 import { classInElementTree, elementWithClassInTree } from "../../utils/htmlStuff.js";
@@ -59,7 +59,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 					]));
 				}
 				else {
-					youtubeDl(postData.data["url"]).then(mp4Url => videoOut.init(new Ph_SimpleVideo([{ src: mp4Url, type: "video/mp4" }])))
+					youtubeDlUrl(postData.data["url"]).then(mp4Url => videoOut.init(new Ph_SimpleVideo([{ src: mp4Url, type: "video/mp4" }])))
 				}
 				break;
 			case "v.redd.it":
@@ -164,7 +164,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 				if (twitchUrlMatches && twitchUrlMatches.length == 2)
 					videoOut.init(new Ph_SimpleVideo([{src: twitchUrlMatches[1] + ".mp4", type: "video/mp4"}]));
 				else {
-					youtubeDl(postData.data["url"]).then(async clipMp4 => {
+					youtubeDlUrl(postData.data["url"]).then(async clipMp4 => {
 						videoOut.init(new Ph_SimpleVideo([{ src: clipMp4, type: "video/mp4" }]));
 					}).catch(err => {
 						new Ph_Toast(Level.Error, "Error getting Twitch clip");

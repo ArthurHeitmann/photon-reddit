@@ -10,8 +10,7 @@ import { $id } from "../utils/htmlStatics.js";
 import { extractHash, splitPathQuery } from "../utils/utils.js";
 import ViewsStack from "./viewsStack.js";
 
-export const viewsStack: ViewsStack = new ViewsStack();
-viewsStack.setNextIsReplace();
+ViewsStack.setNextIsReplace();
 
 window.addEventListener("popstate", (e: PopStateEvent) => {
 	if (document.fullscreenElement) {
@@ -22,13 +21,13 @@ window.addEventListener("popstate", (e: PopStateEvent) => {
 	}
 	if (!e.state)
 		return
-	if (e.state.index > viewsStack.position()) {
-		for(let i = e.state.index - viewsStack.position(); i > 0; --i) 
-			viewsStack.forward(true);
+	if (e.state.index > ViewsStack.position()) {
+		for(let i = e.state.index - ViewsStack.position(); i > 0; --i) 
+			ViewsStack.forward(true);
 	}
-	else if (e.state.index < viewsStack.position()) {
-		for(let i = viewsStack.position() - e.state.index; i > 0; --i) 
-			viewsStack.back();
+	else if (e.state.index < ViewsStack.position()) {
+		for(let i = ViewsStack.position() - e.state.index; i > 0; --i) 
+			ViewsStack.back();
 	}
 });
 
@@ -48,20 +47,20 @@ export function pushLinkToHistoryComb(pathAndQuery: string, pushType: PushType =
 
 export async function pushLinkToHistorySep(path: string, query: string = "?", pushType: PushType = PushType.PushAfter): Promise<void> {
 	// don't load new page if next history state has same url
-	const nextState = viewsStack.nextState();
+	const nextState = ViewsStack.nextState();
 	if (nextState && nextState.state.url == (path + query)) {
 		history.forward();
 		return;
 	}
 
-	const stateLoader: Ph_ViewStateLoader = new Ph_ViewStateLoader(viewsStack.makeHistoryState(
+	const stateLoader: Ph_ViewStateLoader = new Ph_ViewStateLoader(ViewsStack.makeHistoryState(
 		path, path + query, 1
 	));
 
 	if (pushType === PushType.PushAfter)
-		viewsStack.pushAfter(stateLoader);
+		ViewsStack.pushAfter(stateLoader);
 	else if (pushType === PushType.PushBefore)
-		viewsStack.pushBefore(stateLoader);
+		ViewsStack.pushBefore(stateLoader);
 
 
 	// convert query string to key value string[][]
@@ -85,18 +84,18 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 	// result is a posts comments
 	if (requestData instanceof Array) {		// --> [0]: post [1]: comments
 		stateLoader.finishWith(new Ph_PostAndComments(requestData));
-		viewsStack.setCurrentStateTitle(`Photon: ${requestData[0]["data"]["children"][0]["data"]["title"]}`);
+		ViewsStack.setCurrentStateTitle(`Photon: ${requestData[0]["data"]["children"][0]["data"]["title"]}`);
 	}
 	else if (requestData["kind"]) {
 		// result is some sort of generic feed
 		if (requestData["kind"] === "Listing") {
 			stateLoader.finishWith(new Ph_UniversalFeed(requestData, path + query));
-			viewsStack.setCurrentStateTitle(`Photon:  ${(path.length > 3) ? path.slice(1) : "Home"}`);
+			ViewsStack.setCurrentStateTitle(`Photon:  ${(path.length > 3) ? path.slice(1) : "Home"}`);
 		}
 		// result is a wiki page
 		else if (requestData["kind"] === "wikipage") {
 			stateLoader.finishWith(new Ph_Wiki(requestData));
-			viewsStack.setCurrentStateTitle(`Photon: ${path.match(/r\/[^/]+/)[0]} Wiki`);
+			ViewsStack.setCurrentStateTitle(`Photon: ${path.match(/r\/[^/]+/)[0]} Wiki`);
 		}
 	}
 
