@@ -1,3 +1,7 @@
+/**
+ * This files extends the functionality of ViewStack
+ */
+
 import { redditApiRequest } from "../api/redditApi.js";
 import Ph_UniversalFeed from "../components/feed/universalFeed/universalFeed.js";
 import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
@@ -13,20 +17,26 @@ import ViewsStack from "./viewsStack.js";
 ViewsStack.setNextIsReplace();
 
 window.addEventListener("popstate", (e: PopStateEvent) => {
+	// don't change history state when going back & in fullscreen (the user probably just wanted to exit fullscreen)
 	if (document.fullscreenElement) {
-		// works only when previous history state has same domain
-		e.preventDefault();
 		document.exitFullscreen();
-		return;
+		if (e.state.index <= ViewsStack.getPosition()) {
+			// works only when previous history state has same domain
+			e.preventDefault();
+			history.forward();
+			return;
+		}
 	}
-	if (!e.state)
+	if (!e.state)		// something weird
 		return
-	if (e.state.index > ViewsStack.position()) {
-		for(let i = e.state.index - ViewsStack.position(); i > 0; --i) 
+	// forward
+	if (e.state.index > ViewsStack.getPosition()) {
+		for(let i = e.state.index - ViewsStack.getPosition(); i > 0; --i)
 			ViewsStack.forward(true);
 	}
-	else if (e.state.index < ViewsStack.position()) {
-		for(let i = ViewsStack.position() - e.state.index; i > 0; --i) 
+	// back
+	else if (e.state.index < ViewsStack.getPosition()) {
+		for(let i = ViewsStack.getPosition() - e.state.index; i > 0; --i)
 			ViewsStack.back();
 	}
 });
@@ -36,26 +46,29 @@ window.addEventListener("popstate", (e: PopStateEvent) => {
 // 	return "Are you sure you want to Exit?";
 // };
 
+/** Whether a new history state should be inserted before or after the current one */
 export enum PushType {
 	PushAfter, PushBefore
 }
 
+/** Use this function to redirect to a SPA link and the url could contain a query part */
 export function pushLinkToHistoryComb(pathAndQuery: string, pushType: PushType = PushType.PushAfter): void {
 	const [path, query] = splitPathQuery(pathAndQuery);
 	pushLinkToHistorySep(path, query, pushType);
 }
 
+/** Use this function to redirect to a SPA link and the url doesn't contain a query part */
 export async function pushLinkToHistorySep(path: string, query: string = "?", pushType: PushType = PushType.PushAfter): Promise<void> {
 	// don't load new page if next history state has same url
-	const nextState = ViewsStack.nextState();
+	const nextState = ViewsStack.getNextState();
 	if (nextState && nextState.state.url == (path + query)) {
 		history.forward();
 		return;
 	}
 
-	const stateLoader: Ph_ViewStateLoader = new Ph_ViewStateLoader(ViewsStack.makeHistoryState(
-		path, path + query, 1
-	));
+	const stateLoader: Ph_ViewStateLoader = new Ph_ViewStateLoader(
+		ViewsStack.makeHistoryState(path, path + query)
+	);
 
 	if (pushType === PushType.PushAfter)
 		ViewsStack.pushAfter(stateLoader);
@@ -86,6 +99,7 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 		stateLoader.finishWith(new Ph_PostAndComments(requestData));
 		ViewsStack.setCurrentStateTitle(`Photon: ${requestData[0]["data"]["children"][0]["data"]["title"]}`);
 	}
+	// result is something else
 	else if (requestData["kind"]) {
 		// result is some sort of generic feed
 		if (requestData["kind"] === "Listing") {

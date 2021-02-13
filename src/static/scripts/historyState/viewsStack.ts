@@ -1,10 +1,16 @@
+/**
+ * Used for interacting with the history
+ *  - going back & forward
+ *  - added & removing elements from the history
+ */
+
 import { globalSettings } from "../components/global/photonSettings/photonSettings.js";
 import { Ph_ViewState } from "../components/viewState/viewState.js";
 import { $tag } from "../utils/htmlStatics.js";
 import { HistoryState } from "../utils/types.js";
 import { pushLinkToHistoryComb, PushType } from "./historyStateManager.js";
 
-interface ViewsType {
+interface ViewType {
 	[index: number]: Ph_ViewState,
 }
 
@@ -13,20 +19,25 @@ export interface ViewChangeData {
 	newLoad: boolean
 }
 
-// TODO eventually fix the following (rare occurrence): when reloading the page and going back/forward multiple page
+// TODO eventually fix the following (rare occurrence): when reloading the page and going back/forward multiple pages
 // at once (right click on the back/forwards arrows in the browser) all pages in between will not
 // load properly and all be the same
 
 export default class ViewsStack {
-	private static views: ViewsType = {};
+	/** all loaded views */
+	private static views: ViewType = {};
+	/** current index in views */
 	private static pos: number = null;
+	/** to this element view elements will be appended */
 	private static attachmentPoint: HTMLElement = $tag("main")[0];
+	/** if true: the next pushAfter will replace the current history state */
 	private static isNextReplace: boolean;
 
+	/** Pushes a history state after the current one & appends view state to DOM */
 	static pushAfter(state: Ph_ViewState): void {
-		for (let i = ViewsStack.pos + 1; ViewsStack.views[i] !== undefined; ++i) {
+		// if there are history states after the current one they will be cut off & removed, therefore remove the views
+		for (let i = ViewsStack.pos + 1; ViewsStack.views[i] !== undefined; ++i)
 			ViewsStack.views[i].remove();
-		}
 
 		ViewsStack.attachmentPoint.appendChild(state);
 		
@@ -61,6 +72,7 @@ export default class ViewsStack {
 		}));
 	}
 
+	/** Pushes a history state before the current one & appends view state to DOM */
 	static pushBefore(state: Ph_ViewState) {
 		if (ViewsStack.pos == null)
 			throw "First cannot be inserted using insertBefore";
@@ -73,6 +85,7 @@ export default class ViewsStack {
 		ViewsStack.views[ViewsStack.pos] = state;
 	}
 
+	/** Replaces the currently displayed url in the browser */
 	static changeCurrentUrl(newUrl: string) {
 		if (ViewsStack.pos === null || !ViewsStack.views[ViewsStack.pos])
 			throw "Trying to update historyState, but there is currently no historyState";
@@ -89,9 +102,10 @@ export default class ViewsStack {
 		}
 	}
 
+	/** go to next view state; load it if not loaded */
 	static forward(isFromPopStateEvent = false) {
-		if (ViewsStack.views[ViewsStack.pos + 1] == undefined) {			// probably a page reload,
-			if (isFromPopStateEvent)							// need to create to html elements
+		if (ViewsStack.views[ViewsStack.pos + 1] == undefined) {	// probably a page reload,
+			if (isFromPopStateEvent)								// need to create html elements
 				ViewsStack.setNextIsReplace();
 			pushLinkToHistoryComb(history.state.url);
 			return;
@@ -108,9 +122,10 @@ export default class ViewsStack {
 		}));
 	}
 
+	/** go to previous view state; load it if not loaded */
 	static back() {
 		if (ViewsStack.views[ViewsStack.pos - 1] == undefined) {						// probably a page reload,
-			pushLinkToHistoryComb(history.state.url, PushType.PushBefore);	// need to create to html elements
+			pushLinkToHistoryComb(history.state.url, PushType.PushBefore);				// need to create html elements
 			window.dispatchEvent(new CustomEvent("ph-view-change", {
 				detail: <ViewChangeData> {
 					viewState: ViewsStack.views[ViewsStack.pos],
@@ -135,15 +150,17 @@ export default class ViewsStack {
 		ViewsStack.isNextReplace = true;
 	}
 
+	/** Changes the title of the browser tab & history state */
 	static setCurrentStateTitle(title: string) {
 		document.title = globalSettings.isIncognitoEnabled ? `Photon: ${ViewsStack.randomUrl()}` : title;
 		history.state.title = title;
 	}
 
-	static nextState(): Ph_ViewState {
+	static getNextState(): Ph_ViewState {
 		return ViewsStack.views[ViewsStack.pos + 1] || null;
 	}
 
+	/** Remove all view state from the DOM, except for the currently active one */
 	static clear() {
 		const viewIds: string[] = Object.keys(ViewsStack.views);
 		for (let i of viewIds) {
@@ -154,11 +171,11 @@ export default class ViewsStack {
 		}
 	}
 
-	static position(): number {
+	static getPosition(): number {
 		return ViewsStack.pos;
 	}
 
-	static makeHistoryState(title: string, url: string, posOffset: number): HistoryState {
+	static makeHistoryState(title: string, url: string, posOffset: number = 1): HistoryState {
 		return {
 			index: (ViewsStack.pos ?? -1) + posOffset,
 			title: title,

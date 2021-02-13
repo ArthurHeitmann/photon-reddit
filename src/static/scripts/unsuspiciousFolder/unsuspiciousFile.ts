@@ -1,6 +1,9 @@
 /**
  * Some basic tracking
  *
+ * This file has been named this way, because good ad blockers will block
+ * anything with "analytics" or "tracking" in the filename
+ *
  * What will be tracked:
  *  - randomized user id (resets every 30 days)
  *  - visited page
