@@ -5,6 +5,7 @@ import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDow
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Ph_UniversalFeed from "../universalFeed/universalFeed.js";
 
+/** Sorts a universal feed */
 export default class Ph_UniversalFeedSorter extends HTMLElement {
 	feed: Ph_UniversalFeed;
 	dropdown: Ph_DropDown;

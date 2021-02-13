@@ -1,3 +1,7 @@
+/**
+ * Clears cached data in the localstorage occasionally
+ */
+
 import { seenPosts, StoredData, unmarkPostAsSeen } from "../../../utils/globals.js";
 import { globalSettings } from "../../global/photonSettings/photonSettings.js";
 

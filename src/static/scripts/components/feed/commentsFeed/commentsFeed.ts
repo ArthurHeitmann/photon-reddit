@@ -5,6 +5,9 @@ import Ph_Comment from "../../comment/comment.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Ph_Post from "../../post/post.js";
 
+/**
+ * A list of Ph_Comment; has sorter; can have special link
+ */
 export default class Ph_CommentsFeed extends HTMLElement {
 	postFullName: string;
 	sort: SortCommentsOrder;

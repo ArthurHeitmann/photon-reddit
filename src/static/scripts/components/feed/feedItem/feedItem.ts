@@ -1,5 +1,3 @@
-import { RedditApiType } from "../../../types/misc.js";
-
 export default class Ph_FeedItem extends HTMLElement {
 	itemId: string;
 	link: string;

@@ -30,6 +30,11 @@ export enum MessageSection {
 	mentions = "mentions"
 }
 
+/**
+ * A list of reddit things (can be posts, comments, messages)
+ *  - can be sorted
+ *  - automatically loads more (and unloads old) when scrolling to the end
+ */
 export default class Ph_UniversalFeed extends HTMLElement {
 	absoluteFirst: string = null;
 	beforeData: string = null;
@@ -106,7 +111,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			else if (/^\/message\//.test(requestUrl))
 				feedType = FeedType.messages;
 			headerElements.push(title);
-			if (Ph_FeedInfo.supportedFeedType.includes(feedType))
+			if (Ph_FeedInfo.supportedFeedTypes.includes(feedType))
 				headerElements.push(Ph_FeedInfo.getInfoButton(feedType, feedBaseUrl));
 			if (feedType === FeedType.user) {
 				headerElements.push(new Ph_DropDown(

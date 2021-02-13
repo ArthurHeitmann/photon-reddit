@@ -43,16 +43,26 @@ interface SubredditModerator {
 	author_flair_css_class: string
 }
 
+/**
+ * Big area to display info about a feed (subreddit, user, multireddit)
+ *
+ * Should be created, opened, ... with Ph_FeedInfo.getInfoButton()
+ */
 export default class Ph_FeedInfo extends HTMLElement {
+	/** has data been loaded (from reddit) & is it being displayed */
 	hasLoaded: boolean = false;
 	loadedInfo: StoredFeedInfo;
+	/** path for the feed, example: "/r/askreddit" */
 	feedUrl: string;
 	focusLossHideRef: (e: MouseEvent) => void;
 	hideRef: () => void;
+	/** after this time cached data in the localstorage should be invalidated */
 	static refreshEveryNMs = 2 * 60 * 60 * 1000;		// 2 hours
-	static supportedFeedType: FeedType[] = [FeedType.subreddit, FeedType.user, FeedType.multireddit];
+	static supportedFeedTypes: FeedType[] = [FeedType.subreddit, FeedType.user, FeedType.multireddit];
+	/** All feed infos that are currently loaded */
 	static loadedInfos: { [feedUrl: string]: { feedInfo: Ph_FeedInfo, references: number } } = {};
 
+	/** Returns a button element that will open/close a feed info; preferred way for creating a feed info */
 	static getInfoButton(feedType: FeedType, feedUrl: string): HTMLButtonElement {
 		const button = new Ph_BetterButton();
 		button.className = "showInfo transparentButtonAlt";
@@ -75,10 +85,11 @@ export default class Ph_FeedInfo extends HTMLElement {
 		if (!info)
 			Ph_FeedInfo.loadedInfos[feedUrl] = info = { feedInfo: new Ph_FeedInfo(feedType, feedUrl), references: 0 };
 		if (!info.feedInfo.parentElement)
-			info.feedInfo.addToBody();
+			info.feedInfo.addToDOM();
 		return info;
 	}
 
+	/** Gets called whenever the info button get's added or removed from the DOM */
 	private static onButtonAddedOrRemoved(button: HTMLButtonElement, wasAdded: boolean) {
 			const feedUrl: string = button.getAttribute("data-feed-url");
 			const feedType: FeedType = FeedType[button.getAttribute("data-feed-type")];
@@ -96,6 +107,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 			}
 	}
 
+	/** should not be called from outside this file */
 	constructor(feedType: FeedType, feedUrl: string) {
 		super();
 
@@ -116,13 +128,15 @@ export default class Ph_FeedInfo extends HTMLElement {
 			};
 		}
 
-		this.addToBody();
+		this.addToDOM();
 	}
 
-	addToBody() {
+	/** Adds this feed info to the dom at the correct place */
+	addToDOM() {
 		document.body.appendChild(this);
 	}
 
+	/** Will load (maybe from cache) info for this feed & display it */
 	async getOrUpdateInfo() {
 		const isValid = this.isLoadedInfoValid();
 		if (!isValid) {
@@ -133,6 +147,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		}
 		if (!isValid || this.loadedInfo.lastUpdatedMsUTC + Ph_FeedInfo.refreshEveryNMs < Date.now()) {
 			this.classList.add("loading");
+			// get it
 			switch (this.loadedInfo.feedType) {
 				case FeedType.subreddit:
 					await this.loadSubredditInfo();
@@ -152,6 +167,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		else
 			window.dispatchEvent(new CustomEvent("feedInfoReady", { detail: this }));
 
+		// display it
 		switch (this.loadedInfo.feedType) {
 			case FeedType.subreddit:
 				this.displaySubredditInfo();
@@ -719,11 +735,13 @@ export default class Ph_FeedInfo extends HTMLElement {
 			await this.getOrUpdateInfo();
 	}
 
+	/** caches feed info to localstorage */
 	saveInfo() {
 		localStorage.setItem(this.feedUrl.toLowerCase(), JSON.stringify(this.loadedInfo));
 		window.dispatchEvent(new CustomEvent("feedInfoReady", { detail: this }));
 	}
 
+	/** removes a cached feed info from localstorage */
 	removeInfo() {
 		localStorage.removeItem(this.feedUrl.toLowerCase());
 	}
@@ -742,7 +760,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 
 	show() {
 		if (this.parentElement === null)
-			this.addToBody();
+			this.addToDOM();
 
 		this.classList.remove("remove");
 		($class("header")[0] as Ph_Header).hide();
