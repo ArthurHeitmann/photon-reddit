@@ -1,8 +1,18 @@
+/**
+ * Provides some global state functionality
+ *  - is user logged in
+ *  - logged in in user data
+ *  	 - name
+ *  	 - subscribed subreddits
+ *  	 - multireddits,
+ *  	 - number of unread messages
+ *  - manage seen posts
+ */
+
 import { redditApiRequest } from "../api/redditApi.js";
 import { RedditApiType } from "./types.js";
 import { stringSortComparer } from "./utils.js";
 
-// is logged in
 export let isLoggedIn: boolean = false;
 
 export function setIsLoggedIn(newIsLoggedIn: boolean): boolean {
@@ -21,6 +31,7 @@ const _MultiReddit = {
 }
 export type MultiReddit = typeof _MultiReddit;
 
+/** Data about the currently logged in user */
 export class User {
 	name: string;
 	subreddits: string[] = [];
@@ -28,6 +39,7 @@ export class User {
 	inboxUnread: number = 0;
 	private static refreshEveryNMs = 2 * 60 * 60 * 1000;
 
+	/** fetch data from reddit and set properties */
 	async fetch() {
 		const userData = await redditApiRequest("/api/v1/me", [], true);
 		thisUser.name = userData["name"];
@@ -103,6 +115,7 @@ export class User {
 	}
 }
 
+/** Data about the currently logged in user */
 export let thisUser = new User();
 
 // seen posts
@@ -110,6 +123,7 @@ export let thisUser = new User();
 // all the follow try/catches are necessary in case the user messes around with the localstorage
 if (!localStorage.seenPosts)
 	localStorage.seenPosts = "{}";
+/** Map all seen posts; key: thing full name, value: time when thing was seen im ms */
 export let seenPosts: { [fullName: string]: number };
 try {
 	seenPosts = JSON.parse(localStorage.seenPosts) || {};

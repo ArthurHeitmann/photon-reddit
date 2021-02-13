@@ -1,3 +1,8 @@
+/**
+ * Some html related util function.
+ *
+ * These functions don't need any imports
+ */
 
 /** document.getElementById replacement */
 export function $id(id: string) {

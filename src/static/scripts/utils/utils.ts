@@ -1,4 +1,8 @@
+/**
+ * Some general purpose utility funcitons
+ */
 
+/** */
 function _numberToShort(num): { n: number, s: string } {
 	switch (Math.abs(num).toString().length) {
 		case 0:
@@ -31,10 +35,12 @@ function _numberToShort(num): { n: number, s: string } {
 	}
 }
 
+/** convert long numbers like 11,234 to 11k */
 export function numberToShort(num: number): string {
 	return Object.values(_numberToShort(num)).join("");
 }
 
+/** convert long numbers like 11,234 to 11k */
 export function numberToShortStr(num: string): string {
 	return numberToShort(parseInt(num));
 }
@@ -74,6 +80,7 @@ export function timePassedSinceStr(time: string): string {
 	return timePassedSince(parseInt(time));
 }
 
+/** replaces all href in <a> like: https://reddit.com/r/all --> /r/all */
 export function replaceRedditLinks(el: HTMLElement) {
 	for (const a of el.$tag("a")) {
 		if (a.getAttribute("href")) {
@@ -82,16 +89,19 @@ export function replaceRedditLinks(el: HTMLElement) {
 	}
 }
 
+/** splits "/r/all/top?t=day" to ["/r/all/top", "?t=day"] */
 export function splitPathQuery(pathAndQuery: string): string[] {
 	const querySeparation = pathAndQuery.match(/([^?]+)(\?.*)?/);
 	return [querySeparation[1] || "/", querySeparation[2] || ""];
 }
 
+/** converts numbers like 69 to "01:09" */
 export function secondsToVideoTime(seconds: number): string {
 	if (isNaN(seconds)) seconds = 0;
 	return `${padWith0(Math.floor(seconds / 60), 2)}:${padWith0(Math.floor(seconds % 60), 2)}`;
 }
 
+/** Convert num to string with enough leading 0 to reach the minLength; example: padWith0(9, 2) --> "09" */
 export function padWith0(num: number, minLength: number): string {
 	return "0".repeat(Math.max(0, minLength - num.toString().length)) + num.toString();
 }
@@ -100,12 +110,14 @@ export function clamp(val: number, min: number, max: number): number {
 	return Math.min(max, Math.max(min, val));
 }
 
-// Returns a function, that, when invoked, will only be triggered at most once
-// during a given window of time. Normally, the throttled function will run
-// as much as it can, without ever going more than once per `wait` duration;
-// but if you'd like to disable the execution on the leading edge, pass
-// `{leading: false}`. To disable execution on the trailing edge, ditto.
-// from https://stackoverflow.com/questions/27078285/simple-throttle-in-js
+/**
+ * Returns a function, that, when invoked, will only be triggered at most once
+ * during a given window of time. Normally, the throttled function will run
+ * as much as it can, without ever going more than once per `wait` duration;
+ * but if you'd like to disable the execution on the leading edge, pass
+ * `{leading: false}`. To disable execution on the trailing edge, ditto.
+ * from https://stackoverflow.com/questions/27078285/simple-throttle-in-js
+ */
 export function throttle(func: (...any) => any, wait: number, options: { leading?: boolean, trailing?: boolean } = { leading: true, trailing: true}) {
 	let context, args, result;
 	let timeout = null;
@@ -140,8 +152,8 @@ export function throttle(func: (...any) => any, wait: number, options: { leading
 	};
 }
 
+/** basically does what obj === {} should (but doesn't) do */
 export function isObjectEmpty(obj: {}) {
-	// basically does what resp === {} should (but doesn't) do
 	return Object.keys(obj).length === 0 && obj.constructor === Object;
 }
 
@@ -165,16 +177,19 @@ export function stringSortComparer(s1: string, s2): number {
 	return s1.toLowerCase().localeCompare(s2.toLowerCase());
 }
 
+/** extracts the path part from an uri; example: "reddit.com/r/all?query" --> "/r/all" */
 export function extractPath(uri: string):string {
 	const matches = uri.match(/(?<!\/)\/(?!\/)[^?#]*/);
 	return matches && matches[0] || "";
 }
 
+/** extracts the query part from an uri; example: "reddit.com/r/all?query" --> "?query" */
 export function extractQuery(uri: string): string {
 	const matches = uri.match(/\?[^#]*/);
 	return matches && matches[0] || "";
 }
 
+/** extracts the hash part from an uri; example: "/r/AskReddit/wiki/index#wiki_-rule_1-" --> "#wiki_-rule_1-" */
 export function extractHash(uri: string): string {
 	const matches = uri.match(/#.*$/);
 	return matches && matches[0] || "";
