@@ -24,13 +24,17 @@ import Votable from "../../types/votable.js";
 import Ph_VoteButton from "../misc/voteButton/voteButton.js";
 import Ph_Post from "../post/post.js";
 
+/**
+ * A comment that has been posted under a post
+ *
+ * Can be displayed with a post or detached without
+ */
 export default class Ph_Comment extends Ph_FeedItem implements Votable {
 	voteUpButton: Ph_VoteButton;
 	currentUpvotes: HTMLDivElement;
 	voteDownButton: Ph_VoteButton;
 	replyForm: Ph_CommentForm;
 	childComments: HTMLElement;
-	// Votable implementation
 	totalVotes: number;
 	fullName: string;
 	currentVoteDirection: VoteDirection;
@@ -38,23 +42,31 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 	postFullName: string;
 	bodyMarkdown: string;
 
-	constructor(commentData: RedditApiType, isChild: boolean, isInFeed: boolean, post: Ph_Post) {
+	/**
+	 * @param commentData Data returned by the reddit API
+	 * @param isChild false --> root comment
+	 * @param isInFeed true --> child of Ph_UniversalFeed, false --> child of Ph_PostAndComments|Ph_CommentsFeed
+	 * @param post parent post if available should be supplied (needed to load possible child comments)
+	 */
+	constructor(commentData: RedditApiType, isChild: boolean, isInFeed: boolean, post?: Ph_Post) {
 		super(commentData.data["name"], commentData.data["permalink"] || commentData.data["context"], isInFeed);
 
 		this.classList.add("comment");
-		if (!isChild) {
+		if (!isChild)
 			this.classList.add("rootComment");
-		}
 
+		// this is not a comment, this is a load more comments button
 		if (commentData.kind === "more") {
 			const loadMoreButton = document.createElement("button");
 			loadMoreButton.className = "loadMoreButton";
 			this.appendChild(loadMoreButton);
 
+			// continue thread button/link
 			if (commentData.data["children"].length === 0) {
 				loadMoreButton.innerHTML = `<a href="${escADQ(post.permalink)}${escADQ(commentData.data["parent_id"].slice(3))}">Continue thread</a>`;
 				linksToSpa(loadMoreButton);
 			}
+			// load n more comments button
 			else {
 				this.postFullName = post.fullName;
 				const moreId = commentData.data["name"];
@@ -88,6 +100,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 			throw "Invalid comment data type";
 		}
 
+		// set this properties
 		this.setAttribute("data-id", commentData.data["name"].slice(3));
 		this.bodyMarkdown = commentData.data["body"];
 
@@ -96,18 +109,20 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 		this.totalVotes = parseInt(commentData.data["ups"] || 0) + -parseInt(this.currentVoteDirection);
 		this.isSaved = commentData.data["saved"];
 
+		// if this is currently a root comment with a parent id (so not actually the root), create button to view parent comments
 		if (!isInFeed && !isChild && commentData.data["parent_id"] && commentData.data["parent_id"].slice(0, 3) === "t1_") {
 			setTimeout(() =>
 				(elementWithClassInTree(this.parentElement, "commentsFeed") as Ph_CommentsFeed)
 					.insertParentLink(`${post.permalink}${commentData.data["parent_id"].slice(3)}?context=3`, "Load parent comment")
 				, 0)
 		}
-		const isLocked = commentData.data["locked"] || commentData.data["archived"];
-		const lockedReason = commentData.data["locked"] ? "locked" : "archived";
+
+		// HTML elements
 
 		// actions bar
 		const actionBar = document.createElement("div");
 		actionBar.className = "actions";
+		this.appendChild(actionBar);
 		// vote up button
 		this.voteUpButton = new Ph_VoteButton(true);
 		this.voteUpButton.addEventListener("click", e => this.vote(VoteDirection.up));
@@ -122,31 +137,34 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 		actionBar.appendChild(this.voteDownButton);
 		this.setVotesState(this.currentVoteDirection);
 		// additional actions drop down
+		const isLocked = commentData.data["locked"] || commentData.data["archived"];
+		const lockedReason = commentData.data["locked"] ? "locked" : "archived";
 		let dropDownParams: DropDownEntryParam[] = [];
 		if (!isLocked)
 			dropDownParams.push({ displayHTML: "Reply", onSelectCallback: this.showReplyForm.bind(this) });
 		if (commentData.data["author"] === thisUser.name) {
-			dropDownParams.push({displayHTML: "Edit", onSelectCallback: this.edit.bind(this)});
-			dropDownParams.push({displayHTML: "Delete", onSelectCallback: this.delete.bind(this)});
+			dropDownParams.push({ displayHTML: "Edit", onSelectCallback: this.edit.bind(this) });
+			dropDownParams.push({ displayHTML: "Delete", onSelectCallback: this.delete.bind(this) });
 		}
 		dropDownParams.push(...[
 			{ displayHTML: this.isSaved ? "Unsave" : "Save", onSelectCallback: this.toggleSave.bind(this) },
 			{ displayHTML: "Share", nestedEntries: [
-					{displayHTML: "Copy Comment Link", value: "comment link", onSelectCallback: this.share.bind(this)},
-					{displayHTML: "Copy Reddit Link", value: "reddit link", onSelectCallback: this.share.bind(this)},
+					{ displayHTML: "Copy Comment Link", value: "comment link", onSelectCallback: this.share.bind(this) },
+					{ displayHTML: "Copy Reddit Link", value: "reddit link", onSelectCallback: this.share.bind(this) },
 				]
 			}
 		]);
 		const moreDropDown = new Ph_DropDown(dropDownParams, "", DirectionX.left, DirectionY.bottom, true);
 		moreDropDown.toggleButton.classList.add("transparentButton");
 		actionBar.appendChild(moreDropDown);
+		// comment collapser
 		const commentCollapser = document.createElement("div");
 		commentCollapser.className = "commentCollapser";
 		commentCollapser.innerHTML = `<div></div>`;
 		commentCollapser.addEventListener("click", e => this.collapse(e));
 		actionBar.appendChild(commentCollapser);
-		this.appendChild(actionBar);
 
+		// special user distinctions
 		let userAdditionClasses = "";
 		if (commentData.data["is_submitter"]) {
 			userAdditionClasses += " op";
@@ -157,6 +175,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 		else if (commentData.data["distinguished"] === "admin") {
 			userAdditionClasses += " admin";
 		}
+
 		const mainPart = document.createElement("div");
 		mainPart.className = "w100";
 		mainPart.innerHTML = `
@@ -184,14 +203,20 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 				${commentData.data["body_html"]}
 			</div>
 		`;
+
+		// user flair
 		mainPart.$class("user")[0]
 			.insertAdjacentElement("afterend", Ph_Flair.fromThingData(commentData.data, "author"));
+
 		linksToInlineImages(mainPart);
+
+		// child comments
 
 		this.childComments = document.createElement("div");
 		this.childComments.className = "replies";
 		mainPart.appendChild(this.childComments);
 
+		// reply form
 		if (!isLocked) {
 			this.replyForm = new Ph_CommentForm(this, true);
 			this.replyForm.classList.add("hide");
@@ -239,12 +264,12 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 			["id", id]
 		], false, {method: "POST"});
 
+		// reddit returns here just an array of all comments, regardless whether they are parents/children of each other
+		// therefore we have to assemble the comment tree with all the relations ourselves -_-
 		let commentTree: RedditApiType[] = [];
 		for (const comment of childData["json"]["data"]["things"] as RedditApiType[]) {
-			if (!this.tryAttachToCommentTree(commentTree, comment)) {
+			if (!this.tryAttachToCommentTree(commentTree, comment))
 				commentTree.push(comment);
-			}
-
 		}
 
 		return commentTree;
@@ -340,7 +365,6 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 				break;
 			default:
 				throw "Invalid share type";
-
 		}
 	}
 

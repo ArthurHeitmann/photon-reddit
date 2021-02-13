@@ -190,7 +190,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 					this.allPostFullNames.push(post.fullName);
 				return post;
 			case "t1":
-				return new Ph_Comment(itemData, false, true, null);
+				return new Ph_Comment(itemData, false, true);
 			case "t4":
 				return new Ph_Message(itemData, totalItemCount !== 1);
 			default:
