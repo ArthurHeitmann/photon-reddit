@@ -1,7 +1,7 @@
 import { redditApiRequest } from "../../api/redditApi.js";
 import ViewsStack from "../../historyState/viewsStack.js";
 import { elementWithClassInTree } from "../../utils/htmlStuff.js";
-import { RedditApiType, SortCommentsOrder } from "../../utils/types.js";
+import { RedditApiType, SortCommentsOrder } from "../../types/misc.js";
 import { extractPath, extractQuery } from "../../utils/utils.js";
 import Ph_Comment from "../comment/comment.js";
 import Ph_CommentsFeed from "../feed/commentsFeed/commentsFeed.js";

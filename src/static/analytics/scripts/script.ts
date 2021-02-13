@@ -52,16 +52,16 @@ async function loadEventsGraph() {
 	let newHtml = `
 		<svg viewBox="0 0 ${svgWidth} ${svgHeight}" width="100%" >
 			<path d="
-				M ${infoWidth} ${graphHeight} L ${infoWidth + graphWidth} ${graphHeight}   
+				M ${infoWidth} ${graphHeight} L ${infoWidth + graphWidth} ${graphHeight}
 				M ${infoWidth} ${graphHeight} L ${infoWidth} 0
 				${ Array(xTicks).fill(0).map((_, i) =>			// x ticks 
 					`M ${(i + 1) * xTickWidth + infoWidth} ${graphHeight} L ${(i + 1) * xTickWidth + infoWidth} ${graphHeight + 2}`).join(" ") }
 				${ Array(yTicks).fill(0).map((_, i) =>			// y ticks 
-					`M ${infoWidth - 2} ${(i + 1) * yTickHeight} L ${infoWidth} ${(i + 1) * yTickHeight}`).join(" ") }    
-				   
+					`M ${infoWidth - 2} ${(i + 1) * yTickHeight} L ${infoWidth} ${(i + 1) * yTickHeight}`).join(" ") }
+				
 			" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" stroke="var(--text-color)" fill="none" opacity="1"></path>
 			${ Array(yTicks).fill(0).map((_, i) =>			// y ticks labels 
-				`<text x="${0}" y="${graphHeight - i * yTickHeight}">${numberToShort(Math.round(i * highestScaleFactor / yTicks))}</text>`).join("\n") }    
+				`<text x="${0}" y="${graphHeight - i * yTickHeight}">${numberToShort(Math.round(i * highestScaleFactor / yTicks))}</text>`).join("\n") }
 			<path d="${graphPath}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke="#ff6363" fill="none"></path
 		</svg>
 	`;

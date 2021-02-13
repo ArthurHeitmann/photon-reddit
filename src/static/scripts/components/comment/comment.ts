@@ -10,7 +10,7 @@ import {
 import { thisUser } from "../../utils/globals.js";
 import { escADQ } from "../../utils/htmlStatics.js";
 import { elementWithClassInTree, linksToInlineImages, linksToSpa } from "../../utils/htmlStuff.js";
-import { RedditApiType } from "../../utils/types.js";
+import { RedditApiType } from "../../types/misc.js";
 import { isObjectEmpty, numberToShort, replaceRedditLinks, timePassedSinceStr } from "../../utils/utils.js";
 import Ph_CommentsFeed from "../feed/commentsFeed/commentsFeed.js";
 import Ph_FeedItem from "../feed/feedItem/feedItem.js";

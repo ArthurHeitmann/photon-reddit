@@ -1,7 +1,7 @@
 import { getImgurAlbumContents, getImgurContent, ImgurContent, ImgurContentType } from "../../../api/imgurApi.js";
 import { escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { linksToSpa } from "../../../utils/htmlStuff.js";
-import { RedditApiData, RedditApiType } from "../../../utils/types.js";
+import { RedditApiData, RedditApiType } from "../../../types/misc.js";
 import { replaceRedditLinks } from "../../../utils/utils.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Ph_SimpleVideo from "../../videoPlayer/simpleVideo/simpleVideo.js";

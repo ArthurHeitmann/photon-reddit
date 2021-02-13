@@ -1,5 +1,5 @@
 import { linksToSpa } from "../../../utils/htmlStuff.js";
-import { RedditApiType, SortCommentsOrder } from "../../../utils/types.js";
+import { RedditApiType, SortCommentsOrder } from "../../../types/misc.js";
 import { extractQuery } from "../../../utils/utils.js";
 import Ph_Comment from "../../comment/comment.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";

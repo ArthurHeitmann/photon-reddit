@@ -1,4 +1,4 @@
-import { RedditApiData } from "../../../utils/types.js";
+import { RedditApiData } from "../../../types/misc.js";
 import Ph_Toast, { Level } from "../toast/toast.js";
 
 export interface FlairData {

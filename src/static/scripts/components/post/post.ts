@@ -3,7 +3,7 @@ import Votable from "../../types/votable.js";
 import { hasPostsBeenSeen, markPostAsSeen, thisUser } from "../../utils/globals.js";
 import { escADQ, escHTML } from "../../utils/htmlStatics.js";
 import { elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff.js";
-import { RedditApiType } from "../../utils/types.js";
+import { RedditApiType } from "../../types/misc.js";
 import {
 	isObjectEmpty,
 	numberToShort as numberToShort,

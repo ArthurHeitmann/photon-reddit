@@ -12,9 +12,9 @@ async function getAccessToken(params: URLSearchParams): Promise<string> {
 	});
 
 	const responseData = await response.json();
-    if (responseData["error"])
+	if (responseData["error"])
 		throw responseData;
-    return responseData;
+	return responseData;
 }
 
 export async function initialAccessToken(code: string): Promise<string> {

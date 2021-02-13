@@ -10,7 +10,7 @@
  */
 
 import { redditApiRequest } from "../api/redditApi.js";
-import { RedditApiType } from "./types.js";
+import { RedditApiType } from "../types/misc.js";
 import { stringSortComparer } from "./utils.js";
 
 export let isLoggedIn: boolean = false;
@@ -163,5 +163,5 @@ export function clearSeenPosts() {
 }
 
 export function hasPostsBeenSeen(postFullName: string): boolean {
-	return  Boolean(seenPosts[postFullName]);
+	return Boolean(seenPosts[postFullName]);
 }

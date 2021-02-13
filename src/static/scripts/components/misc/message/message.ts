@@ -3,7 +3,7 @@ import { FullName } from "../../../types/votable.js";
 import { thisUser } from "../../../utils/globals.js";
 import { $class, $css, escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { linksToSpa } from "../../../utils/htmlStuff.js";
-import { RedditApiType } from "../../../utils/types.js";
+import { RedditApiType } from "../../../types/misc.js";
 import { replaceRedditLinks, timePassedSinceStr } from "../../../utils/utils.js";
 import Ph_FeedItem from "../../feed/feedItem/feedItem.js";
 import { MessageSection } from "../../feed/universalFeed/universalFeed.js";

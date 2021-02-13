@@ -6,7 +6,7 @@ import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
 import Votable, { FullName } from "../types/votable.js";
 import { checkTokenExpiry } from "../login/login.js";
 import { isLoggedIn, thisUser, } from "../utils/globals.js";
-import { RedditApiType } from "../utils/types.js";
+import { RedditApiType } from "../types/misc.js";
 import { isObjectEmpty, splitPathQuery } from "../utils/utils.js";
 
 /**
@@ -24,9 +24,9 @@ export async function redditApiRequest(pathAndQuery, params: string[][], require
 	}
 
 	if (requiresLogin || isLoggedIn)
-		return  await oath2Request(pathAndQuery, params, options);
+		return await oath2Request(pathAndQuery, params, options);
 	else
-		return  await simpleApiRequest(pathAndQuery, params);
+		return await simpleApiRequest(pathAndQuery, params);
 }
 
 /** Makes request without oauth, by appending /.json to the end of the path */

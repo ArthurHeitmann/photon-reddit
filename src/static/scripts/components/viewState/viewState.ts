@@ -1,5 +1,5 @@
 import { $tag } from "../../utils/htmlStatics.js";
-import { HistoryState } from "../../utils/types";
+import { HistoryState } from "../../types/misc.js";
 import Ph_Header from "../global/header/header.js";
 
 export class Ph_ViewState extends HTMLElement {
@@ -17,7 +17,7 @@ export class Ph_ViewState extends HTMLElement {
 		this.header = $tag("ph-header")[0] as Ph_Header;
 
 		this.contentElement = document.createElement("div");
-		this.contentElement.className =  "contentElement"
+		this.contentElement.className = "contentElement"
 		this.contentElement.innerText = "loading...";
 		this.appendChild(this.contentElement);
 	}

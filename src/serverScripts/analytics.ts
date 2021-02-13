@@ -9,7 +9,7 @@ import mariadb from "mariadb";
 import RateLimit from "express-rate-limit";
 import { analyticsRateLimitConfig, basicRateLimitConfig } from "./consts.js";
 
-export const analyticsRouter =  express.Router();
+export const analyticsRouter = express.Router();
 
 const pool = mariadb.createPool({
 	host: process.env.DB_HOST,
@@ -25,12 +25,12 @@ async function trackEvent(clientId: string, path: string, referrer: string, time
 	try {
 		await connection.query(`
 		INSERT INTO trackedEvents 
-		    (clientId, path, referer, timeMillisUtc) 
-		    VALUES (
-		    	${connection.escape(clientId)}, 
-		    	${connection.escape(path)}, 
-		    	${connection.escape(referrer)}, 
-		    	${connection.escape(timeMillisUtc)}
+			(clientId, path, referer, timeMillisUtc) 
+			VALUES (
+				${connection.escape(clientId)}, 
+				${connection.escape(path)}, 
+				${connection.escape(referrer)}, 
+				${connection.escape(timeMillisUtc)}
 			)
 		;
 	`);
@@ -130,7 +130,7 @@ analyticsRouter.post("/event", RateLimit(analyticsRateLimitConfig), expressAsync
 		res.send("Invalid parameters").status(400);
 		return;
 	}
-	if (!timeMillisUtc || typeof timeMillisUtc !== "number"  || referer.length > 128) {
+	if (!timeMillisUtc || typeof timeMillisUtc !== "number" || referer.length > 128) {
 		res.send("Invalid parameters").status(400);
 		return;
 	}

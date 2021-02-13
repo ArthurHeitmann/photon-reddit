@@ -2,7 +2,7 @@ import { youtubeDlUrl } from "../../api/photonApi.js";
 import { getRedgifsMp4SrcFromUrl } from "../../api/redgifsApi.js";
 import { escADQ, escHTML } from "../../utils/htmlStatics.js";
 import { classInElementTree, elementWithClassInTree } from "../../utils/htmlStuff.js";
-import { RedditApiType } from "../../utils/types.js";
+import { RedditApiType } from "../../types/misc.js";
 import { secondsToVideoTime } from "../../utils/utils.js";
 import Ph_ControlsBar from "../misc/controlsBar/controlsBar.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";

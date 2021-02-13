@@ -7,7 +7,7 @@
 import { globalSettings } from "../components/global/photonSettings/photonSettings.js";
 import { Ph_ViewState } from "../components/viewState/viewState.js";
 import { $tag } from "../utils/htmlStatics.js";
-import { HistoryState } from "../utils/types.js";
+import { HistoryState } from "../types/misc.js";
 import { pushLinkToHistoryComb, PushType } from "./historyStateManager.js";
 
 interface ViewType {
@@ -45,7 +45,7 @@ export default class ViewsStack {
 			ViewsStack.views[ViewsStack.pos].classList.add("hide");
 		else
 			// if page has been reloaded or similar, retrieve the previous historyState
-			ViewsStack.pos =  (history.state && history.state.index ? history.state.index - 1 : -1);
+			ViewsStack.pos = (history.state && history.state.index ? history.state.index - 1 : -1);
 		++ViewsStack.pos;
 		state.state.index = ViewsStack.pos;
 		ViewsStack.views[ViewsStack.pos] = state;

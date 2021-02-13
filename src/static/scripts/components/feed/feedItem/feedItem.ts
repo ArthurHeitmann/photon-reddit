@@ -1,4 +1,4 @@
-import { RedditApiType } from "../../../utils/types.js";
+import { RedditApiType } from "../../../types/misc.js";
 
 export default class Ph_FeedItem extends HTMLElement {
 	itemId: string;

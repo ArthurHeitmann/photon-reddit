@@ -1,5 +1,5 @@
 import { elementWithClassInTree } from "../../../../utils/htmlStuff.js";
-import { RedditApiType } from "../../../../utils/types";
+import { RedditApiType } from "../../../../types/misc.js";
 import { globalSettings, ImageLoadingPolicy, PhotonSettings } from "../../../global/photonSettings/photonSettings.js";
 import Ph_ControlsBar from "../../../misc/controlsBar/controlsBar.js";
 import Ph_Toast, { Level } from "../../../misc/toast/toast.js";

@@ -3,7 +3,7 @@ import { pushLinkToHistoryComb, pushLinkToHistorySep } from "../../../historySta
 import { ViewChangeData } from "../../../historyState/viewsStack.js";
 import { escADQ } from "../../../utils/htmlStatics.js";
 import { elementWithClassInTree, isElementIn, linksToSpa } from "../../../utils/htmlStuff.js";
-import { RedditApiType, SortPostsTimeFrame, SortSearchOrder } from "../../../utils/types.js";
+import { RedditApiType, SortPostsTimeFrame, SortSearchOrder } from "../../../types/misc.js";
 import { extractPath, extractQuery, throttle } from "../../../utils/utils.js";
 import Ph_FeedInfo from "../../feed/feedInfo/feedInfo.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";

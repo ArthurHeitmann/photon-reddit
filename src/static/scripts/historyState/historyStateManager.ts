@@ -104,7 +104,7 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 		// result is some sort of generic feed
 		if (requestData["kind"] === "Listing") {
 			stateLoader.finishWith(new Ph_UniversalFeed(requestData, path + query));
-			ViewsStack.setCurrentStateTitle(`Photon:  ${(path.length > 3) ? path.slice(1) : "Home"}`);
+			ViewsStack.setCurrentStateTitle(`Photon: ${(path.length > 3) ? path.slice(1) : "Home"}`);
 		}
 		// result is a wiki page
 		else if (requestData["kind"] === "wikipage") {
