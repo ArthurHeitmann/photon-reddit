@@ -6,6 +6,10 @@ import Ph_UserDropDown from "../../misc/userDropDown/userDropDown.js";
 import Ph_PhotonSettings from "../photonSettings/photonSettings.js";
 import Ph_Search from "../search/search.js";
 
+/**
+ * The always present, expandable header at the top. Provides navigation options and a place for feeds to
+ * place control elements.
+ */
 export default class Ph_Header extends HTMLElement {
 	isExpanded: boolean = false;
 	isPinned: boolean = false;
@@ -89,6 +93,8 @@ export default class Ph_Header extends HTMLElement {
 			this.isPinned = true;
 			this.headerMouseEnter();
 		}
+		// if the user visits the page for the first time, expand the header for a brief amount of time.
+		// Should help new users understand this feature
 		else if (localStorage["firstTimeFlag"] !== "set") {
 			setTimeout(this.headerMouseEnter.bind(this), 1500);
 		}

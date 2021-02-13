@@ -9,9 +9,11 @@ import Ph_FeedInfo from "../../feed/feedInfo/feedInfo.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import Ph_Flair, { FlairData } from "../../misc/flair/flair.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
-import { Ph_ViewState } from "../../viewState/viewState.js";
 import Ph_Header from "../header/header.js";
 
+/**
+ * A search field to search reddit for subreddits, user, and posts; child of Ph_Header
+ */
 export default class Ph_Search extends HTMLElement {
 	searchBar: HTMLInputElement;
 	sortBy: Ph_DropDown;

@@ -39,7 +39,9 @@ export let globalSettings: PhotonSettings = {
 	clearSeenPostAfterMs: 1000 * 60 * 60 * 24 * 31,
 };
 
+/** Stores and manages global settings */
 export default class Ph_PhotonSettings extends HTMLElement {
+	/** unsaved settings are stored here */
 	temporarySettings: PhotonSettings = {};
 	optionsArea: HTMLElement;
 
@@ -121,8 +123,8 @@ export default class Ph_PhotonSettings extends HTMLElement {
 			}
 		));
 		this.optionsArea.appendChild(document.createElement("hr"));
-		// nsfw visibility
 
+		// nsfw visibility
 		this.optionsArea.appendChild(this.makeRadioGroup(
 			"nsfwPolicy",
 			"NSFW Posts Visibility:",
