@@ -32,7 +32,7 @@ export let globalSettings: PhotonSettings = {
 	imageLoadingPolicy: ImageLoadingPolicy.originalInFs,
 	nsfwPolicy: NsfwPolicy.covered,
 	markSeenPosts: true,
-	hideSeenPosts: false,
+	hideSeenPosts: true,
 	isIncognitoEnabled: false,
 	controlBarForImages: false,
 	clearFeedCacheAfterMs: 1000 * 60 * 60 * 24 * 2,

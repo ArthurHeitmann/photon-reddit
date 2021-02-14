@@ -203,27 +203,32 @@
 				}
 
 				> button {
-					display: flex;
-					width: 100%;
-					text-align: start;
+					cursor: default;
 
-					&::after {
-						content: "";
-						background-image: url("/img/downArrow.svg");
-						background-size: contain;
-						width: 1.5rem;
-						height: 1.5rem;
-						margin-left: auto;
-						transition: transform 0.25s cubic-bezier(0.6, 0, 0.4, 1.0);
-					}
+					&.expandable {
+						display: flex;
+						width: 100%;
+						text-align: start;
+						cursor: pointer;
 
-					&.expanded {
 						&::after {
-							transform: rotate(180deg);
+							content: "";
+							background-image: url("/img/downArrow.svg");
+							background-size: contain;
+							width: 1.5rem;
+							height: 1.5rem;
+							margin-left: auto;
+							transition: transform 0.25s cubic-bezier(0.6, 0, 0.4, 1.0);
 						}
 
-						+ div {
-							display: block;
+						&.expanded {
+							&::after {
+								transform: rotate(180deg);
+							}
+
+							+ div {
+								display: block;
+							}
 						}
 					}
 				}

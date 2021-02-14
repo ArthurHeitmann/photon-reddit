@@ -571,11 +571,14 @@ export default class Ph_FeedInfo extends HTMLElement {
 			ruleWrapper.className = "ruleWrapper";
 			const title = document.createElement("button");
 			title.innerText = rule.short_name;
-			title.addEventListener("click", () => title.classList.toggle("expanded"));
 			ruleWrapper.appendChild(title);
-			const description = document.createElement("div");
-			description.innerHTML = rule.description_html;
-			ruleWrapper.appendChild(description);
+			if (rule.description_html) {
+				title.classList.add("expandable")
+				title.addEventListener("click", () => title.classList.toggle("expanded"));
+				const description = document.createElement("div");
+				description.innerHTML = rule.description_html;
+				ruleWrapper.appendChild(description);
+			}
 			return ruleWrapper;
 		});
 	}
