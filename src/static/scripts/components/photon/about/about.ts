@@ -2,6 +2,9 @@ const template = `
 <h1>Photon</h1>
 `;
 
+/**
+ * About page
+ */
 export default class Ph_About extends HTMLElement {
 	connectedCallback() {
 		this.classList.add("about");

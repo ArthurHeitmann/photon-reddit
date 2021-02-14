@@ -18,6 +18,10 @@ interface GalleryDataInternal {
 	originalSrc: string,
 }
 
+/**
+ * A single image or a gallery of images. Can (depending on user settings) first load preview images and in fullscreen
+ * load origin high res images.
+ */
 export default class Ph_PostImage extends HTMLElement {
 	imageMax: Ph_DraggableWrapper;
 	controls: Ph_ControlsBar;

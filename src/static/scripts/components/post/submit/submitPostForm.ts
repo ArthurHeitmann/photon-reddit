@@ -19,6 +19,9 @@ interface SubmitTypeSection {
 	element: HTMLElement
 }
 
+/**
+ * Form for submitting posts
+ */
 export default class Ph_SubmitPostForm extends HTMLElement {
 	subInput: HTMLDivElement;
 	validIndicator: HTMLImageElement;
@@ -43,10 +46,6 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 	forceNsfw: boolean = false;
 	isSpoiler: boolean = false;
 	isSpoilerAllowed: boolean = false;
-	// linkIsImageButton: HTMLButtonElement;
-	// linkIsVideoButton: HTMLButtonElement;
-	// isImage: boolean = false;
-	// isVideo: boolean = false;
 	imagesAllowed: boolean = true;
 	videosAllowed: boolean = true;
 	notificationButton: HTMLButtonElement;
@@ -59,6 +58,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 
 		this.className = "submitPost";
 
+		// community name
 		this.subInput = this.makeTextInput("sub", "Subreddit or User Name");
 		this.subInput.addEventListener("input", this.setCommunityIsNeutral.bind(this));
 		this.subInput.addEventListener("change", this.onSubChange.bind(this));
@@ -70,47 +70,23 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		this.subInput.appendChild(this.subInfoButton);
 		this.appendChild(this.subInput);
 
+		// subreddit specific text
 		this.subSubmitText = document.createElement("div");
 		this.subSubmitText.className = "el2 roundedM hide subSubmitText";
 		this.appendChild(this.subSubmitText);
 
+		// post title
 		this.titleInput = this.makeTextInput("", "Title");
 		this.appendChild(this.titleInput);
 
+		// post text (self post)
 		this.textInput = this.makeTextInput("postthis.textInput", "Text", true);
 		this.textInput.classList.add("hide");
 		this.allPossibleTypeSections.push({ type: SubmitPostType.text, element: this.textInput });
 
+		// post link
 		this.linkUrlInput = this.makeTextInput("", "Url");
 		this.linkUrlInput.classList.add("hide");
-		// this.linkIsImageButton = this.makeImageButton("/img/fileImage.svg", "Link is Image", "Link is Image", (e) => {
-		// 	const btn = e.currentTarget as HTMLButtonElement;
-		// 	if (btn.classList.contains("selected")) {
-		// 		btn.classList.remove("selected");
-		// 		this.isImage = false;
-		// 	}
-		// 	else if (this.imagesAllowed) {
-		// 		btn.classList.add("selected");
-		// 		this.isImage = true;
-		// 		if (this.isVideo)
-		// 			this.linkIsVideoButton.click();
-		// 	}
-		// });
-		// this.linkUrlInput.appendChild(this.linkIsImageButton);
-		// this.linkIsVideoButton = this.makeImageButton("/img/fileVideo.svg", "Link is Video", "Link is Video", (e) => {
-		// 	const btn = e.currentTarget as HTMLButtonElement;
-		// 	if (btn.classList.contains("selected")) {
-		// 		btn.classList.remove("selected");
-		// 		this.isVideo = false;
-		// 	}
-		// 	else if (this.videosAllowed) {
-		// 		btn.classList.add("selected");
-		// 		this.isVideo = true;
-		// 		if (this.isImage)
-		// 			this.linkIsImageButton.click();
-		// 	}
-		// });
-		// this.linkUrlInput.appendChild(this.linkIsVideoButton);
 		this.repostCheckButton = this.makeImageButton("/img/refresh.svg", "check if repost", "Check if repost", () => {
 			this.repostCheckButton.classList.toggle("selected");
 			this.checkForReposts = this.repostCheckButton.classList.contains("selected");
@@ -119,6 +95,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		this.linkUrlInput.appendChild(this.repostCheckButton);
 		this.allPossibleTypeSections.push({ type: SubmitPostType.link, element: this.linkUrlInput });
 
+		// selection for what type of post this is (text or link(
 		this.sectionSelection = document.createElement("div");
 		this.sectionSelection.className = "sectionSelection el2";
 		this.appendChild(this.sectionSelection);
@@ -131,14 +108,17 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		}
 		this.setAllowedTypes([]);
 
+		// bottom bar
 		const bottomBar = document.createElement("div");
 		bottomBar.className = "bottomBar";
 		this.appendChild(bottomBar)
 
+		// left items
 		const leftItems = document.createElement("div");
 		leftItems.className = "group";
 		bottomBar.appendChild(leftItems);
 
+		// nsfw & spoiler
 		this.nsfwButton = this.makeSpecialButton("NSFW", "nsfw", leftItems, () => {
 			this.isNsfw = !this.isNsfw || this.forceNsfw;
 			if (this.isNsfw)
@@ -154,14 +134,17 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 				this.spoilerButton.classList.remove("selected");
 		});
 
+		// flair
 		this.flairSelectorWrapper = document.createElement("div");
 		this.flairSelectorWrapper.className = "flairSelectorWrapper";
 		leftItems.appendChild(this.flairSelectorWrapper);
 
+		// right items
 		const rightItems = document.createElement("div");
 		rightItems.className = "group";
 		bottomBar.appendChild(rightItems);
 
+		// notifications
 		this.notificationButton = this.makeImageButton("/img/notification.svg", "send notifications", "Send Notifications", () => {
 			this.notificationButton.classList.toggle("selected");
 			this.sendNotifications = this.notificationButton.classList.contains("selected");
@@ -170,6 +153,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		this.notificationButton.classList.add("selected");
 		rightItems.appendChild(this.notificationButton);
 
+		// submit button
 		this.submitButton = document.createElement("button");
 		this.submitButton.innerText = this.textSubmitText;
 		this.submitButton.className = "button submit";
@@ -177,6 +161,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		rightItems.appendChild(this.submitButton);
 		this.submitButton.addEventListener("click", this.onSubmitPost.bind(this));
 
+		// if the current url is like /r/AskReddit/submit then fill out the subreddit input field
 		if (/^\/r\/\w+\/submit/.test(history.state.url)) {
 			const subMatches = history.state.url.match(/(?<=^\/r\/)\w+/);
 			(this.subInput.$tag("input")[0] as HTMLInputElement).value = `r/${subMatches[0]}`;
@@ -283,9 +268,11 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		pushLinkToHistoryComb(path);
 	}
 
+	/** the community name has changed --> verify if it's valid and if so load it's data */
 	private async onSubChange() {
 		this.submitButton.disabled = true;
 		let community = (this.subInput.$tag("input")[0] as HTMLInputElement).value;
+		// basic schema
 		if (!/^(r|u|user)\//.test(community)) {
 			new Ph_Toast(Level.Error, `Community must start with "r/" or "u/" or "user/"`, {timeout: 3500});
 			return;
@@ -299,6 +286,8 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		}
 		community = community.replace(/^\/?/, "/");
 
+		// make reddit request to verify existence of that sub and get it's data
+		// for subreddit
 		if (community.startsWith("/r/")) {
 			// check if valid
 			const r = await redditApiRequest(`${community}/api/submit_text`, [], false);
@@ -338,11 +327,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 				throw "Invalid submission type";
 			}
 			this.imagesAllowed = subData["allow_images"];
-			// if (this.isImage)
-			// 	this.linkIsImageButton.click();
 			this.videosAllowed = subData["allow_videos"];
-			// if (this.isVideo)
-			// 	this.linkIsVideoButton.click();
 			// flair selection
 			const flairs: {}[] = await redditApiRequest(`${community}/api/link_flair_v2`, [], true);
 			this.flairSelectorWrapper.innerText = "";
@@ -382,6 +367,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 
 			this.submitButton.disabled = false;
 		}
+		// TODO for user
 		else {
 			const r = await redditApiRequest(`${community}/about`, [], false);
 			if (r["kind"] === "listing" || r["error"]) {
@@ -392,6 +378,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 			this.setCommunityIsValid();
 			this.subInfoButton.innerText = "";
 			this.subInfoButton.appendChild(Ph_FeedInfo.getInfoButton(FeedType.user, community));
+			new Ph_Toast(Level.Warning, "Post to users aren't supported yet");
 		}
 	}
 

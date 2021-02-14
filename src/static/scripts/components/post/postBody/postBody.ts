@@ -9,97 +9,40 @@ import Ph_VideoPlayer from "../../videoPlayer/videoPlayer.js";
 import Ph_PostImage, { GalleryInitData } from "./postImage/postImage.js";
 import Ph_PostText from "./postText/postText.js";
 
+/**
+ * Determines the post type and generates the type specific content
+ */
 export default class Ph_PostBody extends HTMLElement {
 	constructor(postData: RedditApiType) {
 		super();
-		// if (postData.data["crosspost_parent_list"])		// is cross post ? use original post data
-		// 	postData.data = { ...postData.data, ...postData.data["crosspost_parent_list"][0] };
 
 		this.classList.add("content");
 
 		switch (this.getPostType(postData.data)) {
 			case PostType.Image:
-				this.classList.add("fullScale");
-				this.appendChild(Ph_PostImage.fromPostData(postData));
+				this.makeImageBody(postData);
 				break;
 			case PostType.Text:
-				const text = new Ph_PostText(postData.data["selftext_html"] || "");
-				this.appendChild(text);
-				if (text.innerText)
-					this.classList.add("padded");
+				this.makeTextBody(postData);
 				break;
 			case PostType.EmbeddedVideo:
-				this.classList.add("fullScale");
-				const iframeSrc = postData.data["media_embed"]["content"].match(/src="([^"]+)"/)[1]; 
-				this.innerHTML = `<div class="aspect-ratio-16-9-wrapper"><iframe src="${escADQ(iframeSrc)}" allowfullscreen></iframe></div>`;
+				this.makeEmbeddedVideoBody(postData);
 				break;
 			case PostType.Link:
-				this.classList.add("padded");
-				if (postData.data["preview"])
-					this.innerHTML = `
-						<div class="linkPreviewWrapper">
-							<a href="${escADQ(postData.data["url"])}" rel="noopener">${escHTML(postData.data["url"])}</a>
-							<img src="${escADQ(postData.data["preview"]["images"][0]["source"]["url"])}" alt="preview">
-						</div>`;
-				else
-					this.innerHTML = `<a href="${escADQ(postData.data["url"])}" rel="noopener">${escHTML(postData.data["url"])}</a>`;
+				this.makeLinkBody(postData);
 				break;
 			case PostType.Video:
-				this.classList.add("fullScale");
-				this.appendChild(Ph_VideoPlayer.fromPostData(postData));
+				this.makeVideoBody(postData);
 				break;
 			case PostType.Tweet:
-				this.classList.add("fullScale");
-				this.innerHTML = `
-					<div class="aspect-ratio-16-9-wrapper">
-						<iframe border=0 frameborder=0 height=250 width=550
- 							src="https://twitframe.com/show?url=${encodeURIComponent(postData.data["url"])}&theme=dark&align=center">
-						</iframe>
-					</div>`;
+				this.makeTweetBody(postData);
 				break;
 			case PostType.Imgur:
-				this.classList.add("fullScale");
-				if (/imgur\.com\/(a|album|gallery)\/[^/]+$/.test(postData.data["url"])) {
-					getImgurAlbumContents(postData.data["url"]).then((contents: ImgurContent[]) => {
-						if (contents[0].type === ImgurContentType.Video) {
-							this.appendChild(new Ph_VideoPlayer(
-								new Ph_SimpleVideo([{ src: contents[0].link, type: "video/mp4" }])
-							));
-							if (contents.length > 1)
-								new Ph_Toast(Level.Warning, "Imgur album with video and more than 1 items --> only displaying video");
-						}
-						else {
-							this.appendChild(new Ph_PostImage(
-								contents.map(content => <GalleryInitData> {
-									originalUrl: content.link,
-									caption: content.caption
-								}))
-							);
-						}
-					});
-				}
-				else {
-					getImgurContent(postData.data["url"]).then(content => {
-						if (content.type === ImgurContentType.Image) {
-							this.appendChild(new Ph_PostImage([{
-								originalUrl: content.link,
-								caption: content.caption
-							}]));
-						}
-						else {
-							 this.appendChild(new Ph_VideoPlayer(new Ph_SimpleVideo([{
-								 src: content.link,
-								 type: "video/mp4"
-							 }])))
-						}
-					})
-				}
+				this.makeImgurBody(postData);
 				break;
 			default:
-				this.classList.add("padded");
-				this.innerText = `Unknown post type ${this.getPostType(postData.data)}`;
+				this.makeDefaultBody(postData);
 				break;
-			
 			}
 
 		replaceRedditLinks(this);
@@ -134,7 +77,96 @@ export default class Ph_PostBody extends HTMLElement {
 			return PostType.Tweet;
 		else
 			return PostType.Link;
+	}
+
+	private makeLinkBody(postData: RedditApiType) {
+		this.classList.add("padded");
+		if (postData.data["preview"])
+			this.innerHTML = `
+				<div class="linkPreviewWrapper">
+					<a href="${escADQ(postData.data["url"])}" rel="noopener">${escHTML(postData.data["url"])}</a>
+					<img src="${escADQ(postData.data["preview"]["images"][0]["source"]["url"])}" alt="preview">
+				</div>`;
+		else
+			this.innerHTML = `<a href="${escADQ(postData.data["url"])}" rel="noopener">${escHTML(postData.data["url"])}</a>`;
+	}
+
+	private makeImageBody(postData: RedditApiType) {
+		this.classList.add("fullScale");
+		this.appendChild(Ph_PostImage.fromPostData(postData));
+	}
+
+	private makeVideoBody(postData: RedditApiType) {
+		this.classList.add("fullScale");
+		this.appendChild(Ph_VideoPlayer.fromPostData(postData));
+	}
+
+	private makeEmbeddedVideoBody(postData: RedditApiType) {
+		this.classList.add("fullScale");
+		const iframeSrc = postData.data["media_embed"]["content"].match(/src="([^"]+)"/)[1];
+		this.innerHTML = `<div class="aspect-ratio-16-9-wrapper"><iframe src="${escADQ(iframeSrc)}" allowfullscreen></iframe></div>`;
+	}
+
+	private makeTextBody(postData: RedditApiType) {
+		const text = new Ph_PostText(postData.data["selftext_html"] || "");
+		this.appendChild(text);
+		if (text.innerText)
+			this.classList.add("padded");
+	}
+
+	private makeTweetBody(postData: RedditApiType) {
+		this.classList.add("fullScale");
+		this.innerHTML = `
+			<div class="aspect-ratio-16-9-wrapper">
+				<iframe border=0 frameborder=0 height=250 width=550
+					src="https://twitframe.com/show?url=${encodeURIComponent(postData.data["url"])}&theme=dark&align=center">
+				</iframe>
+			</div>`;
+	}
+
+	private makeImgurBody(postData: RedditApiType) {
+		this.classList.add("fullScale");
+		if (/imgur\.com\/(a|album|gallery)\/[^/]+$/.test(postData.data["url"])) {
+			getImgurAlbumContents(postData.data["url"]).then((contents: ImgurContent[]) => {
+				if (contents[0].type === ImgurContentType.Video) {
+					this.appendChild(new Ph_VideoPlayer(
+						new Ph_SimpleVideo([{ src: contents[0].link, type: "video/mp4" }])
+					));
+					if (contents.length > 1)
+						new Ph_Toast(Level.Warning, "Imgur album with video and more than 1 items --> only displaying video");
+				}
+				else {
+					this.appendChild(new Ph_PostImage(
+						contents.map(content => <GalleryInitData> {
+							originalUrl: content.link,
+							caption: content.caption
+						}))
+					);
+				}
+			});
 		}
+		else {
+			getImgurContent(postData.data["url"]).then(content => {
+				if (content.type === ImgurContentType.Image) {
+					this.appendChild(new Ph_PostImage([{
+						originalUrl: content.link,
+						caption: content.caption
+					}]));
+				}
+				else {
+					this.appendChild(new Ph_VideoPlayer(new Ph_SimpleVideo([{
+						src: content.link,
+						type: "video/mp4"
+					}])))
+				}
+			})
+		}
+	}
+
+	private makeDefaultBody(postData: RedditApiType) {
+		this.classList.add("padded");
+		this.innerText = `Unknown post type ${this.getPostType(postData.data)}`;
+	}
 }
 
 customElements.define("ph-post-body", Ph_PostBody);

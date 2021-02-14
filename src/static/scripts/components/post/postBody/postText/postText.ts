@@ -1,5 +1,8 @@
 import { elementWithClassInTree, linksToInlineImages } from "../../../../utils/htmlStuff.js";
 
+/**
+ * Text of a post. If in feed, has a max height. If higher than max height, show expand button
+ */
 export default class Ph_PostText extends HTMLElement {
 	maxHeightInVh: number;
 	expandButton: HTMLButtonElement;

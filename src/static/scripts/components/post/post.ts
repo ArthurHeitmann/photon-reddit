@@ -19,6 +19,9 @@ import Ph_Toast, { Level } from "../misc/toast/toast.js";
 import Ph_VoteButton from "../misc/voteButton/voteButton.js";
 import Ph_PostBody from "./postBody/postBody.js";
 
+/**
+ * A reddit post
+ */
 export default class Ph_Post extends Ph_FeedItem implements Votable {
 	actionBar: HTMLDivElement;
 	voteUpButton: Ph_VoteButton;
@@ -242,6 +245,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		}
 	}
 
+	/** This is a solution with the best UX and least unexpected hidden posts */
 	private shouldPostBeHidden(ignoreSeenSettings: boolean = false, changedSettings?: PhotonSettings): boolean {
 		if (changedSettings === undefined) {
 			return (

@@ -1,4 +1,6 @@
-
+/**
+ * The children of this wrapper can be dragged around and zoomed in on with the mouse & scroll wheel
+ */
 export default class Ph_DraggableWrapper extends HTMLElement {
 	prevX = 0;
 	prevY = 0;
