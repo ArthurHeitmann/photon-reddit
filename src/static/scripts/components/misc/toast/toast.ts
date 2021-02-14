@@ -1,5 +1,14 @@
-
+/**
+ * A toast notification that appears on the screen. Can have different severities and some other customization options.
+ */
 export default class Ph_Toast extends HTMLElement {
+	/**
+	 * @param level severity
+	 * @param displayHtml message innerHTML
+	 * @param options {}
+	 * @param options.timeout if > 0 --> remove toast after n ms
+	 * @param options.onConfirm if given will display accept or cancel buttons. When accept is pressed execute onConfirm
+	 */
 	constructor(level: Level, displayHtml: string, options: { timeout?: number, onConfirm?: () => void } = {}) {
 		super();
 

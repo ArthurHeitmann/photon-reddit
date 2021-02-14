@@ -9,6 +9,9 @@ export interface FlairData {
 	text?: string
 }
 
+/**
+ * A reddit flair (for example user or post related)
+ */
 export default class Ph_Flair extends HTMLElement {
 	constructor(data: FlairData) {
 		super();
@@ -56,6 +59,12 @@ export default class Ph_Flair extends HTMLElement {
 			this.classList.add("empty");
 	}
 
+	/**
+	 * Use this when using reddit api response data
+	 *
+	 * @param thingData raw api response
+	 * @param prefix like "author" (for users) or "link" (for posts)
+	 */
 	static fromThingData(thingData: RedditApiData, prefix: string): Ph_Flair {
 		return new Ph_Flair({
 			type: thingData[`${prefix}_flair_type`],

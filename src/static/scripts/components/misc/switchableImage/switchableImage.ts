@@ -1,4 +1,6 @@
-
+/**
+ * A set of images that can be replaced by each other
+ */
 export default class Ph_SwitchingImage extends HTMLElement {
 	dict = {};
 	lastActive: HTMLImageElement
@@ -21,7 +23,7 @@ export default class Ph_SwitchingImage extends HTMLElement {
 		this.lastActive.classList.remove("hide");
 	}
 
-	activate(key: any) {
+	showImage(key: any) {
 		this.lastActive.classList.add("hide");
 		this.dict[key].classList.remove("hide");
 		this.lastActive = this.dict[key];

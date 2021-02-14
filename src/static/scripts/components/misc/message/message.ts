@@ -12,8 +12,12 @@ import Ph_MarkdownForm from "../markdownForm/markdownForm.js";
 import Ph_Toast, { Level } from "../toast/toast.js";
 import Ph_UserDropDown from "../../global/userDropDown/userDropDown.js";
 
+/**
+ * A message that has been sent by someone
+ */
 export default class Ph_Message extends Ph_FeedItem implements FullName {
 	fullName: string;
+	/** If in a message thread, this is the most recent message that wasn't sent by the current user */
 	lastMessageFromOther: Ph_Message;
 	isRead: boolean;
 	canBeRead: boolean;
@@ -30,7 +34,7 @@ export default class Ph_Message extends Ph_FeedItem implements FullName {
 			throw `Invalid message kind (${messageData.kind})`;
 		}
 
-		this.setIsRead(!messageData.data["new"])
+		this.setIsRead(!messageData.data["new"]);
 		this.canBeRead = messageData.data["dest"] === thisUser.name;
 
 		let userAdditionClasses = "";

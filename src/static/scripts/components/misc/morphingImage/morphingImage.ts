@@ -1,4 +1,6 @@
-
+/**
+ * An svg with a path element. The path can be changed, so that it morphs between different paths
+ */
 export default class Ph_MorphingImage extends HTMLElement {
 	svg: SVGElement;
 	path: SVGPathElement;

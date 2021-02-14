@@ -1,4 +1,6 @@
-
+/**
+ * An up- or down-vote button with a cool animation
+ */
 export default class Ph_VoteButton extends HTMLButtonElement {
 	animated: SVGAnimateElement;
 

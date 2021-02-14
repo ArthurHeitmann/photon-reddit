@@ -317,11 +317,11 @@ export default class Ph_VideoPlayer extends HTMLElement {
 			}
 		});
 		this.video.addEventListener("ph-ready", () => {
-			this.overlayIcon.activate("ready");
+			this.overlayIcon.showImage("ready");
 			timeText.innerText = `${secondsToVideoTime(this.video.getCurrentTime())} / ${secondsToVideoTime(this.video.getMaxTime())}`;
 		});
-		this.video.addEventListener("ph-buffering", () => this.overlayIcon.activate("loading"));
-		this.video.addEventListener("ph-playing", () => this.overlayIcon.activate("none"));
+		this.video.addEventListener("ph-buffering", () => this.overlayIcon.showImage("loading"));
+		this.video.addEventListener("ph-playing", () => this.overlayIcon.showImage("none"));
 
 		// play, pause, progress bar
 		const playButton = new Ph_PlayImage();
@@ -365,7 +365,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		volumeWrapper.appendChild(volumeSlider);
 		this.video.addEventListener("ph-volumechange",
 			(e: CustomEvent) => {
-				muteButton.activate(e.detail === 0 ? "mute" : "audio");
+				muteButton.showImage(e.detail === 0 ? "mute" : "audio");
 				volumeSlider.setProgress(e.detail);
 			}
 		);
@@ -435,7 +435,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		fullscreenButton.parentElement.addEventListener("click", () => this.toggleFullscreen());
 		this.addEventListener("fullscreenchange",
 			() => {
-				fullscreenButton.activate(document.fullscreenElement ? "minimize" : "fullscreen");
+				fullscreenButton.showImage(document.fullscreenElement ? "minimize" : "fullscreen");
 				if (!document.fullscreenElement)
 					this.onExitFullscreen();
 			}

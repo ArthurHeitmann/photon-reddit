@@ -1,3 +1,6 @@
+/**
+ * Not actually markdown yet, just plain text (but maybe in the future)
+ */
 export default class Ph_MarkdownForm extends HTMLElement {
 	commentTextField: HTMLTextAreaElement;
 	submitCommentBtn: HTMLButtonElement;

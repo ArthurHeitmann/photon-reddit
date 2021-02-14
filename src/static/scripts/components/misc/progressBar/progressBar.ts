@@ -1,5 +1,8 @@
 import { throttle } from "../../../utils/utils.js";
 
+/**
+ * A progress bar that can optionally be changed/dragged by the user
+ */
 export default class Ph_ProgressBar extends HTMLElement {
 	private dragMoveRef: (e: MouseEvent) => void;
 	private dragEndRef: (e: MouseEvent) => void;
