@@ -4,10 +4,17 @@ import { thisUser } from "../../../utils/globals.js";
 import { escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { elementWithClassInTree, isElementIn, linksToSpa } from "../../../utils/htmlStuff.js";
 import { numberToShort } from "../../../utils/utils.js";
-import Ph_Header from "../../global/header/header.js";
+import Ph_Header from "../header/header.js";
 
+/**
+ * A Dropdown in the header with
+ *  - quick actions
+ *  - multireddits
+ *  - subscribed subreddits
+ */
 export default class Ph_UserDropDown extends HTMLElement {
-	private unreadBadge: HTMLDivElement;
+	unreadBadge: HTMLDivElement;
+
 	constructor() {
 		super();
 

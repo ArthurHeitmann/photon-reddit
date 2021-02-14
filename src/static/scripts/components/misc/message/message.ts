@@ -10,7 +10,7 @@ import { MessageSection } from "../../feed/universalFeed/universalFeed.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../dropDown/dropDown.js";
 import Ph_MarkdownForm from "../markdownForm/markdownForm.js";
 import Ph_Toast, { Level } from "../toast/toast.js";
-import Ph_UserDropDown from "../userDropDown/userDropDown.js";
+import Ph_UserDropDown from "../../global/userDropDown/userDropDown.js";
 
 export default class Ph_Message extends Ph_FeedItem implements FullName {
 	fullName: string;

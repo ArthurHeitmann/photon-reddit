@@ -1,6 +1,9 @@
 import Ph_DropDown from "../dropDown.js";
 import Ph_DropDownEntry, { DropDownEntryParam } from "../dropDownEntry/dropDownEntry.js";
 
+/**
+ * Contains one level of drop down entries
+ */
 export default class Ph_DropDownArea extends HTMLElement {
 	parentEntry: Ph_DropDownEntry = null;
 	isExpanded = false;

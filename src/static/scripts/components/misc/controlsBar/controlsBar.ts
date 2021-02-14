@@ -1,6 +1,10 @@
 import Ph_DropDown from "../dropDown/dropDown.js";
 import Ph_MorphingImage from "../morphingImage/morphingImage.js";
 
+/**
+ * A bar with control elements. Needs a content element (addHowHideListeners()). Will show when the cursor hovers
+ * the content element. Hides when the cursor doesn't move over the content element for a while.
+ */
 export default class Ph_ControlsBar extends HTMLElement {
 	hideTimeout = null;
 	contentElement: HTMLElement = null;

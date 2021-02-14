@@ -2,7 +2,7 @@ import { ViewChangeData } from "../../../historyState/viewsStack.js";
 import { $class } from "../../../utils/htmlStatics.js";
 import { SVGAnimateElement } from "../../../types/misc.js";
 import Ph_DropDownArea from "../../misc/dropDown/dropDownArea/dropDownArea.js";
-import Ph_UserDropDown from "../../misc/userDropDown/userDropDown.js";
+import Ph_UserDropDown from "../userDropDown/userDropDown.js";
 import Ph_PhotonSettings from "../photonSettings/photonSettings.js";
 import Ph_Search from "../search/search.js";
 
