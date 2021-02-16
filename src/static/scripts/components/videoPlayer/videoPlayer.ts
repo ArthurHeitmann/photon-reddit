@@ -1,8 +1,8 @@
+import { getGfycatMp4SrcFromUrl, GfycatDomain } from "../../api/gfycatApi.js";
 import { youtubeDlUrl } from "../../api/photonApi.js";
-import { getRedgifsMp4SrcFromUrl } from "../../api/redgifsApi.js";
+import { RedditApiType } from "../../types/misc.js";
 import { escADQ, escHTML } from "../../utils/htmlStatics.js";
 import { classInElementTree, elementWithClassInTree } from "../../utils/htmlStuff.js";
-import { RedditApiType } from "../../types/misc.js";
 import { secondsToVideoTime } from "../../utils/utils.js";
 import Ph_ControlsBar from "../misc/controlsBar/controlsBar.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
@@ -19,19 +19,26 @@ import Ph_SimpleVideo from "./simpleVideo/simpleVideo.js";
 import Ph_VideoAudio from "./videoAudio/videoAudio.js";
 import Ph_VideoWrapper from "./videoWrapper.js";
 
+/**
+ * A custom video player with custom controls
+ */
 export default class Ph_VideoPlayer extends HTMLElement {
+	/** Video playing element */
 	video: Ph_VideoWrapper;
 	overlayIcon: Ph_SwitchingImage;
+	/** video url */
 	url: string;
 	videoProgressInterval = null;
 	controlsDropDown: Ph_DropDown;
 	draggableWrapper: Ph_DraggableWrapper;
 	resetViewBtn: HTMLButtonElement;
 
+	/** Creates a video player from a reddit post (with a video link) */
 	static fromPostData(postData: RedditApiType): Ph_VideoPlayer {
 		const videoOut = new Ph_VideoPlayer();
 		videoOut.url = postData.data["url"];
 
+		// task of this huuuuge switch: get the video file url (.mp4/.gif/...) of this post
 		switch (postData.data["url"].match(/^https?:\/\/w?w?w?\.?([\w\.]+)/)[1]) {
 			case "imgur.com":
 			case "m.imgur.com":
@@ -42,6 +49,8 @@ export default class Ph_VideoPlayer extends HTMLElement {
 				]));
 				break;
 			case "gfycat.com":
+				// gfycats paths are case sensitive, but the urls usually are all lower case
+				// however in the media oembed property there is a correctly capitalized path
 				if (postData.data["media"]) {
 					let capitalizedPath;
 					if (/^https?:\/\/thumbs\.gfycat\.com\/./.test(postData.data["media"]["oembed"]["thumbnail_url"])) {
@@ -58,13 +67,16 @@ export default class Ph_VideoPlayer extends HTMLElement {
 						{src: `https://thumbs.gfycat.com/${capitalizedPath}-mobile.mp4`, type: "video/mp4"},
 					]));
 				}
+				// if no oembed data, use gfycat api
 				else {
-					youtubeDlUrl(postData.data["url"]).then(mp4Url => videoOut.init(new Ph_SimpleVideo([{ src: mp4Url, type: "video/mp4" }])))
+					getGfycatMp4SrcFromUrl(postData.data["url"], GfycatDomain.gfycat)
+						.then(mp4Url => videoOut.init(new Ph_SimpleVideo([{ src: mp4Url, type: "video/mp4" }])))
+						.catch(() => videoOut.init(null));
 				}
 				break;
 			case "v.redd.it":
 				// wtf is this inconsistency v.redd.it ??????!
-				// try to minimize sources list and failed requests
+				// trying to minimize sources list and failed requests
 				if (postData.data["media"] && postData.data["media"]["reddit_video"]) {
 					const helperUrl = postData.data["media"]["reddit_video"]["fallback_url"];
 					const resolutions = [1080, 720, 480, 360, 240, 96];
@@ -126,6 +138,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 					}
 				}
 				else {
+					// when everything fails: bruteforce
 					videoOut.init(new Ph_VideoAudio([
 						{src: postData.data["url"] + "/DASH_1080.mp4", type: "video/mp4"},
 						{src: postData.data["url"] + "/DASH_1080", type: "video/mp4"},
@@ -152,6 +165,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 				}
 				break;
 			case "i.redd.it":
+				// from i.reddit only gifs come; try to get the mp4 preview
 				if (postData.data["preview"] && postData.data["preview"]["images"][0]["variants"]["mp4"]) {
 					videoOut.init(new Ph_SimpleVideo([{
 						src: postData.data["preview"]["images"][0]["variants"]["mp4"]["source"]["url"],
@@ -159,10 +173,13 @@ export default class Ph_VideoPlayer extends HTMLElement {
 					}]));
 					break;
 				}
+				// if no preview: no break, continue to default case
 			case "clips.twitch.tv":
+				// try to get mp4 url from oembed data
 				const twitchUrlMatches = postData.data["media"]["oembed"]["thumbnail_url"].match(/(.*)-social-preview.jpg$/);
 				if (twitchUrlMatches && twitchUrlMatches.length == 2)
 					videoOut.init(new Ph_SimpleVideo([{src: twitchUrlMatches[1] + ".mp4", type: "video/mp4"}]));
+				// if not suitable oembed data use youtube-dl
 				else {
 					youtubeDlUrl(postData.data["url"]).then(async clipMp4 => {
 						videoOut.init(new Ph_SimpleVideo([{ src: clipMp4, type: "video/mp4" }]));
@@ -174,11 +191,13 @@ export default class Ph_VideoPlayer extends HTMLElement {
 				}
 				break;
 			case "redgifs.com":
-				getRedgifsMp4SrcFromUrl(postData.data["url"])
+				// like gfycat but there is no usable info in the oembed data
+				getGfycatMp4SrcFromUrl(postData.data["url"], GfycatDomain.redgifs)
 					.then(mp4Url => videoOut.init(new Ph_SimpleVideo([ { src: mp4Url, type: "video/mp4" } ])))
 					.catch(() => videoOut.init(null));
 				break;
 			default:
+				// some other .mp4 or .gif file
 				if (/\.gif(\?.*)?$/.test(postData.data["url"])) {
 					videoOut.init(new Ph_GifVideo(postData.data["url"]));
 					break;
@@ -219,7 +238,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		if (this.video)
 			this.makeControls();
 		else
-			this.innerText = "No video supplied (maybe it was deleted)";
+			this.innerText = "No video supplied (maybe video was deleted)";
 	}
 
 	makeControls() {
@@ -238,22 +257,6 @@ export default class Ph_VideoPlayer extends HTMLElement {
 				}
 			});
 		}, 0);
-
-		// const intersectionObserver = new IntersectionObserver(
-		// 	(entries, obs) => {
-		// 		if (entries[0].intersectionRatio > .4 && !classInElementTree(this.parentElement, "covered")) {
-		// 			this.video.play();
-		// 			this.focus({preventScroll: true});
-		// 		} else {
-		// 			this.video.pause();
-		// 			this.blur();
-		// 		}
-		// 	},
-		// 	{
-		// 		threshold: .4,
-		// 	}
-		// );
-		// intersectionObserver.observe(this);
 
 		this.draggableWrapper = new Ph_DraggableWrapper();
 		this.video.classList.add("draggable");

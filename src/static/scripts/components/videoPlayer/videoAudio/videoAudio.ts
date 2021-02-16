@@ -2,6 +2,9 @@ import { escADQ } from "../../../utils/htmlStatics.js";
 import { clamp, urlWithHttps } from "../../../utils/utils.js";
 import Ph_VideoWrapper from "../videoWrapper.js";
 
+/**
+ * Use this when you have 2 mp4s, 1 for video & 1 for audio. This will play, pause, seek, ... them together
+ */
 export default class Ph_VideoAudio extends Ph_VideoWrapper {
 	video: HTMLVideoElement;
 	audio: HTMLVideoElement;

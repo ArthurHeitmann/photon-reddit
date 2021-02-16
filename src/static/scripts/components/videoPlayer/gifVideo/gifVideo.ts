@@ -1,6 +1,11 @@
 import { urlWithHttps } from "../../../utils/utils.js";
 import Ph_VideoWrapper from "../videoWrapper.js";
 
+/**
+ * A video wrapper for gifs. Very limited compared to videos (not time information, no seeking, no pause only stop).
+ *
+ * Pausing works by replacing the gif <img> with a <canvas>
+ */
 export default class Ph_GifVideo extends Ph_VideoWrapper {
 	gifSrc: string;
 	gifImg: HTMLImageElement;
@@ -45,7 +50,7 @@ export default class Ph_GifVideo extends Ph_VideoWrapper {
 	}
 
 	getDimensions(): number[] {
-		return [0, 0];
+		return [this.gifImg.naturalWidth, this.gifImg.naturalHeight];
 	}
 
 	getMaxTime(): number {

@@ -2,35 +2,25 @@ import { escADQ } from "../../../utils/htmlStatics.js";
 import { allUrlsWithHttps, clamp, urlWithHttps } from "../../../utils/utils.js";
 import Ph_VideoWrapper from "../videoWrapper.js";
 
+/**
+ * A video with a list of fallback sources
+ */
 export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 	video: HTMLVideoElement;
 	lastNon0Volume: number;
 	noAudioProgressCallback: () => void;
 
-	constructor(sourcesArray?: { src: string, type: string }[], sourcesHtml?: string[]) {
+	/** @param sourcesArray browser first tries to load src 0, when fails try src 1, ... */
+	constructor(sourcesArray: { src: string, type: string }[]) {
 		super();
 
-		if (sourcesArray)
-			sourcesArray.forEach(src => src.src = urlWithHttps(src.src));
-		if (sourcesHtml) {
-			for (let i = 0; i < sourcesHtml.length; i++) {
-				sourcesHtml[i] = allUrlsWithHttps(sourcesHtml[i]);
-			}
-		}
+		sourcesArray.forEach(src => src.src = urlWithHttps(src.src));
 
 		this.video = document.createElement("video");
 		this.video.setAttribute("loop", "");
 		this.appendChild(this.video);
-		if (sourcesArray) {
-			for (const source of sourcesArray)
-				this.video.insertAdjacentHTML("beforeend", `<source src="${escADQ(source.src)}" type="${escADQ(source.type)}">`);
-		}
-		else if (sourcesHtml) {
-			for (const source of sourcesHtml)
-				this.video.insertAdjacentHTML("beforeend", source);
-		}
-		else
-			throw "Invalid video sources"
+		for (const source of sourcesArray)
+			this.video.insertAdjacentHTML("beforeend", `<source src="${escADQ(source.src)}" type="${escADQ(source.type)}">`);
 
 		this.lastNon0Volume = this.video.volume;
 		this.video.muted = true;

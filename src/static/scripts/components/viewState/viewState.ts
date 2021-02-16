@@ -2,6 +2,11 @@ import { $tag } from "../../utils/htmlStatics.js";
 import { HistoryState } from "../../types/misc.js";
 import Ph_Header from "../global/header/header.js";
 
+/**
+ * A page that is associated with a history state/url.
+ * Will be displayed when viewing that history state.
+ * When leaving this page, it will be hidden, not removed or unloaded.
+ */
 export class Ph_ViewState extends HTMLElement {
 	state: HistoryState;
 	contentElement: HTMLElement;

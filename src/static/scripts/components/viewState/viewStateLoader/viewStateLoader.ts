@@ -2,6 +2,9 @@ import ViewsStack from "../../../historyState/viewsStack.js";
 import { HistoryState } from "../../../types/misc.js";
 import { Ph_ViewState } from "../viewState.js";
 
+/**
+ * A Ph_ViewState with a loading screen
+ */
 export default class Ph_ViewStateLoader extends Ph_ViewState {
 	constructor(state: HistoryState) {
 		super(state);

@@ -4,6 +4,9 @@ import { replaceRedditLinks } from "../../utils/utils.js";
 import Ph_FeedInfo, { FeedType } from "../feed/feedInfo/feedInfo.js";
 import { Ph_ViewState } from "../viewState/viewState.js";
 
+/**
+ * A simple wiki page
+ */
 export default class Ph_Wiki extends HTMLElement {
 	constructor(wikiData: RedditApiType) {
 		super();
@@ -17,6 +20,7 @@ export default class Ph_Wiki extends HTMLElement {
 	}
 
 	connectedCallback() {
+		// subreddit info button
 		const subredditPath = history.state.url.match(/\/r\/[^/]+/)[0];
 		const headerElements: HTMLElement[] = [];
 		const title = document.createElement("div");

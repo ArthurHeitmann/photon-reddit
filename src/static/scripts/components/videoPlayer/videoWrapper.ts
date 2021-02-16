@@ -1,6 +1,8 @@
-
+/**
+ * Interface/abstract class for something that plays video like media
+ */
 export default abstract class Ph_VideoWrapper extends HTMLElement {
-	constructor() {
+	protected constructor() {
 		super();
 
 		this.classList.add("videoWrapper");
@@ -18,12 +20,12 @@ export default abstract class Ph_VideoWrapper extends HTMLElement {
 	abstract setPlaybackSpeed(speed: number): void;
 	abstract getDimensions(): number[];
 	// should be dispatching the following events
-	// - ph-play
-	// - ph-pause
-	// - ph-volumechange
-	// - ph-seek
-	// - ph-noaudio
-	// - ph-ready
-	// - ph-buffering
-	// - ph-playing
+	// - ph-play			video starts playing
+	// - ph-pause			video pauses
+	// - ph-volumechange	volume changes
+	// - ph-seek			video playing position has changed
+	// - ph-noaudio			signals that is video has no audio
+	// - ph-ready			video is ready to be played
+	// - ph-buffering		video is buffering/loading
+	// - ph-playing			video has stopped buffering
 }

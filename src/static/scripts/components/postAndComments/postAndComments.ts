@@ -12,6 +12,9 @@ import Ph_Toast, { Level } from "../misc/toast/toast.js";
 import Ph_Post from "../post/post.js";
 import { Ph_ViewState } from "../viewState/viewState.js";
 
+/**
+ * A Ph_Post & Ph_CommentsFeed; Also sets user, & sub info + sorter in the header
+ */
 export default class Ph_PostAndComments extends HTMLElement {
 	post: Ph_Post;
 	comments: Ph_CommentsFeed
@@ -26,6 +29,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 		this.subredditPrefixed = data[0].data.children[0].data["subreddit_name_prefixed"];
 		this.userPrefixed = `u/${data[0].data.children[0].data["author"]}`;
 
+		// post
 		try {
 			this.appendChild(this.post = new Ph_Post(data[0].data.children[0], false));
 		}
@@ -35,6 +39,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 			new Ph_Toast(Level.Error, "Error making post");
 		}
 
+		// write comment form
 		if (!this.post.isLocked) {
 			const commentForm = new Ph_CommentForm(this.post, false);
 			this.appendChild(commentForm);
@@ -43,15 +48,18 @@ export default class Ph_PostAndComments extends HTMLElement {
 					new Ph_Comment(e.detail, false, false, this.post)));
 		}
 
+		// comments
 		this.comments = new Ph_CommentsFeed(data[1], this.post);
 		this.appendChild(this.comments);
 
+		// highlighted comment
 		const commentLinkMatches = history.state.url.match(new RegExp(`${this.post.permalink}(\\w*)`));
 		if (commentLinkMatches && commentLinkMatches.length > 1 && commentLinkMatches[1]) {
 			this.comments.$css(`[data-id=${commentLinkMatches[1]}]`)[0].classList.add("highlight");
 			this.comments.insertParentLink(this.post.permalink, "Load all comments");
 		}
 
+		// sorting
 		this.sorter = new Ph_DropDown([
 			{ displayHTML: "Best", value: SortCommentsOrder.best, onSelectCallback: this.handleSort.bind(this) },
 			{ displayHTML: "Top", value: SortCommentsOrder.top, onSelectCallback: this.handleSort.bind(this) },
@@ -67,6 +75,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 	connectedCallback() {
 		const headerElements: HTMLElement[] = [];
 
+		// user info button
 		if (this.userPrefixed !== this.subredditPrefixed && this.userPrefixed !== "u/[deleted]") {
 			const userTitle = document.createElement("div");
 			userTitle.className = "feedTitle";
@@ -77,6 +86,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 				`/${this.userPrefixed}`
 			));
 		}
+		// subreddit info button
 		const subTitle = document.createElement("div");
 		subTitle.className = "feedTitle";
 		subTitle.innerText = this.subredditPrefixed;
@@ -86,6 +96,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 			`/${this.subredditPrefixed}`
 		));
 
+		// sorter
 		headerElements.push(this.sorter);
 
 		(elementWithClassInTree(this.parentElement, "viewState") as Ph_ViewState).setHeaderElements(headerElements);
