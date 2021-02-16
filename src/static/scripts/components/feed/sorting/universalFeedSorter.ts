@@ -1,4 +1,5 @@
 import { redditApiRequest } from "../../../api/redditApi.js";
+import ViewsStack from "../../../historyState/viewsStack.js";
 import { PostSorting, RedditApiType, SortPostsOrder, SortPostsTimeFrame } from "../../../types/misc.js";
 import { splitPathQuery } from "../../../utils/utils.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
@@ -47,7 +48,6 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 			timeFrame: valueChain[1]
 		};
 
-
 		const loadingIcon = document.createElement("img");
 		loadingIcon.alt = "loading";
 		loadingIcon.src = "/img/loading.svg";
@@ -87,6 +87,7 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 			new Ph_Toast(Level.Error, "Error making request to reddit");
 			throw `Error making sort request: ${JSON.stringify(request)}`;
 		}
+		ViewsStack.changeCurrentUrl(newUrl);
 
 		this.feed.replaceChildren(request.data.children, request.data.before, request.data.after);
 	}
