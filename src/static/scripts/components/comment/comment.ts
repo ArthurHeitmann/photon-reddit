@@ -184,6 +184,7 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 				${ commentData.data["stickied"] ? `<img class="pinned" src="/img/pin.svg" alt="pinned" draggable="false">` : "" }
 				<a href="/user/${escADQ(commentData.data["author"])}" class="user${userAdditionClasses}">
 					<span>u/${commentData.data["author"]}</span>
+					${ commentData.data["author_cakeday"] ? `<img src="/img/cake.svg" class="cakeDay" alt="cake day">` : "" }
 				</a>
 				<span class="time" data-tooltip="${new Date(commentData.data["created_utc"] * 1000).toString()}">
 					${timePassedSinceStr(commentData.data["created_utc"])}

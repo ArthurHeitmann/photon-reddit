@@ -148,6 +148,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 					<span>by</span>
 					<a href="/user/${escADQ(postData.data["author"])}" class="user${userAdditionClasses}">
 						<span>u/${escHTML(postData.data["author"])}</span>
+						${ postData.data["author_cakeday"] ? `<img src="/img/cake.svg" class="cakeDay" alt="cake day">` : "" }
 					</a>
 					<span class="time" data-tooltip="${new Date(postData.data["created_utc"] * 1000).toString()}">${timePassedSinceStr(postData.data["created_utc"])}</span>
 					<span>ago</span>
