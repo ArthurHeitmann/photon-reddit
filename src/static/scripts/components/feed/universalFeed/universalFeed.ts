@@ -61,7 +61,8 @@ export default class Ph_UniversalFeed extends HTMLElement {
 				scrollElement = this.parentElement;
 
 			const scrollChecker = throttle(this.onScroll.bind(this), 1000);
-			scrollElement.addEventListener("scroll", scrollChecker, { passive: true });
+			scrollElement.addEventListener("wheel", scrollChecker, { passive: true });
+			scrollElement.addEventListener("touchmove", scrollChecker, { passive: true });
 		}, 0);
 
 		// find first FeedItem, once it has been added
@@ -212,6 +213,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 	 * If less than 5 screen heights are left until the end of the feed, load new content
 	 */
 	onScroll(e: Event = undefined, skipEmptyCheck = false) {
+		console.log("scroll");
 		// stop if empty or is loading or for some reason close to empty (normal feed will have very large scrollHeight)
 		if (!skipEmptyCheck && (this.children.length <= 0 || this.isLoading || this.scrollHeight < window.innerHeight)) {
 			if (this.isLoading || elementWithClassInTree(this.parentElement, "viewState").classList.contains("hide"))
