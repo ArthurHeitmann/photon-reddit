@@ -75,19 +75,19 @@
 				> .top {
 					display: flex;
 					justify-content: space-between;
-
-					> .price {
-						&::after {
-							content: "c";
-							margin-left: .125rem;
-						}
-					}
 				}
 
 				* {
 					font-size: .8rem;
 				}
 			}
+		}
+	}
+
+	.coins {
+		&::after {
+			content: "c";
+			margin-left: .125rem;
 		}
 	}
 

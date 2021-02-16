@@ -22,8 +22,7 @@ export default class Ph_AwardsInfo extends HTMLElement {
 		if (typeof coinPriceSum !== "number")
 			throw "Oh no";
 		preview.innerHTML = `
-			<span class="number">${coinPriceSum}</span>
-			<span class="currency">c</span>
+			<span class="number coins">${numberToShort(coinPriceSum)}</span>
 		`;
 		this.appendChild(preview);
 
@@ -39,7 +38,7 @@ export default class Ph_AwardsInfo extends HTMLElement {
 		this.awardInfo.innerHTML = `
 			<div class="top">
 				<div class="name"></div>
-				<div class="price"></div>
+				<div class="coins"></div>
 			</div>
 			<div class="description"></div>
 		`;
@@ -83,7 +82,7 @@ export default class Ph_AwardsInfo extends HTMLElement {
 				this.awardInfo.classList.remove("hide");
 				const currAward = this.awardsData.find(aw => aw.id === awardId);			// avoid capture of unnecessary variables
 				(this.awardInfo.$class("name")[0] as HTMLElement).innerText = currAward.name;
-				(this.awardInfo.$class("price")[0] as HTMLElement).innerText = numberToShort(currAward.coin_price);
+				(this.awardInfo.$class("coins")[0] as HTMLElement).innerText = numberToShort(currAward.coin_price);
 				(this.awardInfo.$class("description")[0] as HTMLElement).innerText = currAward.description.replace("%{coin_symbol}", "c ");
 			});
 		}
