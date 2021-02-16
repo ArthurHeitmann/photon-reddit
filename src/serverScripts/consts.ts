@@ -14,8 +14,8 @@ export const commonRateLimitConfig = {
 	headers: false
 }
 export const basicRateLimitConfig = {
-	windowMs: 30 * 1000,
-	max: 30,
+	windowMs: 30 * 1000,		// in a timeframe of 30s
+	max: 30,					// 30 requests are allowed
 	...commonRateLimitConfig
 };
 export const redditTokenRateLimitConfig = {
@@ -26,12 +26,10 @@ export const redditTokenRateLimitConfig = {
 export const analyticsRateLimitConfig = {
 	windowMs: 40 * 1000,
 	max: 15,
-	message: "A little fast hugh?",
-	headers: false
+	...commonRateLimitConfig
 };
 export const youtube_dlRateLimitConfig = {
 	windowMs: 30 * 1000,
 	max: 40,
-	message: "A little fast hugh?",
-	headers: false
+	...commonRateLimitConfig
 };

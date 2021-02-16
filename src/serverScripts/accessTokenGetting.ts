@@ -1,7 +1,6 @@
 import fetch from "node-fetch";
 import { appId, redirectURI } from "./config.js";
 
-
 async function getAccessToken(params: URLSearchParams): Promise<string> {
 	const response = await fetch("https://www.reddit.com/api/v1/access_token", {
 		method: "POST",
@@ -18,14 +17,18 @@ async function getAccessToken(params: URLSearchParams): Promise<string> {
 }
 
 export async function initialAccessToken(code: string): Promise<string> {
-	const formBody = new URLSearchParams("grant_type=authorization_code&" +
+	const formBody = new URLSearchParams(
+		"grant_type=authorization_code&" +
 		`code=${ code }&` +
-		`redirect_uri=${ redirectURI }`);
+		`redirect_uri=${ redirectURI }`
+	);
 	return await getAccessToken(formBody);
 }
 
 export async function refreshAccessToken(refreshToken: string): Promise<string> {
-	const formBody = new URLSearchParams("grant_type=refresh_token&" +
-		`refresh_token=${ refreshToken }`);
+	const formBody = new URLSearchParams(
+		"grant_type=refresh_token&" +
+		`refresh_token=${ refreshToken }`
+	);
 	return await getAccessToken(formBody);
 }

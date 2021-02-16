@@ -72,7 +72,7 @@ Examples:
 - localhost:8080/redirect
 - some-photon-reddit-fork.com/redirect
 
-5. Under `/src/serverScripts/loginRedirect.ts` change line 4 to
+5. Under `/src/serverScripts/accessTokenGetting.ts` change line 4 to
 
 ```Javascript
 export const rediretURI = "[what you entered in step 4.]";

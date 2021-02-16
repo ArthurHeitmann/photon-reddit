@@ -14,7 +14,7 @@ import {
 	scope,
 	tokenDuration, youtube_dlRateLimitConfig
 } from "./serverScripts/consts.js";
-import { initialAccessToken, refreshAccessToken } from "./serverScripts/loginRedirect.js";
+import { initialAccessToken, refreshAccessToken } from "./serverScripts/accessTokenGetting.js";
 import bodyParser from "body-parser";
 import youtube_dl from "youtube-dl";
 
