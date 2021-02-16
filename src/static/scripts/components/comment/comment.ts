@@ -392,7 +392,11 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 				}
 				this.bodyMarkdown = resp["body"];
 				this.classList.remove("isEditing");
-				this.getElementsByClassName("content")[0].innerHTML = resp["body_html"];
+				const content = this.getElementsByClassName("content")[0] as HTMLElement;
+				content.innerHTML = resp["body_html"];
+				linksToInlineImages(content);
+				replaceRedditLinks(content);
+				linksToSpa(content);
 				editForm.remove();
 				new Ph_Toast(Level.Success, "Edited comment", { timeout: 2000 });
 			} catch (e) {
