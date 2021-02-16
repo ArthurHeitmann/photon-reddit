@@ -133,7 +133,7 @@
 	.header {
 		margin: vars.$post-padding 0;
 
-		.top {
+		> .top {
 			margin-bottom: vars.$post-padding / 4;
 			flex-wrap: wrap;
 			align-items: center;
@@ -142,7 +142,7 @@
 				margin: 0 0.125rem;
 			}
 
-			> span {
+			span {
 				font-size: .8em;
 				margin: 0 0.1rem;
 			}
@@ -158,13 +158,6 @@
 			font-size: 1.75rem;
 			word-break: break-word;
 		}
-
-		//> .flair {
-		//	width: max-content;
-		//	margin-left: auto;
-		//	position: relative;
-		//	margin-bottom: -1.2rem;
-		//}
 	}
 
 	&:not(.isInFeed) {

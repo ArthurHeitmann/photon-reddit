@@ -12,6 +12,7 @@ import {
 } from "../../utils/utils.js";
 import Ph_FeedItem from "../feed/feedItem/feedItem.js";
 import { globalSettings, NsfwPolicy, PhotonSettings } from "../global/photonSettings/photonSettings.js";
+import Ph_AwardsInfo from "../misc/awardsInfo/awardsInfo.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
 import Ph_DropDownEntry from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_Flair from "../misc/flair/flair.js";
@@ -168,6 +169,8 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 				</div>
 			</div>
 		`;
+		if (postData.data["all_awardings"] && postData.data["all_awardings"].length > 0)
+			mainPart.$class("flairWrapper")[0].insertAdjacentElement("beforebegin", new Ph_AwardsInfo(postData.data["all_awardings"]));
 		try {
 			this.postBody = new Ph_PostBody(postData);
 			mainPart.appendChild(this.postBody);

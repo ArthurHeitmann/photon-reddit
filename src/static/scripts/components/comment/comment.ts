@@ -14,6 +14,7 @@ import { RedditApiType } from "../../types/misc.js";
 import { isObjectEmpty, numberToShort, replaceRedditLinks, timePassedSinceStr } from "../../utils/utils.js";
 import Ph_CommentsFeed from "../feed/commentsFeed/commentsFeed.js";
 import Ph_FeedItem from "../feed/feedItem/feedItem.js";
+import Ph_AwardsInfo from "../misc/awardsInfo/awardsInfo.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
 import Ph_DropDownEntry, { DropDownEntryParam } from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_Flair from "../misc/flair/flair.js";
@@ -203,6 +204,10 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 				${commentData.data["body_html"]}
 			</div>
 		`;
+		if (commentData.data["all_awardings"] && commentData.data["all_awardings"].length > 0) {
+			const nonLocked = mainPart.$css(".header > :not(.locked)");
+			nonLocked[nonLocked.length - 1].insertAdjacentElement("afterend", new Ph_AwardsInfo(commentData.data["all_awardings"]));
+		}
 
 		// user flair
 		mainPart.$class("user")[0]
