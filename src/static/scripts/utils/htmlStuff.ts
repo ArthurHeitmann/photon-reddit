@@ -60,15 +60,17 @@ export function isElementIn(container: HTMLElement, checkElement: HTMLElement): 
 export function linksToInlineImages(elem: HTMLElement) {
 	const links = elem.$tag("a");
 	for (let link of links) {
-		if (!(/^[^?]+(?<!#.*)\.(png|jpg|jpeg|gif)(\?.*)?$/).test((link as HTMLAnchorElement).href)) {
+		// test for file endine
+		if (!(/^[^?]+(?<!#.*)\.(png|jpg|jpeg|gif)(\?.*)?$/).test((link as HTMLAnchorElement).href))
 			continue;
-		}
-		else if ((/wikipedia\.org.*File:/).test((link as HTMLAnchorElement).href)) {
+		// no images with http
+		else if ((/^http:\/\//).test((link as HTMLAnchorElement).href))
 			continue;
-		}
-		else if ((/preview\.redd\.it\/.*\.gif\?format=mp4/).test((link as HTMLAnchorElement).href)) {
+		// wikipedia & reddit exceptions
+		else if ((/wikipedia\.org.*File:/).test((link as HTMLAnchorElement).href))
 			continue;
-		}
+		else if ((/preview\.redd\.it\/.*\.gif\?format=mp4/).test((link as HTMLAnchorElement).href))
+			continue;
 
 		const image = new Ph_PostImage([{originalUrl: (link as HTMLAnchorElement).href, caption: ""}]);
 		link.innerHTML = "";

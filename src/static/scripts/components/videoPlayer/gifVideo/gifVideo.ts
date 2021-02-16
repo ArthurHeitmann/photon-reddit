@@ -1,3 +1,4 @@
+import { urlWithHttps } from "../../../utils/utils.js";
 import Ph_VideoWrapper from "../videoWrapper.js";
 
 export default class Ph_GifVideo extends Ph_VideoWrapper {
@@ -8,6 +9,8 @@ export default class Ph_GifVideo extends Ph_VideoWrapper {
 
 	constructor(src: string) {
 		super();
+
+		src = urlWithHttps(src);
 
 		this.classList.add("gifVideo");
 		this.gifSrc = src;

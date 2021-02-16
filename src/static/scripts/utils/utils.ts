@@ -194,3 +194,12 @@ export function extractHash(uri: string): string {
 	const matches = uri.match(/#.*$/);
 	return matches && matches[0] || "";
 }
+
+export function urlWithHttps(url: string) {
+	return url.replace(/^http:/, "https:");
+}
+
+export function allUrlsWithHttps(text: string): string {
+	return text.replace(/http:/, "https:");
+
+}

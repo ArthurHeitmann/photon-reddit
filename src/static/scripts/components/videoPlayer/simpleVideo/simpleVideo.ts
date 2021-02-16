@@ -1,5 +1,5 @@
 import { escADQ } from "../../../utils/htmlStatics.js";
-import { clamp } from "../../../utils/utils.js";
+import { allUrlsWithHttps, clamp, urlWithHttps } from "../../../utils/utils.js";
 import Ph_VideoWrapper from "../videoWrapper.js";
 
 export default class Ph_SimpleVideo extends Ph_VideoWrapper {
@@ -9,6 +9,14 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 
 	constructor(sourcesArray?: { src: string, type: string }[], sourcesHtml?: string[]) {
 		super();
+
+		if (sourcesArray)
+			sourcesArray.forEach(src => src.src = urlWithHttps(src.src));
+		if (sourcesHtml) {
+			for (let i = 0; i < sourcesHtml.length; i++) {
+				sourcesHtml[i] = allUrlsWithHttps(sourcesHtml[i]);
+			}
+		}
 
 		this.video = document.createElement("video");
 		this.video.setAttribute("loop", "");
