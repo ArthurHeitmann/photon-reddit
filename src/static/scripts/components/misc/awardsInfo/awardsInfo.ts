@@ -18,7 +18,7 @@ export default class Ph_AwardsInfo extends HTMLElement {
 		const preview = document.createElement("div");
 		preview.className = "preview";
 		const coinPriceSum = data.reduce((previousValue, currentValue) =>
-			previousValue + currentValue.coin_price, 0);
+			previousValue + currentValue.coin_price * currentValue.count, 0);
 		if (typeof coinPriceSum !== "number")
 			throw "Oh no";
 		preview.innerHTML = `
