@@ -54,5 +54,4 @@ export function isAccessTokenValid(): boolean {
 }
 
 // check if token has expired every 30 seconds
-setTimeout(checkTokenExpiry, 0);
 setInterval(checkTokenExpiry, 30000);
