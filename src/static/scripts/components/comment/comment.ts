@@ -13,7 +13,7 @@ import { elementWithClassInTree, linksToInlineImages, linksToSpa } from "../../u
 import { RedditApiType } from "../../types/misc.js";
 import { isObjectEmpty, numberToShort, replaceRedditLinks, timePassedSinceStr } from "../../utils/utils.js";
 import Ph_CommentsFeed from "../feed/commentsFeed/commentsFeed.js";
-import Ph_FeedItem from "../feed/feedItem/feedItem.js";
+import Ph_Readable from "../feed/feedItem/readable/readable.js";
 import Ph_AwardsInfo from "../misc/awardsInfo/awardsInfo.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
 import Ph_DropDownEntry, { DropDownEntryParam } from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
@@ -30,7 +30,7 @@ import Ph_Post from "../post/post.js";
  *
  * Can be displayed with a post or detached without
  */
-export default class Ph_Comment extends Ph_FeedItem implements Votable {
+export default class Ph_Comment extends Ph_Readable implements Votable {
 	voteUpButton: Ph_VoteButton;
 	currentUpvotes: HTMLDivElement;
 	voteDownButton: Ph_VoteButton;
@@ -50,7 +50,8 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 	 * @param post parent post if available should be supplied (needed to load possible child comments)
 	 */
 	constructor(commentData: RedditApiType, isChild: boolean, isInFeed: boolean, post?: Ph_Post) {
-		super(commentData.data["name"], commentData.data["permalink"] || commentData.data["context"], isInFeed);
+		super(commentData.data["name"], commentData.data["permalink"] || commentData.data["context"], isInFeed,
+			"first_message" in commentData.data, !commentData.data["new"]);
 
 		this.classList.add("comment");
 		if (!isChild)
@@ -102,7 +103,6 @@ export default class Ph_Comment extends Ph_FeedItem implements Votable {
 		}
 
 		// set this properties
-		this.setAttribute("data-id", commentData.data["name"].slice(3));
 		this.bodyMarkdown = commentData.data["body"];
 
 		this.fullName = commentData.data["name"];

@@ -33,5 +33,5 @@ export function clearAllOldData() {
 		++removedSeen;
 	}
 
-	console.log(`Cache cleaner too ${Date.now() - now}ms, removed ${removedCachedInfos} cached feed infos and ${removedSeen} seen posts`);
+	console.log(`Cache cleaner took ${Date.now() - now}ms, removed ${removedCachedInfos} cached feed infos and ${removedSeen} seen posts`);
 }

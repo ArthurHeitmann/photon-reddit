@@ -1,0 +1,31 @@
+@use "../../../../../style/vars";
+
+.readable {
+	transition: border-color .25s ease;
+	&.unread {
+		border: 1px solid vars.$text !important;
+	}
+
+	.markRead {
+		position: absolute;
+		top: .5rem;
+		right: .5rem;
+	}
+}
+
+.markRead {
+	width: 2rem;
+	height: 2rem;
+	background-image: url("/img/check.svg");
+	background-size: contain;
+
+	&::before {
+		position: absolute;
+		left: -0.25rem;
+		opacity: 0.5;
+		width: 100%;
+		height: 100%;
+		background-image: url("/img/check.svg");
+		background-size: contain;
+	}
+}

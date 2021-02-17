@@ -11,6 +11,7 @@ export default class Ph_FeedItem extends HTMLElement {
 		this.isInFeed = isInFeed;
 
 		this.classList.add("feedItem");
+		this.setAttribute("data-id", this.itemId);
 
 		if (isInFeed) {
 			this.classList.add("isInFeed");
