@@ -4,10 +4,10 @@ if (env !== "production")
 	config();
 
 import express from "express";
-import expressAsyncHandler from "express-async-handler";
 import mariadb from "mariadb";
 import RateLimit from "express-rate-limit";
 import { analyticsRateLimitConfig, basicRateLimitConfig } from "./consts.js";
+import { safeExcAsync } from "./utils.js";
 
 export const analyticsRouter = express.Router();
 
@@ -116,7 +116,7 @@ async function getPopularPathsInTimeFrame(timeFrame: number, limit: number) {
 	}
 }
 
-analyticsRouter.post("/event", RateLimit(analyticsRateLimitConfig), expressAsyncHandler(async (req, res) => {
+analyticsRouter.post("/event", RateLimit(analyticsRateLimitConfig), safeExcAsync(async (req, res) => {
 	const { clientId, path, referer, timeMillisUtc } = req.body;
 	if (!clientId || typeof clientId !== "string" || clientId.length > 128) {
 		res.send("Invalid parameters").status(400);
@@ -158,7 +158,7 @@ async function analyticsQueryMiddleware(req: express.Request, res: express.Respo
 	next();
 }
 
-analyticsRouter.get("/events", RateLimit(basicRateLimitConfig), analyticsQueryMiddleware, expressAsyncHandler(async (req, res) => {
+analyticsRouter.get("/events", RateLimit(basicRateLimitConfig), analyticsQueryMiddleware, safeExcAsync(async (req, res) => {
 	const timeFrame = parseInt(req.query["timeFrame"].toString());
 	const resolution = parseInt(req.query["resolution"].toString());
 	if (timeFrame <= 0 || !isFinite(timeFrame) || typeof timeFrame !== "number") {
@@ -178,7 +178,7 @@ analyticsRouter.get("/events", RateLimit(basicRateLimitConfig), analyticsQueryMi
 	}
 }));
 
-analyticsRouter.get("/uniqueClients", RateLimit(basicRateLimitConfig), analyticsQueryMiddleware, expressAsyncHandler(async (req, res) => {
+analyticsRouter.get("/uniqueClients", RateLimit(basicRateLimitConfig), analyticsQueryMiddleware, safeExcAsync(async (req, res) => {
 	const timeFrame = parseInt(req.query["timeFrame"].toString());
 	if (timeFrame <= 0 || !isFinite(timeFrame) || typeof timeFrame !== "number") {
 		res.send("Invalid parameters").status(400);
@@ -194,7 +194,7 @@ analyticsRouter.get("/uniqueClients", RateLimit(basicRateLimitConfig), analytics
 	}
 }));
 
-analyticsRouter.get("/popularPaths", RateLimit(basicRateLimitConfig), analyticsQueryMiddleware, expressAsyncHandler(async (req, res) => {
+analyticsRouter.get("/popularPaths", RateLimit(basicRateLimitConfig), analyticsQueryMiddleware, safeExcAsync(async (req, res) => {
 	const timeFrame = parseInt(req.query["timeFrame"].toString());
 	const limit = parseInt(req.query["limit"].toString());
 	if (timeFrame <= 0 || !isFinite(timeFrame) || typeof timeFrame !== "number") {

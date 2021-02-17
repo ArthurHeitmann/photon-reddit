@@ -1,8 +1,9 @@
+import bodyParser from "body-parser";
 import express from "express";
-import helmet from "helmet";
 import RateLimit from "express-rate-limit";
-import expressAsyncHandler from "express-async-handler";
-import fetch from "node-fetch";
+import helmet from "helmet";
+import youtube_dl from "youtube-dl";
+import { initialAccessToken, refreshAccessToken } from "./serverScripts/accessTokenGetting.js";
 import { analyticsRouter } from "./serverScripts/analytics.js";
 import { appId, redirectURI } from "./serverScripts/config.js";
 import {
@@ -12,31 +13,27 @@ import {
 	port,
 	redditTokenRateLimitConfig,
 	scope,
-	tokenDuration, youtube_dlRateLimitConfig
+	tokenDuration,
+	youtube_dlRateLimitConfig
 } from "./serverScripts/consts.js";
-import { initialAccessToken, refreshAccessToken } from "./serverScripts/accessTokenGetting.js";
-import bodyParser from "body-parser";
-import youtube_dl from "youtube-dl";
+import { checkSslAndWww, safeExc, safeExcAsync } from "./serverScripts/utils.js";
 
 const app = express();
 
-function checkSslAndWww(req: express.Request, res: express.Response, next: express.NextFunction) {
-	if ((env === "development" || req.headers['x-forwarded-proto'] === "https") && !(/^www\./.test(req.hostname)))
-		next();
-	else
-		res.redirect(`https://${req.hostname.replace(/^www\./, "")}${req.originalUrl}`)
-}
+// middlewares
 
 app.use(helmet({
 	contentSecurityPolicy: false
 }));
-app.use(checkSslAndWww);
+app.use(safeExc(checkSslAndWww));
 app.use(express.static('src/static', env !== "production" ? {} : {
 	maxAge: env === "production" ? "1d" : "0"
 }));
 app.use(bodyParser.json());
 
-app.get("/login", RateLimit(basicRateLimitConfig), (req, res) => {
+// paths
+
+app.get("/login", RateLimit(basicRateLimitConfig), safeExc((req, res) => {
 	const loginUrl = "https://www.reddit.com/api/v1/authorize?" +
 		`client_id=${ encodeURIComponent(appId) }&` +
 		`response_type=code&` +
@@ -46,10 +43,10 @@ app.get("/login", RateLimit(basicRateLimitConfig), (req, res) => {
 		`scope=${ encodeURIComponent(scope.join(" ")) }`;
 
 	res.redirect(loginUrl);
-});
+}));
 
 // redirect from certain reddit api requests (like login)
-app.get("/redirect", RateLimit(redditTokenRateLimitConfig), expressAsyncHandler(async (req, res) => {
+app.get("/redirect", RateLimit(redditTokenRateLimitConfig), safeExcAsync(async (req, res) => {
 	if (req.query["state"] && req.query["state"] === "initialLogin") {
 		try {
 			const data = await initialAccessToken(req.query["code"].toString());
@@ -61,12 +58,11 @@ app.get("/redirect", RateLimit(redditTokenRateLimitConfig), expressAsyncHandler(
 		}
 	}
 	else {
-		res.setHeader('Content-Type', 'application/json');
-		res.send('{ "error": "¯\\_(ツ)_/¯"}');
+		res.json({ error: "¯\\_(ツ)_/¯"}).status(400);
 	}
 }));
 
-app.get("/refreshToken", RateLimit(redditTokenRateLimitConfig), expressAsyncHandler(async (req, res) => {
+app.get("/refreshToken", RateLimit(redditTokenRateLimitConfig), safeExcAsync(async (req, res) => {
 	res.setHeader('Content-Type', 'application/json');
 	if (req.query["refreshToken"]) {
 		try {
@@ -78,24 +74,28 @@ app.get("/refreshToken", RateLimit(redditTokenRateLimitConfig), expressAsyncHand
 		}
 	}
 	else {
-		res.send('{ "error": "¯\\_(ツ)_/¯"}');
+		res.json({ error: "¯\\_(ツ)_/¯"}).status(400);
 	}
 }));
 
-app.get("/youtube-dl", RateLimit(youtube_dlRateLimitConfig), (req, res) => {
+app.get("/youtube-dl", RateLimit(youtube_dlRateLimitConfig), safeExc((req, res) => {
 	youtube_dl.getInfo(req.query["url"], [], (err, info) => {
-		res.json({ url: info.url });
+		if (!err && info && info.url)
+			res.json({ url: info.url });
+		else {
+			res.json({ error: "¯\\_(ツ)_/¯"}).status(400);
+		}
 	});
-});
+}));
 
 // /data instead of /analytics used to avoid getting blocked by adblockers
 app.use("/data", analyticsRouter);
 
 const indexFile = __dirname + "/src/static/index.html"
 // catch all paths and check ssl, since app.use middleware doesn't seem to get called here
-app.get('*', [RateLimit(basicRateLimitConfig), checkSslAndWww], (req, res) => {
+app.get('*', [RateLimit(basicRateLimitConfig), checkSslAndWww], safeExc((req, res) => {
 	res.sendFile(indexFile);
-});
+}));
 
 app.listen(port, () => {
 	console.log(`Started app on port ${port}!`)
