@@ -38,6 +38,19 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		const videoOut = new Ph_VideoPlayer();
 		videoOut.url = postData.data["url"];
 
+		function defaultCase() {
+			if (/\.gif(\?.*)?$/.test(postData.data["url"])) {
+				videoOut.init(new Ph_GifVideo(postData.data["url"]));
+				return;
+			}
+			else if (/\.mp4(\?.*)?$/.test(postData.data["url"])) {
+				videoOut.init(new Ph_SimpleVideo([{src: postData.data["url"], type: "video/mp4"}]));
+				return;
+			}
+			console.error(`Unknown video provider for ${postData.data["url"]}`);
+			new Ph_Toast(Level.Error, `Unknown video provider for ${escHTML(postData.data["url"])}`);
+		}
+
 		// task of this huuuuge switch: get the video file url (.mp4/.gif/...) of this post
 		switch (postData.data["url"].match(/^https?:\/\/w?w?w?\.?([\w\.]+)/)[1]) {
 			case "imgur.com":
@@ -171,16 +184,22 @@ export default class Ph_VideoPlayer extends HTMLElement {
 						src: postData.data["preview"]["images"][0]["variants"]["mp4"]["source"]["url"],
 						type: "video/mp4"
 					}]));
-					break;
 				}
-				// if no preview: no break, continue to default case
+				else
+					defaultCase();
+				break;
 			case "clips.twitch.tv":
 				// try to get mp4 url from oembed data
-				const twitchUrlMatches = postData.data["media"]["oembed"]["thumbnail_url"].match(/(.*)-social-preview.jpg$/);
-				if (twitchUrlMatches && twitchUrlMatches.length == 2)
-					videoOut.init(new Ph_SimpleVideo([{src: twitchUrlMatches[1] + ".mp4", type: "video/mp4"}]));
+				let twitchMp4Found = false;
+				if (postData.data["media"] && postData.data["media"]["oembed"]) {
+					const twitchUrlMatches = postData.data["media"]["oembed"]["thumbnail_url"].match(/(.*)-social-preview.jpg$/);
+					if (twitchUrlMatches && twitchUrlMatches.length == 2) {
+						videoOut.init(new Ph_SimpleVideo([{src: twitchUrlMatches[1] + ".mp4", type: "video/mp4"}]));
+						twitchMp4Found = true;
+					}
+				}
 				// if not suitable oembed data use youtube-dl
-				else {
+				if (!twitchMp4Found) {
 					youtubeDlUrl(postData.data["url"]).then(async clipMp4 => {
 						videoOut.init(new Ph_SimpleVideo([{ src: clipMp4, type: "video/mp4" }]));
 					}).catch(err => {
@@ -198,17 +217,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 				break;
 			default:
 				// some other .mp4 or .gif file
-				if (/\.gif(\?.*)?$/.test(postData.data["url"])) {
-					videoOut.init(new Ph_GifVideo(postData.data["url"]));
-					break;
-				}
-				else if (/\.mp4(\?.*)?$/.test(postData.data["url"])) {
-					videoOut.init(new Ph_SimpleVideo([{src: postData.data["url"], type: "video/mp4"}]));
-					break;
-				}
-				console.error(`Unknown video provider for ${postData.data["url"]}`);
-				new Ph_Toast(Level.Error, `Unknown video provider for ${escHTML(postData.data["url"])}`);
-				break;
+				defaultCase();
 		}
 
 		return videoOut;
