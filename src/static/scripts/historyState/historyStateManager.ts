@@ -27,7 +27,7 @@ window.addEventListener("popstate", (e: PopStateEvent) => {
 			return;
 		}
 	}
-	if (!e.state)		// something weird
+	if (!e.state)		// new page load || something weird
 		return
 	// forward
 	if (e.state.index > ViewsStack.getPosition()) {

@@ -37,7 +37,7 @@ async function loadEventsGraph() {
 	const graphHeight = 150;
 	const infoWidth = 20;
 	const infoHeight = 20;
-	const xTicks = /*resolution - 1*/ 0;
+	const xTicks = 0;
 	const xTickWidth = graphWidth / (xTicks + 1)
 	const yTicks = 4;
 	const yTickHeight = graphHeight / yTicks;
@@ -105,5 +105,3 @@ window.addEventListener("load", () => {
 
 	setTimeFrame([timeFrame]);
 });
-
-// setInterval(() => setTimeFrame([timeFrame]), 1000 * 30);

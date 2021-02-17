@@ -179,7 +179,6 @@ export default class Ph_FeedInfo extends HTMLElement {
 				this.displayMultiInfo();
 				break;
 			case FeedType.misc:
-			// break;
 			default:
 				this.innerText = `Unknown feed type ${this.loadedInfo.feedType} for ${this.feedUrl}`;
 				new Ph_Toast(Level.Warning, `Unknown feed type ${this.loadedInfo.feedType} for ${escHTML(this.feedUrl)}`);

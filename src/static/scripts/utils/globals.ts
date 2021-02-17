@@ -100,7 +100,6 @@ export class User {
 	}
 
 	private async fetchMultis() {
-		// my first attempt at functional programming lol
 		this.multireddits = <MultiReddit[]>
 			(await redditApiRequest("/api/multi/mine", [], true) as RedditApiType[])
 				.map(multi => multi.data)						// simplify, by only using the data property

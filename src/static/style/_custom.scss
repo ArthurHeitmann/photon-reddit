@@ -84,13 +84,7 @@ a.inlineImage {
 	}
 
 	*:not(img, .controls) {
-		//width: max-content !important;
 		max-width: 100%;
-	}
-
-	.galleryWrapper img {
-		//width: initial !important;
-		//max-width: 100%;
 	}
 
 	.fullscreen {

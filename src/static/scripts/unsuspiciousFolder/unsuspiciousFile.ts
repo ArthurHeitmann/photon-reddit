@@ -30,7 +30,7 @@ window.addEventListener("ph-view-change", (e: CustomEvent) => {
 	if (/analytics\/analytics\.html$/.test(viewChangeData.viewState.state.url))
 		return;
 	if (viewChangeData.newLoad) {
-		// only truck path up to subreddit name
+		// only track path up to subreddit name
 		const path = viewChangeData.viewState.state.url.replace(/(?<=^\/[^/]+\/[^/]+)\/.*/, "");
 		fetch("/data/event", {
 			method: "POST",
