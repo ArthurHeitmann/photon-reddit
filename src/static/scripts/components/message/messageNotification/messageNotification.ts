@@ -81,18 +81,18 @@ export default class Ph_MessageNotification extends HTMLElement {
 	}
 
 	static async checkForNewMessages() {
-		if (document.hidden)
-			return;
-
-		const unreadMessages = await redditApiRequest(`/message/unread`,
+		const unreadMessagesData = await redditApiRequest(`/message/unread`,
 			[], true) as RedditApiType;
+		const unreadMessages = unreadMessagesData.data.children;
 
-		if (unreadMessages.data.children.length < Ph_MessageNotification.previousUnreadMessages)
-			Ph_MessageNotification.previousUnreadMessages = unreadMessages.data.children.length;
-		if (unreadMessages.data.children.length === Ph_MessageNotification.previousUnreadMessages)
+		if (unreadMessages.length < Ph_MessageNotification.previousUnreadMessages)
+			Ph_MessageNotification.previousUnreadMessages = unreadMessages.length;
+		if (unreadMessages.length === Ph_MessageNotification.previousUnreadMessages)
 			return;
 
-		const newMessages = unreadMessages.data.children.splice(Ph_MessageNotification.previousUnreadMessages);
+
+		const newMessages = Array.from(unreadMessages);
+		newMessages.splice(unreadMessages.length - Ph_MessageNotification.previousUnreadMessages);
 
 		if (Ph_MessageNotification.currentlyDisplayedNotification) {
 			Ph_MessageNotification.currentlyDisplayedNotification.close();
