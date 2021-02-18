@@ -3,7 +3,7 @@
 .submitPost {
 	width: vars.$widthM;
 	@media (orientation: portrait) {
-		width: calc(100% - 2rem);
+		width: vars.$widthP;
 	}
 	background: vars.$background-el1;
 	border: 1px solid vars.$border-color;

@@ -10,9 +10,9 @@ html, body {
 }
 
 #mainContent {
-	width: 100%;
+	width: vars.$widthP;
 	@media (orientation: landscape) {
-		width: 50vw;
+		width: vars.$widthM;
 		margin: 0 auto;
 	}
 	padding: .5rem;

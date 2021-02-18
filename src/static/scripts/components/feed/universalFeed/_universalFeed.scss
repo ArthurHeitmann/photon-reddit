@@ -1,12 +1,12 @@
 @use "../../../../style/vars";
 
-@media (orientation: landscape) {
-	.universalFeed {
-		width: vars.$widthM;
-	}
-}
-
 .universalFeed {
+	width: vars.$widthM;
+	@media (orientation: portrait) {
+		width: vars.$widthP;
+		margin: 0 .4rem 0 auto;
+	}
+
 	> * {
 		margin: 1.5rem 0;
 	}
