@@ -147,15 +147,11 @@
 		padding: 0 .75rem;
 	}
 
-	.textarea.phInput {
+	.markdownForm textarea {
 		padding: .5rem;
-		height: auto;
-
-		textarea {
-			width: 100%;
-			resize: vertical;
-			min-height: 5rem;
-		}
+		min-height: 10rem;
+		width: 100%;
+		max-width: unset;
 	}
 
 	.roundedL {

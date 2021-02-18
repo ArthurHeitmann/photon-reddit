@@ -22,12 +22,6 @@
 		transition: all .125s ease, height .05s linear;
 		resize: none;
 
-		&:focus, &:hover {
-			background: #323232;
-			border: 1px solid #474747;
-
-		}
-
 		&.shadow {
 			visibility: hidden;
 			position: absolute;

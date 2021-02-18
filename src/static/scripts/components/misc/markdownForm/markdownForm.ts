@@ -6,6 +6,10 @@ export default class Ph_MarkdownForm extends HTMLElement {
 	shadowTextField: HTMLTextAreaElement;
 	submitCommentBtn: HTMLButtonElement;
 
+	/**
+	 * @param submitBtnText if empty no submit button
+	 * @param hasCancelBtn
+	 */
 	constructor(submitBtnText: string, hasCancelBtn: boolean) {
 		super();
 
@@ -33,12 +37,14 @@ export default class Ph_MarkdownForm extends HTMLElement {
 			cancelBtn.addEventListener("click", () => this.dispatchEvent(new Event("ph-cancel")));
 		}
 
-		this.submitCommentBtn = document.createElement("button");
-		buttonsWrapper.appendChild(this.submitCommentBtn);
-		this.submitCommentBtn.className = "submitBtn";
-		this.submitCommentBtn.innerText = submitBtnText;
+		if (submitBtnText) {
+			this.submitCommentBtn = document.createElement("button");
+			buttonsWrapper.appendChild(this.submitCommentBtn);
+			this.submitCommentBtn.className = "submitBtn";
+			this.submitCommentBtn.innerText = submitBtnText;
 
-		this.submitCommentBtn.addEventListener("click", () => this.dispatchEvent(new Event("ph-submit")));
+			this.submitCommentBtn.addEventListener("click", () => this.dispatchEvent(new Event("ph-submit")));
+		}
 	}
 
 	onTextInput() {
