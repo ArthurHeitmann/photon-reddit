@@ -22,6 +22,7 @@
 		transition: max-width .5s ease;
 		max-width: 100%;
 		overflow: hidden;
+		margin-right: .25rem;
 
 		&::before {
 			content: "";
@@ -32,7 +33,7 @@
 		}
 	}
 
-	.close {
+	.close, .markRead {
 		width: 1.75rem;
 		height: 1.75rem;
 		opacity: 0;
@@ -52,7 +53,7 @@
 
 		}
 
-		.close {
+		.close, .markRead {
 			opacity: 1;
 			visibility: visible;
 			transition-delay: .25s;
