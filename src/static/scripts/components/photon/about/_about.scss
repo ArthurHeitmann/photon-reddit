@@ -2,7 +2,13 @@
 
 .about {
 	width: vars.$widthM;
+	@media (orientation: portrait) {
+		width: vars.$widthP;
+	}
 	background: vars.$background-el1;
 	min-height: 100%;
 	border: 1px solid vars.$border-color;
+	padding: vars.$post-padding;
+	border-radius: vars.$b-r;
+	height: max-content;
 }

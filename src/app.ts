@@ -54,7 +54,7 @@ app.get("/redirect", RateLimit(redditTokenRateLimitConfig), safeExcAsync(async (
 				`/setAccessToken.html?accessToken=${encodeURIComponent(data["access_token"])}&refreshToken=${encodeURIComponent(data["refresh_token"])}`);
 		} catch (e) {
 			console.error(`Error getting access token ${JSON.stringify(e, null, 4)}`);
-			res.send(`error getting access token ${JSON.stringify(e, null, 4)}`);
+			res.json({ error: `error getting access token` });
 		}
 	}
 	else {
@@ -67,10 +67,10 @@ app.get("/refreshToken", RateLimit(redditTokenRateLimitConfig), safeExcAsync(asy
 	if (req.query["refreshToken"]) {
 		try {
 			const data = await refreshAccessToken(req.query["refreshToken"].toString());
-			res.send(`{ "accessToken": "${encodeURIComponent(data["access_token"])}" }`);
+			res.json({ accessToken: `${encodeURIComponent(data["access_token"])}` });
 		} catch (e) {
 			console.error(`Error getting access token ${JSON.stringify(e, null, 4)}`);
-			res.send(`error getting access token ${JSON.stringify(e, null, 4)}`);
+			res.json({ error: `error getting access token` });
 		}
 	}
 	else {
