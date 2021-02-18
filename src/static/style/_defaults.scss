@@ -28,6 +28,7 @@ code {
 	padding: .1rem .2rem;
 	border-radius: .25rem;
 	margin: 0 .25rem;
+	white-space: pre-wrap;
 }
 
 pre {
@@ -42,9 +43,11 @@ pre {
 }
 
 ol, ul {
-	list-style-position: inside;
+	list-style-position: outside;
 
 	li {
+		margin-left: 1.5rem;
+
 		> ul, > ol {
 			margin-left: 1rem;
 		}

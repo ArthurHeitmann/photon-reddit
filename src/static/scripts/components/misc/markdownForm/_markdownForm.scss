@@ -2,27 +2,29 @@
 
 .markdownForm {
 	display: block;
+	position: relative;
 
 	> * {
 		display: block;
 	}
 
 	.rawTextEditor {
-		width: 70%;
+		--textarea-height: 5rem;
+		width: 85%;
 		max-width: calc(100% - 4rem);
 		min-width: 30%;
 		min-height: 5rem;
-		max-height: 95vh;
+		height: var(--textarea-height);
 		background: #2d2d2d;
 		padding: .5rem;
 		border-radius: 1rem;
 		border: 1px solid #404040;
-		transition: background .25s ease, border .25s ease;
+		transition: all .125s ease, height .05s linear;
+		resize: none;
 
-		&:focus, &:hover {
-			background: #323232;
-			border: 1px solid #474747;
-
+		&.shadow {
+			visibility: hidden;
+			position: absolute;
 		}
 	}
 

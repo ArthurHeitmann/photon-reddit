@@ -378,10 +378,10 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 		this.classList.add("isEditing");
 
 		const editForm = new Ph_MarkdownForm("Edit", true);
-		editForm.commentTextField.value = this.bodyMarkdown;
+		editForm.textField.value = this.bodyMarkdown;
 		editForm.addEventListener("ph-submit", async () => {
 			try {
-				const resp = await edit(this, editForm.commentTextField.value);
+				const resp = await edit(this, editForm.textField.value);
 
 				if (resp["json"] && resp["json"]["errors"]) {
 					new Ph_Toast(Level.Error, resp["json"]["errors"][0].join(" | "));

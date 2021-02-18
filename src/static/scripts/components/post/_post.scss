@@ -4,7 +4,7 @@
 	&.isInFeed {
 		.actions {
 			position: absolute;
-			transform: translateX(calc(-100% - 1.5rem));
+			transform: translateX(calc(-100% - .5rem));
 		}
 
 		@media (orientation: portrait) {

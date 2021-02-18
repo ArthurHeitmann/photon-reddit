@@ -9,18 +9,28 @@
 	--primary-contrast: #e65d5d;
 }
 
+/** default background color */
 $background: var(--bg-color);
+/** bg color for more important/elevated elements */
 $background-el1: #1f1f1f;
+/** text color */
 $text: var(--text-color);
 $headerHeight: 5rem;
 $postActionsWidth: 2.2rem;
 $post-padding: 2rem;
+/** default border radius */
 $b-r: $post-padding / 2;
 $controls-height: 3rem;
 $controls-bg: #121212ad;
+/** primary accent */
 $primary: var(--primary);
+/** accent color as background with white text */
 $primaryContrast: var(--primary-contrast);
-$widthM: 50%;
-$widthL: 60%;
+/** view state width in portrait */
+$widthP: calc(100% - 2.8rem);
+/** view state width in landscape */
+$widthM: min(50rem, calc(100% - 6rem));
+/** view state width+ in landscape */
+$widthL: min(60rem, calc(100% - 6rem));
 $link-color: #7da3f9;
 $border-color: #383838;

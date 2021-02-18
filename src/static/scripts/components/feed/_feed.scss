@@ -14,8 +14,7 @@
 
 
 .postAndComments, .universalFeed {
-	margin: 0 .5rem 0 auto;
-	width: calc(100% - 2.8rem);
+	width: vars.$widthP;
 	animation: fadeIn .5s ease;
 }
 

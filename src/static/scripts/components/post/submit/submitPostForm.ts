@@ -7,6 +7,7 @@ import Ph_FeedInfo, { FeedType } from "../../feed/feedInfo/feedInfo.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import { DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_Flair from "../../misc/flair/flair.js";
+import Ph_MarkdownForm from "../../misc/markdownForm/markdownForm.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 
 enum SubmitPostType {
@@ -29,7 +30,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 	subSubmitText: HTMLDivElement;
 	titleInput: HTMLDivElement;
 	linkUrlInput: HTMLDivElement;
-	textInput: HTMLDivElement;
+	textInput: Ph_MarkdownForm;
 	submitButton: HTMLButtonElement;
 	isCommunityNameValid: boolean = false;
 	allPossibleTypeSections: SubmitTypeSection[] = [];
@@ -80,7 +81,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		this.appendChild(this.titleInput);
 
 		// post text (self post)
-		this.textInput = this.makeTextInput("postthis.textInput", "Text", true);
+		this.textInput = new Ph_MarkdownForm("", false);
 		this.textInput.classList.add("hide");
 		this.allPossibleTypeSections.push({ type: SubmitPostType.text, element: this.textInput });
 
@@ -240,7 +241,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		switch (this.currentSection.type) {
 			case SubmitPostType.text:
 				params.push(["kind", "self"]);
-				params.push(["text", this.textInput.$tag("textarea")[0]["value"]])
+				params.push(["text", this.textInput.textField.value])
 				break;
 			case SubmitPostType.link:
 				params.push(["kind", "link"]);

@@ -1,15 +1,12 @@
-import { comment, redditApiRequest } from "../../api/redditApi.js";
+import { comment } from "../../api/redditApi.js";
 import { thisUser } from "../../utils/globals.js";
-import { $class, $css, escADQ, escHTML } from "../../utils/htmlStatics.js";
+import { escADQ, escHTML } from "../../utils/htmlStatics.js";
 import { linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../types/misc.js";
 import { replaceRedditLinks, timePassedSinceStr } from "../../utils/utils.js";
 import Ph_Readable from "../feed/feedItem/readable/readable.js";
-import { MessageSection } from "../feed/universalFeed/universalFeed.js";
-import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
 import Ph_MarkdownForm from "../misc/markdownForm/markdownForm.js";
 import Ph_Toast, { Level } from "../misc/toast/toast.js";
-import Ph_UserDropDown from "../global/userDropDown/userDropDown.js";
 
 /**
  * A message that has been sent by someone
@@ -99,7 +96,7 @@ export default class Ph_Message extends Ph_Readable {
 				const replyForm = new Ph_MarkdownForm("Send", false);
 				mainPart.appendChild(replyForm);
 				replyForm.addEventListener("ph-submit", async () => {
-					const response = await comment(this.lastMessageFromOther, replyForm.commentTextField.value);
+					const response = await comment(this.lastMessageFromOther, replyForm.textField.value);
 					if (response.json.errors.length) {
 						for (let error of response.json.errors) {
 							new Ph_Toast(Level.Error, error instanceof Array ? error.join(" | ") : escHTML(JSON.stringify(error)));

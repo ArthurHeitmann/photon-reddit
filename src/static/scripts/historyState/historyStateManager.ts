@@ -120,7 +120,7 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 }
 
 function handleSpecialPaths(path: string, query: string[][], stateLoader: Ph_ViewStateLoader): boolean {
-	if (/^\/about$/.test(path)) {
+	if (/^\/about(#.*)?$/.test(path)) {
 		stateLoader.finishWith(new Ph_About());
 		return true;
 	}
