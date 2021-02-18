@@ -6,7 +6,7 @@
  *
  * What will be tracked:
  *  - randomized user id (resets every 30 days)
- *  - visited page
+ *  - visited page (at most subreddit/user but not which post)
  *  - previous page/referer
  *  - time
  *

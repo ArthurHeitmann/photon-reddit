@@ -6,7 +6,7 @@ import { RedditApiType } from "../../../types/misc.js";
 import { throttle } from "../../../utils/utils.js";
 import Ph_Comment from "../../comment/comment.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
-import Ph_Message from "../../misc/message/message.js";
+import Ph_Message from "../../message/message.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Ph_Post from "../../post/post.js";
 import { Ph_ViewState } from "../../viewState/viewState.js";

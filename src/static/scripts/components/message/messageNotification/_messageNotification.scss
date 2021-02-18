@@ -1,0 +1,101 @@
+@use "../../../../style/vars";
+
+.messageNotification {
+	position: fixed;
+	bottom: 1rem;
+	right: 1rem;
+	background: vars.$primaryContrast;
+	min-width: 2rem;
+	min-height: 2rem;
+	border-radius: 1.125rem;
+	padding: 0 0.75rem;
+	display: flex;
+	align-items: center;
+	overflow: hidden;
+	animation: hideMessageNotification .5s ease  forwards;
+
+	a {
+		color: vars.$text;
+		display: block;
+		line-height: 2rem;
+		white-space: nowrap;
+		transition: max-width .5s ease;
+		max-width: 100%;
+		overflow: hidden;
+
+		&::before {
+			content: "";
+			width: 1.75rem;
+			height: 1.75rem;
+			margin-right: .25rem;
+			background-image: url("/img/chat.svg");
+		}
+	}
+
+	.close {
+		width: 1.75rem;
+		height: 1.75rem;
+		opacity: 0;
+		visibility: hidden;
+		transition: all .3s ease .075s;
+
+		> img {
+			width: 1.75rem;
+			height: 1.75rem;
+		}
+	}
+
+	&.show {
+		animation: showMessageNotification .5s ease forwards;
+
+		a {
+
+		}
+
+		.close {
+			opacity: 1;
+			visibility: visible;
+			transition-delay: .25s;
+		}
+	}
+}
+
+@keyframes showMessageNotification {
+	0% {
+		transform: scale(0);
+		max-width: 2rem;
+	}
+
+	30% {
+		transform: scale(1.2);
+	}
+
+	45% {
+		transform: scale(1);
+		max-width: 2rem;
+	}
+
+	100% {
+		max-width: 28rem;
+	}
+}
+
+@keyframes hideMessageNotification {
+	0% {
+		max-width: 28rem;
+	}
+
+	55% {
+		transform: scale(1);
+		max-width: 2rem;
+	}
+
+	70% {
+		transform: scale(1.2);
+	}
+
+	100% {
+		transform: scale(0);
+		max-width: 2rem;
+	}
+}

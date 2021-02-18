@@ -13,6 +13,7 @@ import { $id } from "./utils/htmlStatics.js";
 import { thisUser } from "./utils/globals.js";
 import { linksToSpa } from "./utils/htmlStuff.js";
 import { extractHash, extractPath, extractQuery } from "./utils/utils.js";
+import "./components/message/messageNotification/messageNotification.js"
 
 async function init(): Promise<void> {
 	$id("mainWrapper").insertAdjacentElement("afterbegin", new Ph_Header());
