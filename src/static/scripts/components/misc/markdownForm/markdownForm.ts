@@ -1,8 +1,9 @@
 /**
- * Not actually markdown yet, just plain text (but maybe in the future)
+ * Not actually markdown yet, just plain text (but hopefully in the future)
  */
 export default class Ph_MarkdownForm extends HTMLElement {
-	commentTextField: HTMLTextAreaElement;
+	textField: HTMLTextAreaElement;
+	shadowTextField: HTMLTextAreaElement;
 	submitCommentBtn: HTMLButtonElement;
 
 	constructor(submitBtnText: string, hasCancelBtn: boolean) {
@@ -10,9 +11,14 @@ export default class Ph_MarkdownForm extends HTMLElement {
 
 		this.classList.add("markdownForm")
 
-		this.commentTextField = document.createElement("textarea");
-		this.commentTextField.className = "rawTextEditor";
-		this.appendChild(this.commentTextField);
+		this.textField = document.createElement("textarea");
+		this.textField.className = "rawTextEditor";
+		this.shadowTextField = this.textField.cloneNode(true) as HTMLTextAreaElement;
+		this.textField.contentEditable = "true";
+		this.textField.addEventListener("input", this.onTextInput.bind(this));
+		this.appendChild(this.textField);
+		this.shadowTextField.classList.add("shadow");
+		this.appendChild(this.shadowTextField);
 
 		const buttonsWrapper = document.createElement("div");
 		buttonsWrapper.className = "buttonsWrapper";
@@ -33,6 +39,11 @@ export default class Ph_MarkdownForm extends HTMLElement {
 		this.submitCommentBtn.innerText = submitBtnText;
 
 		this.submitCommentBtn.addEventListener("click", () => this.dispatchEvent(new Event("ph-submit")));
+	}
+
+	onTextInput() {
+		this.shadowTextField.value = this.textField.value;
+		this.textField.style.setProperty("--textarea-height", `calc(${this.shadowTextField.scrollHeight}px + 1.5rem)`)
 	}
 }
 

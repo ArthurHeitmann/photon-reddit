@@ -12,7 +12,7 @@ export default class Ph_CommentForm extends Ph_MarkdownForm {
 			this.submitCommentBtn.disabled = true;
 			let response;
 			try {
-				response = await comment(thing, this.commentTextField.value);
+				response = await comment(thing, this.textField.value);
 			}
 			catch (e) {
 				console.error("Error making comment request");
@@ -29,7 +29,7 @@ export default class Ph_CommentForm extends Ph_MarkdownForm {
 				return;
 			}
 
-			this.commentTextField.value = "";
+			this.textField.value = "";
 			this.dispatchEvent(new CustomEvent("ph-comment-submitted", { detail: response.json.data.things[0] }))
 		})
 	}
