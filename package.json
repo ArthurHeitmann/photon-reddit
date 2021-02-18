@@ -19,7 +19,8 @@
     ]
   },
   "engines": {
-    "node": "14.x"
+    "node": ">= 14.x",
+    "npm": ">= 7.5.1"
   },
   "author": "ArthurH",
   "license": "GPL-3.0-only",

@@ -55,7 +55,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 		// highlighted comment
 		const commentLinkMatches = history.state.url.match(new RegExp(`${this.post.permalink}(\\w*)`));
 		if (commentLinkMatches && commentLinkMatches.length > 1 && commentLinkMatches[1]) {
-			this.comments.$css(`[data-id=${commentLinkMatches[1]}]`)[0].classList.add("highlight");
+			this.comments.$css(`[data-id=t1_${commentLinkMatches[1]}]`)[0].classList.add("highlight");
 			this.comments.insertParentLink(this.post.permalink, "Load all comments");
 		}
 
