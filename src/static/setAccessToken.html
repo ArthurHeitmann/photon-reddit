@@ -21,7 +21,10 @@
 		// set expiry to be 59 minutes from now
 		localStorage.expiration = (Date.now() + (59 * 60 * 1000)).toString();
 		localStorage.loginTime = Date.now();
-		location.replace("/");
+		localStorage.isLoggedIn = "true";
+		const pageBeforeLogin = localStorage.pageBeforeLogin;
+		localStorage.removeItem("pageBeforeLogin");
+		location.replace(pageBeforeLogin || "/");
 	</script>
 </body>
 </html>

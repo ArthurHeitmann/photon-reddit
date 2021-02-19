@@ -3,7 +3,7 @@ import express from "express";
 import RateLimit from "express-rate-limit";
 import helmet from "helmet";
 import youtube_dl from "youtube-dl";
-import { initialAccessToken, refreshAccessToken } from "./serverScripts/accessTokenGetting.js";
+import { implicitGrant, initialAccessToken, refreshAccessToken } from "./serverScripts/accessTokenGetting.js";
 import { analyticsRouter } from "./serverScripts/analytics.js";
 import { appId, redirectURI } from "./serverScripts/config.js";
 import {
@@ -63,7 +63,6 @@ app.get("/redirect", RateLimit(redditTokenRateLimitConfig), safeExcAsync(async (
 }));
 
 app.get("/refreshToken", RateLimit(redditTokenRateLimitConfig), safeExcAsync(async (req, res) => {
-	res.setHeader('Content-Type', 'application/json');
 	if (req.query["refreshToken"]) {
 		try {
 			const data = await refreshAccessToken(req.query["refreshToken"].toString());
@@ -76,6 +75,14 @@ app.get("/refreshToken", RateLimit(redditTokenRateLimitConfig), safeExcAsync(asy
 	else {
 		res.json({ error: "¯\\_(ツ)_/¯"}).status(400);
 	}
+}));
+
+app.get("/applicationOnlyAccessToken", RateLimit(redditTokenRateLimitConfig), safeExcAsync(async (req, res) => {
+	if (!req.query["clientId"]) {
+		res.status(400).json({ error: "missing clientId" })
+		return;
+	}
+	res.json(await implicitGrant(req.query["clientId"].toString()));
 }));
 
 app.get("/youtube-dl", RateLimit(youtube_dlRateLimitConfig), safeExc((req, res) => {

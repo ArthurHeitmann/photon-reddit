@@ -2,9 +2,9 @@
  * For communication with reddit
  */
 
+import { checkTokenRefresh } from "../auth/auth.js";
 import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
 import Votable, { FullName } from "../types/votable.js";
-import { checkTokenExpiry } from "../login/login.js";
 import { isLoggedIn, thisUser, } from "../utils/globals.js";
 import { RedditApiType } from "../types/misc.js";
 import { isObjectEmpty, splitPathQuery } from "../utils/utils.js";
@@ -23,34 +23,31 @@ export async function redditApiRequest(pathAndQuery, params: string[][], require
 		throw "This feature requires to be logged in";
 	}
 
-	if (requiresLogin || isLoggedIn)
-		return await oath2Request(pathAndQuery, params, options);
-	else
-		return await simpleApiRequest(pathAndQuery, params);
+	return await oath2Request(pathAndQuery, params, options);
 }
 
-/** Makes request without oauth, by appending /.json to the end of the path */
-async function simpleApiRequest(pathAndQuery, params: string[][]) {
-	pathAndQuery = fixUrl(pathAndQuery);
-	let [path, query] = splitPathQuery(pathAndQuery);
-	path = path.replace(/\/?$/, "/.json")
+// /** Makes request without oauth, by appending /.json to the end of the path */
+// async function simpleApiRequest(pathAndQuery, params: string[][]) {
+// 	pathAndQuery = fixUrl(pathAndQuery);
+// 	let [path, query] = splitPathQuery(pathAndQuery);
+// 	path = path.replace(/\/?$/, "/.json")
+//
+// 	const parameters = new URLSearchParams(query);
+// 	for (const param of params)
+// 		parameters.append(param[0], param[1]);
+// 	parameters.append("raw_json", "1");
+//
+// 	try {
+// 		const response = await fetch(`https://www.reddit.com${path}?${parameters.toString()}`);
+// 		const responseText = await response.text()
+// 		return response ? JSON.parse(responseText) : {};
+// 	} catch (e) {
+// 		// maybe the token has expired, try to refresh it; try again up to 3 times
+// 		return { error: e }
+// 	}
+// }
 
-	const parameters = new URLSearchParams(query);
-	for (const param of params)
-		parameters.append(param[0], param[1]);
-	parameters.append("raw_json", "1");
-
-	try {
-		const response = await fetch(`https://www.reddit.com${path}?${parameters.toString()}`);
-		const responseText = await response.text()
-		return response ? JSON.parse(responseText) : {};
-	} catch (e) {
-		// maybe the token has expired, try to refresh it; try again up to 3 times
-		return { error: e }
-	}
-}
-
-/** Makes an authenticated request to reddit */
+/** Makes a request to reddit with an an access token */
 async function oath2Request(pathAndQuery, params: string[][], options: RequestInit, attempt = 0) {
 	pathAndQuery = fixUrl(pathAndQuery);
 	const [path, query] = splitPathQuery(pathAndQuery);
@@ -76,8 +73,8 @@ async function oath2Request(pathAndQuery, params: string[][], options: RequestIn
 		const responseText = await response.text()
 		return response ? JSON.parse(responseText) : {};
 	} catch (e) {
-		// maybe the token has expired, try to refresh it; try again up to 2 times
-		if (attempt < 1 && await checkTokenExpiry())
+		// maybe the token has expired, try to refresh it
+		if (attempt < 1 && await checkTokenRefresh())
 			return await oath2Request(path, params, options, attempt + 1);
 		else
 			return { error: e }

@@ -32,3 +32,21 @@ export async function refreshAccessToken(refreshToken: string): Promise<string> 
 	);
 	return await getAccessToken(formBody);
 }
+
+export async function implicitGrant(clientId: string): Promise<Object> {
+	if (clientId.length < 20 || clientId.length > 30)
+		return { error: "clientId length must be >= 20 && <= 30" };
+
+	const r = await fetch("https://www.reddit.com/api/v1/access_token", {
+		method: "POST",
+		headers: {
+			"Authorization": `Basic ${Buffer.from(`${appId}:`).toString('base64')}`,
+			"Content-Type": "application/x-www-form-urlencoded"
+		},
+		body: new URLSearchParams([
+			["grant_type", "https://oauth.reddit.com/grants/installed_client"],
+			["device_id", clientId]
+		]),
+	});
+	return await r.json();
+}

@@ -53,7 +53,7 @@ interface ClientIdData {
 	lastSetMillisUtc: number
 }
 /** 128 character long random string */
-let clientId: string;
+export let clientId: string;
 let referer = document.referrer || "";
 const clientIdAlphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
