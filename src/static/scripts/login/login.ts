@@ -1,6 +1,5 @@
 import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
 import { isLoggedIn, setIsLoggedIn } from "../utils/globals.js";
-import { $id } from "../utils/htmlStatics.js";
 
 export function initiateLogin() {
 	location.href = "/login";
@@ -25,19 +24,19 @@ export async function checkTokenExpiry(): Promise<boolean> {
 		return setIsLoggedIn(true);
 	
 	const response = await fetch(`/refreshToken?refreshToken=${ encodeURIComponent(localStorage.refreshToken) }`);
-	const newTokenText = await response.text();
-	const newToken = JSON.parse(newTokenText);
-	if (newToken.accessToken) {
-		localStorage.accessToken = newToken.accessToken;
-		localStorage.expiration = (Date.now() + (59 * 60 * 1000)).toString();
-		console.log("successfully refreshed access token");			// TODO remove
-		return setIsLoggedIn(true);
-	}
-	else {
-		console.error(`error getting new token (${newTokenText})`);
-		new Ph_Toast(Level.Error, "Error updating access token");
+	const newTokens = await response.json();
+	if (newTokens["error"] || !newTokens["accessToken"]) {
+		new Ph_Toast(Level.Error, "Error refreshing access token");
+		console.error("Error refreshing access token");
+		console.error(newTokens);
 		return setIsLoggedIn(false);
 	}
+	localStorage.accessToken = newTokens.accessToken;
+	if (newTokens.refreshToken)
+		localStorage.refreshToken = newTokens.refreshToken;
+	localStorage.expiration = (Date.now() + (59 * 60 * 1000)).toString();
+	console.log("successfully refreshed access token");
+	return setIsLoggedIn(true);
 }
 
 export function isAccessTokenValid(): boolean {

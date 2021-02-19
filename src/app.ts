@@ -67,7 +67,7 @@ app.get("/refreshToken", RateLimit(redditTokenRateLimitConfig), safeExcAsync(asy
 	if (req.query["refreshToken"]) {
 		try {
 			const data = await refreshAccessToken(req.query["refreshToken"].toString());
-			res.json({ accessToken: `${encodeURIComponent(data["access_token"])}` });
+			res.json({ accessToken: data["access_token"], refreshToken: data["refresh_token"] });
 		} catch (e) {
 			console.error(`Error getting access token ${JSON.stringify(e, null, 4)}`);
 			res.json({ error: `error getting access token` });
