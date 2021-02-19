@@ -96,7 +96,7 @@ export default class Ph_Header extends HTMLElement {
 		// if the user visits the page for the first time, expand the header for a brief amount of time.
 		// Should help new users understand this feature
 		else if (localStorage["firstTimeFlag"] !== "set") {
-			setTimeout(this.headerMouseEnter.bind(this), 1500);
+			setTimeout(this.headerMouseEnter.bind(this), 4000);
 		}
 	}
 
