@@ -23,14 +23,14 @@ export async function checkAuthOnPageLoad(): Promise<AuthState> {
 			if (hasTokenExpired() && !await refreshAccessToken()) {
 				authError("Failed to refresh authentication! If this is breaking the website, log out & reload?");
 			}
-			else if (!await verifyTokenWorksLoggedIn() || !await refreshAccessToken()) {
+			else if (!await verifyTokenWorksLoggedIn() && !await refreshAccessToken()) {
 				authError("Invalid authentication! If this is breaking the website, log out & reload?");
 			}
 			return AuthState.LoggedIn;
 		}
 		else {
 			setIsLoggedIn(false);
-			if (hasTokenExpired() && !await getImplicitGrant() || !await verifyTokenWorksImplicit() || !await getImplicitGrant())
+			if (hasTokenExpired() && !await getImplicitGrant() || !await verifyTokenWorksImplicit() && !await getImplicitGrant())
 				authError("Failed to get authentication! Do you want to clear data & reload?");
 			return AuthState.ImplicitGrant;
 		}
