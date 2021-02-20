@@ -31,7 +31,6 @@
 			border: 1px solid vars.$border-color;
 			background: vars.$background;
 
-
 			.awardInfo {
 				display: flex;
 				flex-flow: column;
@@ -61,8 +60,7 @@
 				.award {
 					margin: .5rem;
 					cursor: pointer;
-					//position: relative;
-					//z-index: -1;
+					position: relative;
 
 					img {
 						width: $awardsTileSeize;
