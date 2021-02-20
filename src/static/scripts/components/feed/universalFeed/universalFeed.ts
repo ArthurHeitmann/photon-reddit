@@ -248,16 +248,21 @@ export default class Ph_UniversalFeed extends HTMLElement {
 	}
 
 	clearPrevious(loadPosition: LoadPosition) {
-		const view = elementWithClassInTree(this.parentElement, "viewState");
 
 		if (loadPosition === LoadPosition.Before) {
-			// same as After just in reverse
-			// let last = this.children[this.childElementCount - 1];
-			// while (last && (last.classList.contains("hide") || last.getBoundingClientRect().y > window.innerHeight * 7) && this.childElementCount > 1) {
-			// 	last.remove();
-			// 	last = this.children[this.childElementCount - 1];
-			// }
-			// this.afterData = last["itemId"]
+			const removeElements: HTMLElement[] = [];
+			let next = this.lastElementChild as HTMLElement;
+			while (next && (next.classList.contains("hide") || next.getBoundingClientRect().y > window.innerHeight * 7) && this.childElementCount > 1) {
+				removeElements.push(next);
+				next = next.nextElementSibling as HTMLElement;
+			}
+			if (removeElements.length === 0)
+				return;
+
+			for (const removeElement of removeElements)
+				removeElement.remove();
+
+			this.afterData = this.lastElementChild.getAttribute("data-id");
 		}
 		else if (loadPosition === LoadPosition.After) {
 			// firefox messes up the scroll position if you just remove all old elements, so we have to do this instead
@@ -272,6 +277,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 				return;
 
 			// remove old elements and set scroll position approximately back to where it was before removal
+			const view = elementWithClassInTree(this.parentElement, "viewState");
 			const viewScrollTop = view.scrollTop;
 			const elementMarginTop = parseFloat(getComputedStyle(removeElements[0]).marginTop);
 			let removedHeight = 0;
@@ -279,7 +285,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 				removedHeight += removeElement.getBoundingClientRect().height + elementMarginTop * 2;
 				removeElement.remove();
 			}
-			view.scrollTo({ top: viewScrollTop -removedHeight - elementMarginTop });
+			view.scrollTo({ top: viewScrollTop - removedHeight - elementMarginTop });
 
 			this.beforeData = this.firstElementChild.getAttribute("data-id");
 		}
@@ -308,18 +314,25 @@ export default class Ph_UniversalFeed extends HTMLElement {
 				this.hasReachedEndOfFeed = true;
 		}
 		else {
+			// scroll logic from clearPrevious() loadPosition === LoadPosition.After
+			const view = elementWithClassInTree(this.parentElement, "viewState");
+			const viewScrollTop = view.scrollTop;
+			const elementMarginTop = parseFloat(getComputedStyle(this.children[0]).marginTop);
+			let addedHeight = 0;
 			for (const postData of posts.data.children.reverse()) {
 				try {
 					const newPost = this.makeFeedItem(postData, posts.data.children.length);
 					if (newPost instanceof Ph_Post)
 						newPost.forceShowWhenSeen();
 					this.insertAdjacentElement("afterbegin", newPost);
+					addedHeight += newPost.getBoundingClientRect().height + elementMarginTop * 2;
 				}
 				catch (e) {
 					console.error(e);
 					new Ph_Toast(Level.Error, `Error making feed item`);
 				}
 			}
+			view.scrollTo({ top: viewScrollTop + addedHeight - elementMarginTop });
 
 			this.beforeData = posts.data.before;
 		}
