@@ -38,7 +38,7 @@ export default class Ph_DropDown extends HTMLElement {
 
 	setLabel(newLabel: ButtonLabel) {
 		if (typeof newLabel == "string")
-			this.toggleButton.innerHTML = newLabel;
+			this.toggleButton.innerText = newLabel;
 		else if (newLabel instanceof HTMLElement) {
 			this.toggleButton.innerText = "";
 			this.toggleButton.appendChild(newLabel);
