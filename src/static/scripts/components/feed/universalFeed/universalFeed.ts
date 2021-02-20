@@ -257,13 +257,24 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			this.afterData = last["itemId"]
 		}
 		else if (loadPosition === LoadPosition.After) {
-			let first = this.children[0];
+			const removeElements: HTMLElement[] = [];
+			let first = this.children[0] as HTMLElement;
 			while (first && (first.classList.contains("hide") || first.getBoundingClientRect().y < window.innerHeight * -5) && this.childElementCount > 1) {
-				first.remove();
-				first = this.children[0];
+				removeElements.push(first);
+				first = first.nextElementSibling as HTMLElement;
 			}
-			this.beforeData = first["itemId"];
+			let lastVisible = removeElements[removeElements.length - 1].nextElementSibling;
+			while (lastVisible.classList.contains("hide") && lastVisible.nextElementSibling)
+				lastVisible = lastVisible.nextElementSibling;
+			this.beforeData = lastVisible["itemId"];
+
+			const scrollRef1 = lastVisible.getBoundingClientRect().top;
+			removeElements.forEach(el => el.remove());
+			const scrollDiff = scrollRef1 - lastVisible.getBoundingClientRect().top;
+			const view = elementWithClassInTree(this.parentElement, "viewState");
+			view.scrollBy(0, scrollDiff);
 		}
+
 	}
 
 	async loadMore(loadPosition) {
