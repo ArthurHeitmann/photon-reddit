@@ -251,55 +251,37 @@ export default class Ph_UniversalFeed extends HTMLElement {
 		const view = elementWithClassInTree(this.parentElement, "viewState");
 
 		if (loadPosition === LoadPosition.Before) {
-			let last = this.children[this.childElementCount - 1];
-			while (last && (last.classList.contains("hide") || last.getBoundingClientRect().y > window.innerHeight * 7) && this.childElementCount > 1) {
-				last.remove();
-				last = this.children[this.childElementCount - 1];
-			}
-			this.afterData = last["itemId"]
+			// same as After just in reverse
+			// let last = this.children[this.childElementCount - 1];
+			// while (last && (last.classList.contains("hide") || last.getBoundingClientRect().y > window.innerHeight * 7) && this.childElementCount > 1) {
+			// 	last.remove();
+			// 	last = this.children[this.childElementCount - 1];
+			// }
+			// this.afterData = last["itemId"]
 		}
 		else if (loadPosition === LoadPosition.After) {
+			// firefox messes up the scroll position if you just remove all old elements, so we have to do this instead
+			// first collect all elements that are too far away and should be removed
 			const removeElements: HTMLElement[] = [];
-			let first = this.children[0] as HTMLElement;
-			while (first && (first.classList.contains("hide") || first.getBoundingClientRect().y < window.innerHeight * -5) && this.childElementCount > 1) {
-				removeElements.push(first);
-				first = first.nextElementSibling as HTMLElement;
+			let next = this.children[0] as HTMLElement;
+			while (next && (next.classList.contains("hide") || next.getBoundingClientRect().y < window.innerHeight * -5) && this.childElementCount > 1) {
+				removeElements.push(next);
+				next = next.nextElementSibling as HTMLElement;
 			}
-			let lastVisible = removeElements[removeElements.length - 1].nextElementSibling;
-			while (lastVisible.classList.contains("hide") && lastVisible.nextElementSibling)
-				lastVisible = lastVisible.nextElementSibling;
-			this.beforeData = lastVisible["itemId"];
 			if (removeElements.length === 0)
 				return;
-			// const scrollRef1 = lastVisible.getBoundingClientRect().top;
-			const scrollRef1 = view.scrollTop;
-			const perElementMarginHeight = parseInt(getComputedStyle(removeElements[0]).marginTop) * 2
+
+			// remove old elements and set scroll position approximately back to where it was before removal
+			const viewScrollTop = view.scrollTop;
+			const elementMarginTop = parseFloat(getComputedStyle(removeElements[0]).marginTop);
 			let removedHeight = 0;
-			let firstHeight = 0;
-			let lastHeight = 0;
-			let removedEs = 0;
-			for (let i = 0; i < removeElements.length; i++){
-				let removeElement = removeElements[i];
-				if (i === 0)
-					firstHeight = removeElement.offsetHeight + perElementMarginHeight;
-				else if (i + 1 === removeElements.length)
-					lastHeight = removeElement.offsetHeight + perElementMarginHeight;
-				removedHeight += removeElement.offsetHeight + perElementMarginHeight;
-				removedEs++;
+			for (const removeElement of removeElements) {
+				removedHeight += removeElement.getBoundingClientRect().height + elementMarginTop * 2;
 				removeElement.remove();
 			}
-			const scrollRef2 = view.scrollTop;
-			const newScroll = scrollRef1 - removedHeight - perElementMarginHeight/2;
-			view.scrollTo(0, newScroll);
-			console.log({ scrollRef1, removedHeight, removedEs, scrollRef2, newScroll, firstHeight, lastHeight });
-			// view.addEventListener("scroll", e => {
-			// 	const scrollRef2 = lastVisible.getBoundingClientRect().top;
-			// 	const scrollDiff = scrollRef2 - scrollRef1;
-			// 	console.log(scrollDiff);
-			// 	view.scrollBy(0, -scrollDiff);
-			// 	e.preventDefault();
-			// 	return false;
-			// },  { passive: false, once: true });
+			view.scrollTo({ top: viewScrollTop -removedHeight - elementMarginTop });
+
+			this.beforeData = this.firstElementChild.getAttribute("data-id");
 		}
 	}
 
