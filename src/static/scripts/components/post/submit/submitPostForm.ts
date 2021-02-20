@@ -4,7 +4,7 @@ import { thisUser } from "../../../utils/globals.js";
 import { linksToSpa } from "../../../utils/htmlStuff.js";
 import { replaceRedditLinks } from "../../../utils/utils.js";
 import Ph_FeedInfo, { FeedType } from "../../feed/feedInfo/feedInfo.js";
-import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
+import Ph_DropDown, { ButtonLabel, DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import { DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_Flair from "../../misc/flair/flair.js";
 import Ph_MarkdownForm from "../../misc/markdownForm/markdownForm.js";
@@ -334,20 +334,17 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 			this.flairSelectorWrapper.innerText = "";
 			this.selectedFlairId = null;
 			if (!flairs["error"]) {
-				const flairDropdownEntries: DropDownEntryParam[] = [];
-				for (const flair of flairs) {
-					flairDropdownEntries.push({
-						displayElement: new Ph_Flair({
-							type: flair["type"],
-							richText: flair["richtext"],
-							text: flair["text"],
-							backgroundColor: flair["background_color"],
-							textColor: flair["text_color"]
-						}),
-						value: flair["id"],
-						onSelectCallback: this.selectFlair.bind(this)
-					});
-				}
+				const flairDropdownEntries: DropDownEntryParam[] = flairs.map(flair => <DropDownEntryParam> {
+					displayElement: new Ph_Flair({
+						type: flair["type"],
+						richText: flair["richtext"],
+						text: flair["text"],
+						backgroundColor: flair["background_color"],
+						textColor: flair["text_color"]
+					}),
+					value: flair["id"],
+					onSelectCallback: this.selectFlair.bind(this)
+				});
 				if (flairDropdownEntries.length) {
 					this.flairSelectorWrapper.appendChild(new Ph_DropDown(
 						flairDropdownEntries,
@@ -383,8 +380,15 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		}
 	}
 
-	selectFlair([flairId]) {
-		this.selectedFlairId = flairId;
+	selectFlair([flairId], setLabel: (newLabel: ButtonLabel) => void, _, source: HTMLElement) {
+		if (this.selectedFlairId === flairId) {
+			this.selectedFlairId = null;
+			setLabel("Select Flair")
+		}
+		else {
+			this.selectedFlairId = flairId;
+			setLabel(source.$class("flair")[0].cloneNode(true) as HTMLElement);
+		}
 	}
 
 	setAllowedTypes(sections: SubmitPostType[]) {
