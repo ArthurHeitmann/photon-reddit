@@ -25,49 +25,18 @@
 			margin-left: -50%;
 			transform: translateX(-25%) scale(.9);
 			transition: all .25s ease;
-			display: grid;
-			grid-template-columns: 1fr 1fr 1fr;
-			padding: 1rem;
 			max-width: ($awardsTileSeize + 1rem) * 3 + 2rem;
-			max-height: ($awardsTileSeize + 1rem) * 3 + 2rem;
 			overflow-x: hidden;
-			overflow-y: auto;
 			border-radius: 1rem;
 			border: 1px solid vars.$border-color;
 			background: vars.$background;
 
-			.award {
-				margin: .5rem;
-				cursor: pointer;
-				position: relative;
-				z-index: -1;
-
-				img {
-					width: $awardsTileSeize;
-					height: $awardsTileSeize;
-				}
-
-				.count {
-					position: absolute;
-					top: 0;
-					left: 0;
-					background: black;
-					box-shadow: 0 0 6px 1px black;
-					height: 1rem;
-					padding: 0 .125rem;
-					border-radius: .5rem;
-					font-size: .75rem;
-				}
-			}
 
 			.awardInfo {
-				grid-column-start: span 3;
 				display: flex;
 				flex-flow: column;
 				background: vars.$background-el1;
-				width: calc(100% + 2rem);
-				margin-left: -1rem;
-				margin-top: -1rem;
+				width: 100%;
 				padding: .65rem;
 				position: sticky;
 				top: -1rem;
@@ -79,6 +48,38 @@
 
 				* {
 					font-size: .8rem;
+				}
+			}
+
+			.awardsList {
+				display: grid;
+				grid-template-columns: 1fr 1fr 1fr;
+				max-height: ($awardsTileSeize + 1rem) * 3 + 2rem;
+				overflow-y: auto;
+				padding: 1rem;
+
+				.award {
+					margin: .5rem;
+					cursor: pointer;
+					//position: relative;
+					//z-index: -1;
+
+					img {
+						width: $awardsTileSeize;
+						height: $awardsTileSeize;
+					}
+
+					.count {
+						position: absolute;
+						top: 0;
+						left: 0;
+						background: black;
+						box-shadow: 0 0 6px 1px black;
+						height: 1rem;
+						padding: 0 .125rem;
+						border-radius: .5rem;
+						font-size: .75rem;
+					}
 				}
 			}
 		}
