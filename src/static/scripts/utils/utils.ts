@@ -201,5 +201,8 @@ export function urlWithHttps(url: string) {
 
 export function allUrlsWithHttps(text: string): string {
 	return text.replace(/http:/, "https:");
+}
 
+export async function sleep(ms: number): Promise<void> {
+	return  new Promise(resolve => setTimeout(resolve, ms));
 }

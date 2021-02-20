@@ -24,8 +24,9 @@ export default class Ph_ViewStateLoader extends Ph_ViewState {
 				<div>What could have happened?</div>
 				<ul>
 					<li>You entered an invalid Url.</li>
-					<li>Some internal error occurred. Check the browser console logs.</li>
 					<li>Reddit is having problems. Check <a href="https://www.redditstatus.com" target="_blank">redditstatus.com</a></li>
+					<li>If you are using firefox, you might have to disable "Enhanced Tracking Protection".</li>
+					<li>Some internal error occurred. Check the browser console logs.</li>
 				</ul>
 			</div>
 		`;

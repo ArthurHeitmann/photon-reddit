@@ -6,9 +6,11 @@
 		width: vars.$widthP;
 		margin: 0 .4rem 0 auto;
 	}
+	display: flex;
+	flex-flow: column;
 
 	> * {
-		margin: 1.5rem 0;
+		margin: .75rem 0;
 	}
 }
 

@@ -3,7 +3,7 @@ import ViewsStack from "../../../historyState/viewsStack.js";
 import { escHTML } from "../../../utils/htmlStatics.js";
 import { elementWithClassInTree } from "../../../utils/htmlStuff.js";
 import { RedditApiType } from "../../../types/misc.js";
-import { throttle } from "../../../utils/utils.js";
+import { sleep, throttle } from "../../../utils/utils.js";
 import Ph_Comment from "../../comment/comment.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import Ph_Message from "../../message/message.js";
@@ -248,6 +248,8 @@ export default class Ph_UniversalFeed extends HTMLElement {
 	}
 
 	clearPrevious(loadPosition: LoadPosition) {
+		const view = elementWithClassInTree(this.parentElement, "viewState");
+
 		if (loadPosition === LoadPosition.Before) {
 			let last = this.children[this.childElementCount - 1];
 			while (last && (last.classList.contains("hide") || last.getBoundingClientRect().y > window.innerHeight * 7) && this.childElementCount > 1) {
@@ -267,14 +269,38 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			while (lastVisible.classList.contains("hide") && lastVisible.nextElementSibling)
 				lastVisible = lastVisible.nextElementSibling;
 			this.beforeData = lastVisible["itemId"];
-
-			const scrollRef1 = lastVisible.getBoundingClientRect().top;
-			removeElements.forEach(el => el.remove());
-			const scrollDiff = scrollRef1 - lastVisible.getBoundingClientRect().top;
-			const view = elementWithClassInTree(this.parentElement, "viewState");
-			view.scrollBy(0, scrollDiff);
+			if (removeElements.length === 0)
+				return;
+			// const scrollRef1 = lastVisible.getBoundingClientRect().top;
+			const scrollRef1 = view.scrollTop;
+			const perElementMarginHeight = parseInt(getComputedStyle(removeElements[0]).marginTop) * 2
+			let removedHeight = 0;
+			let firstHeight = 0;
+			let lastHeight = 0;
+			let removedEs = 0;
+			for (let i = 0; i < removeElements.length; i++){
+				let removeElement = removeElements[i];
+				if (i === 0)
+					firstHeight = removeElement.offsetHeight + perElementMarginHeight;
+				else if (i + 1 === removeElements.length)
+					lastHeight = removeElement.offsetHeight + perElementMarginHeight;
+				removedHeight += removeElement.offsetHeight + perElementMarginHeight;
+				removedEs++;
+				removeElement.remove();
+			}
+			const scrollRef2 = view.scrollTop;
+			const newScroll = scrollRef1 - removedHeight - perElementMarginHeight/2;
+			view.scrollTo(0, newScroll);
+			console.log({ scrollRef1, removedHeight, removedEs, scrollRef2, newScroll, firstHeight, lastHeight });
+			// view.addEventListener("scroll", e => {
+			// 	const scrollRef2 = lastVisible.getBoundingClientRect().top;
+			// 	const scrollDiff = scrollRef2 - scrollRef1;
+			// 	console.log(scrollDiff);
+			// 	view.scrollBy(0, -scrollDiff);
+			// 	e.preventDefault();
+			// 	return false;
+			// },  { passive: false, once: true });
 		}
-
 	}
 
 	async loadMore(loadPosition) {
