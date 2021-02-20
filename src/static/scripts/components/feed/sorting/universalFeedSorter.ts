@@ -1,8 +1,9 @@
 import { redditApiRequest } from "../../../api/redditApi.js";
 import ViewsStack from "../../../historyState/viewsStack.js";
 import { PostSorting, RedditApiType, SortPostsOrder, SortPostsTimeFrame } from "../../../types/misc.js";
-import { splitPathQuery } from "../../../utils/utils.js";
-import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
+import { getLoadingIcon } from "../../../utils/htmlStatics.js";
+import { extractPath, extractQuery, splitPathQuery } from "../../../utils/utils.js";
+import Ph_DropDown, { ButtonLabel, DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Ph_UniversalFeed from "../universalFeed/universalFeed.js";
 
@@ -17,6 +18,12 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 		this.feed = feed;
 		this.className = "feedSorter";
 
+		let tmpCurSort = extractPath(history.state?.url || "").match(/(?<=\/)\w+$/);
+		let curSort = tmpCurSort && tmpCurSort[0] || "";
+		if (!(Object.values(SortPostsOrder) as string[]).includes(curSort.toLowerCase()))
+			curSort = "default";
+		const curSortTime = (new URLSearchParams(extractQuery(history.state?.url || ""))).get("t");
+		const curSortStr = `Sort - ${curSort}${curSortTime ? `/${curSortTime}` : ""}`;
 		this.appendChild(this.dropdown = new Ph_DropDown([
 			{ displayHTML: "Default", value: SortPostsOrder.default, onSelectCallback: this.handleSortSelect.bind(this) },
 			{ displayHTML: "Hot", value: SortPostsOrder.hot, onSelectCallback: this.handleSortSelect.bind(this) },
@@ -39,23 +46,19 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 					{ displayHTML: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.handleSortSelect.bind(this) }
 				] },
 			{ displayHTML: "Gilded", value: SortPostsOrder.gilded, onSelectCallback: this.handleSortSelect.bind(this) },
-		], "Sort by", DirectionX.right, DirectionY.bottom, false));
+		], curSortStr, DirectionX.right, DirectionY.bottom, false));
 	}
 
-	handleSortSelect(valueChain: any[]) {
+	handleSortSelect(valueChain: any[], setLabel: (newLabel: ButtonLabel) => void) {
 		const selection: PostSorting = {
 			order: valueChain[0],
 			timeFrame: valueChain[1]
 		};
 
-		const loadingIcon = document.createElement("img");
-		loadingIcon.alt = "loading";
-		loadingIcon.src = "/img/loading.svg";
-		this.dropdown.toggleButton.appendChild(loadingIcon);
+		setLabel(getLoadingIcon());
 
 		this.setSorting(selection)
-			.then(() => loadingIcon.remove())
-			.catch(() => loadingIcon.remove());
+			.then(() => setLabel(`Sort - ${selection.order}${selection.timeFrame ? `/${selection.timeFrame}` : ""}`));
 	}
 
 	async setSorting(sortingMode: PostSorting): Promise<void> {

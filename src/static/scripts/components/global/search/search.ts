@@ -101,7 +101,11 @@ export default class Ph_Search extends HTMLElement {
 		this.searchDropdown.appendChild(expandedOptions);
 
 		const curSort = new URLSearchParams(extractQuery(history.state?.url || ""));
-		const curSortStr = `Sort - ${curSort.get("sort") || "relevance"}${curSort.get("t") ? `/${curSort.get("t")}` : ""}`;
+		let curSortStr: string;
+		if (history.state && /search$/.test(extractPath(history.state.url)))
+			curSortStr = `Sort - ${curSort.get("sort") || "relevance"}${curSort.get("t") ? `/${curSort.get("t")}` : ""}`;
+		else
+			curSortStr = `Sort - relevance/all`;
 		this.sortBy = new Ph_DropDown([
 			{ displayHTML: "Relevance", value: SortSearchOrder.relevance, nestedEntries: [
 				{ displayHTML: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.setSortOrder.bind(this) },
