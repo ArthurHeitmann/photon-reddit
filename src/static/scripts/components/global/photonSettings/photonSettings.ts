@@ -1,6 +1,6 @@
 import { clearSeenPosts } from "../../../utils/globals.js";
-import "../../../utils/htmlStuff.js";
 import { escADQ } from "../../../utils/htmlStatics.js";
+import "../../../utils/htmlStuff.js";
 import { deepClone, isObjectEmpty } from "../../../utils/utils.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 
@@ -209,7 +209,10 @@ export default class Ph_PhotonSettings extends HTMLElement {
 		});
 		const clearSeenPostsBtn = document.createElement("button");
 		clearSeenPostsBtn.innerText = "Clear seen posts";
-		clearSeenPostsBtn.addEventListener("click", clearSeenPosts);
+		clearSeenPostsBtn.addEventListener("click", () => {
+			clearSeenPosts();
+			new Ph_Toast(Level.Success, "", { timeout: 1500 });
+		});
 		clearSeenPostsBtn.className = "mla button";
 		this.optionsArea.appendChild(this.makeGeneralInputGroup("Keep stored data for N ms", [
 			feedInfoCacheGroup,

@@ -26,27 +26,6 @@ export async function redditApiRequest(pathAndQuery, params: string[][], require
 	return await oath2Request(pathAndQuery, params, options);
 }
 
-// /** Makes request without oauth, by appending /.json to the end of the path */
-// async function simpleApiRequest(pathAndQuery, params: string[][]) {
-// 	pathAndQuery = fixUrl(pathAndQuery);
-// 	let [path, query] = splitPathQuery(pathAndQuery);
-// 	path = path.replace(/\/?$/, "/.json")
-//
-// 	const parameters = new URLSearchParams(query);
-// 	for (const param of params)
-// 		parameters.append(param[0], param[1]);
-// 	parameters.append("raw_json", "1");
-//
-// 	try {
-// 		const response = await fetch(`https://www.reddit.com${path}?${parameters.toString()}`);
-// 		const responseText = await response.text()
-// 		return response ? JSON.parse(responseText) : {};
-// 	} catch (e) {
-// 		// maybe the token has expired, try to refresh it; try again up to 3 times
-// 		return { error: e }
-// 	}
-// }
-
 /** Makes a request to reddit with an an access token */
 async function oath2Request(pathAndQuery, params: string[][], options: RequestInit, attempt = 0) {
 	pathAndQuery = fixUrl(pathAndQuery);
