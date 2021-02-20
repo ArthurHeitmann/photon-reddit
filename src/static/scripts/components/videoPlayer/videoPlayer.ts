@@ -487,7 +487,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		return img;
 	}
 
-	setVideoSpeed(valueChain: any[], source: Ph_DropDownEntry) {
+	setVideoSpeed(valueChain: any[]) {
 		this.video.setPlaybackSpeed(valueChain[1]);
 	}
 

@@ -35,6 +35,19 @@ export default class Ph_DropDown extends HTMLElement {
 		if (this.toggleButton)
 			this.toggleButton.addEventListener("click", dropDownArea.toggleMenu.bind(dropDownArea));
 	}
+
+	setLabel(newLabel: ButtonLabel) {
+		if (typeof newLabel == "string")
+			this.toggleButton.innerHTML = newLabel;
+		else if (newLabel instanceof HTMLElement) {
+			this.toggleButton.innerText = "";
+			this.toggleButton.appendChild(newLabel);
+		}
+	}
+
+	getLabel(): HTMLElement {
+		return this.toggleButton.firstElementChild as HTMLElement;
+	}
 }
 
 /** To which edge should the drop down stick */
@@ -46,5 +59,7 @@ export enum DirectionX {
 export enum DirectionY {
 	top = "dirTop", bottom = "dirBottom"
 }
+
+export type ButtonLabel = HTMLElement | string;
 
 customElements.define("ph-drop-down", Ph_DropDown);

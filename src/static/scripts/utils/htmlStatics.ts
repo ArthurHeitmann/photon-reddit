@@ -93,3 +93,10 @@ export function escHTML(unsafeHTML: string): string {
 export function escADQ(unsafeAttribute: string): string {
 	return unsafeAttribute?.replace(`"`, `\\"`)
 }
+
+export function getLoadingIcon(): HTMLImageElement {
+	const loadingIcon = document.createElement("img");
+	loadingIcon.alt = "loading";
+	loadingIcon.src = "/img/loading.svg";
+	return loadingIcon;
+}

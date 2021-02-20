@@ -5,7 +5,7 @@ import { elementWithClassInTree } from "../../../utils/htmlStuff.js";
 import { RedditApiType } from "../../../types/misc.js";
 import { throttle } from "../../../utils/utils.js";
 import Ph_Comment from "../../comment/comment.js";
-import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
+import Ph_DropDown, { ButtonLabel, DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import Ph_Message from "../../message/message.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Ph_Post from "../../post/post.js";
@@ -169,7 +169,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 		}
 	}
 
-	async setMessageSection(section: MessageSection) {
+	async setMessageSection([section]: MessageSection[], setLabel: (newLabel: ButtonLabel) => void) {
 		this.requestUrl = this.requestUrl.replace(/^(\/message)\/[^\/]*/, `$1/${section}`);
 		try {
 			const sectionItems: RedditApiType = await redditApiRequest(

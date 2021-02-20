@@ -1,3 +1,4 @@
+import Ph_DropDown, { ButtonLabel } from "../dropDown.js";
 import Ph_DropDownArea from "../dropDownArea/dropDownArea.js";
 
 export default class Ph_DropDownEntry extends HTMLButtonElement {
@@ -6,15 +7,18 @@ export default class Ph_DropDownEntry extends HTMLButtonElement {
 	nextDropDown: Ph_DropDownArea = null;
 	/** Content of this entry */
 	label: HTMLDivElement;
+	dropDown: Ph_DropDown;
 
 	/**
 	 * @param param determines content & behaviour of this entry
 	 * @param dropDown
+	 * @param dropDownArea
 	 * @param parentEntry When nested, parentEntry has to be clicked to get to this entry
 	 */
-	constructor(param: DropDownEntryParam, dropDown: Ph_DropDownArea, parentEntry?: Ph_DropDownEntry) {
+	constructor(param: DropDownEntryParam, dropDown: Ph_DropDown, dropDownArea: Ph_DropDownArea, parentEntry?: Ph_DropDownEntry) {
 		super();
 
+		this.dropDown = dropDown;
 		this.classList.add("dropDownEntry");
 
 		if (parentEntry)
@@ -35,18 +39,23 @@ export default class Ph_DropDownEntry extends HTMLButtonElement {
 			this.appendChild(expandList);
 
 			this.nextDropDown = new Ph_DropDownArea(param.nestedEntries, null, this);
-			setTimeout(() => dropDown.insertAdjacentElement("afterend", this.nextDropDown), 0);
+			setTimeout(() => dropDownArea.insertAdjacentElement("afterend", this.nextDropDown), 0);
 			this.nextDropDown.classList.add("remove");
 		}
 
-		this.addEventListener("click", e => {
+		this.addEventListener("click", () => {
 			if (param.nestedEntries) {
 				this.nextDropDown.showMenu();
-				dropDown.closeMenu();
+				dropDownArea.closeMenu();
 			}
 			else if (param.onSelectCallback) {
-				param.onSelectCallback(this.valueChain, this);
-				dropDown.closeMenu(true);
+				param.onSelectCallback(
+					this.valueChain,
+					(newLabel) => this.dropDown.setLabel(newLabel),
+					this.dropDown.getLabel(),
+					this
+				);
+				dropDownArea.closeMenu(true);
 			}
 		});
 	}
@@ -68,7 +77,7 @@ export interface DropDownEntryParam {
 	 *
 	 * @param valueChain values of this and all previous entries
 	 */
-	onSelectCallback?: (valueChain: any[], source: Ph_DropDownEntry) => void,
+	onSelectCallback?: (valueChain: any[], setButtonLabel: (newLabel: ButtonLabel) => void, initialLabel: HTMLElement, source: Ph_DropDownEntry) => void,
 	/** When clicking this entry don't execute an action, instead show the next nested drop down */
 	nestedEntries?: DropDownEntryParam[]
 }

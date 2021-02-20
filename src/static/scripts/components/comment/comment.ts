@@ -352,7 +352,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 		}
 	}
 
-	async toggleSave(valueChain: any[], source: Ph_DropDownEntry) {
+	async toggleSave(valueChain: any[], _, __, source: Ph_DropDownEntry) {
 		this.isSaved = !this.isSaved;
 		source.innerText = this.isSaved ? "Unsave" : "Save";
 		if (!await save(this)) {
@@ -409,7 +409,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 		this.childComments.insertAdjacentElement("beforebegin", editForm);
 	}
 
-	async delete() {
+	async delete(_, __, ___, source: Ph_DropDownEntry) {
 		try {
 			const resp = await deleteThing(this);
 
@@ -422,6 +422,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 
 			this.$class("content")[0].innerHTML = "[deleted]";
 			new Ph_Toast(Level.Success, "Deleted comment", { timeout: 2000 });
+			source.remove();
 		} catch (e) {
 			console.error("Error deleting comment");
 			console.error(e);
