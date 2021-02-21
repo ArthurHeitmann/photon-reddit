@@ -25,13 +25,8 @@
 			margin-left: -50%;
 			transform: translateX(-25%) scale(.9);
 			transition: all .25s ease;
-			display: grid;
-			grid-template-columns: 1fr 1fr 1fr;
-			padding: 1rem;
 			max-width: ($awardsTileSeize + 1rem) * 3 + 2rem;
-			max-height: ($awardsTileSeize + 1rem) * 3 + 2rem;
 			overflow-x: hidden;
-			overflow-y: auto;
 			border-radius: 1rem;
 			border: 1px solid vars.$border-color;
 			background: vars.$background;
@@ -41,9 +36,6 @@
 				display: flex;
 				flex-flow: column;
 				background: vars.$background-el1;
-				width: calc(100% + 2rem);
-				margin-left: -1rem;
-				margin-top: -1rem;
 				padding: .65rem;
 				position: sticky;
 				top: -1rem;

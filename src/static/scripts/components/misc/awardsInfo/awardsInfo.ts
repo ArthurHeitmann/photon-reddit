@@ -8,6 +8,7 @@ export default class Ph_AwardsInfo extends HTMLElement {
 	toggleTimeout = null;
 	expandedView: HTMLElement;
 	awardInfo: HTMLElement;
+	awardsList: HTMLElement;
 
 	constructor(data: AwardsData[]) {
 		super();
@@ -44,6 +45,10 @@ export default class Ph_AwardsInfo extends HTMLElement {
 		`;
 		this.expandedView.appendChild(this.awardInfo);
 
+		this.awardsList = document.createElement("div");
+		this.awardsList.className = "awardsList";
+		this.expandedView.appendChild(this.awardsList);
+
 		this.addEventListener("mouseenter", () => {
 			if (this.classList.contains("show")) {
 				if (this.toggleTimeout)
@@ -65,13 +70,13 @@ export default class Ph_AwardsInfo extends HTMLElement {
 	/** Since posts & comments usually have many (animated) awards, only load the when the user really wants to see them */
 	private buildExpandedView() {
 		for (const award of this.awardsData) {
-			this.expandedView.insertAdjacentHTML("beforeend", `
+			this.awardsList.insertAdjacentHTML("beforeend", `
 				<div class="award" data-id="${award.id}">
 					<img src="${award.resized_icons[award.resized_icons.length - 1].url}" alt="${award.name}">
 					<div class="count">${award.count}x</div>
 				</div>
 			`);
-			this.expandedView.lastElementChild.addEventListener("click", (e: MouseEvent) => {
+			this.awardsList.lastElementChild.addEventListener("click", (e: MouseEvent) => {
 				const awardId = (e.currentTarget as HTMLElement).getAttribute("data-id");
 				if (awardId === this.awardInfo.getAttribute("data-id")) {
 					this.awardInfo.classList.add("hide");
@@ -89,7 +94,7 @@ export default class Ph_AwardsInfo extends HTMLElement {
 	}
 
 	show() {
-		if (this.expandedView.childElementCount <= 1)
+		if (this.awardsList.childElementCount <= 1)
 			this.buildExpandedView();
 		this.classList.add("show");
 		this.toggleTimeout = null;
