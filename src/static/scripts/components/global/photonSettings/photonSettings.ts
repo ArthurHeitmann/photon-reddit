@@ -57,12 +57,20 @@ export default class Ph_PhotonSettings extends HTMLElement {
 		this.classList.add("photonSettings");
 		this.hide();
 
-		const savedSettings = localStorage.settings ? JSON.parse(localStorage.settings) : undefined;
-		if (savedSettings)
+		let savedSettings: any;
+		try {
+			savedSettings = localStorage.settings ? JSON.parse(localStorage.settings) : undefined;
+		}
+		catch {
+			savedSettings = {}
+		}
+		if (savedSettings) {
 			globalSettings = {
 				...globalSettings,
 				...savedSettings,
 			};
+		}
+		localStorage.settings = JSON.stringify(globalSettings);
 	}
 
 	connectedCallback() {

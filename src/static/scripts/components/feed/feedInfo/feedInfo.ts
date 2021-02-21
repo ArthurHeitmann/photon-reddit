@@ -1,5 +1,5 @@
 import { redditApiRequest, subscribe } from "../../../api/redditApi.js";
-import { isLoggedIn, MultiReddit, StoredData } from "../../../utils/globals.js";
+import { isLoggedIn, MultiReddit, StoredData, thisUser } from "../../../utils/globals.js";
 import { $class, escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { classInElementTree, linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiType } from "../../../types/misc.js";
@@ -118,9 +118,12 @@ export default class Ph_FeedInfo extends HTMLElement {
 
 		const storedInfo = localStorage[feedUrl.toLowerCase()];
 		if (storedInfo) {
-			this.loadedInfo = JSON.parse(storedInfo);
+			try {
+				this.loadedInfo = JSON.parse(storedInfo);
+			}
+			catch {}
 		}
-		else {
+		if (!this.loadedInfo) {
 			this.loadedInfo = {
 				data: null,
 				feedType: feedType,
@@ -282,12 +285,11 @@ export default class Ph_FeedInfo extends HTMLElement {
 		const dropDownEntries: DropDownEntryParam[] = [];
 		dropDownEntries.push({displayHTML: `<a href="${this.feedUrl}">Visit</a>`})
 		dropDownEntries.push({displayHTML: `<a href="${this.feedUrl}/submit">Submit Post</a>`})
-		if (localStorage.multis) {
-			const userMultis = ((JSON.parse(localStorage.multis) as StoredData).data as MultiReddit[]);
+		if (thisUser.multireddits.length > 0) {
 			dropDownEntries.push({
 				displayHTML: "Add to Multireddit",
 				nestedEntries:
-					userMultis.map(multi => ({
+					thisUser.multireddits.map(multi => ({
 						displayHTML: multi.display_name,
 						value: multi.path,
 						onSelectCallback: ([_, multiPath]) => this.addSubToMulti(this.feedUrl, multiPath.replace(/\/?$/, ""), false)
