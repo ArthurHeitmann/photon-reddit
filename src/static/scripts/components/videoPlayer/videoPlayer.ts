@@ -411,6 +411,10 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		controls.appendChild(this.resetViewBtn);
 
 		// settings
+		const videoSettingsImg = document.createElement("img");
+		videoSettingsImg.src = "/img/settings2.svg";
+		videoSettingsImg.draggable = false;
+		videoSettingsImg.alt = "settings";
 		this.controlsDropDown = new Ph_DropDown([
 			{
 				displayHTML: "Speed", nestedEntries: [
@@ -428,7 +432,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 			// 	displayHTML: `<span data-tooltip="Shortcut: I">Popout</span>`,
 			// 	onSelectCallback: this.popoutVideo.bind(this)
 			// },
-		], `<img src="/img/settings2.svg" draggable="false" alt="settings">`, DirectionX.right, DirectionY.top, false);
+		], videoSettingsImg, DirectionX.right, DirectionY.top, false);
 		this.controlsDropDown.classList.add("settings");
 		this.controlsDropDown.$class("dropDownButton")[0].classList.add("imgBtn");
 		controls.appendChild(this.controlsDropDown);

@@ -585,59 +585,60 @@ export default class Ph_FeedInfo extends HTMLElement {
 	private makeMultiSubManager(): HTMLElement[] {
 		const outElements: HTMLElement[] = [];
 
-		const addSubredditBar = document.createElement("div");
-		addSubredditBar.className = "editableSub addSub";
+		if (this.loadedInfo.data["can_edit"]) {
+			const addSubredditBar = document.createElement("div");
+			addSubredditBar.className = "editableSub addSub";
 
-		const addSubButton = document.createElement("button");
-		addSubButton.className = "addSub transparentButtonAlt";
-		addSubredditBar.appendChild(addSubButton);
+			const addSubButton = document.createElement("button");
+			addSubButton.className = "addSub transparentButtonAlt";
+			addSubredditBar.appendChild(addSubButton);
 
-		const addSubInput = document.createElement("input");
-		addSubInput.type = "text";
-		addSubInput.placeholder = "Subreddit";
+			const addSubInput = document.createElement("input");
+			addSubInput.type = "text";
+			addSubInput.placeholder = "Subreddit";
 
-		const subsSearchResults = document.createElement("div");
-		subsSearchResults.className = "subsSearchResults remove";
-		addSubredditBar.appendChild(subsSearchResults);
+			const subsSearchResults = document.createElement("div");
+			subsSearchResults.className = "subsSearchResults remove";
+			addSubredditBar.appendChild(subsSearchResults);
 
-		addSubredditBar.appendChild(addSubInput);
-		addSubButton.addEventListener("click", e => this.addSubToMulti(
-			addSubInput.value,
-			this.feedUrl,
-			true,
-			(e.currentTarget as HTMLElement).parentElement.parentElement)
-		);
-		addSubInput.addEventListener("keypress", e => e.code === "Enter" && this.addSubToMulti(
-			addSubInput.value,
-			this.feedUrl,
-			true,
-			(e.currentTarget as HTMLElement).parentElement.parentElement)
-		);
-		addSubInput.addEventListener("input", throttle(async () => {
-			addSubInput.value = addSubInput.value.replace(/^\/?r\//, "");
-			if (addSubInput.value) {
-				subsSearchResults.classList.remove("remove");
-				const subs: { names: string[] } = await redditApiRequest("/api/search_reddit_names", [["query", addSubInput.value]], false);
-				subsSearchResults.innerText = "";
-				subs.names.forEach(sub => {
-					const selectSubBtn = document.createElement("button");
-					selectSubBtn.innerText = sub;
-					selectSubBtn.addEventListener("click", e => this.addSubToMulti(
-						sub,
-						this.feedUrl,
-						true,
-						(e.currentTarget as HTMLElement).parentElement.parentElement.parentElement)
-					);
-					subsSearchResults.appendChild(selectSubBtn);
-				});
-			}
-			else {
-				subsSearchResults.classList.add("remove");
-			}
-		}, 500, { leading: true, trailing: true }));
-		addSubInput.addEventListener("blur", () => subsSearchResults.classList.add("remove"));
+			addSubredditBar.appendChild(addSubInput);
+			addSubButton.addEventListener("click", e => this.addSubToMulti(
+				addSubInput.value,
+				this.feedUrl,
+				true,
+				(e.currentTarget as HTMLElement).parentElement.parentElement)
+			);
+			addSubInput.addEventListener("keypress", e => e.code === "Enter" && this.addSubToMulti(
+				addSubInput.value,
+				this.feedUrl,
+				true,
+				(e.currentTarget as HTMLElement).parentElement.parentElement)
+			);
+			addSubInput.addEventListener("input", throttle(async () => {
+				addSubInput.value = addSubInput.value.replace(/^\/?r\//, "");
+				if (addSubInput.value) {
+					subsSearchResults.classList.remove("remove");
+					const subs: { names: string[] } = await redditApiRequest("/api/search_reddit_names", [["query", addSubInput.value]], false);
+					subsSearchResults.innerText = "";
+					subs.names.forEach(sub => {
+						const selectSubBtn = document.createElement("button");
+						selectSubBtn.innerText = sub;
+						selectSubBtn.addEventListener("click", e => this.addSubToMulti(
+							sub,
+							this.feedUrl,
+							true,
+							(e.currentTarget as HTMLElement).parentElement.parentElement.parentElement)
+						);
+						subsSearchResults.appendChild(selectSubBtn);
+					});
+				} else {
+					subsSearchResults.classList.add("remove");
+				}
+			}, 500, {leading: true, trailing: true}));
+			addSubInput.addEventListener("blur", () => subsSearchResults.classList.add("remove"));
 
-		outElements.push(addSubredditBar);
+			outElements.push(addSubredditBar);
+		}
 
 		this.loadedInfo.data.subreddits.forEach(sub => outElements.push(this.makeRemoveSubBar(sub)));
 
@@ -647,18 +648,20 @@ export default class Ph_FeedInfo extends HTMLElement {
 	private makeRemoveSubBar(sub: string) {
 		const removeSubredditBar = document.createElement("div");
 		removeSubredditBar.className = "editableSub";
-		const removeSubButton = document.createElement("button");
-		removeSubButton.className = "removeSub transparentButton";
-		removeSubredditBar.appendChild(removeSubButton);
-		const addSubText = document.createElement("div");
-		addSubText.innerHTML = `<a href="/r/${escADQ(sub)}">r/${escHTML(sub)}</a>`;
-		removeSubredditBar.appendChild(addSubText);
-		removeSubButton.addEventListener("click",
-			e => this.removeSubFromMulti(
-				(e.currentTarget as HTMLElement).parentElement.$tag("a")[0].innerHTML,
-				this.feedUrl,
-				(e.currentTarget as HTMLElement).parentElement)
-		);
+		if (this.loadedInfo.data["can_edit"]) {
+			const removeSubButton = document.createElement("button");
+			removeSubButton.className = "removeSub transparentButton";
+			removeSubredditBar.appendChild(removeSubButton);
+			removeSubButton.addEventListener("click",
+				e => this.removeSubFromMulti(
+					(e.currentTarget as HTMLElement).parentElement.$tag("a")[0].innerHTML,
+					this.feedUrl,
+					(e.currentTarget as HTMLElement).parentElement)
+			);
+		}
+		const subText = document.createElement("div");
+		subText.innerHTML = `<a href="/r/${escADQ(sub)}">r/${escHTML(sub)}</a>`;
+		removeSubredditBar.appendChild(subText);
 		return removeSubredditBar;
 	}
 

@@ -27,7 +27,7 @@ app.use(helmet({
 }));
 app.use(safeExc(checkSslAndWww));
 app.use(express.static('src/static', env !== "production" ? {} : {
-	maxAge: env === "production" ? "1d" : "0"
+	maxAge: env === "production" ? "8h" : "0"
 }));
 app.use(bodyParser.json());
 
