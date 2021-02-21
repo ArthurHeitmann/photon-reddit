@@ -81,7 +81,7 @@ a {
 
 a.inlineImage {
 	max-width: 100%;
-	max-height: 95vh;
+	max-height: vars.$image-height-limited;
 
 	&, > .postImage, > .postImage > .draggableWrapper {
 		display: inline-block;
@@ -118,7 +118,7 @@ a.inlineImage {
 
 .inlineImage {
 	max-width: 100%;
-	max-height: 95vh;
+	max-height: vars.$image-height-limited;
 }
 
 .transparentButton {

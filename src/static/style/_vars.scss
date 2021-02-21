@@ -7,6 +7,7 @@
 	--shadow-color: #0000009c;
 	--primary: lightcoral;
 	--primary-contrast: #e65d5d;
+	--image-height-limited: 95vh;
 }
 
 /** default background color */
@@ -34,3 +35,4 @@ $widthM: min(50rem, calc(100% - 6rem));
 $widthL: min(60rem, calc(100% - 6rem));
 $link-color: #7da3f9;
 $border-color: #383838;
+$image-height-limited: var(--image-height-limited);

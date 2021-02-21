@@ -21,7 +21,7 @@
 		width: 100%;
 		display: block;
 		object-fit: contain;
-		max-height: 95vh;
+		max-height: vars.$image-height-limited;
 	}
 
 	.controls {

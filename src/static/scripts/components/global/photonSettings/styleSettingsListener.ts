@@ -5,6 +5,10 @@ window.addEventListener("settingsChanged", (e: CustomEvent) => handleSettings(e.
 function handleSettings(settings: PhotonSettings) {
 	setClassOnBody("disableInlineImages", !settings.loadInlineImages);
 	setClassOnBody("disableTooltips", !settings.tooltipsVisible);
+	if (settings.imageLimitedHeight !== undefined) {
+		document.documentElement.style.setProperty("--image-height-limited",
+			settings.imageLimitedHeight > 0 ?`${settings.imageLimitedHeight}vh` : "unset");
+	}
 }
 
 function setClassOnBody(className: string, state: boolean) {

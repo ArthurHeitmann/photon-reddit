@@ -64,7 +64,7 @@
 			}
 
 			.postImage {
-				max-height: 95vh;
+				max-height: vars.$image-height-limited;
 				object-fit: contain;
 			}
 

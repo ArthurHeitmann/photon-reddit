@@ -34,7 +34,7 @@
 		.galleryWrapper {
 			img {
 				width: 100%;
-				max-height: 95vh;
+				max-height: vars.$image-height-limited;
 				display: block;
 				object-fit: contain;
 

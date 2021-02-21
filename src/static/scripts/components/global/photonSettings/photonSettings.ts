@@ -21,6 +21,7 @@ export interface PhotonSettings {
 	imageLoadingPolicy?: ImageLoadingPolicy,
 	loadInlineImages?: boolean,
 	controlBarForImages?: boolean,
+	imageLimitedHeight?: number,
 	nsfwPolicy?: NsfwPolicy,
 	markSeenPosts?: boolean,
 	hideSeenPosts?: boolean,
@@ -35,6 +36,7 @@ export let globalSettings: PhotonSettings = {
 	imageLoadingPolicy: ImageLoadingPolicy.originalInFs,
 	loadInlineImages: true,
 	controlBarForImages: false,
+	imageLimitedHeight: 95,
 	nsfwPolicy: NsfwPolicy.covered,
 	markSeenPosts: true,
 	hideSeenPosts: true,
@@ -165,6 +167,19 @@ export default class Ph_PhotonSettings extends HTMLElement {
 			((e.currentTarget as HTMLInputElement).checked);
 		});
 		this.optionsArea.appendChild(imageControlsGroup);
+		// limited image height
+		const limitedHeightGroup = this.makeCustomLabeledInput(
+			"number",
+			"Limit image height to N % of the view height (0 for no limit)",
+			globalSettings.imageLimitedHeight.toString(),
+			"limitHeightSetting"
+		);
+		limitedHeightGroup.$tag("input")[0].addEventListener("input", e => {
+			this.stageSettingChange(nameOf<PhotonSettings>("imageLimitedHeight"),
+				(percent) => !isNaN(parseFloat(percent)) && parseFloat(percent) >= 0, "invalid percent")
+				((e.currentTarget as HTMLInputElement).value);
+		});
+		this.optionsArea.appendChild(limitedHeightGroup);
 		this.optionsArea.appendChild(document.createElement("hr"));
 
 		// nsfw visibility

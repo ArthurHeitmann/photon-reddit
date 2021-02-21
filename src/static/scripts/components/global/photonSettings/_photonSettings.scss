@@ -89,14 +89,14 @@
 						margin-right: .5rem;
 					}
 
-					> input.text {
+					> input[type=text], input[type=number] {
 						width: 6rem;
 						text-align: right;
 						border-bottom: 1px solid #616161;
 						transition: border-bottom-color .25s ease;
 
 						&:focus {
-							border-bottom: 1px solid #838383;
+							border-bottom: 1px solid vars.$primary;
 						}
 					}
 				}
