@@ -3,6 +3,7 @@ import { escADQ } from "../../../utils/htmlStatics.js";
 import "../../../utils/htmlStuff.js";
 import { deepClone, isObjectEmpty } from "../../../utils/utils.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
+import "./styleSettingsListener.js"
 
 export enum ImageLoadingPolicy {
 	alwaysPreview = "alwaysPreview",
@@ -18,6 +19,7 @@ export enum NsfwPolicy {
 
 export interface PhotonSettings {
 	imageLoadingPolicy?: ImageLoadingPolicy,
+	loadInlineImages?: boolean,
 	nsfwPolicy?: NsfwPolicy,
 	markSeenPosts?: boolean,
 	hideSeenPosts?: boolean,
@@ -30,6 +32,7 @@ export interface PhotonSettings {
 // default config
 export let globalSettings: PhotonSettings = {
 	imageLoadingPolicy: ImageLoadingPolicy.originalInFs,
+	loadInlineImages: true,
 	nsfwPolicy: NsfwPolicy.covered,
 	markSeenPosts: true,
 	hideSeenPosts: true,
@@ -106,6 +109,19 @@ export default class Ph_PhotonSettings extends HTMLElement {
 		windowWrapper.appendChild(bottomBar);
 	}
 
+	private stageSettingChange(propertyName: string, validator?: (changed: any) => boolean, errorMessage?: string): (changed: any) => void {
+		return changed => {
+			if (validator && !validator(changed)) {
+				new Ph_Toast(Level.Error, errorMessage, { timeout: 3000 });
+				return;
+			}
+			if (changed !== globalSettings[propertyName])
+				this.temporarySettings[propertyName] = changed;
+			else
+				delete this.temporarySettings[propertyName];
+		}
+	}
+
 	private populateSettings() {
 		// image previews
 		this.optionsArea.appendChild(this.makeRadioGroup(
@@ -117,11 +133,22 @@ export default class Ph_PhotonSettings extends HTMLElement {
 				{ id: ImageLoadingPolicy.originalInFs, text: "Load originals only in fullscreen" },
 				{ id: ImageLoadingPolicy.alwaysOriginal, text: "Always load original images" },
 			],
-			(loadingPolicy: ImageLoadingPolicy) => {
-				if (loadingPolicy !== globalSettings.imageLoadingPolicy)
-					this.temporarySettings.imageLoadingPolicy = loadingPolicy;
-			}
+			this.stageSettingChange(nameOf<PhotonSettings>("imageLoadingPolicy"))
 		));
+		// inline images
+		const inlineImagesGroup = this.makeCustomLabeledInput(
+			"checkbox",
+			"Load images in comments instead of links",
+			"",
+			"inlineImages",
+			"",
+			globalSettings.loadInlineImages
+		);
+		inlineImagesGroup.$tag("input")[0].addEventListener("input", e =>
+			this.stageSettingChange(nameOf<PhotonSettings>("loadInlineImages"))
+				((e.currentTarget as HTMLInputElement).checked)
+		);
+		this.optionsArea.appendChild(inlineImagesGroup);
 		this.optionsArea.appendChild(document.createElement("hr"));
 
 		// nsfw visibility
@@ -134,12 +161,7 @@ export default class Ph_PhotonSettings extends HTMLElement {
 				{ id: NsfwPolicy.covered, text: "Show warning on NSFW posts" },
 				{ id: NsfwPolicy.always, text: "Always show NSFW posts" },
 			],
-			(nsfwPolicy: NsfwPolicy) => {
-				if (nsfwPolicy !== globalSettings.nsfwPolicy)
-					this.temporarySettings.nsfwPolicy = nsfwPolicy;
-				else
-					delete this.temporarySettings.nsfwPolicy;
-			}
+			this.stageSettingChange(nameOf<PhotonSettings>("nsfwPolicy"))
 		));
 		this.optionsArea.appendChild(document.createElement("hr"));
 
@@ -151,20 +173,11 @@ export default class Ph_PhotonSettings extends HTMLElement {
 		seenPostsGroup.$tagAr("input").forEach((checkbox: HTMLInputElement) => checkbox.addEventListener("input", (e: Event) => {
 			switch (checkbox.id) {
 				case "markSeenPosts":
-					if (checkbox.checked !== globalSettings.markSeenPosts)
-						this.temporarySettings.markSeenPosts = checkbox.checked;
-					else
-						delete this.temporarySettings.markSeenPosts;
+					this.stageSettingChange(nameOf<PhotonSettings>("markSeenPosts"))(checkbox.checked);
 					break;
 				case "hideSeenPosts":
-					if (checkbox.checked !== globalSettings.hideSeenPosts)
-						this.temporarySettings.hideSeenPosts = checkbox.checked;
-					else
-						delete this.temporarySettings.hideSeenPosts;
+					this.stageSettingChange(nameOf<PhotonSettings>("hideSeenPosts"))(checkbox.checked);
 					break;
-				default:
-					new Ph_Toast(Level.Error, "Wut is happening?");
-					console.error(checkbox.outerHTML);
 			}
 		}));
 		this.optionsArea.append(seenPostsGroup);
@@ -180,14 +193,8 @@ export default class Ph_PhotonSettings extends HTMLElement {
 		);
 		feedInfoCacheGroup.$tag("input")[0].addEventListener("change", e => {
 			const ms = parseInt((e.currentTarget as HTMLInputElement).value);
-			if (isNaN(ms)) {
-				new Ph_Toast(Level.Error, "Invalid number");
-				return;
-			}
-			if (ms !== globalSettings.clearFeedCacheAfterMs)
-				this.temporarySettings.clearFeedCacheAfterMs = ms;
-			else
-				delete this.temporarySettings.clearFeedCacheAfterMs;
+			this.stageSettingChange(nameOf<PhotonSettings>("clearFeedCacheAfterMs"),
+				changed => !isNaN(changed), "Invalid number")(ms);
 		});
 		const seenPostsStoredGroup = this.makeCustomLabeledInput(
 			"text",
@@ -198,14 +205,8 @@ export default class Ph_PhotonSettings extends HTMLElement {
 		);
 		seenPostsStoredGroup.$tag("input")[0].addEventListener("change", e => {
 			const ms = parseInt((e.currentTarget as HTMLInputElement).value);
-			if (isNaN(ms)) {
-				new Ph_Toast(Level.Error, "Invalid number");
-				return;
-			}
-			if (ms !== globalSettings.clearSeenPostAfterMs)
-				this.temporarySettings.clearSeenPostAfterMs = ms;
-			else
-				delete this.temporarySettings.clearSeenPostAfterMs;
+			this.stageSettingChange(nameOf<PhotonSettings>("clearSeenPostAfterMs"),
+					changed => !isNaN(changed), "Invalid number")(ms);
 		});
 		const clearSeenPostsBtn = document.createElement("button");
 		clearSeenPostsBtn.innerText = "Clear seen posts";
@@ -230,13 +231,10 @@ export default class Ph_PhotonSettings extends HTMLElement {
 			"",
 			globalSettings.isIncognitoEnabled
 		);
-		incognitoGroup.$tag("input")[0].addEventListener("input", e => {
-			const checkbox = e.currentTarget as HTMLInputElement;
-			if (checkbox.checked !== globalSettings.isIncognitoEnabled)
-				this.temporarySettings.isIncognitoEnabled = checkbox.checked;
-			else
-				delete this.temporarySettings.isIncognitoEnabled;
-		});
+		incognitoGroup.$tag("input")[0].addEventListener("input", e =>
+			this.stageSettingChange(nameOf<PhotonSettings>("isIncognitoEnabled"))
+				((e.currentTarget as HTMLInputElement).checked)
+		);
 		incognitoGroup.setAttribute("data-tooltip", "Randomize tab title and url");
 		this.optionsArea.appendChild(incognitoGroup);
 		this.optionsArea.appendChild(document.createElement("hr"));
@@ -251,11 +249,8 @@ export default class Ph_PhotonSettings extends HTMLElement {
 			globalSettings.controlBarForImages
 		);
 		imageControlsGroup.$tag("input")[0].addEventListener("input", e => {
-			const checkbox = e.currentTarget as HTMLInputElement;
-			if (checkbox.checked !== globalSettings.controlBarForImages)
-				this.temporarySettings.controlBarForImages = checkbox.checked;
-			else
-				delete this.temporarySettings.controlBarForImages;
+			this.stageSettingChange(nameOf<PhotonSettings>("controlBarForImages"))
+				((e.currentTarget as HTMLInputElement).checked);
 		});
 		this.optionsArea.appendChild(imageControlsGroup);
 		this.optionsArea.appendChild(document.createElement("hr"));
@@ -325,5 +320,8 @@ export default class Ph_PhotonSettings extends HTMLElement {
 		this.classList.add("remove");
 	}
 }
+
+/** Compile time validator that @param name is a property of T */
+const nameOf = <T>(name: keyof T) => name;
 
 customElements.define("ph-photon-settings", Ph_PhotonSettings);

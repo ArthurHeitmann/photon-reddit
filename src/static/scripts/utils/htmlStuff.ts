@@ -73,7 +73,14 @@ export function linksToInlineImages(elem: HTMLElement) {
 			continue;
 
 		const image = new Ph_PostImage([{originalUrl: (link as HTMLAnchorElement).href, caption: ""}]);
-		link.innerHTML = "";
+		const tmpChildren = Array.from(link.children);
+		const tmpInner = link.innerHTML;
+		tmpChildren.forEach(child => child.remove());
+		link.innerHTML = `<span class="backupLink"></span>`;
+		if (tmpChildren.length)
+			link.children[0].append(...tmpChildren);
+		else
+			link.children[0].innerHTML = tmpInner;
 		link.appendChild(image);
 		link.classList.add("inlineImage");
 

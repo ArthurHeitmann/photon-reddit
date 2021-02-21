@@ -96,6 +96,20 @@ a.inlineImage {
 	&:hover {
 		filter: none;
 	}
+
+	.backupLink {
+		display: none;
+	}
+}
+
+.disableInlineImages .inlineImage {
+	.postImage {
+		display: none !important;
+	}
+
+	.backupLink {
+		display: inherit;
+	}
 }
 
 .inlineImage {

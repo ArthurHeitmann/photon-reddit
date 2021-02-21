@@ -56,9 +56,9 @@ const template = `
 		<li>
 			The time in milliseconds in UTC.
 		</li>
-		<br>
-		Tracking is disabled when Photon is running on localhost.
 	</ul>
+	<br>
+	Tracking is disabled when Photon is running on localhost.
 </p>
 
 <h2 id="github">GitHub & Source Code</h2>

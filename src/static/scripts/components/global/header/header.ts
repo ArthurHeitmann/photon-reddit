@@ -70,7 +70,7 @@ export default class Ph_Header extends HTMLElement {
 			.insertAdjacentElement("afterend", this.userDropDown = new Ph_UserDropDown());
 
 		this.addEventListener("mouseenter", this.headerMouseEnter);
-		this.addEventListener("touchstart", this.headerMouseEnter);
+		this.addEventListener("touchstart", this.headerMouseEnter, { passive: true });
 		this.addEventListener("mouseleave", this.headerMouseLeave);
 		this.$class("showSettingsButton")[0].addEventListener("click", () => {
 			this.settings.toggle();

@@ -25,13 +25,11 @@ async function init(): Promise<void> {
 
 	checkIfAnalyticsFileLoaded()
 
-	if (await checkAuthOnPageLoad() === AuthState.LoggedIn) {
-		setInterval(checkTokenRefresh, 1000 * 30);
+	if (await checkAuthOnPageLoad() === AuthState.LoggedIn)
 		await thisUser.fetch();
-	}
-	else {
+	else
 		loginBtn.hidden = false;
-	}
+		setInterval(checkTokenRefresh, 1000 * 30);
 	loadPosts();
 
 	window.dispatchEvent(new Event("ph-page-ready"));

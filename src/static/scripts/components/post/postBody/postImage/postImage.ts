@@ -1,5 +1,5 @@
-import { elementWithClassInTree } from "../../../../utils/htmlStuff.js";
 import { RedditApiType } from "../../../../types/misc.js";
+import { elementWithClassInTree } from "../../../../utils/htmlStuff.js";
 import { globalSettings, ImageLoadingPolicy, PhotonSettings } from "../../../global/photonSettings/photonSettings.js";
 import Ph_ControlsBar from "../../../misc/controlsBar/controlsBar.js";
 import Ph_Toast, { Level } from "../../../misc/toast/toast.js";
@@ -43,6 +43,10 @@ export default class Ph_PostImage extends HTMLElement {
 			const items: {}[] = postData.data["gallery_data"]["items"];
 			for (const item of items) {
 				const imgData = postData.data["media_metadata"][item["media_id"]];
+				if (imgData["status"] === "failed") {
+					new Ph_Toast(Level.Warning, "Couldn't load a gallery image");
+					continue;
+				}
 				const previews: {}[] = imgData["p"];
 				galleryInitData.push({
 					caption: item["caption"] || postData.data["title"],
