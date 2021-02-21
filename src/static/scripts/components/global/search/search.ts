@@ -1,12 +1,12 @@
 import { searchSubreddits, searchUser } from "../../../api/redditApi.js";
 import { pushLinkToHistoryComb, pushLinkToHistorySep } from "../../../historyState/historyStateManager.js";
 import { ViewChangeData } from "../../../historyState/viewsStack.js";
-import { escADQ } from "../../../utils/htmlStatics.js";
+import { escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { elementWithClassInTree, isElementIn, linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiType, SortPostsTimeFrame, SortSearchOrder } from "../../../types/misc.js";
 import { extractPath, extractQuery, throttle } from "../../../utils/utils.js";
 import Ph_FeedInfo from "../../feed/feedInfo/feedInfo.js";
-import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
+import Ph_DropDown, { ButtonLabel, DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import Ph_Flair, { FlairData } from "../../misc/flair/flair.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Ph_Header from "../header/header.js";
@@ -100,6 +100,12 @@ export default class Ph_Search extends HTMLElement {
 		toggleDropdownBtn.addEventListener("click", this.toggleSearchDropdown.bind(this));
 		this.searchDropdown.appendChild(expandedOptions);
 
+		const curSort = new URLSearchParams(extractQuery(history.state?.url || ""));
+		let curSortStr: string;
+		if (history.state && /search$/.test(extractPath(history.state.url)))
+			curSortStr = `Sort - ${curSort.get("sort") || "relevance"}${curSort.get("t") ? `/${curSort.get("t")}` : ""}`;
+		else
+			curSortStr = `Sort - relevance/all`;
 		this.sortBy = new Ph_DropDown([
 			{ displayHTML: "Relevance", value: SortSearchOrder.relevance, nestedEntries: [
 				{ displayHTML: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.setSortOrder.bind(this) },
@@ -134,7 +140,7 @@ export default class Ph_Search extends HTMLElement {
 				{ displayHTML: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.setSortOrder.bind(this) },
 				{ displayHTML: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.setSortOrder.bind(this) },
 			] },
-		], "Sort by", DirectionX.right, DirectionY.bottom, false);
+		], curSortStr, DirectionX.right, DirectionY.bottom, false);
 		expandedOptions.appendChild(this.sortBy);
 
 		function makeLabelCheckboxPair(labelText: string, checkboxId: string, defaultChecked: boolean, appendTo: HTMLElement): { checkbox: HTMLInputElement, label: HTMLLabelElement } {
@@ -235,9 +241,11 @@ export default class Ph_Search extends HTMLElement {
 			(elementWithClassInTree(this.parentElement, "header") as Ph_Header)?.minimizeAll([this]);
 	}
 
-	setSortOrder(valueChain: any[]) {
+	setSortOrder(valueChain: any[], setLabel: (newLabel: ButtonLabel) => void) {
 		this.searchOrder = valueChain[0];
 		this.searchTimeFrame = valueChain.length === 2 ? valueChain[1] : null;
+		const sortStr = `Sort - ${this.searchOrder}${this.searchTimeFrame ? `/${this.searchTimeFrame}` : ""}`;
+		setLabel(sortStr);
 	}
 
 	async quickSearch() {

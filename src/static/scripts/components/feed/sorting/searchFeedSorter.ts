@@ -1,8 +1,9 @@
 import { redditApiRequest } from "../../../api/redditApi.js";
 import ViewsStack from "../../../historyState/viewsStack.js";
 import { RedditApiType, SortPostsTimeFrame, SortSearchOrder } from "../../../types/misc.js";
-import { splitPathQuery } from "../../../utils/utils.js";
-import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
+import { getLoadingIcon } from "../../../utils/htmlStatics.js";
+import { extractQuery, splitPathQuery } from "../../../utils/utils.js";
+import Ph_DropDown, { ButtonLabel, DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Ph_UniversalFeed from "../universalFeed/universalFeed.js";
 
@@ -17,6 +18,8 @@ export default class Ph_SearchFeedSorter extends HTMLElement {
 		this.className = "feedSorter";
 		this.feed = feed;
 
+		const curSort = new URLSearchParams(extractQuery(history.state?.url || ""));
+		const curSortStr = `Sort - ${curSort.get("sort") || "relevance"}${curSort.get("t") ? `/${curSort.get("t")}` : ""}`;
 		this.appendChild(this.dropdown = new Ph_DropDown([
 			{ displayHTML: "Relevance", value: SortSearchOrder.relevance, nestedEntries: [
 					{ displayHTML: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.handleSortSelect.bind(this) },
@@ -51,18 +54,14 @@ export default class Ph_SearchFeedSorter extends HTMLElement {
 					{ displayHTML: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.handleSortSelect.bind(this) },
 					{ displayHTML: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.handleSortSelect.bind(this) },
 				] },
-		], "Sort by", DirectionX.right, DirectionY.bottom, false));
+		], curSortStr, DirectionX.right, DirectionY.bottom, false));
 	}
 
-	handleSortSelect(valueChain: any[]) {
-		const loadingIcon = document.createElement("img");
-		loadingIcon.alt = "loading";
-		loadingIcon.src = "/img/loading.svg";
-		this.dropdown.toggleButton.appendChild(loadingIcon);
-
+	handleSortSelect(valueChain: any[], setLabel: (newLabel: ButtonLabel) => void) {
+		setLabel(getLoadingIcon());
+		const sortStr = `Sort - ${valueChain[0]}${valueChain[1] ? `/${valueChain[1]}` : ""}`;
 		this.setSorting(valueChain[0], valueChain[1])
-			.then(() => loadingIcon.remove())
-			.catch(() => loadingIcon.remove());
+			.then(() => setLabel(sortStr))
 	}
 
 	async setSorting(order: SortSearchOrder, timeFrame: SortPostsTimeFrame): Promise<void> {

@@ -1,12 +1,14 @@
 import { redditApiRequest } from "../../api/redditApi.js";
 import ViewsStack from "../../historyState/viewsStack.js";
+import { getLoadingIcon } from "../../utils/htmlStatics.js";
 import { elementWithClassInTree } from "../../utils/htmlStuff.js";
 import { RedditApiType, SortCommentsOrder } from "../../types/misc.js";
 import { extractPath, extractQuery } from "../../utils/utils.js";
 import Ph_Comment from "../comment/comment.js";
 import Ph_CommentsFeed from "../feed/commentsFeed/commentsFeed.js";
 import Ph_FeedInfo, { FeedType } from "../feed/feedInfo/feedInfo.js";
-import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
+import { MessageSection } from "../feed/universalFeed/universalFeed.js";
+import Ph_DropDown, { ButtonLabel, DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
 import Ph_CommentForm from "../misc/markdownForm/commentForm/commentForm.js";
 import Ph_Toast, { Level } from "../misc/toast/toast.js";
 import Ph_Post from "../post/post.js";
@@ -60,6 +62,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 		}
 
 		// sorting
+		const curSort = extractQuery(history.state.url).match(/(?<=sort=)\w+/);
 		this.sorter = new Ph_DropDown([
 			{ displayHTML: "Best", value: SortCommentsOrder.best, onSelectCallback: this.handleSort.bind(this) },
 			{ displayHTML: "Top", value: SortCommentsOrder.top, onSelectCallback: this.handleSort.bind(this) },
@@ -68,7 +71,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 			{ displayHTML: "Old", value: SortCommentsOrder.old, onSelectCallback: this.handleSort.bind(this) },
 			{ displayHTML: "Q & A", value: SortCommentsOrder.qa, onSelectCallback: this.handleSort.bind(this) },
 			{ displayHTML: "Random", value: SortCommentsOrder.random, onSelectCallback: this.handleSort.bind(this) },
-		], "Sort by", DirectionX.right, DirectionY.bottom, false);
+		], curSort ? `Sort - ${curSort[0]}` : "Sorting", DirectionX.right, DirectionY.bottom, false);
 		this.sorter.classList.add("commentsSorter");
 	}
 
@@ -102,15 +105,12 @@ export default class Ph_PostAndComments extends HTMLElement {
 		(elementWithClassInTree(this.parentElement, "viewState") as Ph_ViewState).setHeaderElements(headerElements);
 	}
 
-	async handleSort(valueChain: any[]) {
+	async handleSort([sorting]: SortCommentsOrder[], setLabel: (newLabel: ButtonLabel) => void, initialLabel: HTMLElement) {
 		const path = extractPath(history.state.url);
 		const params = new URLSearchParams(extractQuery(history.state.url));
-		params.set("sort", valueChain[0]);
+		params.set("sort", sorting);
 
-		const loadingIcon = document.createElement("img");
-		loadingIcon.alt = "loading";
-		loadingIcon.src = "/img/loading.svg";
-		this.sorter.toggleButton.appendChild(loadingIcon);
+		setLabel(getLoadingIcon());
 
 		try {
 			const newUrl = `${path}?${params.toString()}`;
@@ -125,14 +125,15 @@ export default class Ph_PostAndComments extends HTMLElement {
 			}
 
 			ViewsStack.changeCurrentUrl(newUrl);
+			setLabel(`Sort - ${sorting}`);
 		}
 		catch (e) {
 			console.error("Error sorting comments");
 			console.error(e);
 			new Ph_Toast(Level.Error, "Error sorting comments");
+			setLabel(initialLabel);
 		}
 
-		loadingIcon.remove();
 	}
 }
 

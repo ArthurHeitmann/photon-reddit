@@ -42,6 +42,27 @@ export enum SortPostsOrder {
 	gilded = "gilded",
 }
 
+export enum SortUserPostsOrder {
+	default = "",
+	hot = "hot",
+	new = "new",
+	top = "top",
+	controversial = "controversial",
+}
+
+export enum UserSection {
+	Overview = "",
+	Posts = "submitted",
+	Comments = "comments",
+	Gilded = "gilded",
+	Upvoted = "upvoted",
+	Downvoted = "downvoted",
+	Hidden = "hidden",
+	Saved = "saved",
+}
+
+export const NonSortableUserSections = [UserSection.Gilded, UserSection.Upvoted, UserSection.Downvoted, UserSection.Hidden, UserSection.Saved];
+
 export enum SortPostsTimeFrame {
 	hour = "hour",
 	day = "day",

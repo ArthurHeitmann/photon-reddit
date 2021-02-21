@@ -48,6 +48,10 @@ export default class Ph_AwardsInfo extends HTMLElement {
 		this.awardsList.className = "awardsList";
 		this.expandedView.appendChild(this.awardsList);
 
+		this.awardsList = document.createElement("div");
+		this.awardsList.className = "awardsList";
+		this.expandedView.appendChild(this.awardsList);
+
 		this.addEventListener("mouseenter", () => {
 			if (this.classList.contains("show")) {
 				if (this.toggleTimeout)

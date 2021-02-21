@@ -9,22 +9,20 @@ export default class Ph_DropDown extends HTMLElement {
 
 	/**
 	 * @param entryParams parameters for the individual entries
-	 * @param toggleButtonHTML innerHTML of the button that shows or hides the drop down
+	 * @param buttonLabel label the button that shows or hides the drop down
 	 * @param dirX to what edge should the drop down stick
 	 * @param dirY in what direction should the drop down expand
 	 * @param sameLineY should the drop down overlap with the toggle button on the y axis
 	 */
-	constructor(entryParams: DropDownEntryParam[], toggleButtonHTML: string, dirX: DirectionX, dirY: DirectionY, sameLineY: boolean) {
+	constructor(entryParams: DropDownEntryParam[], buttonLabel: ButtonLabel, dirX: DirectionX, dirY: DirectionY, sameLineY: boolean) {
 		super();
 
 		this.classList.add("dropDown");
 
-		if (typeof toggleButtonHTML === "string") {
-			this.toggleButton = document.createElement("button");
-			this.toggleButton.className = "button dropDownButton";
-			this.toggleButton.innerHTML = toggleButtonHTML;
-			this.appendChild(this.toggleButton);
-		}
+		this.toggleButton = document.createElement("button");
+		this.toggleButton.className = "button dropDownButton";
+		this.appendChild(this.toggleButton);
+		this.setLabel(buttonLabel)
 
 		const areaWrapper = document.createElement("div");
 		areaWrapper.className = `areaWrapper ${dirX} ${dirY} ${sameLineY ? "sameLine" : ""}`;
@@ -34,6 +32,19 @@ export default class Ph_DropDown extends HTMLElement {
 		areaWrapper.appendChild(dropDownArea);
 		if (this.toggleButton)
 			this.toggleButton.addEventListener("click", dropDownArea.toggleMenu.bind(dropDownArea));
+	}
+
+	setLabel(newLabel: ButtonLabel) {
+		if (typeof newLabel == "string")
+			this.toggleButton.innerText = newLabel;
+		else if (newLabel instanceof HTMLElement) {
+			this.toggleButton.innerText = "";
+			this.toggleButton.appendChild(newLabel);
+		}
+	}
+
+	getLabel(): HTMLElement {
+		return this.toggleButton.firstElementChild as HTMLElement;
 	}
 }
 
@@ -46,5 +57,7 @@ export enum DirectionX {
 export enum DirectionY {
 	top = "dirTop", bottom = "dirBottom"
 }
+
+export type ButtonLabel = HTMLElement | string;
 
 customElements.define("ph-drop-down", Ph_DropDown);

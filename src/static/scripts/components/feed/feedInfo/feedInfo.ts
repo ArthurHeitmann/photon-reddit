@@ -296,7 +296,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		}
 		subActionsWrapper.appendChild(new Ph_DropDown(
 			dropDownEntries,
-			`<img src="/img/kebab.svg" draggable="false" alt="menu">`,
+			this.getKebabImg(),
 			DirectionX.left,
 			DirectionY.bottom,
 			false
@@ -396,7 +396,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		overviewBar.appendChild(userActionsWrapper);
 		userActionsWrapper.appendChild(new Ph_DropDown(
 			[],
-			`<img src="/img/kebab.svg" alt="menu" draggable="false">`,
+			this.getKebabImg(),
 			DirectionX.left,
 			DirectionY.bottom,
 			false
@@ -483,7 +483,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		overviewBar.appendChild(userActionsWrapper);
 		userActionsWrapper.appendChild(new Ph_DropDown(
 			[],
-			`<img src="/img/kebab.svg" draggable="false" alt="menu">`,
+			this.getKebabImg(),
 			DirectionX.left,
 			DirectionY.bottom,
 			false
@@ -775,6 +775,14 @@ export default class Ph_FeedInfo extends HTMLElement {
 		this.classList.add("remove");
 		window.removeEventListener("click", this.focusLossHideRef);
 		window.removeEventListener("ph-view-change", this.hideRef);
+	}
+
+	getKebabImg(): HTMLImageElement {
+		const img = document.createElement("img");
+		img.src = "/img/kebab.svg";
+		img.draggable = false;
+		img.alt = "menu";
+		return img;
 	}
 }
 

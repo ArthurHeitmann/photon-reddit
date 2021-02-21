@@ -16,7 +16,7 @@ export default class Ph_Flair extends HTMLElement {
 	constructor(data: FlairData) {
 		super();
 
-		if (!data.type)
+		if (!data || !data.type)
 			return;
 
 		this.className = "flair";

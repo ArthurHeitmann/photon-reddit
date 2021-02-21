@@ -330,7 +330,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		}
 	}
 
-	async toggleSave(valueChain: any[], source: Ph_DropDownEntry) {
+	async toggleSave(valueChain: any[], _, __, source: Ph_DropDownEntry) {
 		this.isSaved = !this.isSaved;
 		source.innerText = this.isSaved ? "Unsave" : "Save";
 		if (!await save(this)) {
