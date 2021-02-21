@@ -20,26 +20,28 @@ export enum NsfwPolicy {
 export interface PhotonSettings {
 	imageLoadingPolicy?: ImageLoadingPolicy,
 	loadInlineImages?: boolean,
+	controlBarForImages?: boolean,
 	nsfwPolicy?: NsfwPolicy,
 	markSeenPosts?: boolean,
 	hideSeenPosts?: boolean,
-	isIncognitoEnabled?: boolean,
-	controlBarForImages?: boolean,
 	clearFeedCacheAfterMs?: number,
 	clearSeenPostAfterMs?: number,
+	isIncognitoEnabled?: boolean,
+	tooltipsVisible?: boolean,
 }
 
 // default config
 export let globalSettings: PhotonSettings = {
 	imageLoadingPolicy: ImageLoadingPolicy.originalInFs,
 	loadInlineImages: true,
+	controlBarForImages: false,
 	nsfwPolicy: NsfwPolicy.covered,
 	markSeenPosts: true,
 	hideSeenPosts: true,
-	isIncognitoEnabled: false,
-	controlBarForImages: false,
 	clearFeedCacheAfterMs: 1000 * 60 * 60 * 24 * 2,
 	clearSeenPostAfterMs: 1000 * 60 * 60 * 24 * 31,
+	isIncognitoEnabled: false,
+	tooltipsVisible: true
 };
 
 /** Stores and manages global settings */
@@ -138,7 +140,7 @@ export default class Ph_PhotonSettings extends HTMLElement {
 		// inline images
 		const inlineImagesGroup = this.makeCustomLabeledInput(
 			"checkbox",
-			"Load images in comments instead of links",
+			"Load images in comments & text posts instead of links",
 			"",
 			"inlineImages",
 			"",
@@ -149,6 +151,20 @@ export default class Ph_PhotonSettings extends HTMLElement {
 				((e.currentTarget as HTMLInputElement).checked)
 		);
 		this.optionsArea.appendChild(inlineImagesGroup);
+		// show control bar for images
+		const imageControlsGroup = this.makeCustomLabeledInput(
+			"checkbox",
+			"Show controls bar for images (not galleries)",
+			"",
+			"checkboxControlsImage",
+			"",
+			globalSettings.controlBarForImages
+		);
+		imageControlsGroup.$tag("input")[0].addEventListener("input", e => {
+			this.stageSettingChange(nameOf<PhotonSettings>("controlBarForImages"))
+			((e.currentTarget as HTMLInputElement).checked);
+		});
+		this.optionsArea.appendChild(imageControlsGroup);
 		this.optionsArea.appendChild(document.createElement("hr"));
 
 		// nsfw visibility
@@ -237,24 +253,21 @@ export default class Ph_PhotonSettings extends HTMLElement {
 		);
 		incognitoGroup.setAttribute("data-tooltip", "Randomize tab title and url");
 		this.optionsArea.appendChild(incognitoGroup);
-		this.optionsArea.appendChild(document.createElement("hr"));
-
-		// show control bar for images
-		const imageControlsGroup = this.makeCustomLabeledInput(
+		// tooltips visibility
+		const tooltipsGroup = this.makeCustomLabeledInput(
 			"checkbox",
-			"Show controls bar for images (not galleries)",
+			"Show Tooltips",
 			"",
-			"checkboxControlsImage",
+			"tooltipVisibility",
 			"",
-			globalSettings.controlBarForImages
+			globalSettings.tooltipsVisible
 		);
-		imageControlsGroup.$tag("input")[0].addEventListener("input", e => {
-			this.stageSettingChange(nameOf<PhotonSettings>("controlBarForImages"))
+		tooltipsGroup.$tag("input")[0].addEventListener("input", e => {
+			this.stageSettingChange(nameOf<PhotonSettings>("tooltipsVisible"))
 				((e.currentTarget as HTMLInputElement).checked);
 		});
-		this.optionsArea.appendChild(imageControlsGroup);
+		this.optionsArea.appendChild(tooltipsGroup);
 		this.optionsArea.appendChild(document.createElement("hr"));
-
 	}
 
 	private makeGeneralInputGroup(groupTitle: string, elements: HTMLElement[]): HTMLElement {

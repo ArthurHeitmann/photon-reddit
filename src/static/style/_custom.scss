@@ -39,6 +39,10 @@ body {
 	transition-delay: 1s;
 }
 
+.disableTooltips [data-tooltip]::after {
+	display: none;
+}
+
 #mainWrapper {
 	position: relative;
 	margin: auto;
