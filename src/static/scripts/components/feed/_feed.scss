@@ -1,17 +1,5 @@
 @use '../../../style/vars';
 
-.feedSorter {
-	.dropDownButton {
-		display: flex;
-		align-items: center;
-
-		> img {
-			height: 2em;
-			margin-left: .5rem;
-		}
-	}
-}
-
 
 .postAndComments, .universalFeed {
 	width: vars.$widthP;

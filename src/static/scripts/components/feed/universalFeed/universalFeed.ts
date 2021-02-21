@@ -1,25 +1,20 @@
 import { redditApiRequest } from "../../../api/redditApi.js";
 import ViewsStack from "../../../historyState/viewsStack.js";
-import { escHTML } from "../../../utils/htmlStatics.js";
+import { thisUser } from "../../../utils/globals.js";
+import { escHTML, getLoadingIcon } from "../../../utils/htmlStatics.js";
 import { elementWithClassInTree } from "../../../utils/htmlStuff.js";
 import { RedditApiType } from "../../../types/misc.js";
 import { throttle } from "../../../utils/utils.js";
 import Ph_Comment from "../../comment/comment.js";
 import Ph_DropDown, { ButtonLabel, DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import Ph_Message from "../../message/message.js";
+import { DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Ph_Post from "../../post/post.js";
 import { Ph_ViewState } from "../../viewState/viewState.js";
 import Ph_FeedInfo, { FeedType } from "../feedInfo/feedInfo.js";
 import Ph_SearchFeedSorter from "../sorting/searchFeedSorter.js";
 import Ph_UniversalFeedSorter from "../sorting/universalFeedSorter.js";
-
-export enum UserSection {
-	Overview = "",
-	Posts = "submitted",
-	Comments = "comments",
-	Gilded = "gilded",
-}
 
 export enum MessageSection {
 	all = "inbox",
@@ -115,18 +110,6 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			if (Ph_FeedInfo.supportedFeedTypes.includes(feedType))
 				headerElements.push(Ph_FeedInfo.getInfoButton(feedType, feedBaseUrl));
 			if (feedType === FeedType.user) {
-				headerElements.push(new Ph_DropDown(
-					[
-						{ displayHTML: "Overview", value: UserSection.Overview, onSelectCallback: this.setUserSection.bind(this) },
-						{ displayHTML: "Posts", value: UserSection.Posts, onSelectCallback: this.setUserSection.bind(this) },
-						{ displayHTML: "Comments", value: UserSection.Comments, onSelectCallback: this.setUserSection.bind(this) },
-						{ displayHTML: "Gilded", value: UserSection.Gilded, onSelectCallback: this.setUserSection.bind(this) },
-					],
-					"Sections",
-					DirectionX.left,
-					DirectionY.bottom,
-					false
-				))
 			}
 			else if (feedType === FeedType.messages) {
 				headerElements.push(...Ph_Message.getMessageFeedHeaderElements(this.setMessageSection.bind(this)));
@@ -134,7 +117,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			if (this.isSearchFeed)
 				headerElements.push(new Ph_SearchFeedSorter(this));
 			else if (feedType !== FeedType.messages)
-				headerElements.push(new Ph_UniversalFeedSorter(this));
+				headerElements.push(new Ph_UniversalFeedSorter(this, feedType, feedBaseUrl));
 			(elementWithClassInTree(this.parentElement, "viewState") as Ph_ViewState).setHeaderElements(headerElements);
 		}, 0);
 
@@ -150,26 +133,8 @@ export default class Ph_UniversalFeed extends HTMLElement {
 		}
 	}
 
-	async setUserSection(section: UserSection) {
-		this.requestUrl = this.requestUrl.replace(/^(\/(u|user)\/[^/]+)(\/[^/]*)?/, `$1/${section}`);
-		try {
-			const sectionItems: RedditApiType = await redditApiRequest(
-				this.requestUrl,
-				[],
-				false
-			);
-			this.beforeData = sectionItems.data.before;
-			this.afterData = sectionItems.data.after;
-			this.replaceChildren(sectionItems.data.children, sectionItems.data.before, sectionItems.data.after);
-			ViewsStack.changeCurrentUrl(this.requestUrl);
-		} catch (e) {
-			new Ph_Toast(Level.Error, "Error getting user section items");
-			console.error("Error getting user section items");
-			console.error(e);
-		}
-	}
-
-	async setMessageSection([section]: MessageSection[], setLabel: (newLabel: ButtonLabel) => void) {
+	async setMessageSection([section]: MessageSection[], setLabel: (newLabel: ButtonLabel) => void, initialLabel: HTMLElement) {
+		setLabel(getLoadingIcon());
 		this.requestUrl = this.requestUrl.replace(/^(\/message)\/[^\/]*/, `$1/${section}`);
 		try {
 			const sectionItems: RedditApiType = await redditApiRequest(
@@ -181,10 +146,12 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			this.afterData = sectionItems.data.after;
 			this.replaceChildren(sectionItems.data.children, sectionItems.data.before, sectionItems.data.after);
 			ViewsStack.changeCurrentUrl(this.requestUrl);
+			setLabel(section);
 		} catch (e) {
 			console.error("Error getting message section items");
 			new Ph_Toast(Level.Error, "Error getting message section items");
 			console.error(e);
+			setLabel(initialLabel);
 		}
 	}
 

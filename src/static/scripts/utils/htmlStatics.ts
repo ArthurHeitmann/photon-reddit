@@ -98,5 +98,6 @@ export function getLoadingIcon(): HTMLImageElement {
 	const loadingIcon = document.createElement("img");
 	loadingIcon.alt = "loading";
 	loadingIcon.src = "/img/loading.svg";
+	loadingIcon.className = "loadingIcon";
 	return loadingIcon;
 }
