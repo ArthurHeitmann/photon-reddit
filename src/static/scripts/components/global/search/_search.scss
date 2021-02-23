@@ -9,12 +9,16 @@
 	border: 1px solid #505050;
 	border-radius: 1.3rem;
 	width: 20rem;
+	@media (orientation: portrait) {
+		width: 12.5rem;
+	}
 	height: 2.6rem;
 	padding-left: 1rem;
 	transition: width .25s ease;
 
 	> input {
 		flex-grow: 1;
+		min-width: 0;
 		margin-left: .125rem;
 	}
 

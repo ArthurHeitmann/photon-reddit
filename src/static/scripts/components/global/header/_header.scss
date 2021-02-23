@@ -21,6 +21,9 @@
 			display: flex;
 			align-items: center;
 			gap: .5rem;
+			@media (orientation: portrait) {
+				gap: .25rem;
+			}
 		}
 
 		> :last-child {
@@ -98,7 +101,6 @@
 				transform: rotate(45deg);
 			}
 		}
-
 	}
 
 	.expander {
