@@ -176,6 +176,16 @@
 		}
 	}
 
+	.searchCollapser {
+		@media (orientation: landscape) {
+			display: none;
+		}
+
+		img {
+			transform: rotate(180deg);
+		}
+	}
+
 	&.expanded {
 		width: 30rem;
 
@@ -183,6 +193,19 @@
 			transform: translateY(calc(100% + 0.5rem)) scale(1);
 			opacity: 1;
 			visibility: visible;
+		}
+	}
+
+	&.collapsed {
+		width: min-content;
+		padding: 0;
+
+		> :not(.searchCollapser) {
+			display: none;
+		}
+
+		.searchCollapser img {
+			transform: rotate(0);
 		}
 	}
 }

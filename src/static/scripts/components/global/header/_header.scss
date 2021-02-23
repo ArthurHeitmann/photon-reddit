@@ -16,6 +16,28 @@
 		height: 100%;
 		transition: all .25s linear;
 
+		&.collapsed {
+			@media (orientation: portrait) {
+				grid-template-columns: 3rem auto 1fr;
+
+				.feedSpecific {
+					flex-wrap: wrap;
+				}
+			}
+
+			.collapser img {
+				transform: rotate(0deg) !important;
+			}
+
+			.mainItems > :not(.home) {
+				transform: translateX(-4rem) scale(.75);
+				opacity: 0;
+				visibility: hidden;
+				max-width: 0;
+				overflow: hidden;
+			}
+		}
+
 		> * {
 			height: 100%;
 			display: flex;
@@ -30,9 +52,63 @@
 			justify-content: flex-end;
 		}
 
+		.leftItems {
+			gap: 0;
+
+			> * {
+				width: 1.5rem;
+				height: 1.5rem;
+				--dim: 2rem;
+
+				img {
+					width: 1.5rem;
+					height: 1.5rem;
+					opacity: .4;
+					transition: all ease .125s;
+
+					&:hover {
+						opacity: 1;
+					}
+				}
+			}
+
+			.pinToggleButton {
+				width: 1.25rem;
+				height: 1.25rem;
+
+				img {
+					width: 1.25rem;
+					height: 1.25rem;
+					transform: rotate(0deg);
+				}
+			}
+
+			.collapser {
+				img {
+					transform: rotate(180deg);
+				}
+
+				&::after {
+					left: auto;
+				}
+			}
+
+			.pinned img {
+				transform: rotate(45deg) scale(.75);
+			}
+		}
+
 		.mainItems {
 			position: relative;
 			z-index: 1;
+
+			> :not(.home) {
+				transform: translateX(0) scale(1);
+				opacity: 1;
+				visibility: visible;
+				max-width: 90vw;
+				transition: all .25s ease;
+			}
 
 			> .showSettingsButton {
 				--dim: 2.5rem;
@@ -61,6 +137,7 @@
 		}
 
 		.feedSpecific {
+			margin-right: .5rem;
 
 			&:empty {
 				display: none !important;
@@ -77,28 +154,6 @@
 
 			&:hover {
 				background: vars.$primary;
-			}
-		}
-
-		.pinToggleButton {
-			width: 1.5rem;
-			height: 1.5rem;
-			--dim: 2rem;
-
-			img {
-				width: 1.5rem;
-				height: 1.5rem;
-				opacity: .4;
-				transform: rotate(0deg);
-				transition: all ease .125s;
-
-				&:hover {
-					opacity: 1;
-				}
-			}
-
-			&.pinned img {
-				transform: rotate(45deg);
 			}
 		}
 	}

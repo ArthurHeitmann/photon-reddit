@@ -36,6 +36,9 @@ export default class Ph_Header extends HTMLElement {
 		this.innerHTML = `
 			<div class="actions">
 				<div class="leftItems">
+					<button class="transparentButtonAlt collapser" data-tooltip="Collapse">
+						<img src="/img/rightArrow.svg" alt="collapse">
+					</button>
 					<button class="transparentButtonAlt pinToggleButton" data-tooltip="Pin top bar">
 						<img src="/img/pin.svg" alt="pin">
 					</button>
@@ -83,6 +86,8 @@ export default class Ph_Header extends HTMLElement {
 				this.minimizeAll();
 		});
 
+		this.$class("collapser")[0].addEventListener("click", e =>
+			this.$class("actions")[0].classList.toggle("collapsed"));
 		this.$class("pinToggleButton")[0].addEventListener("click", e => {
 			(e.currentTarget as HTMLElement).classList.toggle("pinned");
 			this.isPinned = !this.isPinned;

@@ -72,9 +72,15 @@ export default class Ph_Search extends HTMLElement {
 		this.searchBar.addEventListener("input", this.onTextEnter.bind(this));
 		this.searchBar.addEventListener("focus", this.onFocus.bind(this));
 
+		const searchCollapser = document.createElement("button");
+		searchCollapser.className = "searchCollapser transparentButton";
+		searchCollapser.innerHTML = `<img src="/img/rightArrow.svg" draggable="false" alt="expand">`;
+		searchCollapser.addEventListener("click", () => this.classList.toggle("collapsed"))
+		this.appendChild(searchCollapser);
+
 		const toggleDropdownBtn = document.createElement("button")
 		toggleDropdownBtn.className = "toggleDropdownButton transparentButton";
-		toggleDropdownBtn.innerHTML = `<button><img src="/img/downArrow.svg" draggable="false" alt="expand"></button>`;
+		toggleDropdownBtn.innerHTML = `<img src="/img/downArrow.svg" draggable="false" alt="expand">`;
 		this.appendChild(toggleDropdownBtn);
 
 		const searchButton = document.createElement("button");
