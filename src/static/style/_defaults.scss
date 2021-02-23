@@ -13,6 +13,7 @@
 	color: vars.$text;
 	box-sizing: border-box;
 	font-family: "Nunito", sans-serif;
+	-webkit-tap-highlight-color: transparent;
 }
 
 div, span, a, button, input, textarea {

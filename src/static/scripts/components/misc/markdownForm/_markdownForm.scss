@@ -10,9 +10,7 @@
 
 	.rawTextEditor {
 		--textarea-height: 5rem;
-		width: 85%;
-		max-width: calc(100% - 4rem);
-		min-width: 30%;
+		width: 100%;
 		min-height: 5rem;
 		height: var(--textarea-height);
 		background: #2d2d2d;

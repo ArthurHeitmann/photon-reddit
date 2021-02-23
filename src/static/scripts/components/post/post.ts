@@ -68,6 +68,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		// actions bar
 		this.actionBar = document.createElement("div");
 		this.actionBar.className = "actions";
+		this.appendChild(this.actionBar);
 		const actionWrapper = document.createElement("div");
 		this.actionBar.appendChild(actionWrapper);
 		actionWrapper.className = "wrapper";
@@ -208,8 +209,6 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			this.classList.add("spoiler");
 			makeCoverNFlair("orange", "Spoiler", true);
 		}
-
-		this.appendChild(this.actionBar);
 
 		linksToSpa(this);
 

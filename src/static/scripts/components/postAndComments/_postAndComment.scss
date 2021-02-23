@@ -4,7 +4,6 @@
 .postAndComments {
 	display: flex;
 	flex-direction: column;
-	padding-right: 3.5rem;
 	height: max-content;
 	background: vars.$background-el1;
 	border-radius: vars.$b-r;
@@ -12,8 +11,10 @@
 	@extend %shadow-diffuse;
 
 	> .markdownForm {
-		margin-left: 4rem;
-		margin-top: 1.5rem;
+		margin: 1.5rem 4rem;
+		@media (orientation: portrait) and (min-width: 320px) and (max-width: 480px) {
+			margin: 1.5rem 1rem;
+		}
 	}
 }
 
