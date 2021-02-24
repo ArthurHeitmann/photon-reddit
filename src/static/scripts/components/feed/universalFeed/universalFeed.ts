@@ -4,7 +4,7 @@ import { thisUser } from "../../../utils/globals.js";
 import { escHTML, getLoadingIcon } from "../../../utils/htmlStatics.js";
 import { elementWithClassInTree } from "../../../utils/htmlStuff.js";
 import { RedditApiType } from "../../../types/misc.js";
-import { sleep, throttle } from "../../../utils/utils.js";
+import { sleep, throttle, waitForFullScreenExit } from "../../../utils/utils.js";
 import Ph_Comment from "../../comment/comment.js";
 import Ph_DropDown, { ButtonLabel, DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import Ph_Message from "../../message/message.js";
@@ -215,7 +215,6 @@ export default class Ph_UniversalFeed extends HTMLElement {
 	}
 
 	clearPrevious(loadPosition: LoadPosition) {
-
 		if (loadPosition === LoadPosition.Before) {
 			const removeElements: HTMLElement[] = [];
 			let next = this.lastElementChild as HTMLElement;
@@ -252,7 +251,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 				removedHeight += removeElement.getBoundingClientRect().height + elementMarginTop * 2;
 				removeElement.remove();
 			}
-			view.scrollTo({ top: viewScrollTop - removedHeight - elementMarginTop });
+			view.scrollTo({ top: viewScrollTop - removedHeight });
 
 			this.beforeData = this.firstElementChild.getAttribute("data-id");
 		}
@@ -263,6 +262,9 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			["before", loadPosition === LoadPosition.Before ? this.beforeData : "null"],
 			["after",  loadPosition === LoadPosition.After  ? this.afterData : "null"],
 		], false);
+
+		if (await waitForFullScreenExit())
+			await sleep(100);
 
 		if (loadPosition === LoadPosition.After) {
 			for (const postData of posts.data.children) {

@@ -206,3 +206,12 @@ export function allUrlsWithHttps(text: string): string {
 export async function sleep(ms: number): Promise<void> {
 	return  new Promise(resolve => setTimeout(resolve, ms));
 }
+
+export function waitForFullScreenExit(): Promise<boolean> {
+	return new Promise<boolean>(resolve => {
+		if (!document.fullscreenElement) {
+			return resolve(false);
+		}
+		window.addEventListener("fullscreenchange", () => resolve(true), { once: true });
+	});
+}
