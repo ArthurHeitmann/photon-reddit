@@ -9,6 +9,7 @@
 	padding: vars.$headerHeight 0;
 	display: flex;
 	justify-content: center;
+	will-change: transform;		// VERY IMPORTANT for performance
 
 	.backClickArea {
 		position: fixed;
