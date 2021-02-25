@@ -4,6 +4,7 @@
  * Might import other files
  */
 
+import { globalSettings } from "../components/global/photonSettings/photonSettings.js";
 import Ph_PostImage from "../components/post/postBody/postImage/postImage.js";
 import { pushLinkToHistoryComb } from "../historyState/historyStateManager.js";
 
@@ -84,7 +85,7 @@ export function linksToInlineImages(elem: HTMLElement) {
 		link.appendChild(image);
 		link.classList.add("inlineImage");
 
-		(link as HTMLAnchorElement).onclick = (e: MouseEvent) => Boolean(e.ctrlKey);
+		(link as HTMLAnchorElement).onclick = (e: MouseEvent) => Boolean(e.ctrlKey || !globalSettings.loadInlineImages);
 	}
 }
 

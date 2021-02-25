@@ -20,4 +20,4 @@ function setClassOnBody(className: string, state: boolean) {
 	}
 }
 
-window.addEventListener("load", () => handleSettings(globalSettings));
+window.addEventListener("ph-page-ready", () => handleSettings(globalSettings));
