@@ -177,7 +177,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 	}
 
 	/**
-	 * If less than 5 screen heights are left until the end of the feed, load new content
+	 * If less than N screen heights are left until the end of the feed, load new content
 	 */
 	onScroll(e: Event = undefined, skipEmptyCheck = false) {
 		// stop if empty or is loading or for some reason close to empty (normal feed will have very large scrollHeight)
@@ -191,10 +191,14 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			);
 			return;
 		}
-		const last = this.children[this.childElementCount - 1];
+		let last = this.children[this.childElementCount - 1];
+		while (last.classList.contains("hide") && last.previousElementSibling)
+			last = last.previousElementSibling;
 		if (last.getBoundingClientRect().y < window.innerHeight * 2.5 && !this.hasReachedEndOfFeed)
-			this.scrollAction(LoadPosition.After)
-		const first = this.children[0];
+			this.scrollAction(LoadPosition.After);
+		let first = this.children[0];
+		while (first.classList.contains("hide") && first.nextElementSibling)
+			first = first.nextElementSibling
 		if (first && first.getBoundingClientRect().y > window.innerHeight * -2.5)
 			this.scrollAction(LoadPosition.Before);
 	}
