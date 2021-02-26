@@ -11,11 +11,7 @@ Photon is a website to browse reddit without any distractions (no ads, no crowde
 
 # How it looks like
 
-[DemoVideo](readmeImg/PhotonDemo.mp4)
-
-Fast Demo:
-
-![DemoGif](readmeImg/PhotonDemoShort.gif)
+![preview image](readmeImg/photon_collection.jpg)
 
 Discover all the features yourself on [photon-reddit.com/](https://photon-reddit.com)
 
