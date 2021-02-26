@@ -23,9 +23,8 @@
 
 	> .windowWrapper {
 		position: relative;
-		width: 60rem;
-		height: calc(100% - 10rem);
-		margin-top: 5rem;
+		width: min(90vw, 60rem);
+		height: 80vh;
 		background: vars.$background-el1;
 		border: 1px solid vars.$border-color;
 		border-radius: vars.$b-r;
@@ -57,8 +56,8 @@
 			> .previewArea {
 				padding-right: 1rem;
 				margin-right: 1rem;
-				width: 60%;
 				position: relative;
+				flex-grow: 1;
 
 				&::after {
 					content: "";
@@ -72,9 +71,15 @@
 			}
 
 			> .optionsArea {
-				width: 40%;
+				width: min(80vw, 20rem);
+
+				> .inputGroup, > .inputWrapper {
+					margin: .75rem .25rem .75rem 0;
+				}
 
 				.inputGroup {
+					cursor: default;
+
 					> div:not(:first-child) {
 						margin-left: 1rem;
 					}

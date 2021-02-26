@@ -164,7 +164,7 @@ export default class Ph_PhotonSettings extends HTMLElement {
 		// show control bar for images
 		const imageControlsGroup = this.makeCustomLabeledInput(
 			"checkbox",
-			"Show controls bar for images (not galleries)",
+			"Show controls bar for images",
 			"",
 			"checkboxControlsImage",
 			"",
@@ -222,45 +222,6 @@ export default class Ph_PhotonSettings extends HTMLElement {
 		this.optionsArea.append(seenPostsGroup);
 		this.optionsArea.appendChild(document.createElement("hr"));
 
-		// stored data duration
-		const feedInfoCacheGroup = this.makeCustomLabeledInput(
-			"text",
-			"Cached subreddit & user info",
-			globalSettings.clearFeedCacheAfterMs.toString(),
-			"inputClearFeedCacheAfterMs",
-			""
-		);
-		feedInfoCacheGroup.$tag("input")[0].addEventListener("change", e => {
-			const ms = parseInt((e.currentTarget as HTMLInputElement).value);
-			this.stageSettingChange(nameOf<PhotonSettings>("clearFeedCacheAfterMs"),
-				changed => !isNaN(changed), "Invalid number")(ms);
-		});
-		const seenPostsStoredGroup = this.makeCustomLabeledInput(
-			"text",
-			"Seen posts stay marked",
-			globalSettings.clearSeenPostAfterMs.toString(),
-			"inputClearSeenPostAfterMs",
-			""
-		);
-		seenPostsStoredGroup.$tag("input")[0].addEventListener("change", e => {
-			const ms = parseInt((e.currentTarget as HTMLInputElement).value);
-			this.stageSettingChange(nameOf<PhotonSettings>("clearSeenPostAfterMs"),
-					changed => !isNaN(changed), "Invalid number")(ms);
-		});
-		const clearSeenPostsBtn = document.createElement("button");
-		clearSeenPostsBtn.innerText = "Clear seen posts";
-		clearSeenPostsBtn.addEventListener("click", () => {
-			clearSeenPosts();
-			new Ph_Toast(Level.Success, "", { timeout: 1500 });
-		});
-		clearSeenPostsBtn.className = "mla button";
-		this.optionsArea.appendChild(this.makeGeneralInputGroup("Keep stored data for N ms", [
-			feedInfoCacheGroup,
-			seenPostsStoredGroup,
-			clearSeenPostsBtn
-		]));
-		this.optionsArea.appendChild(document.createElement("hr"));
-
 		// incognito mode
 		const incognitoGroup = this.makeCustomLabeledInput(
 			"checkbox",
@@ -291,6 +252,44 @@ export default class Ph_PhotonSettings extends HTMLElement {
 		});
 		this.optionsArea.appendChild(tooltipsGroup);
 		this.optionsArea.appendChild(document.createElement("hr"));
+
+		// stored data duration
+		const feedInfoCacheGroup = this.makeCustomLabeledInput(
+			"number",
+			"Cached subreddit & user info",
+			globalSettings.clearFeedCacheAfterMs.toString(),
+			"inputClearFeedCacheAfterMs",
+			""
+		);
+		feedInfoCacheGroup.$tag("input")[0].addEventListener("change", e => {
+			const ms = parseInt((e.currentTarget as HTMLInputElement).value);
+			this.stageSettingChange(nameOf<PhotonSettings>("clearFeedCacheAfterMs"),
+				changed => !isNaN(changed), "Invalid number")(ms);
+		});
+		const seenPostsStoredGroup = this.makeCustomLabeledInput(
+			"number",
+			"Seen posts stay marked",
+			globalSettings.clearSeenPostAfterMs.toString(),
+			"inputClearSeenPostAfterMs",
+			""
+		);
+		seenPostsStoredGroup.$tag("input")[0].addEventListener("change", e => {
+			const ms = parseInt((e.currentTarget as HTMLInputElement).value);
+			this.stageSettingChange(nameOf<PhotonSettings>("clearSeenPostAfterMs"),
+				changed => !isNaN(changed), "Invalid number")(ms);
+		});
+		const clearSeenPostsBtn = document.createElement("button");
+		clearSeenPostsBtn.innerText = "Clear seen posts";
+		clearSeenPostsBtn.addEventListener("click", () => {
+			clearSeenPosts();
+			new Ph_Toast(Level.Success, "", { timeout: 1500 });
+		});
+		clearSeenPostsBtn.className = "mla button";
+		this.optionsArea.appendChild(this.makeGeneralInputGroup("Keep stored data for N ms", [
+			feedInfoCacheGroup,
+			seenPostsStoredGroup,
+			clearSeenPostsBtn
+		]));
 	}
 
 	private makeGeneralInputGroup(groupTitle: string, elements: HTMLElement[]): HTMLElement {

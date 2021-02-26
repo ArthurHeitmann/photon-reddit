@@ -190,6 +190,7 @@ input.checkbox {
 	+ label {
 		display: inline-block;
 		width: 1em;
+		min-width: 1em;
 		height: 1em;
 		box-sizing: border-box;
 		background: #4a4a4a;
@@ -237,6 +238,7 @@ input.radio {
 	+ label {
 		display: inline-block;
 		width: 1em;
+		min-width: 1em;
 		height: 1em;
 		box-sizing: border-box;
 		background: #4a4a4a;

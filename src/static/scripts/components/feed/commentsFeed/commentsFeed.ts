@@ -9,7 +9,6 @@ import Ph_Post from "../../post/post.js";
  * A list of Ph_Comment; has sorter; can have special link
  */
 export default class Ph_CommentsFeed extends HTMLElement {
-	postFullName: string;
 	sort: SortCommentsOrder;
 
 	constructor(comments: RedditApiType, post: Ph_Post) {
@@ -17,7 +16,6 @@ export default class Ph_CommentsFeed extends HTMLElement {
 
 		this.classList.add("commentsFeed");
 
-		const urlSortParamMatches = history.state.url.match(/(?<=sort=)\w+/);
 		this.sort = SortCommentsOrder[new URLSearchParams(extractQuery(history.state.url)).get("sort") || "confidence"];
 
 		for (const commentData of comments.data.children) {
