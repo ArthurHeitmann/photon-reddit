@@ -1,12 +1,11 @@
 # Photon Reddit ![LOGO](src/static/img/appIcons/favicon-32x32.png)
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue.svg?cacheSeconds=2592000)
-![Prerequisite](https://img.shields.io/badge/node-14.x-blue.svg)
-[![License: GPL--3.0--only](https://img.shields.io/badge/License-GPL--3.0--only-yellow.svg)](#)
+[![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/)
 
 **Just replace [reddit.com/...](reddit.com) with [photon-reddit.com/...](https://photon-reddit.com) to get started!**
 
-A fast and modern Reddit desktop web client.
+A clean and modern Reddit desktop web client.
 
 Photon is a website to browse reddit without any distractions (no ads, no crowded sidebars, no distracting awards).
 
@@ -20,28 +19,35 @@ Fast Demo:
 
 Discover all the features yourself on [photon-reddit.com/](https://photon-reddit.com)
 
-
-
 # Prerequisites
 
-- npm 6.x
-- node 14.x
+- node: >= 14.x
+- npm: >= 7.5.1
 
-# Commands
+# Selfhosting
 
-## Build
+## Commands
+
+### Download
+
+```sh
+git clone https://github.com/ArthurHeitmann/photon-reddit.git
+cd photon-reddit
+```
+
+### Build
 
 ```sh
 npm run build
 ```
 
-## Start
+### Start
 
 ```sh
 npm run start
 ```
 
-## Other commands for development
+### Other commands for development
 
 ```sh
 # auto restart server when js files change
@@ -50,10 +56,11 @@ npm run start-dev
 
 ```sh
 # watch for Typescript & Sass file changes and auto recompile
-npm run watch		# or watch-wsl2 for wsl support
+npm run watch-tsc
+npm run watch-sass		# or watch-wsl2 for wsl support
 ```
 
-# Selfhosting
+## Getting Login to work
 
 These steps are optional but helpful for development (needed if you want to log in).
 
@@ -61,19 +68,18 @@ Go [here](https://www.reddit.com/prefs/apps) and create your own reddit app.
 
 1. Name: whatever you want
 
-2. Select 
+2. Select
 > installed app
 
 3. description & about url can be left empty
 
 4. redirect uri: [yourDomain]/redirect
 
-Examples: 
+Examples:
 - localhost:8080/redirect
 - some-photon-reddit-fork.com/redirect
 
-5. Under `/src/serverScripts/accessTokenGetting.ts` change line 4 to
-
+5. Under `/src/serverScripts/config.ts` change `redirectURI` to
 ```Javascript
 export const rediretURI = "[what you entered in step 4.]";
 ```
@@ -82,14 +88,17 @@ export const rediretURI = "[what you entered in step 4.]";
 
 ## Frontend
 
-Just compiled Typescript & Sass, no other frameworks or libraries are (and should be) used.
+Just compiled Typescript & Sass, no other frameworks or libraries are (and for the most part should be) used.
 
 Instead of using for example react components with jsx, a mix of the following is used:
 
 ```Typescript
 // 1. For complicated components
-export default class Ph_ComponentName extends HTMLElement  {}
+export default class Ph_ComponentName extends HTMLElement  {
+	// ...
+}
 customElements.define("ph-component-name", Ph_ComponentName);
+
 const element = new Ph_ComponentName(args);
 ```
 ```Typescript
@@ -120,7 +129,7 @@ If a component has a custom style its _componentName.scss file lies in the compo
 
 ## Backend
 
-An express server. Technically only needed for making cross origin request for a client that otherwise gets CORS blocked (mostly reddit api calls).
+An express server. Mostly only needed for making cross origin request for a client that otherwise get CORS blocked (mostly reddit api calls).
 
 node 12.x is not supported because ES6 `import {} from "lib"` are used instead of `require("lib")`.
 
@@ -132,6 +141,12 @@ In general `camelCase`. Except for custom html tag names then `ph-[kebab-case]`.
 
 # Contributing
 
-<sup><sup>I don't really know how this works, so have mercy on me :)</sup></sup>
+<sup><sup>I don't really know how this works :)</sup></sup>
 
 Basically follow the instructions from [here](https://github.com/firstcontributions/first-contributions).
+
+Before doing any major changes, first [ask me](#contact).
+
+# Contact
+
+See here: [photon-reddit.com/about](https://photon-reddit.com/about#contact)
