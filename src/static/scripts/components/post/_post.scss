@@ -161,9 +161,7 @@
 	}
 
 	&:not(.isInFeed) {
-		&.feedItem {
-			//flex-direction: row-reverse;
-		}
+		padding-right: vars.$post-padding;
 
 		.actions {
 			margin: 1.5rem 1rem;
