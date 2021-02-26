@@ -16,7 +16,7 @@ import {
 	tokenDuration,
 	youtube_dlRateLimitConfig
 } from "./serverScripts/consts.js";
-import { checkSslAndWww, safeExc, safeExcAsync } from "./serverScripts/utils.js";
+import { cacheControl, checkSslAndWww, safeExc, safeExcAsync } from "./serverScripts/utils.js";
 
 const app = express();
 
@@ -26,9 +26,8 @@ app.use(helmet({
 	contentSecurityPolicy: false
 }));
 app.use(safeExc(checkSslAndWww));
-app.use(express.static('src/static', env !== "production" ? {} : {
-	maxAge: env === "production" ? "8h" : "0"
-}));
+app.use(safeExc(cacheControl));
+app.use(express.static('src/static'));
 app.use(bodyParser.json());
 
 // paths
