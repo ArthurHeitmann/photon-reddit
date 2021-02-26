@@ -252,7 +252,8 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			const elementMarginTop = parseFloat(getComputedStyle(removeElements[0]).marginTop);
 			let removedHeight = 0;
 			for (const removeElement of removeElements) {
-				removedHeight += removeElement.getBoundingClientRect().height + elementMarginTop * 2;
+				if (!removeElement.classList.contains("hide"))
+					removedHeight += removeElement.getBoundingClientRect().height + elementMarginTop * 2;
 				removeElement.remove();
 			}
 			view.scrollTo({ top: viewScrollTop - removedHeight });
