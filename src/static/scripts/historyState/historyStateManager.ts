@@ -83,8 +83,10 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 		params.push(param);
 
 	// maybe handle special unusual paths instead
-	if (handleSpecialPaths(path, params, stateLoader))
+	if (handleSpecialPaths(path, params, stateLoader)) {
+		goToHash();
 		return;
+	}
 
 	// make request to reddit
 	const requestData = await redditApiRequest(path, params, false);
@@ -113,7 +115,11 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 		}
 	}
 
-	// if url has a hash to an element, scroll it into view
+	goToHash();
+}
+
+/** if url has a hash to an element, scroll it into view */
+function goToHash() {
 	const hash = extractHash(history.state.url);
 	if (hash)
 		$id(hash.slice(1)).scrollIntoView();
