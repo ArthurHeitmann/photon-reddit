@@ -3,6 +3,10 @@ import { linksToSpa } from "../../../utils/htmlStuff.js";
 const template = `
 <h1>Photon</h1>
 
+<p>
+	<a href="/r/photon_reddit">r/photon_reddit</a> is the official subreddit.
+</p>
+
 <ul>
 	<li><a href="#credits">Credits</a></li>
 	<li><a href="#privacy">Privacy</a></li>

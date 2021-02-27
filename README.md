@@ -9,6 +9,8 @@ A clean and modern Reddit desktop web client.
 
 Photon is a website to browse reddit without any distractions (no ads, no crowded sidebars, no distracting awards).
 
+[r/photon_reddit](https://photon-reddit.com/r/photon_reddit) is the official subreddit.
+
 # How it looks like
 
 ![preview image](readmeImg/photon_collection.jpg)
