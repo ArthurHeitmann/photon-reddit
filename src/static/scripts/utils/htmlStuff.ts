@@ -20,7 +20,7 @@ export function linksToSpa(elem: HTMLElement): void {
 
 function setLinkOnClick(elem: HTMLAnchorElement) {
 	if (elem.href.match(location.origin) && elem.target !== "_blank") {
-		if (elem.href && elem.getAttribute("href")[0] !== "#")
+		if (elem.getAttribute("href")[0] !== "#")
 			elem.onclick = linkOnClick;
 	}
 	else {

@@ -82,17 +82,18 @@ export function timePassedSinceStr(time: string): string {
 
 /** replaces all href in <a> like: https://reddit.com/r/all --> /r/all */
 export function replaceRedditLinks(el: HTMLElement) {
-	for (const a of el.$tag("a")) {
-		if (a.getAttribute("href")) {
-			(a as HTMLAnchorElement).href = a.getAttribute("href").replaceAll(/(https?:\/\/)?(\w)*\.?reddit\.com/g, "");
-		}
+	for (const a of el.$tag("a") as HTMLCollectionOf<HTMLAnchorElement>) {
+		a.href = a.getAttribute("href")
+			.replaceAll(new RegExp(`(https?://)((\\w)*\.?reddit\\.com|${location.hostname})`, "g"), "");
+		if (!a.getAttribute("href"))
+			a.href = "/";
 	}
 }
 
 /** splits "/r/all/top?t=day" to ["/r/all/top", "?t=day"] */
 export function splitPathQuery(pathAndQuery: string): string[] {
 	const querySeparation = pathAndQuery.match(/([^?]+)(\?.*)?/);
-	return [querySeparation[1] || "/", querySeparation[2] || ""];
+	return querySeparation ? [querySeparation[1] || "/", querySeparation[2] || ""] : ["/", ""];
 }
 
 /** converts numbers like 69 to "01:09" */
