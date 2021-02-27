@@ -99,19 +99,19 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 	// result is a posts comments
 	if (requestData instanceof Array) {		// --> [0]: post [1]: comments
 		stateLoader.finishWith(new Ph_PostAndComments(requestData));
-		ViewsStack.setCurrentStateTitle(`Photon: ${requestData[0]["data"]["children"][0]["data"]["title"]}`);
+		ViewsStack.setCurrentStateTitle(`${requestData[0]["data"]["children"][0]["data"]["title"]} - Photon`);
 	}
 	// result is something else
 	else if (requestData["kind"]) {
 		// result is some sort of generic feed
 		if (requestData["kind"] === "Listing") {
 			stateLoader.finishWith(new Ph_UniversalFeed(requestData, path + query));
-			ViewsStack.setCurrentStateTitle(`Photon: ${(path.length > 3) ? path.slice(1) : "Home"}`);
+			ViewsStack.setCurrentStateTitle(`${(path.length > 3) ? path.slice(1) : "Home"} - Photon`);
 		}
 		// result is a wiki page
 		else if (requestData["kind"] === "wikipage") {
 			stateLoader.finishWith(new Ph_Wiki(requestData));
-			ViewsStack.setCurrentStateTitle(`Photon: ${path.match(/r\/[^/]+/)[0]} Wiki`);
+			ViewsStack.setCurrentStateTitle(`${path.match(/r\/[^/]+/)[0]} Wiki - Photon`);
 		}
 	}
 

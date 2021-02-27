@@ -152,7 +152,7 @@ export default class ViewsStack {
 
 	/** Changes the title of the browser tab & history state */
 	static setCurrentStateTitle(title: string) {
-		document.title = globalSettings.isIncognitoEnabled ? `Photon: ${ViewsStack.randomUrl()}` : title;
+		document.title = globalSettings.isIncognitoEnabled ? `${ViewsStack.randomUrl()} - Photon` : title;
 		history.state.title = title;
 	}
 
