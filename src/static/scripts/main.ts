@@ -4,12 +4,14 @@
  * This file gets loaded from index.html and imports all other files
  */
 
+import { subscribe } from "./api/redditApi.js";
 import { AuthState, checkAuthOnPageLoad, checkTokenRefresh, initiateLogin } from "./auth/auth.js";
 import Ph_Header from "./components/global/header/header.js";
 import "./components/message/messageNotification/messageNotification.js";
 import Ph_Toast, { Level } from "./components/misc/toast/toast.js";
 import { pushLinkToHistorySep } from "./historyState/historyStateManager.js";
 import { hasAnalyticsFileLoaded } from "./unsuspiciousFolder/unsuspiciousFile.js";
+import { loginSubredditFullName, loginSubredditName } from "./utils/consts.js";
 import { thisUser } from "./utils/globals.js";
 import { $id } from "./utils/htmlStatics.js";
 import { linksToSpa } from "./utils/htmlStuff.js";
@@ -25,15 +27,22 @@ async function init(): Promise<void> {
 
 	checkIfAnalyticsFileLoaded()
 
-	if (await checkAuthOnPageLoad() === AuthState.LoggedIn)
+	if (await checkAuthOnPageLoad() === AuthState.LoggedIn) {
 		await thisUser.fetch();
+		if (localStorage["loginRecommendationFlag"] !== "set") {
+			localStorage["loginRecommendationFlag"] = "set";
+			new Ph_Toast(Level.Info, `Do you want to subscribe to r/${loginSubredditName}?`, {
+				onConfirm: () => subscribe(loginSubredditFullName, true)
+			});
+		}
+	}
 	else
 		loginBtn.hidden = false;
 		setInterval(checkTokenRefresh, 1000 * 30);
 	loadPosts();
 
 	window.dispatchEvent(new Event("ph-page-ready"));
-	if (!localStorage["firstTimeFlag"])
+	if (localStorage["firstTimeFlag"] !== "set")
 		localStorage["firstTimeFlag"] = "set";
 }
 
