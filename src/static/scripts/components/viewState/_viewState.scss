@@ -1,15 +1,10 @@
 @use '../../../style/vars';
 
 .viewState {
-	position: fixed;
 	width: 100%;
-	max-height: 100%;
-	top: 0;
-	left: 0;
 	padding: vars.$headerHeight 0;
 	display: flex;
 	justify-content: center;
-	will-change: transform;		// VERY IMPORTANT for performance
 
 	.backClickArea {
 		position: fixed;

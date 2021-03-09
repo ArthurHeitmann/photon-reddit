@@ -126,7 +126,7 @@ export default class Ph_PostBody extends HTMLElement {
 
 	private makeImgurBody(postData: RedditApiType) {
 		this.classList.add("fullScale");
-		if (/imgur\.com\/(a|album|gallery)\/[^/]+$/.test(postData.data["url"])) {
+		if (/imgur\.com\/(a|album|gallery)\/[^/]+\/?$/.test(postData.data["url"])) {
 			getImgurAlbumContents(postData.data["url"]).then((contents: ImgurContent[]) => {
 				if (contents[0].type === ImgurContentType.Video) {
 					this.appendChild(new Ph_VideoPlayer(

@@ -177,22 +177,19 @@ blockquote {
 	}
 }
 
-* {
+::-webkit-scrollbar {
 	scrollbar-color: #e4e4e4a6 transparent;
+	width: 10px;
+}
 
-	&::-webkit-scrollbar {
-		width: 10px;
-	}
+::-webkit-scrollbar-track {
+	background: transparent;
+}
 
-	&::-webkit-scrollbar-track {
-		background: transparent;
-	}
+::-webkit-scrollbar-thumb {
+	background: #e4e4e4a6;
 
-	&::-webkit-scrollbar-thumb {
-		background: #e4e4e4a6;
-
-		&:hover {
-			background: #e4e4e4;
-		}
+	&:hover {
+		background: #e4e4e4;
 	}
 }

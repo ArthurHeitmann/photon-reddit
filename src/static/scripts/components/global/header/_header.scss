@@ -4,7 +4,7 @@
 	width: 100%;
 	height: vars.$headerHeight;
 	position: fixed;
-	z-index: 1;
+	z-index: 50;
 	transform: translateY(-100%);
 	transition: transform .25s linear;
 

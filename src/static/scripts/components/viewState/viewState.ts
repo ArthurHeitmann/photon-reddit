@@ -16,7 +16,7 @@ export class Ph_ViewState extends HTMLElement {
 	constructor(state: HistoryState) {
 		super();
 
-		this.className = "viewState overflow-y-auto";
+		this.className = "viewState";
 
 		this.state = state;
 		this.header = $tag("ph-header")[0] as Ph_Header;

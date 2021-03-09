@@ -49,16 +49,9 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			this.hasReachedEndOfFeed = true;
 		this.requestUrl = requestUrl;
 
-		//wait for this element to be attached to a parent
-		setTimeout(() => {
-			let scrollElement = this.parentElement;
-			while (!scrollElement.classList.contains("overflow-y-auto"))
-				scrollElement = this.parentElement;
-
-			const scrollChecker = throttle(this.onScroll.bind(this), 1000);
-			scrollElement.addEventListener("wheel", scrollChecker, { passive: true });
-			scrollElement.addEventListener("touchmove", scrollChecker, { passive: true });
-		}, 0);
+		const scrollChecker = throttle(this.onScroll.bind(this), 1000);
+		document.scrollingElement.addEventListener("wheel", scrollChecker, { passive: true });
+		document.scrollingElement.addEventListener("touchmove", scrollChecker, { passive: true });
 
 		// find first FeedItem, once it has been added
 		const observer = new MutationObserver((mutationsList: MutationRecord[], observer) => {
