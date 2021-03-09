@@ -91,11 +91,8 @@
 			z-index: 0;
 			width: 100%;
 			height: 100%;
-
-			&:hover {
-				transition: none;
-				filter: initial;
-			}
+			transition: none;
+			filter: initial;
 		}
 
 		a:not(.backgroundLink), .content > * {
