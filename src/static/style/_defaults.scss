@@ -177,8 +177,11 @@ blockquote {
 	}
 }
 
-::-webkit-scrollbar {
+* {
 	scrollbar-color: #e4e4e4a6 transparent;
+}
+
+::-webkit-scrollbar {
 	width: 10px;
 }
 

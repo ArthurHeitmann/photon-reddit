@@ -33,7 +33,6 @@ export default class Ph_PostImage extends HTMLElement {
 	loadingIcon: HTMLImageElement;
 	galleryData: GalleryDataInternal[] = [];
 	currentImageIndex: number = 0;
-	beforeFsScrollTop = 0;
 
 	static fromPostData(postData: RedditApiType): Ph_PostImage {
 		let galleryInitData: GalleryInitData[] = [];
@@ -333,11 +332,6 @@ export default class Ph_PostImage extends HTMLElement {
 	}
 
 	async onShow() {
-		const viewState = elementWithClassInTree(this.parentElement, "viewState");
-		if (viewState) {
-			this.beforeFsScrollTop = viewState.scrollTop;
-		}
-
 		this.classList.add("fullscreen");
 		await this.requestFullscreen();
 		if (this.galleryData[this.currentImageIndex].originalImg === null) {
@@ -352,10 +346,6 @@ export default class Ph_PostImage extends HTMLElement {
 		this.imageMax.deactivate();
 		this.imageMax.setMoveXY(0, 0);
 		this.imageMax.setZoom(1);
-
-		if (this.beforeFsScrollTop) {
-			setTimeout(() => elementWithClassInTree(this.parentElement, "viewState").scrollTop = this.beforeFsScrollTop, 0);
-		}
 	}
 }
 

@@ -120,7 +120,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		commentsLink.addEventListener("click", (e: MouseEvent) => {
 			if (isInFeed)
 				return true;
-			elementWithClassInTree(this.parentElement, "viewState").scrollBy(0, this.getBoundingClientRect().bottom);
+			document.scrollingElement.scrollBy(0, this.getBoundingClientRect().bottom);
 			e.stopImmediatePropagation();
 			e.preventDefault();
 			return false;
@@ -270,7 +270,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 				return false
 			if (changedSettings.hideSeenPosts !== undefined)
 				return changedSettings.hideSeenPosts && this.wasInitiallySeen && hasPostsBeenSeen(this.fullName);
-			return this.wasInitiallySeen;
+			return this.wasInitiallySeen && globalSettings.hideSeenPosts;
 		}
 	}
 

@@ -240,8 +240,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 				return;
 
 			// remove old elements and set scroll position approximately back to where it was before removal
-			const view = elementWithClassInTree(this.parentElement, "viewState");
-			const viewScrollTop = view.scrollTop;
+			const viewScrollTop = document.scrollingElement.scrollTop;
 			const elementMarginTop = parseFloat(getComputedStyle(removeElements[0]).marginTop);
 			let removedHeight = 0;
 			for (const removeElement of removeElements) {
@@ -249,8 +248,14 @@ export default class Ph_UniversalFeed extends HTMLElement {
 					removedHeight += removeElement.getBoundingClientRect().height + elementMarginTop * 2;
 				removeElement.remove();
 			}
-			view.scrollTo({ top: viewScrollTop - removedHeight });
-
+			const newTop = viewScrollTop - removedHeight;
+			document.scrollingElement.scrollTo({ top: newTop });
+			// setTimeout(() => {
+				// if (Math.abs(document.scrollingElement.scrollTop - newTop) < 50)
+				// 	return;
+				// document.scrollingElement.scrollTo({ top: newTop });
+				// console.log("fixing");
+			// }, 1000);
 			this.beforeData = this.firstElementChild.getAttribute("data-id");
 		}
 	}
@@ -282,8 +287,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 		}
 		else {
 			// scroll logic from clearPrevious() loadPosition === LoadPosition.After
-			const view = elementWithClassInTree(this.parentElement, "viewState");
-			const viewScrollTop = view.scrollTop;
+			const viewScrollTop = document.scrollingElement.scrollTop;
 			const elementMarginTop = parseFloat(getComputedStyle(this.children[0]).marginTop);
 			let addedHeight = 0;
 			for (const postData of posts.data.children.reverse()) {
@@ -299,7 +303,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 					new Ph_Toast(Level.Error, `Error making feed item`);
 				}
 			}
-			view.scrollTo({ top: viewScrollTop + addedHeight - elementMarginTop });
+			document.scrollingElement.scrollTo({ top: viewScrollTop + addedHeight - elementMarginTop });
 
 			this.beforeData = posts.data.before;
 		}
@@ -310,7 +314,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 		this.allPostFullNames = [];
 		this.beforeData = beforeData;
 		this.afterData = afterData;
-		elementWithClassInTree(this.parentElement, "viewState")?.scrollTo(0, 0);
+		document.scrollingElement.scrollTo(0, 0);
 
 		for (const item of posts) {
 			try {

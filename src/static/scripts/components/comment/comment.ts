@@ -253,7 +253,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 
 		const top = this.getBoundingClientRect().top;
 		if (top < 0)
-			elementWithClassInTree(this.parentElement, "viewState").scrollBy(0, top);
+			document.scrollingElement.scrollBy(0, top);
 	}
 
 	showReplyForm() {
