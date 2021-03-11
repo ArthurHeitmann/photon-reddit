@@ -29,6 +29,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 	currentUpvotes: HTMLDivElement;
 	voteDownButton: Ph_VoteButton;
 	url: string;
+	feedUrl: string;
 	permalink: string;
 	cover: HTMLElement = null;
 	totalVotes: number;
@@ -42,7 +43,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 	isSpoiler: boolean;
 	wasInitiallySeen: boolean;
 
-	constructor(postData: RedditApiType, isInFeed: boolean) {
+	constructor(postData: RedditApiType, isInFeed: boolean, feedUrl?: string) {
 		super(postData.data["name"], postData.data["permalink"], isInFeed);
 
 		if (postData.kind !== "t3")
@@ -53,6 +54,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		this.totalVotes = parseInt(postData.data["ups"]) + -parseInt(this.currentVoteDirection);
 		this.isSaved = postData.data["saved"];
 		this.url = postData.data["url"];
+		this.feedUrl = feedUrl;
 		this.permalink = postData.data["permalink"];
 		this.isPinned = postData.data["stickied"];
 		this.isNsfw = postData.data["over_18"];
@@ -250,10 +252,11 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 
 	/** This is a solution with the best UX and least unexpected hidden posts */
 	private shouldPostBeHidden(ignoreSeenSettings: boolean = false, changedSettings?: PhotonSettings): boolean {
+		const isInUserFeed = /^\/(u|user)\/([^/]+\/?){1,2}$/.test(this.feedUrl);	// 1, 2 to exclude multireddits
 		if (changedSettings === undefined) {
 			return (
 				this.isInFeed && (
-					!this.isPinned && globalSettings.hideSeenPosts && !ignoreSeenSettings && hasPostsBeenSeen(this.fullName)
+					!this.isPinned && globalSettings.hideSeenPosts && !isInUserFeed && !ignoreSeenSettings && hasPostsBeenSeen(this.fullName)
 					|| this.isNsfw && globalSettings.nsfwPolicy === NsfwPolicy.never
 				)
 			);
@@ -269,7 +272,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			if (ignoreSeenSettings)
 				return false
 			if (changedSettings.hideSeenPosts !== undefined)
-				return changedSettings.hideSeenPosts && this.wasInitiallySeen && hasPostsBeenSeen(this.fullName);
+				return changedSettings.hideSeenPosts && !isInUserFeed && this.wasInitiallySeen && hasPostsBeenSeen(this.fullName);
 			return this.wasInitiallySeen && globalSettings.hideSeenPosts;
 		}
 	}

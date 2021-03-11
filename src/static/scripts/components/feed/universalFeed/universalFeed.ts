@@ -151,7 +151,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 	makeFeedItem(itemData: RedditApiType, totalItemCount: number): HTMLElement {
 		switch (itemData.kind) {
 			case "t3":
-				const post = new Ph_Post(itemData, true);
+				const post = new Ph_Post(itemData, true, this.requestUrl);
 				if (!this.allPostFullNames.includes(post.fullName))
 					this.allPostFullNames.push(post.fullName);
 				return post;
