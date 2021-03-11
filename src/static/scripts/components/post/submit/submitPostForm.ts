@@ -2,7 +2,6 @@ import { redditApiRequest } from "../../../api/redditApi.js";
 import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager.js";
 import { thisUser } from "../../../utils/globals.js";
 import { linksToSpa } from "../../../utils/htmlStuff.js";
-import { replaceRedditLinks } from "../../../utils/utils.js";
 import Ph_FeedInfo, { FeedType } from "../../feed/feedInfo/feedInfo.js";
 import Ph_DropDown, { ButtonLabel, DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import { DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
@@ -301,7 +300,6 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 			// set submit text
 			if (r["submit_text"]) {
 				this.subSubmitText.innerHTML = r["submit_text_html"];
-				replaceRedditLinks(this.subSubmitText);
 				linksToSpa(this.subSubmitText);
 			}
 			else

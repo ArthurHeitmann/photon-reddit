@@ -3,7 +3,7 @@ import { isLoggedIn, MultiReddit, StoredData, thisUser } from "../../../utils/gl
 import { $class, escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { classInElementTree, linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiType } from "../../../types/misc.js";
-import { numberToShort, replaceRedditLinks, stringSortComparer, throttle } from "../../../utils/utils.js";
+import { numberToShort, stringSortComparer, throttle } from "../../../utils/utils.js";
 import Ph_Header from "../../global/header/header.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import { DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
@@ -323,11 +323,9 @@ export default class Ph_FeedInfo extends HTMLElement {
 		description.innerHTML = this.loadedInfo.data["description_html"];
 		const publicDescription = document.createElement("div");
 		publicDescription.innerHTML = this.loadedInfo.data["public_description_html"];
-		replaceRedditLinks(publicDescription);
 		linksToSpa(publicDescription);
 		const rules = document.createElement("div");
 		rules.append(...this.makeRules());
-		replaceRedditLinks(rules);
 		linksToSpa(rules);
 		const miscText = document.createElement("div");
 		miscText.innerHTML = `
@@ -337,7 +335,6 @@ export default class Ph_FeedInfo extends HTMLElement {
 			.map(mod => `<div><a href="/user/${escADQ(mod.name)}">${escHTML(mod.name)}</a></div>`)
 			.join("\n")}	
 		`;
-		replaceRedditLinks(miscText);
 		linksToSpa(miscText);
 		this.appendChild(this.makeSwitchableBar([
 			{ titleHTML: "Description", content: description },
@@ -346,7 +343,6 @@ export default class Ph_FeedInfo extends HTMLElement {
 			{ titleHTML: "Other", content: miscText },
 		]));
 
-		replaceRedditLinks(this);
 		linksToSpa(this);
 	}
 
@@ -433,14 +429,12 @@ export default class Ph_FeedInfo extends HTMLElement {
 				${this.loadedInfo.data.multis.map(multi => `<div><a href="${escADQ(multi.data.path)}">${escHTML(multi.data.display_name)}</a></div>`).join("")}
 			`);
 		}
-		replaceRedditLinks(miscText);
 		linksToSpa(miscText);
 		this.appendChild(this.makeSwitchableBar([
 			{ titleHTML: "Description", content: publicDescription },
 			{ titleHTML: "Other", content: miscText },
 		]));
 
-		replaceRedditLinks(this);
 		linksToSpa(this);
 	}
 
@@ -512,14 +506,12 @@ export default class Ph_FeedInfo extends HTMLElement {
 		description.innerHTML = this.loadedInfo.data["description_html"];
 		const miscText = document.createElement("div");
 		miscText.append(...this.makeMultiSubManager());
-		replaceRedditLinks(miscText);
 		linksToSpa(miscText);
 		this.appendChild(this.makeSwitchableBar([
 			{ titleHTML: "Description", content: description },
 			{ titleHTML: "Subreddits", content: miscText },
 		]));
 
-		replaceRedditLinks(this);
 		linksToSpa(this);
 	}
 

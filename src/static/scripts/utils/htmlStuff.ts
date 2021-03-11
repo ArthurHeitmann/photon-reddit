@@ -7,9 +7,17 @@
 import { globalSettings } from "../components/global/photonSettings/photonSettings.js";
 import Ph_PostImage from "../components/post/postBody/postImage/postImage.js";
 import { pushLinkToHistoryComb } from "../historyState/historyStateManager.js";
+import { _replaceRedditLinks } from "./utils.js";
+
+export function linksToSpa(elem: HTMLElement, inlineImage: boolean = false) {
+	if (inlineImage)
+		_linksToInlineImages(elem);
+	_replaceRedditLinks(elem);
+	_linksToSpa(elem);
+}
 
 /** Converts all same origin links of an element to SPA (single page application) links */
-export function linksToSpa(elem: HTMLElement): void {
+export function _linksToSpa(elem: HTMLElement): void {
 	if (elem instanceof HTMLAnchorElement) {
 		setLinkOnClick(elem);
 	}
@@ -58,7 +66,7 @@ export function isElementIn(container: HTMLElement, checkElement: HTMLElement): 
 }
 
 /** converts all <a> where href ends with an image file extension to an <img>  */
-export function linksToInlineImages(elem: HTMLElement) {
+export function _linksToInlineImages(elem: HTMLElement) {
 	const links = elem.$tag("a");
 	for (let link of links) {
 		// test for file endine

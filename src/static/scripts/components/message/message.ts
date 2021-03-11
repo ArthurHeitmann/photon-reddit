@@ -3,7 +3,7 @@ import { thisUser } from "../../utils/globals.js";
 import { escADQ, escHTML } from "../../utils/htmlStatics.js";
 import { linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../types/misc.js";
-import { replaceRedditLinks, timePassedSinceStr } from "../../utils/utils.js";
+import { timePassedSinceStr } from "../../utils/utils.js";
 import Ph_Readable from "../feed/feedItem/readable/readable.js";
 import Ph_MarkdownForm from "../misc/markdownForm/markdownForm.js";
 import Ph_Toast, { Level } from "../misc/toast/toast.js";
@@ -115,7 +115,6 @@ export default class Ph_Message extends Ph_Readable {
 		}
 
 		linksToSpa(this);
-		replaceRedditLinks(this)
 	}
 }
 

@@ -9,9 +9,9 @@ import {
 } from "../../api/redditApi.js";
 import { thisUser } from "../../utils/globals.js";
 import { escADQ } from "../../utils/htmlStatics.js";
-import { elementWithClassInTree, linksToInlineImages, linksToSpa } from "../../utils/htmlStuff.js";
+import { elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../types/misc.js";
-import { isObjectEmpty, numberToShort, replaceRedditLinks, timePassedSinceStr } from "../../utils/utils.js";
+import { isObjectEmpty, numberToShort, timePassedSinceStr } from "../../utils/utils.js";
 import Ph_CommentsFeed from "../feed/commentsFeed/commentsFeed.js";
 import Ph_Readable from "../feed/feedItem/readable/readable.js";
 import Ph_AwardsInfo from "../misc/awardsInfo/awardsInfo.js";
@@ -214,8 +214,6 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 		mainPart.$class("user")[0]
 			.insertAdjacentElement("afterend", Ph_Flair.fromThingData(commentData.data, "author"));
 
-		linksToInlineImages(mainPart);
-
 		// child comments
 
 		this.childComments = document.createElement("div");
@@ -244,8 +242,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 
 		this.appendChild(mainPart);
 
-		replaceRedditLinks(this);
-		linksToSpa(this);
+		linksToSpa(this, true);
 	}
 
 	collapse(e: MouseEvent) {
@@ -394,9 +391,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 				this.classList.remove("isEditing");
 				const content = this.getElementsByClassName("content")[0] as HTMLElement;
 				content.innerHTML = resp["body_html"];
-				linksToInlineImages(content);
-				replaceRedditLinks(content);
-				linksToSpa(content);
+				linksToSpa(content, true);
 				editForm.remove();
 				new Ph_Toast(Level.Success, "Edited comment", { timeout: 2000 });
 			} catch (e) {

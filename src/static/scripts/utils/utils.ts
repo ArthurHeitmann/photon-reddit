@@ -81,7 +81,7 @@ export function timePassedSinceStr(time: string): string {
 }
 
 /** replaces all href in <a> like: https://reddit.com/r/all --> /r/all */
-export function replaceRedditLinks(el: HTMLElement) {
+export function _replaceRedditLinks(el: HTMLElement) {
 	for (const a of el.$tag("a") as HTMLCollectionOf<HTMLAnchorElement>) {
 		a.href = a.getAttribute("href")
 			.replaceAll(/redd.it\/(\w+)/g, "reddit.com/comments/$1");

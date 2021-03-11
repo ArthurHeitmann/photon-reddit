@@ -2,7 +2,6 @@ import { getImgurAlbumContents, getImgurContent, ImgurContent, ImgurContentType 
 import { escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiData, RedditApiType } from "../../../types/misc.js";
-import { replaceRedditLinks } from "../../../utils/utils.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Ph_SimpleVideo from "../../videoPlayer/simpleVideo/simpleVideo.js";
 import Ph_VideoPlayer from "../../videoPlayer/videoPlayer.js";
@@ -18,7 +17,8 @@ export default class Ph_PostBody extends HTMLElement {
 
 		this.classList.add("content");
 
-		switch (this.getPostType(postData.data)) {
+		const postType = this.getPostType(postData.data);
+		switch (postType) {
 			case PostType.Image:
 				this.makeImageBody(postData);
 				break;
@@ -45,8 +45,7 @@ export default class Ph_PostBody extends HTMLElement {
 				break;
 			}
 
-		replaceRedditLinks(this);
-		linksToSpa(this);
+		linksToSpa(this, postType === PostType.Text);
 	}
 
 	private getPostType(postData: RedditApiData): PostType {

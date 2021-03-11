@@ -1,4 +1,4 @@
-import { elementWithClassInTree, linksToInlineImages } from "../../../../utils/htmlStuff.js";
+import { elementWithClassInTree } from "../../../../utils/htmlStuff.js";
 
 /**
  * Text of a post. If in feed, has a max height. If higher than max height, show expand button
@@ -15,7 +15,6 @@ export default class Ph_PostText extends HTMLElement {
 
 		this.textWrapper = document.createElement("div");
 		this.textWrapper.innerHTML = bodyHtml;
-		linksToInlineImages(this.textWrapper);
 		this.appendChild(this.textWrapper);
 
 		setTimeout(() => {

@@ -1,6 +1,5 @@
-import { elementWithClassInTree, linksToInlineImages, linksToSpa } from "../../utils/htmlStuff.js";
+import { elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../types/misc.js";
-import { replaceRedditLinks } from "../../utils/utils.js";
 import Ph_FeedInfo, { FeedType } from "../feed/feedInfo/feedInfo.js";
 import { Ph_ViewState } from "../viewState/viewState.js";
 
@@ -14,9 +13,7 @@ export default class Ph_Wiki extends HTMLElement {
 		this.className = "wiki";
 
 		this.innerHTML = wikiData.data["content_html"];
-		replaceRedditLinks(this);
-		linksToSpa(this);
-		linksToInlineImages(this);
+		linksToSpa(this, true);
 	}
 
 	connectedCallback() {
