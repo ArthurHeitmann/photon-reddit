@@ -29,7 +29,7 @@ async function init(): Promise<void> {
 
 	if (await checkAuthOnPageLoad() === AuthState.LoggedIn) {
 		await thisUser.fetch();
-		if (localStorage["loginRecommendationFlag"] !== "set") {
+		if (localStorage["loginRecommendationFlag"] !== "set" && !thisUser.subreddits.includes(`r/${loginSubredditName}`)) {
 			localStorage["loginRecommendationFlag"] = "set";
 			new Ph_Toast(Level.Info, `Do you want to subscribe to r/${loginSubredditName}?`, {
 				onConfirm: () => subscribe(loginSubredditFullName, true)
