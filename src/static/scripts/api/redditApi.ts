@@ -2,7 +2,7 @@
  * For communication with reddit
  */
 
-import { checkTokenRefresh } from "../auth/auth.js";
+import { checkTokenRefresh, initiateLogin } from "../auth/auth.js";
 import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
 import Votable, { FullName } from "../types/votable.js";
 import { isLoggedIn, thisUser, } from "../utils/globals.js";
@@ -19,7 +19,7 @@ import { isObjectEmpty, splitPathQuery } from "../utils/utils.js";
  */
 export async function redditApiRequest(pathAndQuery, params: string[][], requiresLogin: boolean, options: RequestInit = {}) {
 	if (requiresLogin && !isLoggedIn) {
-		new Ph_Toast(Level.Error, "You need to be logged in to use this feature");
+		new Ph_Toast(Level.Error, "Not logged in! Do you want to log in with Reddit?", { onConfirm: initiateLogin });
 		throw "This feature requires to be logged in";
 	}
 
