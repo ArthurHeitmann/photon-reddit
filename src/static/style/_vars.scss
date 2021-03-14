@@ -28,7 +28,7 @@ $primary: var(--primary);
 /** accent color as background with white text */
 $primaryContrast: var(--primary-contrast);
 /** view state width in portrait */
-$widthP: calc(100vw - 2.8rem);
+$widthP: calc(100vw - 3.4rem);
 /** view state width in landscape */
 $widthM: min(50rem, calc(100vw - 6rem));
 /** view state width+ in landscape */
