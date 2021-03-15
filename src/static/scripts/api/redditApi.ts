@@ -65,7 +65,8 @@ function fixUrl(url: string) {
 	url = url.replace(/(\/(u|user)\/[^/]+\/)posts\/?/, "$1submitted/")						// /user/.../posts --> /user/.../submitted
 	url = url.replace(/(?<=^\/r\/[^/]+\/wiki)\/?(?=(\?.*)?$)/, "/index");					// /r/.../wiki --> /r/.../wiki/index
 	url = url.replace(/#[^?]*/, "");														// ...#...?... --> ...?...
-	url = url.replace(/(?<=^\/\w+\/[^/]+\/)w(?=(#|\?|\/).*)/, "wiki");														// /.../.../wiki --> /.../.../wiki
+	url = url.replace(/(?<=^\/\w+\/[^/]+\/)w(?=(#|\?|\/).*)/, "wiki");						// /.../.../wiki --> /.../.../wiki
+	url = url.replace(/(?<=^\/)gallery(?=\/\w+)/, "comments");								// /gallery/... --> /comments/...
 	if (new RegExp(`^/(u|user)/${thisUser.name}/m/([^/]+)`, "i").test(url))							// private multi reddits have CORS problems
 		url = url.replace(/^\/user\/[^/]+\/m\//, "/me/m/")									// /user/thisUser/m/... --> /me/m/...
 	return url;
