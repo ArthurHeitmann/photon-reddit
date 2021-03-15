@@ -97,7 +97,7 @@ async function verifyTokenWorksLoggedIn(): Promise<boolean> {
 }
 
 async function verifyTokenWorksImplicit(): Promise<boolean> {
-	const r = await redditApiRequest("/r/all/new", [], false);
+	const r = await redditApiRequest("/r/all/new", [["limit", "1"]], false);
 	return !("error" in r);
 }
 
