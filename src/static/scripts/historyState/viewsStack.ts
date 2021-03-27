@@ -36,8 +36,10 @@ export default class ViewsStack {
 	/** Pushes a history state after the current one & appends view state to DOM */
 	static pushAfter(state: Ph_ViewState): void {
 		// if there are history states after the current one they will be cut off & removed, therefore remove the views
-		for (let i = ViewsStack.pos + 1; ViewsStack.views[i] !== undefined; ++i)
+		for (let i = ViewsStack.pos + 1; ViewsStack.views[i] !== undefined; ++i) {
 			ViewsStack.views[i].remove();
+			delete ViewsStack.views[i];
+		}
 
 		ViewsStack.attachmentPoint.appendChild(state);
 		
