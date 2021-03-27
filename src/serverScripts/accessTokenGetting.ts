@@ -1,5 +1,11 @@
+import express from "express";
+import RateLimit from "express-rate-limit";
 import fetch from "node-fetch";
 import { appId, redirectURI } from "./config.js";
+import { redditTokenRateLimitConfig } from "./consts.js";
+import { safeExcAsync } from "./utils.js";
+
+export const authRouter = express.Router();
 
 async function getAccessToken(params: URLSearchParams): Promise<string> {
 	const response = await fetch("https://www.reddit.com/api/v1/access_token", {
@@ -25,7 +31,7 @@ export async function initialAccessToken(code: string): Promise<string> {
 	return await getAccessToken(formBody);
 }
 
-export async function refreshAccessToken(refreshToken: string): Promise<string> {
+async function refreshAccessToken(refreshToken: string): Promise<string> {
 	const formBody = new URLSearchParams(
 		"grant_type=refresh_token&" +
 		`refresh_token=${ refreshToken }`
@@ -33,7 +39,7 @@ export async function refreshAccessToken(refreshToken: string): Promise<string> 
 	return await getAccessToken(formBody);
 }
 
-export async function implicitGrant(clientId: string): Promise<Object> {
+async function implicitGrant(clientId: string): Promise<Object> {
 	if (clientId.length < 20 || clientId.length > 30)
 		return { error: "clientId length must be >= 20 && <= 30" };
 
@@ -50,3 +56,26 @@ export async function implicitGrant(clientId: string): Promise<Object> {
 	});
 	return await r.json();
 }
+
+authRouter.get("/refreshToken", RateLimit(redditTokenRateLimitConfig), safeExcAsync(async (req, res) => {
+	if (req.query["refreshToken"]) {
+		try {
+			const data = await refreshAccessToken(req.query["refreshToken"].toString());
+			res.json({ accessToken: data["access_token"], refreshToken: data["refresh_token"] });
+		} catch (e) {
+			console.error(`Error getting access token ${JSON.stringify(e, null, 4)}`);
+			res.json({ error: `error getting access token` });
+		}
+	}
+	else {
+		res.json({ error: "¯\\_(ツ)_/¯"}).status(400);
+	}
+}));
+
+authRouter.get("/applicationOnlyAccessToken", RateLimit(redditTokenRateLimitConfig), safeExcAsync(async (req, res) => {
+	if (!req.query["clientId"]) {
+		res.status(400).json({ error: "missing clientId" })
+		return;
+	}
+	res.json(await implicitGrant(req.query["clientId"].toString()));
+}));

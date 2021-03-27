@@ -146,10 +146,13 @@ interface ServiceWorkerRegistrationOptions {
 // Client API
 
 interface Client {
-	readonly frameType: ClientFrameType;
+	readonly id: string;
+	readonly type: ClientType;
+	readonly url: string;
+	postMessage: (message: any) => void;
 }
 
-type ClientFrameType = "auxiliary" | "top-level" | "nested" | "none";
+type ClientType = "window" | "worker" | "sharedworker"
 
 // Events
 
