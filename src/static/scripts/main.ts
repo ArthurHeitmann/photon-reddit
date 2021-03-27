@@ -4,20 +4,24 @@
  * This file gets loaded from index.html and imports all other files
  */
 
+import "./components/message/messageNotification/messageNotification.js";
+import "./utils/vesionManagement.js";
 import { subscribe } from "./api/redditApi.js";
 import { AuthState, checkAuthOnPageLoad, checkTokenRefresh, initiateLogin } from "./auth/auth.js";
 import Ph_Header from "./components/global/header/header.js";
-import "./components/message/messageNotification/messageNotification.js";
 import Ph_Toast, { Level } from "./components/misc/toast/toast.js";
 import { pushLinkToHistorySep } from "./historyState/historyStateManager.js";
 import { hasAnalyticsFileLoaded } from "./unsuspiciousFolder/unsuspiciousFile.js";
 import { loginSubredditFullName, loginSubredditName } from "./utils/consts.js";
+import { setWaitingServiceWorker } from "./utils/vesionManagement.js";
 import { thisUser } from "./utils/globals.js";
 import { $id } from "./utils/htmlStatics.js";
 import { linksToSpa } from "./utils/htmlStuff.js";
 import { extractHash, extractPath, extractQuery } from "./utils/utils.js";
 
 async function init(): Promise<void> {
+	registerServiceWorker();
+
 	$id("mainWrapper").insertAdjacentElement("afterbegin", new Ph_Header());
 
 	linksToSpa(document.body);
@@ -60,6 +64,25 @@ function checkIfAnalyticsFileLoaded() {
 	console.error("couldn't load unsuspiciousFolder file");
 	new Ph_Toast(Level.Error, "Couldn't load all script files");
 	throw "couldn't load unsuspiciousFolder file";
+}
+
+async function registerServiceWorker() {
+	// adapted from https://stackoverflow.com/a/37582216/9819447
+
+	// register service worker
+	const registration = await navigator.serviceWorker.register("/serviceWorker.js");
+
+	// listen for new installations
+
+	if (registration.waiting && registration.active)
+		setWaitingServiceWorker(registration.waiting);
+
+	registration.addEventListener('updatefound', () => {
+		registration.installing.addEventListener('statechange', (event) => {
+			if ((event.target as ServiceWorker).state === 'installed' && registration.active)
+				setWaitingServiceWorker(event.target);
+		});
+	});
 }
 
 window.addEventListener("load", init);

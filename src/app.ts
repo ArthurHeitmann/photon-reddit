@@ -2,20 +2,18 @@ import bodyParser from "body-parser";
 import express from "express";
 import RateLimit from "express-rate-limit";
 import helmet from "helmet";
-import youtube_dl from "youtube-dl";
-import { implicitGrant, initialAccessToken, refreshAccessToken } from "./serverScripts/accessTokenGetting.js";
+import { authRouter, initialAccessToken } from "./serverScripts/accessTokenGetting.js";
 import { analyticsRouter } from "./serverScripts/analytics.js";
 import { appId, redirectURI } from "./serverScripts/config.js";
 import {
 	__dirname,
 	basicRateLimitConfig,
-	env,
 	port,
 	redditTokenRateLimitConfig,
 	scope,
 	tokenDuration,
-	youtube_dlRateLimitConfig
 } from "./serverScripts/consts.js";
+import { photonApiRouter } from "./serverScripts/photonApi.js";
 import { cacheControl, checkSslAndWww, safeExc, safeExcAsync } from "./serverScripts/utils.js";
 
 const app = express();
@@ -61,39 +59,8 @@ app.get("/redirect", RateLimit(redditTokenRateLimitConfig), safeExcAsync(async (
 	}
 }));
 
-app.get("/refreshToken", RateLimit(redditTokenRateLimitConfig), safeExcAsync(async (req, res) => {
-	if (req.query["refreshToken"]) {
-		try {
-			const data = await refreshAccessToken(req.query["refreshToken"].toString());
-			res.json({ accessToken: data["access_token"], refreshToken: data["refresh_token"] });
-		} catch (e) {
-			console.error(`Error getting access token ${JSON.stringify(e, null, 4)}`);
-			res.json({ error: `error getting access token` });
-		}
-	}
-	else {
-		res.json({ error: "¯\\_(ツ)_/¯"}).status(400);
-	}
-}));
-
-app.get("/applicationOnlyAccessToken", RateLimit(redditTokenRateLimitConfig), safeExcAsync(async (req, res) => {
-	if (!req.query["clientId"]) {
-		res.status(400).json({ error: "missing clientId" })
-		return;
-	}
-	res.json(await implicitGrant(req.query["clientId"].toString()));
-}));
-
-app.get("/youtube-dl", RateLimit(youtube_dlRateLimitConfig), safeExc((req, res) => {
-	youtube_dl.getInfo(req.query["url"], [], (err, info) => {
-		if (!err && info && info.url)
-			res.json({ url: info.url });
-		else {
-			res.json({ error: "¯\\_(ツ)_/¯"}).status(400);
-		}
-	});
-}));
-
+app.use("/api", photonApiRouter);
+app.use("/auth", authRouter);
 // /data instead of /analytics used to avoid getting blocked by adblockers
 app.use("/data", analyticsRouter);
 
