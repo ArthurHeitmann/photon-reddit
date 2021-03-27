@@ -11,16 +11,25 @@
 	<link rel="apple-touch-icon" sizes="180x180" href="/img/appIcons/apple-touch-icon.png">
 	<link rel="icon" type="image/png" sizes="32x32" href="/img/appIcons/favicon-32x32.png">
 	<link rel="icon" type="image/png" sizes="16x16" href="/img/appIcons/favicon-16x16.png">
-	<link rel='stylesheet' type='text/css' href='/style/main.css' media="none" onload="this.media='all'">
 	<link href="https://fonts.googleapis.com" rel="preconnect">
 	<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,600;0,800;1,800&display=swap" rel="stylesheet" media="none" onload="this.media='all'">
 	<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@500&display=swap" rel="stylesheet" media="none" onload="this.media='all'">
+	<link rel='stylesheet' type='text/css' href='/style/main.css' media="none" onload="this.media='all'">
 </head>
 <body class="">
 	<div class="flex f-direction-column f-align-center" id="mainWrapper">
 		<main class="relative w100"></main>
 	</div>
 	<noscript>Photon Reddit needs Javascript to work. Please enable it in your browser</noscript>
-	<script src='/scripts/main.js' type="module"></script>
+	<script src='/scripts/main.js' type="module" defer></script>
+	<script>
+		window.addEventListener("load", () => {
+			if("serviceWorker" in navigator) {
+				navigator.serviceWorker.register("/serviceWorker.js")
+					.then(reg => console.log("Service Worker registered", reg))
+					.catch(err => console.log("Failed to register service worker", err));
+			}
+		});
+	</script>
 </body>
 </html>

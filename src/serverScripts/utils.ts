@@ -1,7 +1,8 @@
-import express, { RequestHandler } from "express";
+import express from "express";
 import expressAsyncHandler from "express-async-handler";
 import { env } from "./consts.js";
 
+/** Fallback for when service worker doesn't work */
 export function cacheControl(req: express.Request, res: express.Response, next: express.NextFunction) {
 	let cacheSeconds = 0;
 	if (env === "production") {
