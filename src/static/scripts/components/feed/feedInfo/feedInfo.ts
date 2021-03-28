@@ -7,7 +7,6 @@ import { numberToShort, stringSortComparer, throttle } from "../../../utils/util
 import Ph_Header from "../../global/header/header.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import { DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
-import { FlairData } from "../../misc/flair/flair.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import { clearAllOldData } from "./feedInfoCleanup.js";
 import Ph_BetterButton from "../../global/betterElements/betterButton.js";
@@ -193,7 +192,6 @@ export default class Ph_FeedInfo extends HTMLElement {
 		let feedAbout: RedditApiType;
 		let rules: SubredditRule[];
 		let mods: SubredditModerator[];
-		let flairs: FlairData[];
 		try {
 			feedAbout = await redditApiRequest(`${this.feedUrl}/about`, [], false);
 			if (feedAbout["error"] || !(feedAbout["kind"] && feedAbout["data"]))
@@ -212,30 +210,9 @@ export default class Ph_FeedInfo extends HTMLElement {
 			console.error(`Error getting subreddit info for ${this.feedUrl}`);
 			console.error(e);
 		}
-		let tmpFlairs: Object[];
-		if (isLoggedIn) {
-			try {
-				tmpFlairs = await redditApiRequest(`${this.feedUrl}/api/link_flair_v2`, [], true);
-				if (tmpFlairs["error"])		// no post flairs from this sub
-					tmpFlairs = [];
-			} catch (e) {
-				tmpFlairs = [];
-			}
-		}
-		else
-			tmpFlairs = [];
-
-		flairs = tmpFlairs.map(flair => ({
-			type: flair["type"],
-			text: flair["text"],
-			backgroundColor: flair["background_color"],
-			richText: flair["richtext"],
-			textColor: flair["text_color"]
-		}));
 		this.loadedInfo.data = feedAbout.data;
 		this.loadedInfo.data.rules = rules;
 		this.loadedInfo.data.mods = mods;
-		this.loadedInfo.data.flairs = flairs;
 		this.loadedInfo.lastUpdatedMsUTC = Date.now();
 		this.saveInfo();
 	}

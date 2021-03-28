@@ -1,12 +1,13 @@
-import { searchSubreddits, searchUser } from "../../../api/redditApi.js";
+import { redditApiRequest, searchSubreddits, searchUser } from "../../../api/redditApi.js";
 import { pushLinkToHistoryComb, pushLinkToHistorySep } from "../../../historyState/historyStateManager.js";
 import { ViewChangeData } from "../../../historyState/viewsStack.js";
-import { escADQ, escHTML } from "../../../utils/htmlStatics.js";
+import { isLoggedIn } from "../../../utils/globals.js";
+import { escADQ, getLoadingIcon } from "../../../utils/htmlStatics.js";
 import { elementWithClassInTree, isElementIn, linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiType, SortPostsTimeFrame, SortSearchOrder } from "../../../types/misc.js";
 import { extractPath, extractQuery, throttle } from "../../../utils/utils.js";
-import Ph_FeedInfo from "../../feed/feedInfo/feedInfo.js";
 import Ph_DropDown, { ButtonLabel, DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
+import { DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_Flair, { FlairData } from "../../misc/flair/flair.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Ph_Header from "../header/header.js";
@@ -18,6 +19,7 @@ export default class Ph_Search extends HTMLElement {
 	searchBar: HTMLInputElement;
 	sortBy: Ph_DropDown;
 	flairSearch: Ph_DropDown;
+	areFlairsLoaded: boolean = false;
 	searchOrder = SortSearchOrder.relevance;
 	searchTimeFrame = SortPostsTimeFrame.all;
 	limitToSubreddit: HTMLInputElement;
@@ -165,6 +167,34 @@ export default class Ph_Search extends HTMLElement {
 			return { checkbox: checkbox, label: wrapper.children[0] as HTMLLabelElement };
 		}
 
+		this.flairSearch = new Ph_DropDown([], "Search by flair", DirectionX.right, DirectionY.bottom, false);
+		expandedOptions.appendChild(this.flairSearch);
+		this.flairSearch.toggleButton.addEventListener("click", async  () => {
+			if (this.areFlairsLoaded || !this.currentSubreddit)
+				return;
+			let flairData: Object[] = await redditApiRequest(`${this.currentSubreddit}/api/link_flair_v2`, [], true);
+			if (flairData["error"])
+				flairData = [];
+			const flairs = flairData
+				.map(flair => (<FlairData> {
+					type: flair["type"],
+					text: flair["text"],
+					backgroundColor: flair["background_color"],
+					richText: flair["richtext"],
+					textColor: flair["text_color"]
+				}))
+				.map(flair => (<DropDownEntryParam> {
+					displayElement: new Ph_Flair(flair),
+					value: flair.text,
+					onSelectCallback: this.searchByFlair.bind(this),
+				}));
+			if (flairs.length === 0)
+				this.flairSearch.setEntries([{ displayHTML: `No flairs for ${this.currentSubreddit}` }]);
+			else
+				this.flairSearch.setEntries(flairs);
+			this.areFlairsLoaded = true;
+		});
+
 		const { checkbox: limitToCheckbox, label: limitToLabel } = makeLabelCheckboxPair("Limit to", "limitToSubreddit", true, expandedOptions);
 		this.limitToSubreddit = limitToCheckbox;
 
@@ -184,34 +214,15 @@ export default class Ph_Search extends HTMLElement {
 			const subMatches = (e.detail as ViewChangeData).viewState.state.url.match(/^\/r\/[^\/]+/);
 			this.currentSubreddit = subMatches && subMatches[0] || null;
 			limitToLabel.innerText = `Limit to ${this.currentSubreddit || "all"}`;
-			if (this.flairSearch) {
-				this.flairSearch?.remove();
-				this.flairSearch = undefined;
+			this.areFlairsLoaded = false;
+			if (this.currentSubreddit) {
+				this.flairSearch.setEntries([isLoggedIn ? {displayElement: getLoadingIcon()} : {displayHTML: "Log in to list flairs"}]);
+				this.flairSearch.classList.remove("hide");
 			}
-			window.addEventListener("feedInfoReady", (e: CustomEvent) => {
-				const flairs: FlairData[] = (e.detail as Ph_FeedInfo).loadedInfo.data.flairs;
-				if (this.flairSearch) {
-					this.flairSearch?.remove();
-					this.flairSearch = undefined;
-				}
-				if (!flairs)
-					return;
-				this.flairSearch = new Ph_DropDown(
-					flairs.length > 0
-					? flairs.map(flair => ({
-						displayElement: new Ph_Flair(flair),
-						value: flair.text,
-						onSelectCallback: this.searchByFlair.bind(this),
-					}))
-					: [{ displayHTML: "No flairs available" }],
-					"Search by flair",
-					DirectionX.right,
-					DirectionY.bottom,
-					false
-				);
-				this.sortBy.insertAdjacentElement("afterend", this.flairSearch);
-			}, { once: true })
-		})
+			else {
+				this.flairSearch.classList.add("hide");
+			}
+		});
 	}
 
 	onTextEnter() {

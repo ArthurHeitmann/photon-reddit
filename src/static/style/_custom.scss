@@ -254,6 +254,8 @@ input.radio {
 	}
 }
 
-.dropDownButton .loadingIcon {
-	height: 2em;
+.dropDownButton, .dropDownEntry {
+	.loadingIcon {
+		height: 2em;
+	}
 }

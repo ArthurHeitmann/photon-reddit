@@ -34,6 +34,10 @@ export default class Ph_DropDown extends HTMLElement {
 			this.toggleButton.addEventListener("click", dropDownArea.toggleMenu.bind(dropDownArea));
 	}
 
+	setEntries(params: DropDownEntryParam[]) {
+		(this.$class("dropDownArea")[0] as Ph_DropDownArea).init(params, this);
+	}
+
 	setLabel(newLabel: ButtonLabel) {
 		if (typeof newLabel == "string")
 			this.toggleButton.innerText = newLabel;

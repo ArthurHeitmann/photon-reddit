@@ -18,9 +18,14 @@ export default class Ph_DropDownArea extends HTMLElement {
 		if (parentEntry)
 			this.parentEntry = parentEntry;
 
-		for (const param of entryParams) {
-			this.appendChild(new Ph_DropDownEntry(param, dropDown, this, parentEntry));
-		}
+		this.init(entryParams, dropDown);
+	}
+
+	init(entryParams: DropDownEntryParam[], dropDown: Ph_DropDown) {
+		this.innerText = "";
+
+		for (const param of entryParams)
+			this.appendChild(new Ph_DropDownEntry(param, dropDown, this, this.parentEntry));
 	}
 
 	toggleMenu() {
