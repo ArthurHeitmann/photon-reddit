@@ -28,31 +28,32 @@ Discover all the features yourself on [photon-reddit.com/](https://photon-reddit
 
 ### Download
 
-```sh
+```bash
 git clone https://github.com/ArthurHeitmann/photon-reddit.git
 cd photon-reddit
 ```
 
-### Build
+### Install dependencies & Build
 
-```sh
+```bash
+npm install
 npm run build
 ```
 
 ### Start
 
-```sh
+```bash
 npm run start
 ```
 
 ### Other commands for development
 
-```sh
+```bash
 # auto restart server when js files change
 npm run start-dev
 ```
 
-```sh
+```bash
 # watch for Typescript & Sass file changes and auto recompile
 npm run watch-tsc
 npm run watch-sass		# or watch-wsl2 for wsl support
@@ -81,6 +82,22 @@ Examples:
 ```Javascript
 export const rediretURI = "[what you entered in step 4.]";
 ```
+
+## Environment Variables
+
+Environment variables so far are only for the analytics system. If you use a .env file here is a template:
+
+```
+DB_HOST=
+DB_USER=
+DB_PW=
+DB_PORT=
+DB_DB=
+analyticsPw=
+```
+
+`DB_x` is for configuring the mariaDB database. `analyticsPw` is for a cookie to access the analytics dashboard. 
+More infos in `analyticsQueryMiddleware` in `src/serverScripts/analytics.ts`.   
 
 # Technical
 
