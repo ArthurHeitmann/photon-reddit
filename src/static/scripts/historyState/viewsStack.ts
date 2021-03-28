@@ -29,7 +29,7 @@ export default class ViewsStack {
 	/** current index in views */
 	private static pos: number = null;
 	/** to this element view elements will be appended */
-	private static attachmentPoint: HTMLElement = $tag("main")[0];
+	static attachmentPoint: HTMLElement = $tag("main")[0];
 	/** if true: the next pushAfter will replace the current history state */
 	private static isNextReplace: boolean;
 

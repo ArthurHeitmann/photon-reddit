@@ -1,15 +1,15 @@
 import { redditApiRequest, subscribe } from "../../../api/redditApi.js";
-import { isLoggedIn, MultiReddit, StoredData, thisUser } from "../../../utils/globals.js";
+import { RedditApiType } from "../../../types/misc.js";
+import { StoredData, thisUser } from "../../../utils/globals.js";
 import { $class, escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { classInElementTree, linksToSpa } from "../../../utils/htmlStuff.js";
-import { RedditApiType } from "../../../types/misc.js";
 import { numberToShort, stringSortComparer, throttle } from "../../../utils/utils.js";
+import Ph_BetterButton from "../../global/betterElements/betterButton.js";
 import Ph_Header from "../../global/header/header.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import { DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import { clearAllOldData } from "./feedInfoCleanup.js";
-import Ph_BetterButton from "../../global/betterElements/betterButton.js";
 
 export enum FeedType {
 	subreddit = "subreddit",
@@ -53,6 +53,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 	loadedInfo: StoredFeedInfo;
 	/** path for the feed, example: "/r/askreddit" */
 	feedUrl: string;
+	multiSubManager: HTMLDivElement;
 	focusLossHideRef: (e: MouseEvent) => void;
 	hideRef: () => void;
 	/** after this time cached data in the localstorage should be invalidated */
@@ -481,12 +482,12 @@ export default class Ph_FeedInfo extends HTMLElement {
 
 		const description = document.createElement("div");
 		description.innerHTML = this.loadedInfo.data["description_html"];
-		const miscText = document.createElement("div");
-		miscText.append(...this.makeMultiSubManager());
-		linksToSpa(miscText);
+		this.multiSubManager = document.createElement("div");
+		this.multiSubManager.append(...this.makeMultiSubManager());
+		linksToSpa(this.multiSubManager);
 		this.appendChild(this.makeSwitchableBar([
 			{ titleHTML: "Description", content: description },
-			{ titleHTML: "Subreddits", content: miscText },
+			{ titleHTML: "Subreddits", content: this.multiSubManager },
 		]));
 
 		linksToSpa(this);
@@ -501,7 +502,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		const content = document.createElement("div");
 		content.className = "content";
 		wrapper.appendChild(content);
-		for (let entry of entries) {
+		for (const entry of entries) {
 			const switchBtn = document.createElement("button");
 			switchBtn.innerHTML = entry.titleHTML;
 			switchBtn.addEventListener("click", () => {
@@ -556,6 +557,11 @@ export default class Ph_FeedInfo extends HTMLElement {
 	private makeMultiSubManager(): HTMLElement[] {
 		const outElements: HTMLElement[] = [];
 
+		const subCounter = document.createElement("div");
+		subCounter.className = "multiSubCounter";
+		subCounter.innerText = "xx/100";
+		outElements.push(subCounter);
+
 		if (this.loadedInfo.data["can_edit"]) {
 			const addSubredditBar = document.createElement("div");
 			addSubredditBar.className = "editableSub addSub";
@@ -594,13 +600,16 @@ export default class Ph_FeedInfo extends HTMLElement {
 					subs.names.forEach(sub => {
 						const selectSubBtn = document.createElement("button");
 						selectSubBtn.innerText = sub;
-						selectSubBtn.addEventListener("click", e => this.addSubToMulti(
-							sub,
-							this.feedUrl,
-							true,
-							(e.currentTarget as HTMLElement).parentElement.parentElement.parentElement)
-						);
 						subsSearchResults.appendChild(selectSubBtn);
+						selectSubBtn.addEventListener("click", async e => {
+							await this.addSubToMulti(
+								sub,
+								this.feedUrl,
+								true,
+								(e.currentTarget as HTMLElement).parentElement.parentElement.parentElement
+							);
+							this.checkMultiMaxSubCount();
+						});
 					});
 				} else {
 					subsSearchResults.classList.add("remove");
@@ -613,7 +622,15 @@ export default class Ph_FeedInfo extends HTMLElement {
 
 		this.loadedInfo.data.subreddits.forEach(sub => outElements.push(this.makeRemoveSubBar(sub)));
 
+		setTimeout(this.checkMultiMaxSubCount.bind(this), 0);
+
 		return outElements;
+	}
+
+	private checkMultiMaxSubCount() {
+		const currentSubCount = this.loadedInfo.data.subreddits.length;
+		(this.multiSubManager.$css(".editableSub.addSub input")[0] as HTMLInputElement).disabled = currentSubCount >= 100;
+		this.multiSubManager.$class("multiSubCounter")[0].innerHTML = `${currentSubCount}/100`;
 	}
 
 	private makeRemoveSubBar(sub: string) {
@@ -624,10 +641,13 @@ export default class Ph_FeedInfo extends HTMLElement {
 			removeSubButton.className = "removeSub transparentButton";
 			removeSubredditBar.appendChild(removeSubButton);
 			removeSubButton.addEventListener("click",
-				e => this.removeSubFromMulti(
-					(e.currentTarget as HTMLElement).parentElement.$tag("a")[0].innerHTML,
-					this.feedUrl,
-					(e.currentTarget as HTMLElement).parentElement)
+				async e => {
+					await this.removeSubFromMulti(
+						(e.currentTarget as HTMLElement).parentElement.$tag("a")[0].innerHTML,
+						this.feedUrl,
+						(e.currentTarget as HTMLElement).parentElement);
+					this.checkMultiMaxSubCount();
+				}
 			);
 		}
 		const subText = document.createElement("div");
@@ -672,7 +692,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 			}
 			if (subsList) {
 				const newSubIndex = this.loadedInfo.data.subreddits.indexOf(response["name"]);
-				subsList.children[newSubIndex].insertAdjacentElement("afterend", this.makeRemoveSubBar(response["name"]));
+				subsList.children[newSubIndex + 1].insertAdjacentElement("afterend", this.makeRemoveSubBar(response["name"]));
 				(subsList.$tag("input")[0] as HTMLInputElement).value = "";
 			}
 
