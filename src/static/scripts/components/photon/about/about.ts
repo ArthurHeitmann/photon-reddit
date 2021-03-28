@@ -32,7 +32,7 @@ const template = `
 </p>
 
 <p>
-	The Photon logo is self made and can may only be used in association with Photon Reddit.
+	The Photon logo is self made and may only be used in association with Photon Reddit.
 </p>
 
 <h2 id="privacy">Privacy</h2>
