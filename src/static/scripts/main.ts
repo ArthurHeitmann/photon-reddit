@@ -11,6 +11,7 @@ import { AuthState, checkAuthOnPageLoad, checkTokenRefresh, initiateLogin } from
 import Ph_Header from "./components/global/header/header.js";
 import Ph_Toast, { Level } from "./components/misc/toast/toast.js";
 import { pushLinkToHistorySep } from "./historyState/historyStateManager.js";
+import ViewsStack from "./historyState/viewsStack.js";
 import { hasAnalyticsFileLoaded } from "./unsuspiciousFolder/unsuspiciousFile.js";
 import { loginSubredditFullName, loginSubredditName } from "./utils/consts.js";
 import { setWaitingServiceWorker } from "./utils/vesionManagement.js";
@@ -32,7 +33,12 @@ async function init(): Promise<void> {
 	checkIfAnalyticsFileLoaded()
 
 	if (await checkAuthOnPageLoad() === AuthState.LoggedIn) {
-		await thisUser.fetch();
+		try {
+			await thisUser.fetch();
+		}
+		catch {
+			showInitErrorPage();
+		}
 		if (localStorage["loginRecommendationFlag"] !== "set" && !thisUser.subreddits.includes(`r/${loginSubredditName}`)) {
 			localStorage["loginRecommendationFlag"] = "set";
 			new Ph_Toast(Level.Info, `Do you want to subscribe to r/${loginSubredditName}?`, {
@@ -48,6 +54,15 @@ async function init(): Promise<void> {
 	window.dispatchEvent(new Event("ph-page-ready"));
 	if (localStorage["firstTimeFlag"] !== "set")
 		localStorage["firstTimeFlag"] = "set";
+}
+
+function showInitErrorPage() {
+	const errorPage = document.createElement("div");
+	errorPage.innerHTML = `
+		<h1>Bad error happened!</h1>
+		<p>Maybe check <a href="https://www.redditstatus.com/" target="_blank">redditstatus.com</a></p>
+	`;
+	ViewsStack.attachmentPoint.appendChild(errorPage);
 }
 
 function loadPosts() {
