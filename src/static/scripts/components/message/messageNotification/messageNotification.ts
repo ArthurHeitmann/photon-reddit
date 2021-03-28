@@ -75,7 +75,7 @@ export default class Ph_MessageNotification extends HTMLElement {
 		($class("userDropDown")[0] as Ph_UserDropDown).setUnreadCount(thisUser.inboxUnread);
 		for (let msg of messageFullNames) {
 			$css(`.readable[data-id="${msg}"]`)
-				.forEach((readable: Ph_Readable) => readable.setIsRead(!readable.isRead));
+				.forEach((readable: Ph_Readable) => readable.setIsRead(true));
 		}
 		this.close();
 	}

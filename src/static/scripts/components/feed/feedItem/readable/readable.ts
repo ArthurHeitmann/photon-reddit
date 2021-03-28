@@ -59,8 +59,8 @@ export default abstract class Ph_Readable extends Ph_FeedItem implements FullNam
 		($class("userDropDown")[0] as Ph_UserDropDown).setUnreadCount(thisUser.inboxUnread);
 		$css(`.readable[data-id="${this.getAttribute("data-id")}"]`)
 			.forEach((readable: Ph_Readable) => readable.setIsRead(!readable.isRead));
-
 	}
+
 	setIsRead(read: boolean) {
 		this.isRead = read;
 		this.updateIsReadStatus();

@@ -198,6 +198,6 @@ blockquote {
 }
 
 ::selection {
-	background: vars.$primary;
-	color: vars.$background;
+	background: vars.$primaryContrast;
+	color: vars.$text;
 }
