@@ -19,6 +19,7 @@ import Ph_Flair from "../misc/flair/flair.js";
 import Ph_Toast, { Level } from "../misc/toast/toast.js";
 import Ph_VoteButton from "../misc/voteButton/voteButton.js";
 import Ph_PostBody from "./postBody/postBody.js";
+import Ph_PostText from "./postBody/postText/postText.js";
 
 /**
  * A reddit post
@@ -87,6 +88,16 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		this.voteDownButton.addEventListener("click", () => this.vote(VoteDirection.down));
 		actionWrapper.appendChild(this.voteDownButton);
 		this.setVotesState(this.currentVoteDirection);
+
+		try {
+			this.postBody = new Ph_PostBody(postData);
+		}
+		catch (e) {
+			console.error(`Error making post for ${postData.data["permalink"]}`);
+			console.error(e);
+			new Ph_Toast(Level.error, "Error making post");
+		}
+
 		// additional actions drop down
 		const dropDownEntries = [
 			{ displayHTML: this.isSaved ? "Unsave" : "Save", onSelectCallback: this.toggleSave.bind(this) },
@@ -97,8 +108,11 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 					{ displayHTML: "Crosspost", onSelectCallback: this.crossPost.bind(this) },
 				] }
 		];
-		if (thisUser && thisUser.name === postData.data["author"])
-			dropDownEntries.push({ displayHTML: "Delete", onSelectCallback: this.deletePost.bind(this) });
+		if (thisUser && thisUser.name === postData.data["author"]) {
+			if (this.postBody.children[0] instanceof Ph_PostText)
+				dropDownEntries.push({displayHTML: "Edit", onSelectCallback: this.editPost.bind(this)});
+			dropDownEntries.push({displayHTML: "Delete", onSelectCallback: this.deletePost.bind(this)});
+		}
 		const moreDropDown = new Ph_DropDown(dropDownEntries, "", DirectionX.left, DirectionY.bottom, true);
 		moreDropDown.toggleButton.classList.add("transparentButtonAlt");
 		actionWrapper.appendChild(moreDropDown);
@@ -175,15 +189,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		`;
 		if (postData.data["all_awardings"] && postData.data["all_awardings"].length > 0)
 			mainPart.$class("flairWrapper")[0].insertAdjacentElement("beforebegin", new Ph_AwardsInfo(postData.data["all_awardings"]));
-		try {
-			this.postBody = new Ph_PostBody(postData);
-			mainPart.appendChild(this.postBody);
-		}
-		catch (e) {
-			console.error(`Error making post for ${postData.data["permalink"]}`);
-			console.error(e);
-			new Ph_Toast(Level.error, "Error making post");
-		}
+		mainPart.appendChild(this.postBody);
 		this.appendChild(mainPart);
 
 		mainPart.$class("flairWrapper")[0]
@@ -357,6 +363,11 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 				throw "Invalid share type";
 				
 		}
+	}
+
+	editPost() {
+		const postText = this.postBody.children[0] as Ph_PostText;
+		postText.startEditing();
 	}
 
 	async deletePost() {

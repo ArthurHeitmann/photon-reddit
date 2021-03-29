@@ -107,7 +107,11 @@ export default class Ph_PostBody extends HTMLElement {
 	}
 
 	private makeTextBody(postData: RedditApiType) {
-		const text = new Ph_PostText(postData.data["selftext_html"] || "");
+		const text = new Ph_PostText(
+			postData.data["selftext_html"] || "",
+			postData.data["selftext"] || "",
+			postData.data["name"]
+		);
 		this.appendChild(text);
 		if (text.innerText)
 			this.classList.add("padded");

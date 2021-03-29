@@ -1,7 +1,10 @@
 
+.postText {
+	width: 100%;
+}
+
 .isInFeed {
 	.postText {
-		width: 100%;
 		transition: padding-bottom .25s ease;
 		--max-height: 30vh;
 

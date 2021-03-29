@@ -1,4 +1,8 @@
+import { redditApiRequest } from "../../../../api/redditApi.js";
+import { escHTML } from "../../../../utils/htmlStatics.js";
 import { elementWithClassInTree } from "../../../../utils/htmlStuff.js";
+import Ph_MarkdownForm from "../../../misc/markdownForm/markdownForm.js";
+import Ph_Toast, { Level } from "../../../misc/toast/toast.js";
 
 /**
  * Text of a post. If in feed, has a max height. If higher than max height, show expand button
@@ -7,11 +11,16 @@ export default class Ph_PostText extends HTMLElement {
 	maxHeightInVh: number;
 	expandButton: HTMLButtonElement;
 	textWrapper: HTMLDivElement;
+	markdown: string;
+	editForm: Ph_MarkdownForm;
+	postFullName: string;
 
-	constructor(bodyHtml: string) {
+	constructor(bodyHtml: string, bodyMarkDown: string, postFullName: string) {
 		super();
 
 		this.className = "postText";
+		this.markdown = bodyMarkDown;
+		this.postFullName = postFullName;
 
 		this.textWrapper = document.createElement("div");
 		this.textWrapper.innerHTML = bodyHtml;
@@ -30,6 +39,12 @@ export default class Ph_PostText extends HTMLElement {
 				this.appendChild(this.expandButton);
 			}
 		}, 0);
+
+		this.editForm = new Ph_MarkdownForm("Edit", true);
+		this.editForm.classList.add("hide");
+		this.editForm.addEventListener("ph-submit", this.edit.bind(this));
+		this.editForm.addEventListener("ph-cancel", this.endEditing.bind(this));
+		this.appendChild(this.editForm);
 	}
 
 	updateMaxHeightStyle() {
@@ -49,6 +64,53 @@ export default class Ph_PostText extends HTMLElement {
 
 	isOverflowing(): boolean {
 		return this.textWrapper.scrollHeight - this.textWrapper.offsetHeight > 15;
+	}
+
+	startEditing() {
+		this.editForm.textField.value = this.markdown;
+		this.editForm.classList.remove("hide");
+		Array.from(this.children)
+			.filter(el => el !== this.editForm)
+			.forEach(el => el.classList.add("hide"));
+	}
+
+	endEditing() {
+		this.editForm.classList.add("hide");
+		Array.from(this.children)
+			.filter(el => el !== this.editForm)
+			.forEach(el => el.classList.remove("hide"));
+	}
+
+	async edit() {
+		let editData: any;
+		try {
+			editData = await redditApiRequest(
+				"/api/editusertext", [
+					["api_type", "json"],
+					["text", this.editForm.textField.value],
+					["thing_id", this.postFullName],
+				],
+				true,
+				{method: "POST"}
+			);
+		}
+		catch (e) {
+			console.error("Error editing post", e);
+			new Ph_Toast(Level.error, "Error editing post", { timeout: 3000 });
+			return;
+		}
+		if (editData.json.errors.length > 0) {
+			console.error("Error editing post");
+			console.error(editData);
+			console.error(JSON.stringify(editData));
+			for (let error of editData.json.errors)
+				new Ph_Toast(Level.error, error instanceof Array ? error.join(" | ") : escHTML(JSON.stringify(error)));
+			return;
+		}
+
+		this.markdown = editData["json"]["data"]["things"][0]["data"]["selftext"];
+		this.textWrapper.innerHTML = editData["json"]["data"]["things"][0]["data"]["selftext_html"];
+		this.endEditing();
 	}
 }
 

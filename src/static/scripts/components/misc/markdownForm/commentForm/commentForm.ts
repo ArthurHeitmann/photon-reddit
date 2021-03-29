@@ -21,7 +21,7 @@ export default class Ph_CommentForm extends Ph_MarkdownForm {
 			this.submitCommentBtn.disabled = false;
 
 			if (response.json.errors.length > 0) {
-				console.error("Error posting comment");
+				console.error("Error editing comment");
 				console.error(response);
 				console.error(JSON.stringify(response));
 				for (let error of response.json.errors)
