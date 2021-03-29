@@ -3,7 +3,8 @@
 	display: flex;
 	flex-direction: column;
 	overflow-x: auto;
-	overflow-y: hidden;		// TODO why is it overflowing here?
+	overflow-y: hidden;
+	padding-bottom: 8rem;
 
 	.parentCommentsLink {
 		display: block;

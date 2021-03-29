@@ -14,7 +14,8 @@ export default class Ph_DropDownArea extends HTMLElement {
 
 		this.cancelMenuFuncRef = this.cancelMenu.bind(this);
 		this.classList.add("dropDownArea");
-		
+		this.classList.add("remove");
+
 		if (parentEntry)
 			this.parentEntry = parentEntry;
 

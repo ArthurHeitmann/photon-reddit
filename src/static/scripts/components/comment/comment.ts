@@ -145,7 +145,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 			dropDownParams.push({ displayHTML: "Reply", onSelectCallback: this.showReplyForm.bind(this) });
 		if (commentData.data["author"] === thisUser.name) {
 			dropDownParams.push({ displayHTML: "Edit", onSelectCallback: this.edit.bind(this) });
-			dropDownParams.push({ displayHTML: "Delete", onSelectCallback: this.delete.bind(this) });
+			dropDownParams.push({ displayHTML: "Delete", onSelectCallback: this.deletePrompt.bind(this) });
 		}
 		dropDownParams.push(...[
 			{ displayHTML: this.isSaved ? "Unsave" : "Save", onSelectCallback: this.toggleSave.bind(this) },
@@ -404,7 +404,15 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 		this.childComments.insertAdjacentElement("beforebegin", editForm);
 	}
 
-	async delete(_, __, ___, source: Ph_DropDownEntry) {
+	deletePrompt(_, __, ___, source: Ph_DropDownEntry) {
+		new Ph_Toast(
+			Level.warning,
+			"Are you sure you want to delete this comment?",
+			{ onConfirm: () => this.delete(source) }
+		);
+	}
+
+	async delete(dropDownEntry: Ph_DropDownEntry) {
 		try {
 			const resp = await deleteThing(this);
 
@@ -416,8 +424,12 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 			}
 
 			this.$class("content")[0].innerHTML = "[deleted]";
+
+			Array.from(dropDownEntry.parentElement.children)
+				.filter((entry: HTMLElement) => /delete|edit/i.test(entry.textContent))
+				.forEach(entry => entry.remove());
+
 			new Ph_Toast(Level.success, "Deleted comment", { timeout: 2000 });
-			source.remove();
 		} catch (e) {
 			console.error("Error deleting comment");
 			console.error(e);

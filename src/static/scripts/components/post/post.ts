@@ -1,9 +1,9 @@
 import { deleteThing, save, vote, VoteDirection, voteDirectionFromLikes } from "../../api/redditApi.js";
+import { RedditApiType } from "../../types/misc.js";
 import Votable from "../../types/votable.js";
 import { hasPostsBeenSeen, markPostAsSeen, thisUser } from "../../utils/globals.js";
 import { escADQ, escHTML } from "../../utils/htmlStatics.js";
-import { elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff.js";
-import { RedditApiType } from "../../types/misc.js";
+import { linksToSpa } from "../../utils/htmlStuff.js";
 import {
 	isObjectEmpty,
 	numberToShort as numberToShort,
@@ -111,7 +111,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		if (thisUser && thisUser.name === postData.data["author"]) {
 			if (this.postBody.children[0] instanceof Ph_PostText)
 				dropDownEntries.push({displayHTML: "Edit", onSelectCallback: this.editPost.bind(this)});
-			dropDownEntries.push({displayHTML: "Delete", onSelectCallback: this.deletePost.bind(this)});
+			dropDownEntries.push({displayHTML: "Delete", onSelectCallback: this.deletePostPrompt.bind(this)});
 		}
 		const moreDropDown = new Ph_DropDown(dropDownEntries, "", DirectionX.left, DirectionY.bottom, true);
 		moreDropDown.toggleButton.classList.add("transparentButtonAlt");
@@ -370,7 +370,15 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		postText.startEditing();
 	}
 
-	async deletePost() {
+	deletePostPrompt(_, __, ___, source: Ph_DropDownEntry) {
+		new Ph_Toast(
+			Level.warning,
+			"Are you sure you want to delete this post?",
+			{ onConfirm: () => this.deletePost(source) }
+		);
+	}
+
+	async deletePost(dropDownEntry: Ph_DropDownEntry) {
 		const resp = await deleteThing(this);
 
 		if (!isObjectEmpty(resp) || resp["error"]) {
@@ -382,6 +390,12 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 
 		this.postBody.innerText = "[deleted]";
 		this.postBody.className = "content padded";
+
+		Array.from(dropDownEntry.parentElement.children)
+			.filter((entry: HTMLElement) => /delete|edit/i.test(entry.textContent))
+			.forEach(entry => entry.remove());
+
+		new Ph_Toast(Level.success, "Deleted post", { timeout: 2000 });
 	}
 
 	crossPost() {
