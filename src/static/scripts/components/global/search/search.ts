@@ -213,13 +213,16 @@ export default class Ph_Search extends HTMLElement {
 		window.addEventListener("ph-view-change", (e: CustomEvent) => {
 			const subMatches = (e.detail as ViewChangeData).viewState.state.url.match(/^\/r\/[^\/]+/);
 			this.currentSubreddit = subMatches && subMatches[0] || null;
-			limitToLabel.innerText = `Limit to ${this.currentSubreddit || "all"}`;
 			this.areFlairsLoaded = false;
 			if (this.currentSubreddit) {
+				limitToLabel.innerText = `Limit to ${this.currentSubreddit}`;
+				this.limitToSubreddit.nextElementSibling.classList.remove("hide");
 				this.flairSearch.setEntries([isLoggedIn ? {displayElement: getLoadingIcon()} : {displayHTML: "Log in to list flairs"}]);
 				this.flairSearch.classList.remove("hide");
 			}
 			else {
+				limitToLabel.innerText = "Search everywhere";
+				this.limitToSubreddit.nextElementSibling.classList.add("hide");
 				this.flairSearch.classList.add("hide");
 			}
 		});
