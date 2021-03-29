@@ -17,13 +17,13 @@ const forceCacheFiles = [
 	"/favicon.ico"
 ];
 enum Environment {
-	PRODUCTION, DEVELOPMENT
+	production, development
 }
 let environment: Environment;
 
 self.addEventListener("install", (e: InstallEvent) => {
 	console.log("Installing sw...");
-	environment = location.hostname === "localhost" ? Environment.DEVELOPMENT : Environment.PRODUCTION;
+	environment = location.hostname === "localhost" ? Environment.development : Environment.production;
 	e.waitUntil(
 		caches.open(CACHE_NAME)
 			.then(cache => {
@@ -57,7 +57,7 @@ self.addEventListener('fetch', (event: FetchEvent) => {
 	if (!filetypesToCache.some(type => url.pathname.endsWith(type)) && !isDocument)
 		return;
 
-	let useCaches = environment === Environment.PRODUCTION;
+	let useCaches = environment === Environment.production;
 	useCaches = useCaches && !isDocument;
 
 	event.respondWith(

@@ -6,7 +6,7 @@
 const imgurClientID = "d3609b9bd045b8f";
 
 export enum ImgurContentType {
-	Image, Video
+	image, video
 }
 
 export interface ImgurContent {
@@ -22,11 +22,11 @@ function makeContentData(data): ImgurContent {
 		caption: data.description || ""
 	};
 	if (/(^video\/)|(^image\/gif)/.test(data.type)) {
-		content.type = ImgurContentType.Video;
+		content.type = ImgurContentType.video;
 		content.link = data.mp4;
 	}
 	else {
-		content.type = ImgurContentType.Image;
+		content.type = ImgurContentType.image;
 		content.link = data.link;
 	}
 	return content;

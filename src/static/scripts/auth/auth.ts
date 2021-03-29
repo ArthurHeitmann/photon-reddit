@@ -9,7 +9,7 @@ export function initiateLogin() {
 }
 
 export enum AuthState {
-	LoggedIn, ImplicitGrant
+	loggedIn, implicitGrant
 }
 
 export async function checkAuthOnPageLoad(): Promise<AuthState> {
@@ -26,13 +26,13 @@ export async function checkAuthOnPageLoad(): Promise<AuthState> {
 			else if (!await verifyTokenWorksLoggedIn() && !await refreshAccessToken()) {
 				authError("Invalid authentication! If this is breaking the website, log out & reload?");
 			}
-			return AuthState.LoggedIn;
+			return AuthState.loggedIn;
 		}
 		else {
 			setIsLoggedIn(false);
 			if (hasTokenExpired() && !await getImplicitGrant() || !await verifyTokenWorksImplicit() && !await getImplicitGrant())
 				authError("Failed to get authentication! Do you want to clear data & reload?");
-			return AuthState.ImplicitGrant;
+			return AuthState.implicitGrant;
 		}
 	}
 	// no usable auth data
@@ -40,12 +40,12 @@ export async function checkAuthOnPageLoad(): Promise<AuthState> {
 		setIsLoggedIn(false);
 		if (!await getImplicitGrant())
 			authError("Failed to get authentication! Do you want to clear data & reload?");
-		return AuthState.ImplicitGrant;
+		return AuthState.implicitGrant;
 	}
 }
 
 function authError(msg: string) {
-	new Ph_Toast(Level.Warning, msg, { onConfirm: () => {
+	new Ph_Toast(Level.warning, msg, { onConfirm: () => {
 		localStorage.removeItem("accessToken");
 		localStorage.removeItem("refreshToken");
 		localStorage.removeItem("isLoggedIn");

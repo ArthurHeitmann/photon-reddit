@@ -32,7 +32,7 @@ async function init(): Promise<void> {
 
 	checkIfAnalyticsFileLoaded()
 
-	if (await checkAuthOnPageLoad() === AuthState.LoggedIn) {
+	if (await checkAuthOnPageLoad() === AuthState.loggedIn) {
 		try {
 			await thisUser.fetch();
 		}
@@ -41,7 +41,7 @@ async function init(): Promise<void> {
 		}
 		if (localStorage["loginRecommendationFlag"] !== "set" && !thisUser.subreddits.includes(`r/${loginSubredditName}`)) {
 			localStorage["loginRecommendationFlag"] = "set";
-			new Ph_Toast(Level.Info, `Do you want to subscribe to r/${loginSubredditName}?`, {
+			new Ph_Toast(Level.info, `Do you want to subscribe to r/${loginSubredditName}?`, {
 				onConfirm: () => subscribe(loginSubredditFullName, true)
 			});
 		}
@@ -77,7 +77,7 @@ function checkIfAnalyticsFileLoaded() {
 		return;
 
 	console.error("couldn't load unsuspiciousFolder file");
-	new Ph_Toast(Level.Error, "Couldn't load all script files");
+	new Ph_Toast(Level.error, "Couldn't load all script files");
 	throw "couldn't load unsuspiciousFolder file";
 }
 

@@ -121,7 +121,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			}
 			catch (e) {
 				console.error(e);
-				new Ph_Toast(Level.Error, `Error making feed item`);
+				new Ph_Toast(Level.error, `Error making feed item`);
 			}
 		}
 	}
@@ -142,7 +142,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			setLabel(section);
 		} catch (e) {
 			console.error("Error getting message section items");
-			new Ph_Toast(Level.Error, "Error getting message section items");
+			new Ph_Toast(Level.error, "Error getting message section items");
 			console.error(e);
 			setLabel(initialLabel);
 		}
@@ -160,7 +160,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			case "t4":
 				return new Ph_Message(itemData, totalItemCount !== 1);
 			default:
-				new Ph_Toast(Level.Error, `Unknown feed item "${escHTML(itemData.kind)}"`);
+				new Ph_Toast(Level.error, `Unknown feed item "${escHTML(itemData.kind)}"`);
 				throw `What is this feed item? ${JSON.stringify(itemData, null, 4)}`;
 		}
 	}
@@ -178,7 +178,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			if (this.isLoading || elementWithClassInTree(this.parentElement, "viewState").classList.contains("hide"))
 				return;
 			new Ph_Toast(
-				Level.Warning,
+				Level.warning,
 				"Empty feed. Try to load more?",
 				{ timeout: 2000, onConfirm: () => this.onScroll(undefined, true) }
 			);
@@ -188,18 +188,18 @@ export default class Ph_UniversalFeed extends HTMLElement {
 		while (last.classList.contains("hide") && last.previousElementSibling)
 			last = last.previousElementSibling;
 		if (last.getBoundingClientRect().y < window.innerHeight * 2.5 && !this.hasReachedEndOfFeed)
-			this.scrollAction(LoadPosition.After);
+			this.scrollAction(LoadPosition.after);
 		let first = this.children[0];
 		while (first.classList.contains("hide") && first.nextElementSibling)
 			first = first.nextElementSibling
 		if (first && first.getBoundingClientRect().y > window.innerHeight * -2.5)
-			this.scrollAction(LoadPosition.Before);
+			this.scrollAction(LoadPosition.before);
 	}
 
 	scrollAction(loadPosition: LoadPosition) {
-		if (loadPosition === LoadPosition.Before && (this.beforeData === null || this.beforeData === this.absoluteFirst))
+		if (loadPosition === LoadPosition.before && (this.beforeData === null || this.beforeData === this.absoluteFirst))
 			return;
-		if (loadPosition === LoadPosition.After && this.afterData === null)
+		if (loadPosition === LoadPosition.after && this.afterData === null)
 			return;
 
 		this.isLoading = true;
@@ -212,7 +212,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 	}
 
 	clearPrevious(loadPosition: LoadPosition) {
-		if (loadPosition === LoadPosition.Before) {
+		if (loadPosition === LoadPosition.before) {
 			const removeElements: HTMLElement[] = [];
 			let next = this.lastElementChild as HTMLElement;
 			while (next && (next.classList.contains("hide") || next.getBoundingClientRect().y > window.innerHeight * 7) && this.childElementCount > 1) {
@@ -227,7 +227,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 
 			this.afterData = this.lastElementChild.getAttribute("data-id");
 		}
-		else if (loadPosition === LoadPosition.After) {
+		else if (loadPosition === LoadPosition.after) {
 			// firefox messes up the scroll position if you just remove all old elements, so we have to do this instead
 			// first collect all elements that are too far away and should be removed
 			const removeElements: HTMLElement[] = [];
@@ -262,14 +262,14 @@ export default class Ph_UniversalFeed extends HTMLElement {
 
 	async loadMore(loadPosition) {
 		const posts: RedditApiType = await redditApiRequest(this.requestUrl, [
-			["before", loadPosition === LoadPosition.Before ? this.beforeData : "null"],
-			["after",  loadPosition === LoadPosition.After  ? this.afterData : "null"],
+			["before", loadPosition === LoadPosition.before ? this.beforeData : "null"],
+			["after",  loadPosition === LoadPosition.after  ? this.afterData : "null"],
 		], false);
 
 		if (await waitForFullScreenExit())
 			await sleep(100);
 
-		if (loadPosition === LoadPosition.After) {
+		if (loadPosition === LoadPosition.after) {
 			for (const postData of posts.data.children) {
 				if (!this.shouldAddFeedItem(postData))
 					continue;
@@ -278,7 +278,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 				}
 				catch (e) {
 					console.error(e);
-					new Ph_Toast(Level.Error, `Error making feed item`);
+					new Ph_Toast(Level.error, `Error making feed item`);
 				}
 			}
 			this.afterData = posts.data.after;
@@ -300,7 +300,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 				}
 				catch (e) {
 					console.error(e);
-					new Ph_Toast(Level.Error, `Error making feed item`);
+					new Ph_Toast(Level.error, `Error making feed item`);
 				}
 			}
 			document.scrollingElement.scrollTo({ top: viewScrollTop + addedHeight - elementMarginTop });
@@ -322,14 +322,14 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			}
 			catch (e) {
 				console.error(e);
-				new Ph_Toast(Level.Error, `Error making feed item`);
+				new Ph_Toast(Level.error, `Error making feed item`);
 			}
 		}
 	}
 }
 
 enum LoadPosition {
-	Before, After
+	before, after
 }
 
 customElements.define("ph-universal-feed", Ph_UniversalFeed);

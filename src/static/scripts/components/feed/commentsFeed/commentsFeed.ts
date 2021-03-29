@@ -25,7 +25,7 @@ export default class Ph_CommentsFeed extends HTMLElement {
 			catch (e) {
 				console.error("Error making root comment");
 				console.error(e);
-				new Ph_Toast(Level.Error, "Error making comment");
+				new Ph_Toast(Level.error, "Error making comment");
 			}
 		}
 	}

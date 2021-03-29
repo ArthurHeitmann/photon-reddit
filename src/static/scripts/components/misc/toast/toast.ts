@@ -53,22 +53,22 @@ export default class Ph_Toast extends HTMLElement {
 }
 
 const levelConfig = {
-	Success: {
+	success: {
 		text: "Success",
 		color: "#388e3c",
 		img: "/img/success.svg",
 	},
-	Info: {
+	info: {
 		text: "Info",
 		color: "#1976d2",
 		img: "/img/info.svg",
 	},
-	Warning: {
+	warning: {
 		text: "Warning",
 		color: "#f57c00",
 		img: "/img/warning.svg",
 	},
-	Error: {
+	error: {
 		text: "Error",
 		color: "#d32f2f",
 		img: "/img/error.svg",
@@ -76,7 +76,7 @@ const levelConfig = {
 }
 
 export enum Level {
-	Success = "Success", Info = "Info", Warning = "Warning", Error = "Error",
+	success = "success", info = "info", warning = "warning", error = "error",
 }
 
 customElements.define("ph-toast", Ph_Toast);

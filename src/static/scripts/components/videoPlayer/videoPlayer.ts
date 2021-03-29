@@ -48,7 +48,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 				return;
 			}
 			console.error(`Unknown video provider for ${postData.data["url"]}`);
-			new Ph_Toast(Level.Error, `Unknown video provider for ${escHTML(postData.data["url"])}`);
+			new Ph_Toast(Level.error, `Unknown video provider for ${escHTML(postData.data["url"])}`);
 		}
 
 		// task of this huuuuge switch: get the video file url (.mp4/.gif/...) of this post
@@ -145,7 +145,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 						]));
 					}
 					else {
-						new Ph_Toast(Level.Error, "A wild new v.redd.it standard has appeared!");
+						new Ph_Toast(Level.error, "A wild new v.redd.it standard has appeared!");
 						console.error(`A wild new v.redd.it standard has appeared! ${helperUrl}`);
 						throw "A wild new v.redd.it standard has appeared!";
 					}
@@ -203,7 +203,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 					youtubeDlUrl(postData.data["url"]).then(async clipMp4 => {
 						videoOut.init(new Ph_SimpleVideo([{ src: clipMp4, type: "video/mp4" }]));
 					}).catch(err => {
-						new Ph_Toast(Level.Error, "Error getting Twitch clip");
+						new Ph_Toast(Level.error, "Error getting Twitch clip");
 						console.error("Error getting twitch clip url");
 						console.error(err);
 					});

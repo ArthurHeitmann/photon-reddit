@@ -25,7 +25,7 @@ export default class Ph_CommentForm extends Ph_MarkdownForm {
 				console.error(response);
 				console.error(JSON.stringify(response));
 				for (let error of response.json.errors)
-					new Ph_Toast(Level.Error, error instanceof Array ? error.join(" | ") : escHTML(JSON.stringify(error)));
+					new Ph_Toast(Level.error, error instanceof Array ? error.join(" | ") : escHTML(JSON.stringify(error)));
 				return;
 			}
 

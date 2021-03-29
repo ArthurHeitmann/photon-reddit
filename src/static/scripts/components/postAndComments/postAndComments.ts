@@ -38,7 +38,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 		catch (e) {
 			console.error("Error making post in comments");
 			console.error(e);
-			new Ph_Toast(Level.Error, "Error making post");
+			new Ph_Toast(Level.error, "Error making post");
 		}
 
 		// write comment form
@@ -130,7 +130,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 		catch (e) {
 			console.error("Error sorting comments");
 			console.error(e);
-			new Ph_Toast(Level.Error, "Error sorting comments");
+			new Ph_Toast(Level.error, "Error sorting comments");
 			setLabel(initialLabel);
 		}
 

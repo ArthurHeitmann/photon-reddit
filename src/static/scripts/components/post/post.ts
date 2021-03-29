@@ -182,7 +182,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		catch (e) {
 			console.error(`Error making post for ${postData.data["permalink"]}`);
 			console.error(e);
-			new Ph_Toast(Level.Error, "Error making post");
+			new Ph_Toast(Level.error, "Error making post");
 		}
 		this.appendChild(mainPart);
 
@@ -303,7 +303,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		if (!res) {
 			console.error("Error voting on post");
 			this.setVotesState(prevDir);
-			new Ph_Toast(Level.Error, "Error occurred while voting");
+			new Ph_Toast(Level.error, "Error occurred while voting");
 		}
 	};
 
@@ -337,7 +337,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		source.innerText = this.isSaved ? "Unsave" : "Save";
 		if (!await save(this)) {
 			console.error(`error voting on post ${this.fullName}`);
-			new Ph_Toast(Level.Error, "Error saving post");
+			new Ph_Toast(Level.error, "Error saving post");
 		}
 	}
 
@@ -365,7 +365,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		if (!isObjectEmpty(resp) || resp["error"]) {
 			console.error("Error deleting post");
 			console.error(resp);
-			new Ph_Toast(Level.Error, "Error deleting post");
+			new Ph_Toast(Level.error, "Error deleting post");
 			return;
 		}
 
@@ -374,7 +374,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 	}
 
 	crossPost() {
-		new Ph_Toast(Level.Info, "Currently not supported", { timeout: 5000 });
+		new Ph_Toast(Level.info, "Currently not supported", { timeout: 5000 });
 	}
 }
 

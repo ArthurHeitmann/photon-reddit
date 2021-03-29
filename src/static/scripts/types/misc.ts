@@ -51,17 +51,17 @@ export enum SortUserPostsOrder {
 }
 
 export enum UserSection {
-	Overview = "",
-	Posts = "submitted",
-	Comments = "comments",
-	Gilded = "gilded",
-	Upvoted = "upvoted",
-	Downvoted = "downvoted",
-	Hidden = "hidden",
-	Saved = "saved",
+	overview = "",
+	posts = "submitted",
+	comments = "comments",
+	gilded = "gilded",
+	upvoted = "upvoted",
+	downvoted = "downvoted",
+	hidden = "hidden",
+	saved = "saved",
 }
 
-export const NonSortableUserSections = [UserSection.Gilded, UserSection.Upvoted, UserSection.Downvoted, UserSection.Hidden, UserSection.Saved];
+export const NonSortableUserSections = [UserSection.gilded, UserSection.upvoted, UserSection.downvoted, UserSection.hidden, UserSection.saved];
 
 export enum SortPostsTimeFrame {
 	hour = "hour",

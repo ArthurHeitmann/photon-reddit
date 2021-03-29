@@ -105,7 +105,7 @@ export default class Ph_PhotonSettings extends HTMLElement {
 		saveButton.innerText = "Save";
 		saveButton.addEventListener("click", () => {
 			if (isObjectEmpty(this.temporarySettings)) {
-				new Ph_Toast(Level.Warning, "Nothing to save", { timeout: 2000 });
+				new Ph_Toast(Level.warning, "Nothing to save", { timeout: 2000 });
 				return;
 			}
 			globalSettings = {
@@ -115,7 +115,7 @@ export default class Ph_PhotonSettings extends HTMLElement {
 			window.dispatchEvent(new CustomEvent("settingsChanged", { detail: deepClone(this.temporarySettings) }));
 			this.temporarySettings = {};
 			localStorage.settings = JSON.stringify(globalSettings);
-			new Ph_Toast(Level.Success, "", { timeout: 1500 });
+			new Ph_Toast(Level.success, "", { timeout: 1500 });
 		});
 		bottomBar.appendChild(saveButton);
 		windowWrapper.appendChild(bottomBar);
@@ -124,7 +124,7 @@ export default class Ph_PhotonSettings extends HTMLElement {
 	private stageSettingChange(propertyName: string, validator?: (changed: any) => boolean, errorMessage?: string): (changed: any) => void {
 		return changed => {
 			if (validator && !validator(changed)) {
-				new Ph_Toast(Level.Error, errorMessage, { timeout: 3000 });
+				new Ph_Toast(Level.error, errorMessage, { timeout: 3000 });
 				return;
 			}
 			if (changed !== globalSettings[propertyName])
@@ -282,7 +282,7 @@ export default class Ph_PhotonSettings extends HTMLElement {
 		clearSeenPostsBtn.innerText = "Clear seen posts";
 		clearSeenPostsBtn.addEventListener("click", () => {
 			clearSeenPosts();
-			new Ph_Toast(Level.Success, "", { timeout: 1500 });
+			new Ph_Toast(Level.success, "", { timeout: 1500 });
 		});
 		clearSeenPostsBtn.className = "mla button";
 		this.optionsArea.appendChild(this.makeGeneralInputGroup("Keep stored data for N ms", [

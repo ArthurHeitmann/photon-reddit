@@ -36,17 +36,17 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 			const tmpCurSection = feed.requestUrl.match(/(?<=^\/(u|user)\/[^/]+\/)\w+/);
 			const curSection = tmpCurSection && tmpCurSection[0] || "Overview";
 			const userSections = <DropDownEntryParam[]> [
-				{ displayHTML: "Overview", value: UserSection.Overview, onSelectCallback: this.setUserSection.bind(this) },
-				{ displayHTML: "Posts", value: UserSection.Posts, onSelectCallback: this.setUserSection.bind(this) },
-				{ displayHTML: "Comments", value: UserSection.Comments, onSelectCallback: this.setUserSection.bind(this) },
-				{ displayHTML: "Gilded", value: UserSection.Gilded, onSelectCallback: this.setUserSection.bind(this) },
+				{ displayHTML: "Overview", value: UserSection.overview, onSelectCallback: this.setUserSection.bind(this) },
+				{ displayHTML: "Posts", value: UserSection.posts, onSelectCallback: this.setUserSection.bind(this) },
+				{ displayHTML: "Comments", value: UserSection.comments, onSelectCallback: this.setUserSection.bind(this) },
+				{ displayHTML: "Gilded", value: UserSection.gilded, onSelectCallback: this.setUserSection.bind(this) },
 			];
 			if (new RegExp(`/${thisUser.name}$`, "i").test(baseUrl)) {
 				userSections.push(...[
-					{ displayHTML: "Upvoted", value: UserSection.Upvoted, onSelectCallback: this.setUserSection.bind(this) },
-					{ displayHTML: "Downvoted", value: UserSection.Downvoted, onSelectCallback: this.setUserSection.bind(this) },
-					{ displayHTML: "Hidden", value: UserSection.Hidden, onSelectCallback: this.setUserSection.bind(this) },
-					{ displayHTML: "Saved", value: UserSection.Saved, onSelectCallback: this.setUserSection.bind(this) }
+					{ displayHTML: "Upvoted", value: UserSection.upvoted, onSelectCallback: this.setUserSection.bind(this) },
+					{ displayHTML: "Downvoted", value: UserSection.downvoted, onSelectCallback: this.setUserSection.bind(this) },
+					{ displayHTML: "Hidden", value: UserSection.hidden, onSelectCallback: this.setUserSection.bind(this) },
+					{ displayHTML: "Saved", value: UserSection.saved, onSelectCallback: this.setUserSection.bind(this) }
 				]);
 			}
 			this.sectionDropDown = new Ph_DropDown(userSections, curSection, DirectionX.left, DirectionY.bottom, false);
@@ -151,7 +151,7 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 		this.feed.requestUrl = newUrl;
 		const request: RedditApiType = await redditApiRequest(newUrl, [], false);
 		if (request["error"]) {
-			new Ph_Toast(Level.Error, "Error making request to reddit");
+			new Ph_Toast(Level.error, "Error making request to reddit");
 			throw `Error making sort request: ${JSON.stringify(request)}`;
 		}
 		ViewsStack.changeCurrentUrl(newUrl);
@@ -184,7 +184,7 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 			else
 				this.sortDropDown.classList.add("hide");
 		} catch (e) {
-			new Ph_Toast(Level.Error, "Error getting user section items");
+			new Ph_Toast(Level.error, "Error getting user section items");
 			console.error("Error getting user section items");
 			console.error(e);
 			setLabel(initialLabel);

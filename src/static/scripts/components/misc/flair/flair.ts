@@ -109,7 +109,7 @@ export default class Ph_Flair extends HTMLElement {
 			return brightness < 128 ? this.shortColorToCss("light") : this.shortColorToCss("dark");
 		}
 		else {
-			new Ph_Toast(Level.Error, "Invalid flair color");
+			new Ph_Toast(Level.error, "Invalid flair color");
 			return "red";
 		}
 	}

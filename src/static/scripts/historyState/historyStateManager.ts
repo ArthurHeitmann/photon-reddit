@@ -48,17 +48,17 @@ window.addEventListener("popstate", (e: PopStateEvent) => {
 
 /** Whether a new history state should be inserted before or after the current one */
 export enum PushType {
-	PushAfter, PushBefore
+	pushAfter, pushBefore
 }
 
 /** Use this function to redirect to a SPA link and the url could contain a query part */
-export function pushLinkToHistoryComb(pathAndQuery: string, pushType: PushType = PushType.PushAfter): void {
+export function pushLinkToHistoryComb(pathAndQuery: string, pushType: PushType = PushType.pushAfter): void {
 	const [path, query] = splitPathQuery(pathAndQuery);
 	pushLinkToHistorySep(path, query, pushType);
 }
 
 /** Use this function to redirect to a SPA link and the url doesn't contain a query part */
-export async function pushLinkToHistorySep(path: string, query: string = "?", pushType: PushType = PushType.PushAfter): Promise<void> {
+export async function pushLinkToHistorySep(path: string, query: string = "?", pushType: PushType = PushType.pushAfter): Promise<void> {
 	// don't load new page if next history state has same url
 	const nextState = ViewsStack.getNextState();
 	if (nextState && nextState.state.url == (path + query)) {
@@ -70,9 +70,9 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 		ViewsStack.makeHistoryState(path, path + query)
 	);
 
-	if (pushType === PushType.PushAfter)
+	if (pushType === PushType.pushAfter)
 		ViewsStack.pushAfter(stateLoader);
-	else if (pushType === PushType.PushBefore)
+	else if (pushType === PushType.pushBefore)
 		ViewsStack.pushBefore(stateLoader);
 
 
@@ -92,7 +92,7 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 	const requestData = await redditApiRequest(path, params, false);
 	if (requestData["error"]) {
 		stateLoader.error()
-		new Ph_Toast(Level.Error, "Error making request to reddit");
+		new Ph_Toast(Level.error, "Error making request to reddit");
 		throw `Error making request to reddit (${path}, ${JSON.stringify(params)})`;
 	}
 

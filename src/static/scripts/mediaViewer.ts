@@ -19,6 +19,6 @@ window.addEventListener("load", async () => {
 		document.body.appendChild(new Ph_PostBody(data[0].data.children[0]));
 	}
 	catch (e) {
-		new Ph_Toast(Level.Error, `Error making request to reddit (${escHTML(fetchUrl)})`);
+		new Ph_Toast(Level.error, `Error making request to reddit (${escHTML(fetchUrl)})`);
 	}
 });

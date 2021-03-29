@@ -25,7 +25,7 @@ export default class Ph_Message extends Ph_Readable {
 
 		if (messageData.kind !== "t4") {
 			console.error(`Invalid message kind (${messageData.kind})`);
-			new Ph_Toast(Level.Error, "Invalid message kind");
+			new Ph_Toast(Level.error, "Invalid message kind");
 			throw `Invalid message kind (${messageData.kind})`;
 		}
 
@@ -99,7 +99,7 @@ export default class Ph_Message extends Ph_Readable {
 					const response = await comment(this.lastMessageFromOther, replyForm.textField.value);
 					if (response.json.errors.length) {
 						for (let error of response.json.errors) {
-							new Ph_Toast(Level.Error, error instanceof Array ? error.join(" | ") : escHTML(JSON.stringify(error)));
+							new Ph_Toast(Level.error, error instanceof Array ? error.join(" | ") : escHTML(JSON.stringify(error)));
 						}
 						console.error(response);
 						throw "Error replying to message";

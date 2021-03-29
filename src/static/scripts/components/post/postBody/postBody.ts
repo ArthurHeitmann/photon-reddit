@@ -19,25 +19,25 @@ export default class Ph_PostBody extends HTMLElement {
 
 		const postType = this.getPostType(postData.data);
 		switch (postType) {
-			case PostType.Image:
+			case PostType.image:
 				this.makeImageBody(postData);
 				break;
-			case PostType.Text:
+			case PostType.text:
 				this.makeTextBody(postData);
 				break;
-			case PostType.EmbeddedVideo:
+			case PostType.embeddedVideo:
 				this.makeEmbeddedVideoBody(postData);
 				break;
-			case PostType.Link:
+			case PostType.link:
 				this.makeLinkBody(postData);
 				break;
-			case PostType.Video:
+			case PostType.video:
 				this.makeVideoBody(postData);
 				break;
-			case PostType.Tweet:
+			case PostType.tweet:
 				this.makeTweetBody(postData);
 				break;
-			case PostType.Imgur:
+			case PostType.imgur:
 				this.makeImgurBody(postData);
 				break;
 			default:
@@ -45,12 +45,12 @@ export default class Ph_PostBody extends HTMLElement {
 				break;
 			}
 
-		linksToSpa(this, postType === PostType.Text);
+		linksToSpa(this, postType === PostType.text);
 	}
 
 	private getPostType(postData: RedditApiData): PostType {
 		if (postData["is_self"])
-			return PostType.Text;
+			return PostType.text;
 		else if (new RegExp(
 			"^((https?://(i|m)?\.?imgur\\.com\/[\\w-]+.(gifv|mp4))|" +
 			"(https?://v.redd.it\\/[\\w-]+)|" +
@@ -59,23 +59,23 @@ export default class Ph_PostBody extends HTMLElement {
 			"(\\.(gif|mp4)(\\?.*)?$)"
 		).test(postData["url"])
 		)
-			return PostType.Video;
+			return PostType.video;
 		else if (/https?:\/\/clips.twitch.tv\/[\w-]+/.test(postData["url"]) && postData["media"])
-			return PostType.Video;
+			return PostType.video;
 		else if (postData["post_hint"] == "image" ||
 			/(?<!#.*)\.(png|jpg|jpeg|svg)$/.test(postData["url"]) ||
 			postData["gallery_data"])
-			return PostType.Image;
+			return PostType.image;
 		else if (postData["post_hint"] == "hosted:video")
-			return PostType.Video;
+			return PostType.video;
 		else if (/^(https?:\/\/)?imgur\.com\/\w+(\/\w+)?/.test(postData["url"]))
-			return PostType.Imgur;
+			return PostType.imgur;
 		else if (postData["post_hint"] == "rich:video")
-			return PostType.EmbeddedVideo;
+			return PostType.embeddedVideo;
 		else if (/^(https?:\/\/)?(www\.)?twitter\.com\/[^/]+\/status\/\d+/.test(postData["url"]))
-			return PostType.Tweet;
+			return PostType.tweet;
 		else
-			return PostType.Link;
+			return PostType.link;
 	}
 
 	private makeLinkBody(postData: RedditApiType) {
@@ -127,12 +127,12 @@ export default class Ph_PostBody extends HTMLElement {
 		this.classList.add("fullScale");
 		if (/imgur\.com\/(a|album|gallery)\/[^/]+\/?$/.test(postData.data["url"])) {
 			getImgurAlbumContents(postData.data["url"]).then((contents: ImgurContent[]) => {
-				if (contents[0].type === ImgurContentType.Video) {
+				if (contents[0].type === ImgurContentType.video) {
 					this.appendChild(new Ph_VideoPlayer(
 						new Ph_SimpleVideo([{ src: contents[0].link, type: "video/mp4" }])
 					));
 					if (contents.length > 1)
-						new Ph_Toast(Level.Warning, "Imgur album with video and more than 1 items --> only displaying video");
+						new Ph_Toast(Level.warning, "Imgur album with video and more than 1 items --> only displaying video");
 				}
 				else {
 					this.appendChild(new Ph_PostImage(
@@ -146,7 +146,7 @@ export default class Ph_PostBody extends HTMLElement {
 		}
 		else {
 			getImgurContent(postData.data["url"]).then(content => {
-				if (content.type === ImgurContentType.Image) {
+				if (content.type === ImgurContentType.image) {
 					this.appendChild(new Ph_PostImage([{
 						originalUrl: content.link,
 						caption: content.caption
@@ -171,11 +171,11 @@ export default class Ph_PostBody extends HTMLElement {
 customElements.define("ph-post-body", Ph_PostBody);
 
 enum PostType {
-	Link,
-	Image,
-	Video,
-	EmbeddedVideo,
-	Text,
-	Tweet,
-	Imgur
+	link,
+	image,
+	video,
+	embeddedVideo,
+	text,
+	tweet,
+	imgur
 }

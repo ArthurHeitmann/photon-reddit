@@ -47,7 +47,7 @@ export default abstract class Ph_Readable extends Ph_FeedItem implements FullNam
 			{ method: "POST" }
 		);
 		if (r["error"]) {
-			new Ph_Toast(Level.Error, "Failed to change read status");
+			new Ph_Toast(Level.error, "Failed to change read status");
 			console.error("Failed to change read status");
 			console.error(r);
 			return;
@@ -103,12 +103,12 @@ export default abstract class Ph_Readable extends Ph_FeedItem implements FullNam
 	static async readAllMessages() {
 		const r = await redditApiRequest("/api/read_all_messages", [], true, { method: "POST" });
 		if (r["error"]) {
-			new Ph_Toast(Level.Error, "Error reading all messages");
+			new Ph_Toast(Level.error, "Error reading all messages");
 			console.error("Error reading all messages");
 			console.error(r);
 			return;
 		}
-		new Ph_Toast(Level.Success, "", { timeout: 2000 });
+		new Ph_Toast(Level.success, "", { timeout: 2000 });
 		for (const message of $css(".readable.unread")) {
 			(message as Ph_Readable).setIsRead(true);
 		}

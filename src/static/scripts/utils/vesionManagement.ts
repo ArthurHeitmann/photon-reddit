@@ -27,7 +27,7 @@ setInterval(compareLatestVersion, 1000 * 60 * 30);
 
 function showNewVersionToast() {
 	pendingNewVersionNotification = false;
-	new Ph_Toast(Level.Info, "New version available! Reload all tabs to update?", { onConfirm: updateVersion });
+	new Ph_Toast(Level.info, "New version available! Reload all tabs to update?", { onConfirm: updateVersion });
 }
 
 function updateVersion() {

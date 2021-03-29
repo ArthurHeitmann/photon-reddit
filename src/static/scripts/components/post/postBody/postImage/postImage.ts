@@ -43,7 +43,7 @@ export default class Ph_PostImage extends HTMLElement {
 			for (const item of items) {
 				const imgData = postData.data["media_metadata"][item["media_id"]];
 				if (imgData["status"] === "failed") {
-					new Ph_Toast(Level.Warning, "Couldn't load a gallery image");
+					new Ph_Toast(Level.warning, "Couldn't load a gallery image");
 					continue;
 				}
 				const previews: {}[] = imgData["p"];
@@ -104,7 +104,7 @@ export default class Ph_PostImage extends HTMLElement {
 				if (!imgData.originalImg)
 					imgData.originalImg = document.createElement("img");
 				imgData.originalImg.src= "/img/error.svg";
-				new Ph_Toast(Level.Error, "No image URL given");
+				new Ph_Toast(Level.error, "No image URL given");
 			}
 
 			if (!hasUnloadedOriginals && imgData.previewImg && imgData.originalSrc)

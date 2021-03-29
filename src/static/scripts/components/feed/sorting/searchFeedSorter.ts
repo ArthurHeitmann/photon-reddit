@@ -78,7 +78,7 @@ export default class Ph_SearchFeedSorter extends HTMLElement {
 		this.feed.requestUrl = newUrl;
 		const request: RedditApiType = await redditApiRequest(newUrl, [], false);
 		if (request["error"]) {
-			new Ph_Toast(Level.Error, "Error making request to reddit");
+			new Ph_Toast(Level.error, "Error making request to reddit");
 			throw `Error making sort request: ${JSON.stringify(request)}`;
 		}
 

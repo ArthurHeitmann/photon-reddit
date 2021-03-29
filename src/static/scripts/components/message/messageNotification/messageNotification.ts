@@ -66,7 +66,7 @@ export default class Ph_MessageNotification extends HTMLElement {
 		);
 		this.isRequestInProgress = false;
 		if (r["error"]) {
-			new Ph_Toast(Level.Error, "Failed mark as read read");
+			new Ph_Toast(Level.error, "Failed mark as read read");
 			console.error("Failed to mark as read");
 			console.error(r);
 			return;

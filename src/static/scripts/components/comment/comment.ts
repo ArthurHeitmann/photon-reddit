@@ -89,7 +89,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 					} catch (e) {
 						console.error("Error loading more comments");
 						console.error(e);
-						new Ph_Toast(Level.Error, "Error loading more comments");
+						new Ph_Toast(Level.error, "Error loading more comments");
 						loadMoreButton.disabled = false;
 						loadMoreButton.innerText = loadMoreBtnText;
 					}
@@ -98,7 +98,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 			return;
 		}
 		else if (commentData.kind !== "t1") {
-			new Ph_Toast(Level.Error, "Error occurred while making comment");
+			new Ph_Toast(Level.error, "Error occurred while making comment");
 			throw "Invalid comment data type";
 		}
 
@@ -308,7 +308,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 		if (!res) {
 			console.error("Error voting on post");
 			this.setVotesState(prevDir);
-			new Ph_Toast(Level.Error, "Error occurred while voting");
+			new Ph_Toast(Level.error, "Error occurred while voting");
 		}
 	};
 
@@ -354,7 +354,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 		source.innerText = this.isSaved ? "Unsave" : "Save";
 		if (!await save(this)) {
 			console.error(`error voting on comment ${this.fullName}`);
-			new Ph_Toast(Level.Error, "Error saving post");
+			new Ph_Toast(Level.error, "Error saving post");
 		}
 	}
 
@@ -381,10 +381,10 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 				const resp = await edit(this, editForm.textField.value);
 
 				if (resp["json"] && resp["json"]["errors"]) {
-					new Ph_Toast(Level.Error, resp["json"]["errors"][0].join(" | "));
+					new Ph_Toast(Level.error, resp["json"]["errors"][0].join(" | "));
 					return;
 				} else if (resp["error"]) {
-					new Ph_Toast(Level.Error, resp["message"]);
+					new Ph_Toast(Level.error, resp["message"]);
 					return;
 				}
 				this.bodyMarkdown = resp["body"];
@@ -393,11 +393,11 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 				content.innerHTML = resp["body_html"];
 				linksToSpa(content, true);
 				editForm.remove();
-				new Ph_Toast(Level.Success, "Edited comment", { timeout: 2000 });
+				new Ph_Toast(Level.success, "Edited comment", { timeout: 2000 });
 			} catch (e) {
 				console.error("Error editing comment");
 				console.error(e);
-				new Ph_Toast(Level.Error, "Error editing comment");
+				new Ph_Toast(Level.error, "Error editing comment");
 			}
 		});
 		editForm.addEventListener("ph-cancel", () => editForm.remove());
@@ -411,17 +411,17 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 			if (!isObjectEmpty(resp) || resp["error"]) {
 				console.error("Error deleting comment");
 				console.error(resp);
-				new Ph_Toast(Level.Error, "Error deleting comment");
+				new Ph_Toast(Level.error, "Error deleting comment");
 				return;
 			}
 
 			this.$class("content")[0].innerHTML = "[deleted]";
-			new Ph_Toast(Level.Success, "Deleted comment", { timeout: 2000 });
+			new Ph_Toast(Level.success, "Deleted comment", { timeout: 2000 });
 			source.remove();
 		} catch (e) {
 			console.error("Error deleting comment");
 			console.error(e);
-			new Ph_Toast(Level.Error, "Error deleting comment");
+			new Ph_Toast(Level.error, "Error deleting comment");
 		}
 	}
 }

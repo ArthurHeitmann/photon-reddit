@@ -296,7 +296,7 @@ export default class Ph_Search extends HTMLElement {
 		} catch (e) {
 			console.error("Error loading quick search");
 			console.error(e);
-			new Ph_Toast(Level.Error, "Error loading quick search");
+			new Ph_Toast(Level.error, "Error loading quick search");
 			throw e;
 		}
 		this.resultsWrapper.classList.remove("loading");
@@ -309,7 +309,7 @@ export default class Ph_Search extends HTMLElement {
 			catch (e) {
 				console.error("Error making search result entry");
 				console.error(e);
-				new Ph_Toast(Level.Error, "Error making search result entry");
+				new Ph_Toast(Level.error, "Error making search result entry");
 			}
 		}
 	}
@@ -326,7 +326,7 @@ export default class Ph_Search extends HTMLElement {
 			default:
 				console.error("Invalid search result entry");
 				console.error(data);
-				new Ph_Toast(Level.Error, "Invalid search result entry");
+				new Ph_Toast(Level.error, "Invalid search result entry");
 				const errorElement = document.createElement("div");
 				errorElement.innerText = "ERROR";
 				entry = errorElement;
@@ -359,7 +359,7 @@ export default class Ph_Search extends HTMLElement {
 		const inNewTab: boolean = e && e.ctrlKey || false;
 
 		if (!this.searchBar.value) {
-			new Ph_Toast(Level.Warning, "Empty search query", { timeout: 2000 });
+			new Ph_Toast(Level.warning, "Empty search query", { timeout: 2000 });
 			return;
 		}
 

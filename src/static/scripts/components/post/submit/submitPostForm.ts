@@ -252,7 +252,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 
 		const r = await redditApiRequest("/api/submit", params, true, { method: "POST" });
 		if (r["error"]) {
-			new Ph_Toast(Level.Error, "Error posting");
+			new Ph_Toast(Level.error, "Error posting");
 			console.error(r);
 			throw "error posting";
 		}
@@ -261,7 +261,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		const errorMessageIndex = jqueryArr.findIndex(value => value[3] === "text");
 		if (errorMessageIndex !== -1) {
 			const msg = jqueryArr[errorMessageIndex + 1][3][0];
-			new Ph_Toast(Level.Error, msg);
+			new Ph_Toast(Level.error, msg);
 			return;
 		}
 		const path = jqueryArr[redirectIndex + 1][3][0].match(/(?<=reddit\.com).*/)[0];
@@ -274,14 +274,14 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		let community = (this.subInput.$tag("input")[0] as HTMLInputElement).value;
 		// basic schema
 		if (!/^(r|u|user)\//.test(community)) {
-			new Ph_Toast(Level.Error, `Community must start with "r/" or "u/" or "user/"`, {timeout: 3500});
+			new Ph_Toast(Level.error, `Community must start with "r/" or "u/" or "user/"`, {timeout: 3500});
 			return;
 		} else if (!/^(r|u|user)\/[a-zA-z0-9_-]{3,21}$/.test(community)) {
-			new Ph_Toast(Level.Error, `Invalid community name`, {timeout: 3500});
+			new Ph_Toast(Level.error, `Invalid community name`, {timeout: 3500});
 			return;
 		}
 		else if (/^(u|user)\//.test(community) && community.match(/(?<=^(u|user)\/)\w+/)[0] !== thisUser.name) {
-			new Ph_Toast(Level.Error, `You can only submit posts on your profile`, {timeout: 3500});
+			new Ph_Toast(Level.error, `You can only submit posts on your profile`, {timeout: 3500});
 			return;
 		}
 		community = community.replace(/^\/?/, "/");
@@ -292,7 +292,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 			// check if valid
 			const r = await redditApiRequest(`${community}/api/submit_text`, [], false);
 			if (r["kind"] === "listing" || r["error"]) {
-				new Ph_Toast(Level.Error, "Subreddit not found", {timeout: 2500});
+				new Ph_Toast(Level.error, "Subreddit not found", {timeout: 2500});
 				this.setCommunityIsInvalid();
 				return;
 			}
@@ -322,7 +322,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 			else {
 				console.error("Invalid submission type for ");
 				console.error(subData);
-				new Ph_Toast(Level.Error, "Couldn't get submission type");
+				new Ph_Toast(Level.error, "Couldn't get submission type");
 				throw "Invalid submission type";
 			}
 			this.imagesAllowed = subData["allow_images"];
@@ -367,14 +367,14 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		else {
 			const r = await redditApiRequest(`${community}/about`, [], false);
 			if (r["kind"] === "listing" || r["error"]) {
-				new Ph_Toast(Level.Error, "User not found", {timeout: 2500});
+				new Ph_Toast(Level.error, "User not found", {timeout: 2500});
 				this.setCommunityIsInvalid();
 				return;
 			}
 			this.setCommunityIsValid();
 			this.subInfoButton.innerText = "";
 			this.subInfoButton.appendChild(Ph_FeedInfo.getInfoButton(FeedType.user, community));
-			new Ph_Toast(Level.Warning, "Post to users aren't supported yet");
+			new Ph_Toast(Level.warning, "Post to users aren't supported yet");
 		}
 	}
 

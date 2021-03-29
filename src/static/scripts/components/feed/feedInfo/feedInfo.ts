@@ -144,7 +144,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		const isValid = this.isLoadedInfoValid();
 		if (!isValid) {
 			this.removeInfo();
-			new Ph_Toast(Level.Error, `Corrupted feed info for ${escHTML(this.feedUrl)}`);
+			new Ph_Toast(Level.error, `Corrupted feed info for ${escHTML(this.feedUrl)}`);
 			console.error(`Corrupted feed info for ${this.feedUrl} (${JSON.stringify(this.loadedInfo)})`);
 			throw "Corrupted feed info";
 		}
@@ -184,7 +184,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 			case FeedType.misc:
 			default:
 				this.innerText = `Unknown feed type ${this.loadedInfo.feedType} for ${this.feedUrl}`;
-				new Ph_Toast(Level.Warning, `Unknown feed type ${this.loadedInfo.feedType} for ${escHTML(this.feedUrl)}`);
+				new Ph_Toast(Level.warning, `Unknown feed type ${this.loadedInfo.feedType} for ${escHTML(this.feedUrl)}`);
 				break;
 		}
 	}
@@ -207,7 +207,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 			mods = tmpMods["data"]["children"];
 
 		} catch (e) {
-			new Ph_Toast(Level.Error, "Error getting subreddit info");
+			new Ph_Toast(Level.error, "Error getting subreddit info");
 			console.error(`Error getting subreddit info for ${this.feedUrl}`);
 			console.error(e);
 		}
@@ -250,12 +250,12 @@ export default class Ph_FeedInfo extends HTMLElement {
 			this.loadedInfo.data["user_is_subscriber"] = !this.loadedInfo.data["user_is_subscriber"];
 			subscribeButton.innerText = this.loadedInfo.data["user_is_subscriber"] ? "Unsubscribe" : "Subscribe";
 			if (await subscribe(this.loadedInfo.data["name"], this.loadedInfo.data["user_is_subscriber"])) {
-				new Ph_Toast(Level.Success, "", { timeout: 2000 });
+				new Ph_Toast(Level.success, "", { timeout: 2000 });
 			}
 			else {
 				this.loadedInfo.data["user_is_subscriber"] = !this.loadedInfo.data["user_is_subscriber"];
 				subscribeButton.innerText = this.loadedInfo.data["user_is_subscriber"] ? "Unsubscribe" : "Subscribe";
-				new Ph_Toast(Level.Error, `Error subscribing to subreddit`, { timeout: 2000 });
+				new Ph_Toast(Level.error, `Error subscribing to subreddit`, { timeout: 2000 });
 			}
 
 		});
@@ -335,7 +335,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 			if (multis["error"])
 				throw `Invalid user multis response ${JSON.stringify(feedAbout)}`;
 		} catch (e) {
-			new Ph_Toast(Level.Error, "Error getting user info");
+			new Ph_Toast(Level.error, "Error getting user info");
 			console.error(`Error getting user info for ${this.feedUrl}`);
 			console.error(e);
 		}
@@ -423,7 +423,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 			if (feedAbout["error"] || !(feedAbout["kind"] && feedAbout["data"]))
 				throw `Invalid about response ${JSON.stringify(feedAbout)}`;
 		} catch (e) {
-			new Ph_Toast(Level.Error, "Error getting multi info");
+			new Ph_Toast(Level.error, "Error getting multi info");
 			console.error(`Error getting user info for ${this.feedUrl}`);
 			console.error(e);
 		}
@@ -661,7 +661,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		if (subName === "")
 			return;
 		if (sourceIsMulti && this.loadedInfo.data.subreddits.includes(subName)) {
-			new Ph_Toast(Level.Warning, `r/${escHTML(subName)} already exists in ${escHTML(multiPath)}`, { timeout: 6000 });
+			new Ph_Toast(Level.warning, `r/${escHTML(subName)} already exists in ${escHTML(multiPath)}`, { timeout: 6000 });
 			return;
 		}
 		try {
@@ -674,7 +674,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 				{ method: "PUT" }
 			);
 			if (response["explanation"]) {
-				new Ph_Toast(Level.Error, escHTML(response["explanation"]), { timeout: 6000 });
+				new Ph_Toast(Level.error, escHTML(response["explanation"]), { timeout: 6000 });
 				return;
 			}
 			if (!response["name"])
@@ -697,7 +697,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 			}
 
 		} catch (e) {
-			new Ph_Toast(Level.Error, "Error adding sub to multi");
+			new Ph_Toast(Level.error, "Error adding sub to multi");
 			console.error("Error adding sub to multi");
 			console.error(subName);
 		}
@@ -706,7 +706,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 	private async removeSubFromMulti(subName: string, multiPath: string, editSubBar: HTMLElement) {
 		subName = subName.replace(/^\/?r\//, "");
 		if (!this.loadedInfo.data.subreddits.includes(subName)) {
-			new Ph_Toast(Level.Warning, `r/${escHTML(subName)} does not exist in ${escHTML(multiPath)}`, { timeout: 6000 });
+			new Ph_Toast(Level.warning, `r/${escHTML(subName)} does not exist in ${escHTML(multiPath)}`, { timeout: 6000 });
 			return;
 		}
 		try {
@@ -720,7 +720,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 			this.loadedInfo.data.subreddits.splice(this.loadedInfo.data.subreddits.indexOf(subName), 1);
 			this.saveInfo();
 		} catch (e) {
-			new Ph_Toast(Level.Error, "Error removing sub from multi");
+			new Ph_Toast(Level.error, "Error removing sub from multi");
 			console.error("Error removing sub from multi");
 			console.error(subName);
 		}

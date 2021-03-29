@@ -127,7 +127,7 @@ export default class ViewsStack {
 	/** go to previous view state; load it if not loaded */
 	static back() {
 		if (ViewsStack.views[ViewsStack.pos - 1] == undefined) {						// probably a page reload,
-			pushLinkToHistoryComb(history.state.url, PushType.PushBefore);				// need to create html elements
+			pushLinkToHistoryComb(history.state.url, PushType.pushBefore);				// need to create html elements
 			window.dispatchEvent(new CustomEvent("ph-view-change", {
 				detail: <ViewChangeData> {
 					viewState: ViewsStack.views[ViewsStack.pos],
