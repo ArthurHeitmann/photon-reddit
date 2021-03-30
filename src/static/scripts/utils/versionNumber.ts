@@ -13,6 +13,10 @@ export default class VersionNumber {
 		this.patch = parseInt(numbers[2]);
 	}
 
+	equals(version: VersionNumber) {
+		return this.major === version.major && this.minor === version.minor && this.patch === version.patch;
+	}
+
 	greaterThan(version: VersionNumber) {
 		return (
 			this.major > version.major
