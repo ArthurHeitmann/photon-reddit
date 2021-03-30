@@ -12,6 +12,15 @@ export enum AuthState {
 	loggedIn, implicitGrant
 }
 
+export async function logOut() {
+	await fetch(`/auth/revoke?refreshToken=${location["refreshToken"]}`);
+	localStorage.removeItem("accessToken");
+	localStorage.removeItem("refreshToken");
+	localStorage.removeItem("isLoggedIn");
+	localStorage.removeItem("expiration");
+	location.reload();
+}
+
 export async function checkAuthOnPageLoad(): Promise<AuthState> {
 	if (!("isLoggedIn" in localStorage) || !["true", "false"].includes(localStorage.isLoggedIn))
 		localStorage.isLoggedIn = "refreshToken" in localStorage;		// implicit grant doesn't have refresh token
@@ -45,13 +54,7 @@ export async function checkAuthOnPageLoad(): Promise<AuthState> {
 }
 
 function authError(msg: string) {
-	new Ph_Toast(Level.warning, msg, { onConfirm: () => {
-		localStorage.removeItem("accessToken");
-		localStorage.removeItem("refreshToken");
-		localStorage.removeItem("isLoggedIn");
-		localStorage.removeItem("expiration");
-		location.reload();
-	} });
+	new Ph_Toast(Level.warning, msg, { onConfirm: logOut });
 }
 
 export async function checkTokenRefresh(): Promise<boolean> {

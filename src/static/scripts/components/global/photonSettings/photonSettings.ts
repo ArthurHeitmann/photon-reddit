@@ -1,7 +1,9 @@
-import { clearSeenPosts } from "../../../utils/globals.js";
+import { logOut } from "../../../auth/auth.js";
+import { clearSeenPosts, isLoggedIn } from "../../../utils/globals.js";
 import { escADQ } from "../../../utils/htmlStatics.js";
 import "../../../utils/htmlStuff.js";
 import { deepClone, isObjectEmpty } from "../../../utils/utils.js";
+import { photonWebVersion } from "../../../utils/version.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import "./styleSettingsListener.js"
 
@@ -290,6 +292,18 @@ export default class Ph_PhotonSettings extends HTMLElement {
 			seenPostsStoredGroup,
 			clearSeenPostsBtn
 		]));
+
+		// other
+		this.optionsArea.appendChild(document.createElement("hr"));
+		if (isLoggedIn) {
+			const logOutButton = document.createElement("button");
+			logOutButton.className = "button";
+			logOutButton.innerText = "Log out";
+			logOutButton.addEventListener("click", logOut);
+			this.optionsArea.appendChild(logOutButton);
+		}
+
+		this.optionsArea.insertAdjacentHTML("beforeend", `<div>v${photonWebVersion}</div>`)
 	}
 
 	private makeGeneralInputGroup(groupTitle: string, elements: HTMLElement[]): HTMLElement {
