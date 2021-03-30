@@ -44,6 +44,7 @@
     "helmet": "^4.3.1",
     "mariadb": "^2.5.2",
     "node-fetch": "^2.6.1",
+    "xmlhttprequest": "^1.8.0",
     "youtube-dl": "ArthurHeitmann/node-youtube-dl"
   }
 }

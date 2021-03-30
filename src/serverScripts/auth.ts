@@ -79,3 +79,19 @@ authRouter.get("/applicationOnlyAccessToken", RateLimit(redditTokenRateLimitConf
 	}
 	res.json(await implicitGrant(req.query["clientId"].toString()));
 }));
+
+authRouter.post("/revoke", RateLimit(redditTokenRateLimitConfig), safeExcAsync(async (req, res) => {
+	const refreshToken = req.query["refreshToken"].toString();
+	const r = await fetch("https://www.reddit.com/api/v1/revoke_token", {
+		method: "POST",
+		body: new URLSearchParams([
+			["token", refreshToken],
+			["token_type_hint", "refresh_token"],
+		]),
+		headers: new Headers({
+			Authorization: `Basic ${Buffer.from(appId + ":").toString("base64")}`
+		})
+	});
+	console.log(await r.json());
+	res.send("YEP");
+}));

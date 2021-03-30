@@ -8,6 +8,7 @@ import Votable, { FullName } from "../types/votable.js";
 import { isLoggedIn, thisUser, } from "../utils/globals.js";
 import { RedditApiType } from "../types/misc.js";
 import { isObjectEmpty, splitPathQuery } from "../utils/utils.js";
+import { redditProxy, urlRequiresProxy } from "./photonApi.js";
 
 /**
  * Use this to make requests to reddit
@@ -45,6 +46,11 @@ async function oath2Request(pathAndQuery, params: string[][], options: RequestIn
 	if (fetchOptions.method && fetchOptions.method.toUpperCase() !== "GET") {
 		fetchOptions.body = parameters;
 		parametersStr = "";
+	}
+
+	if (urlRequiresProxy(path + "?" + parametersStr)) {
+		// @ts-ignore
+		return await redditProxy(path + "?" + parametersStr, fetchOptions.headers.get("Authorization"));
 	}
 
 	try {
