@@ -2,6 +2,8 @@
  *
  */
 
+import { Changelog } from "../types/misc.js";
+
 /** */
 export async function youtubeDlUrl(url): Promise<string> {
 	const res = await fetch(`/api/youtube-dl?url=${encodeURIComponent(url)}`);
@@ -26,4 +28,20 @@ export async function redditProxy(url: string, authorization: string): Promise<a
 	catch (e) {
 		return { error: e }
 	}
+}
+
+export async function getChangelog(): Promise<Changelog> {
+	let changelogData: Changelog;
+	try {
+		const r = await fetch("/api/changelog");
+		changelogData = await r.json();
+	}
+	catch (e) {
+		changelogData = {
+			error: {
+				error: ["Error getting changelog from server"]
+			}
+		}
+	}
+	return changelogData;
 }

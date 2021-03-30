@@ -6,6 +6,7 @@ import { deepClone, isObjectEmpty } from "../../../utils/utils.js";
 import { photonWebVersion } from "../../../utils/version.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import "./styleSettingsListener.js"
+import Ph_Changelog from "../../photon/changelog/changelog.js";
 
 export enum ImageLoadingPolicy {
 	alwaysPreview = "alwaysPreview",
@@ -303,6 +304,14 @@ export default class Ph_PhotonSettings extends HTMLElement {
 			this.optionsArea.appendChild(logOutButton);
 		}
 
+		const showChangelogButton = document.createElement("button");
+		showChangelogButton.className = "button";
+		showChangelogButton.innerText = "View Changelog";
+		showChangelogButton.addEventListener("click", () => {
+			Ph_Changelog.show();
+			this.hide();
+		})
+		this.optionsArea.appendChild(showChangelogButton);
 		this.optionsArea.insertAdjacentHTML("beforeend", `<div>v${photonWebVersion}</div>`)
 	}
 

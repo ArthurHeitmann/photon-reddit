@@ -89,3 +89,9 @@ export enum SortSearchOrder {
 	new = "new",
 	comments = "comments",
 }
+
+export interface Changelog {
+	[version: string]: {
+		[header: string]: string[]
+	}
+}

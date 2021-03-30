@@ -4,7 +4,7 @@ import * as https from "https";
 import { basicRateLimitConfig, youtube_dlRateLimitConfig } from "./consts.js";
 import { safeExc, safeExcAsync } from "./utils.js";
 import youtube_dl from "youtube-dl";
-import { photonChangeLog, photonVersion } from "./version.js";
+import { photonChangelog, photonVersion } from "./version.js";
 import XMLHttpRequest from "xmlhttprequest"
 import fetch from "node-fetch";
 
@@ -24,14 +24,13 @@ photonApiRouter.get("/latestVersion", RateLimit(basicRateLimitConfig), safeExc((
 	res.json({ version: photonVersion });
 }));
 
-photonApiRouter.get("/changeLog", safeExc((req, res) => {
-	res.json(photonChangeLog);
+photonApiRouter.get("/changelog", safeExc((req, res) => {
+	res.json(photonChangelog);
 }))
 
 photonApiRouter.get("/proxy*", safeExcAsync(async (req, res) => {
 	const url = req.url.split("/proxy")[1];
 	const auth = req.headers.authorization;
-	console.log("using proxy");
 	try {
 		// node-fetch doesn't seem to work with /r/sub/random --> use different library for this
 		const data = await proxyPromise(url, auth);

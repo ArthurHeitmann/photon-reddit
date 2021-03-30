@@ -4,8 +4,7 @@
  * This file gets loaded from index.html and imports all other files
  */
 
-import "./components/message/messageNotification/messageNotification.js";
-import "./utils/vesionManagement.js";
+import "./utils/sideEffectImports.js"
 import { subscribe } from "./api/redditApi.js";
 import { AuthState, checkAuthOnPageLoad, checkTokenRefresh, initiateLogin } from "./auth/auth.js";
 import Ph_Header from "./components/global/header/header.js";
