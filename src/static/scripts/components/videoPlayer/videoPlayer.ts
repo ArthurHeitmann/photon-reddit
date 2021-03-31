@@ -35,6 +35,8 @@ export default class Ph_VideoPlayer extends HTMLElement {
 	resetViewBtn: HTMLButtonElement;
 	static globalVolume: number = 0.5;
 	static globalIsMuted: boolean = true;
+	// browsers don't allow auto playing videos with audio
+	static isVideoPlayAllowed = false;
 
 	/** Creates a video player from a reddit post (with a video link) */
 	static fromPostData(postData: RedditApiType): Ph_VideoPlayer {
@@ -247,8 +249,11 @@ export default class Ph_VideoPlayer extends HTMLElement {
 	init(video: Ph_VideoWrapper) {
 		this.video = video;
 
-		if (this.video)
+		if (this.video) {
 			this.makeControls();
+			this.video.setVolume(Ph_VideoPlayer.globalVolume);
+			this.video.setIsMuted(Ph_VideoPlayer.globalIsMuted);
+		}
 		else
 			this.innerText = "No video supplied (maybe video was deleted)";
 	}
@@ -258,10 +263,13 @@ export default class Ph_VideoPlayer extends HTMLElement {
 
 		const intersectionObserver = new IntersectionObserver(
 			(entries, obs) => {
+				if (!Ph_VideoPlayer.isVideoPlayAllowed)
+					return;
 				if (
+					globalSettings.autoplayVideos &&
 					entries[0].intersectionRatio > .4 &&
-					!classInElementTree(this.parentElement, "covered") &&
-					globalSettings.autoplayVideos
+					Boolean(document.fullscreenElement) === (document.fullscreenElement === this) &&
+					!classInElementTree(this.parentElement, "covered")
 				) {
 					this.video.play();
 					this.focus({preventScroll: true});
@@ -286,7 +294,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		controls.addShowHideListeners(this.video);
 		this.appendChild(controls);
 
-		this.video.addEventListener("click", () => this.video.togglePlay());
+		this.video.addEventListener("click", () => this.togglePlay());
 		this.video.addEventListener("dblclick", () => this.toggleFullscreen());
 		this.addEventListener("keydown", e => {
 			let actionExecuted = false;
@@ -294,7 +302,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 				case "Space":
 				case "KeyP":
 				case "KeyK":
-					this.video.togglePlay();
+					this.togglePlay();
 					actionExecuted = true;
 					break;
 				case "ArrowLeft":
@@ -349,7 +357,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		const playButton = new Ph_PlayImage();
 		controls.appendMorphingImage(playButton);
 		playButton.setAttribute("data-tooltip", "Shortcut: Space/P/K");
-		playButton.addEventListener("click", () => this.video.togglePlay());
+		playButton.addEventListener("click", () => this.togglePlay());
 		this.video.addEventListener("ph-play", () => {
 			playButton.toPause();
 			this.videoProgressInterval = setInterval(() => {
@@ -513,11 +521,17 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		// );
 	}
 
+	togglePlay() {
+		this.video.togglePlay();
+		Ph_VideoPlayer.isVideoPlayAllowed = true;
+	}
+
 	setVolume(newVolume: number, broadcastChange = true) {
 		this.video.setVolume(newVolume);
 		if (!broadcastChange || !globalSettings.globalVideoVolume)
 			return;
 		Ph_VideoPlayer.globalVolume = newVolume;
+		Ph_VideoPlayer.globalIsMuted = newVolume === 0;
 		$tagAr("ph-video-player").forEach((player: Ph_VideoPlayer) => player.setVolume(newVolume, false));
 	}
 
