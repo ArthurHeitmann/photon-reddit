@@ -89,6 +89,10 @@ export default class Ph_GifVideo extends Ph_VideoWrapper {
 		return false;
 	}
 
+	setIsMuted(): boolean {
+		return true;
+	}
+
 	togglePlay(): void {
 		if (this.canvasWrapper.classList.contains("hide"))
 			this.pause();

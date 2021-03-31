@@ -2,14 +2,13 @@ import { getGfycatMp4SrcFromUrl, GfycatDomain } from "../../api/gfycatApi.js";
 import { youtubeDlUrl } from "../../api/photonApi.js";
 import { RedditApiType } from "../../types/misc.js";
 import { markPostAsSeen } from "../../utils/globals.js";
-import { escADQ, escHTML } from "../../utils/htmlStatics.js";
+import { $tag, $tagAr, escADQ, escHTML } from "../../utils/htmlStatics.js";
 import { classInElementTree, elementWithClassInTree } from "../../utils/htmlStuff.js";
 import { secondsToVideoTime } from "../../utils/utils.js";
 import { globalSettings } from "../global/photonSettings/photonSettings.js";
 import Ph_ControlsBar from "../misc/controlsBar/controlsBar.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
 import Ph_DropDownArea from "../misc/dropDown/dropDownArea/dropDownArea.js";
-import Ph_DropDownEntry from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_ProgressBar from "../misc/progressBar/progressBar.js";
 import Ph_SwitchingImage from "../misc/switchableImage/switchableImage.js";
 import Ph_Toast, { Level } from "../misc/toast/toast.js";
@@ -34,6 +33,8 @@ export default class Ph_VideoPlayer extends HTMLElement {
 	controlsDropDown: Ph_DropDown;
 	draggableWrapper: Ph_DraggableWrapper;
 	resetViewBtn: HTMLButtonElement;
+	static globalVolume: number = 0.5;
+	static globalIsMuted: boolean = true;
 
 	/** Creates a video player from a reddit post (with a video link) */
 	static fromPostData(postData: RedditApiType): Ph_VideoPlayer {
@@ -307,11 +308,11 @@ export default class Ph_VideoPlayer extends HTMLElement {
 					actionExecuted = true;
 					break;
 				case "ArrowUp":
-					this.video.setVolume(this.video.getVolume() + .1);
+					this.setVolume(this.video.getVolume() + .1);
 					actionExecuted = true;
 					break;
 				case "ArrowDown":
-					this.video.setVolume(this.video.getVolume() - .1);
+					this.setVolume(this.video.getVolume() - .1);
 					actionExecuted = true;
 					break;
 				case "KeyF":
@@ -319,7 +320,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 					actionExecuted = true;
 					break;
 				case "KeyM":
-					this.video.toggleMute();
+					this.toggleMuted();
 					actionExecuted = true;
 					break;
 				case "KeyI":
@@ -379,10 +380,10 @@ export default class Ph_VideoPlayer extends HTMLElement {
 			{src: "/img/audio.svg", key: "audio"},
 		]), volumeWrapper);
 		muteButton.parentElement.setAttribute("data-tooltip", "Shortcut: M");
-		muteButton.parentElement.addEventListener("click", () => this.video.toggleMute());
+		muteButton.parentElement.addEventListener("click", () => this.toggleMuted());
 		const volumeSlider = new Ph_ProgressBar(true, 20);
 		volumeSlider.setAttribute("data-tooltip", "Shortcut: Arrow Up/Down or Scroll");
-		volumeSlider.addEventListener("ph-drag", (e: CustomEvent) => this.video.setVolume(e.detail));
+		volumeSlider.addEventListener("ph-drag", (e: CustomEvent) => this.setVolume(e.detail));
 		volumeWrapper.appendChild(volumeSlider);
 		this.video.addEventListener("ph-volumechange",
 			(e: CustomEvent) => {
@@ -392,7 +393,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		);
 		volumeWrapper.addEventListener("wheel", e => {
 			e.preventDefault();
-			this.video.setVolume(this.video.getVolume() + ((-e.deltaY || e.deltaX) > 0 ? .05 : -.05));
+			this.setVolume(this.video.getVolume() + ((-e.deltaY || e.deltaX) > 0 ? .05 : -.05));
 		}, {passive: false});
 		this.video.addEventListener("ph-noaudio", () => {
 			volumeWrapper.classList.add("remove");
@@ -510,6 +511,26 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		// 	"_blank",
 		// 	`location=no,status=no,menubar=no,width=${this.video.getDimensions()[0]},height=${this.video.getDimensions()[1]}`
 		// );
+	}
+
+	setVolume(newVolume: number, broadcastChange = true) {
+		this.video.setVolume(newVolume);
+		if (!broadcastChange || !globalSettings.globalVideoVolume)
+			return;
+		Ph_VideoPlayer.globalVolume = newVolume;
+		$tagAr("ph-video-player").forEach((player: Ph_VideoPlayer) => player.setVolume(newVolume, false));
+	}
+
+	toggleMuted(broadcastChange = true, newIsMuted: boolean = null) {
+		if (!broadcastChange) {
+			this.video.setIsMuted(newIsMuted);
+			return;
+		}
+		const newMuted = this.video.toggleMute();
+		if (!globalSettings.globalVideoVolume)
+			return;
+		Ph_VideoPlayer.globalIsMuted = newMuted;
+		$tagAr("ph-video-player").forEach((player: Ph_VideoPlayer) => player.toggleMuted(false, newMuted));
 	}
 
 	toggleFullscreen(): boolean {

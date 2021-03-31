@@ -74,8 +74,12 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 		return this.video.duration;
 	}
 
-	toggleMute(): void {
-		this.video.muted = !this.video.muted;
+	toggleMute(): boolean {
+		return this.video.muted = !this.video.muted;
+	}
+
+	setIsMuted(isMuted: boolean): boolean {
+		return this.video.muted = isMuted;
 	}
 
 	setVolume(vol: number): void {

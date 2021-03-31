@@ -14,7 +14,8 @@ export default abstract class Ph_VideoWrapper extends HTMLElement {
 	abstract seekTo(time: number): void;
 	abstract getCurrentTime(): number;
 	abstract getMaxTime(): number;
-	abstract toggleMute(): void;
+	abstract toggleMute(): boolean;
+	abstract setIsMuted(isMuted: boolean): boolean;
 	abstract setVolume(vol: number): void;
 	abstract getVolume(): number;
 	abstract setPlaybackSpeed(speed: number): void;

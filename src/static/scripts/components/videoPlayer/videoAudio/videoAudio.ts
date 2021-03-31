@@ -94,8 +94,12 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 		return this.video.duration;
 	}
 
-	toggleMute(): void {
-		this.audio.muted = !this.audio.muted;
+	toggleMute(): boolean {
+		return this.audio.muted = !this.audio.muted;
+	}
+
+	setIsMuted(isMuted: boolean): boolean {
+		return this.audio.muted = isMuted;
 	}
 
 	setVolume(vol: number): void {
