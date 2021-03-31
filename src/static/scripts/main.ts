@@ -23,6 +23,8 @@ import VersionNumber from "./utils/versionNumber.js";
 import { setWaitingServiceWorker } from "./utils/vesionManagement.js";
 
 async function init(): Promise<void> {
+	console.log("Photon Init");
+
 	registerServiceWorker();
 
 	$id("mainWrapper").insertAdjacentElement("afterbegin", new Ph_Header());
@@ -58,6 +60,8 @@ async function init(): Promise<void> {
 	window.dispatchEvent(new Event("ph-page-ready"));
 	if (localStorage["firstTimeFlag"] !== "set")
 		localStorage["firstTimeFlag"] = "set";
+
+	console.log("Photon is ready");
 }
 
 function showInitErrorPage() {
