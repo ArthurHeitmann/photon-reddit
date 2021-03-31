@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node src/app.js",
     "start-dev": "nodemon src/app.js",
-    "build": "tsc && sass src/static --style compressed --no-source-map",
+    "build": "tsc && sass src/static --style compressed --no-source-map && echo Build completed!",
     "watch-sass": " sass --watch src/static",
     "watch-sass-wsl2": " sass --watch --poll src/static",
     "watch-tsc": "tsc -w",
