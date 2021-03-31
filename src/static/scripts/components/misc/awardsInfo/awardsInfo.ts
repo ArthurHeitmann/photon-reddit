@@ -44,9 +44,6 @@ export default class Ph_AwardsInfo extends HTMLElement {
 			<div class="description"></div>
 		`;
 		this.expandedView.appendChild(this.awardInfo);
-		this.awardsList = document.createElement("div");
-		this.awardsList.className = "awardsList";
-		this.expandedView.appendChild(this.awardsList);
 
 		this.awardsList = document.createElement("div");
 		this.awardsList.className = "awardsList";

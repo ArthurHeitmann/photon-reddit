@@ -213,7 +213,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 
 	clearPrevious(loadPosition: LoadPosition) {
 		if (loadPosition === LoadPosition.before) {
-			const removeElements: HTMLElement[] = [];
+			let removeElements: HTMLElement[] = [];
 			let next = this.lastElementChild as HTMLElement;
 			while (next && (next.classList.contains("hide") || next.getBoundingClientRect().y > window.innerHeight * 7) && this.childElementCount > 1) {
 				removeElements.push(next);
@@ -221,6 +221,8 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			}
 			if (removeElements.length === 0)
 				return;
+			if (removeElements.length === this.childElementCount)
+				removeElements = removeElements.slice(1);
 
 			for (const removeElement of removeElements)
 				removeElement.remove();
@@ -238,6 +240,8 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			}
 			if (removeElements.length === 0)
 				return;
+			if (removeElements.length === this.childElementCount)
+				removeElements.splice(-1);
 
 			// remove old elements and set scroll position approximately back to where it was before removal
 			const viewScrollTop = document.scrollingElement.scrollTop;

@@ -77,6 +77,10 @@ export default class Ph_PhotonSettings extends HTMLElement {
 	}
 
 	connectedCallback() {
+		window.addEventListener("ph-page-ready", this.init.bind(this));
+	}
+
+	init() {
 		const windowWrapper = document.createElement("div");
 		windowWrapper.className = "windowWrapper";
 		this.addEventListener("click", (e: MouseEvent) =>
@@ -312,7 +316,7 @@ export default class Ph_PhotonSettings extends HTMLElement {
 			this.hide();
 		})
 		this.optionsArea.appendChild(showChangelogButton);
-		this.optionsArea.insertAdjacentHTML("beforeend", `<div>v${photonWebVersion}</div>`)
+		this.optionsArea.insertAdjacentHTML("beforeend", `<span>v${photonWebVersion}</span>`)
 	}
 
 	private makeGeneralInputGroup(groupTitle: string, elements: HTMLElement[]): HTMLElement {
