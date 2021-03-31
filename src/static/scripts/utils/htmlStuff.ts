@@ -17,7 +17,7 @@ export function linksToSpa(elem: HTMLElement, inlineImage: boolean = false) {
 }
 
 /** Converts all same origin links of an element to SPA (single page application) links */
-export function _linksToSpa(elem: HTMLElement): void {
+function _linksToSpa(elem: HTMLElement): void {
 	if (elem instanceof HTMLAnchorElement) {
 		setLinkOnClick(elem);
 	}
@@ -71,7 +71,7 @@ export function isElementIn(container: HTMLElement, checkElement: HTMLElement): 
 export function _linksToInlineImages(elem: HTMLElement) {
 	const links = elem.$tag("a");
 	for (let link of links) {
-		// test for file endine
+		// test for file endings
 		if (!(/^[^?]+(?<!#.*)\.(png|jpg|jpeg|gif)(\?.*)?$/).test((link as HTMLAnchorElement).href))
 			continue;
 		// no images with http

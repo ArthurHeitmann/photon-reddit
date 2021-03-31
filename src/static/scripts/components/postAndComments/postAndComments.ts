@@ -12,6 +12,7 @@ import Ph_DropDown, { ButtonLabel, DirectionX, DirectionY } from "../misc/dropDo
 import Ph_CommentForm from "../misc/markdownForm/commentForm/commentForm.js";
 import Ph_Toast, { Level } from "../misc/toast/toast.js";
 import Ph_Post from "../post/post.js";
+import PostDoubleLink from "../post/postDoubleLink/postDoubleLink.js";
 import { Ph_ViewState } from "../viewState/viewState.js";
 
 /**
@@ -23,23 +24,46 @@ export default class Ph_PostAndComments extends HTMLElement {
 	sorter: Ph_DropDown;
 	subredditPrefixed: string;
 	userPrefixed: string;
+	tmpLoadingIcon: HTMLElement;
 
-	constructor(data: RedditApiType[]) {
+	constructor(data?: RedditApiType[], postHint?: { post: Ph_Post, subredditPrefixed: string, userPrefixed: string }) {
 		super();
 
 		this.classList.add("postAndComments");
-		this.subredditPrefixed = data[0].data.children[0].data["subreddit_name_prefixed"];
-		this.userPrefixed = `u/${data[0].data.children[0].data["author"]}`;
+
+		if (postHint) {
+			this.subredditPrefixed = postHint.subredditPrefixed;
+			this.userPrefixed = postHint.userPrefixed;
+		}
+		else {
+			this.subredditPrefixed = data[0].data.children[0].data["subreddit_name_prefixed"];
+			this.userPrefixed = `u/${data[0].data.children[0].data["author"]}`;
+		}
 
 		// post
-		try {
-			this.appendChild(this.post = new Ph_Post(data[0].data.children[0], false));
+		if (postHint)
+			this.post = postHint.post;
+		else {
+			try {
+				this.post = new Ph_Post(data[0].data.children[0], false);
+			} catch (e) {
+				console.error("Error making post in comments");
+				console.error(e);
+				new Ph_Toast(Level.error, "Error making post");
+			}
 		}
-		catch (e) {
-			console.error("Error making post in comments");
-			console.error(e);
-			new Ph_Toast(Level.error, "Error making post");
-		}
+		this.appendChild(this.post);
+
+		// comments & more
+		if (data)
+			this.initWithData(data);
+		else
+			this.appendChild(this.tmpLoadingIcon = getLoadingIcon())
+	}
+
+	initWithData(data: RedditApiType[]) {
+		this.tmpLoadingIcon?.remove();
+		const initialScrollPosition = document.scrollingElement.scrollTop;
 
 		// write comment form
 		if (!this.post.isLocked) {
@@ -73,6 +97,9 @@ export default class Ph_PostAndComments extends HTMLElement {
 			{ displayHTML: "Random", value: SortCommentsOrder.random, onSelectCallback: this.handleSort.bind(this) },
 		], curSort ? `Sort - ${curSort[0]}` : "Sorting", DirectionX.right, DirectionY.bottom, false);
 		this.sorter.classList.add("commentsSorter");
+
+		const newScrollPosition = document.scrollingElement.scrollTop;
+		document.scrollingElement.scrollBy(0, initialScrollPosition - newScrollPosition);
 	}
 
 	connectedCallback() {

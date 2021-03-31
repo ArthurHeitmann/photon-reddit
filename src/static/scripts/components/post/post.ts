@@ -1,4 +1,5 @@
 import { deleteThing, save, vote, VoteDirection, voteDirectionFromLikes } from "../../api/redditApi.js";
+import { pushLinkToHistoryComb, PushType } from "../../historyState/historyStateManager.js";
 import { RedditApiType } from "../../types/misc.js";
 import Votable from "../../types/votable.js";
 import { hasPostsBeenSeen, markPostAsSeen, thisUser } from "../../utils/globals.js";
@@ -20,6 +21,7 @@ import Ph_Toast, { Level } from "../misc/toast/toast.js";
 import Ph_VoteButton from "../misc/voteButton/voteButton.js";
 import Ph_PostBody from "./postBody/postBody.js";
 import Ph_PostText from "./postBody/postText/postText.js";
+import PostDoubleLink from "./postDoubleLink/postDoubleLink.js";
 
 /**
  * A reddit post
@@ -43,6 +45,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 	isNsfw: boolean;
 	isSpoiler: boolean;
 	wasInitiallySeen: boolean;
+	doubleLink: PostDoubleLink = null;
 
 	constructor(postData: RedditApiType, isInFeed: boolean, feedUrl?: string) {
 		super(postData.data["name"], postData.data["permalink"], isInFeed);
@@ -133,14 +136,6 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			<img alt="comments" src="/img/comments.svg">
 			<div class="${commentsSizeClass}">${numbOfComments}</div>
 		`;
-		commentsLink.addEventListener("click", (e: MouseEvent) => {
-			if (isInFeed)
-				return true;
-			document.scrollingElement.scrollBy(0, this.getBoundingClientRect().bottom);
-			e.stopImmediatePropagation();
-			e.preventDefault();
-			return false;
-		})
 		actionWrapper.appendChild(commentsLink);
 
 		const isLocked = this.isLocked = postData.data["locked"] || postData.data["archived"];
@@ -218,7 +213,18 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			makeCoverNFlair("orange", "Spoiler", true);
 		}
 
-		linksToSpa(this);
+		linksToSpa(this)
+
+		if (isInFeed)
+			(this.$class("backgroundLink")[0] as HTMLAnchorElement).onclick = this.linkToCommentsClick.bind(this);
+		commentsLink.onclick = (e: MouseEvent) => {
+			if (this.isInFeed)
+				return this.linkToCommentsClick(e);
+			document.scrollingElement.scrollBy(0, this.getBoundingClientRect().bottom);
+			e.stopImmediatePropagation();
+			e.preventDefault();
+			return false;
+		};
 
 		const intersectionObserver = new IntersectionObserver(
 			(entries, obs) => {
@@ -300,6 +306,15 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 	forceShowWhenSeen() {
 		if (!this.shouldPostBeHidden(true) && this.classList.contains("hidden"))
 			this.classList.remove("hidden");
+	}
+
+	linkToCommentsClick(e) {
+		if (e.ctrlKey)
+			return true;
+		this.doubleLink?.disable();
+		this.doubleLink = new PostDoubleLink(this);
+		pushLinkToHistoryComb(e.currentTarget.getAttribute("href"), PushType.pushAfter, this.doubleLink);
+		return false;
 	}
 
 	async vote(dir: VoteDirection): Promise<void> {
@@ -401,6 +416,15 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 	crossPost() {
 		new Ph_Toast(Level.info, "Currently not supported", { timeout: 5000 });
 	}
+
+	connectedCallback() {
+		this.dispatchEvent(new Event("ph-added"));
+	}
+
+	disconnectedCallback() {
+		this.dispatchEvent(new Event("ph-removed"));
+	}
+
 }
 
 customElements.define("ph-post", Ph_Post);

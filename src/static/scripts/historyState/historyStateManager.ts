@@ -6,8 +6,12 @@ import { redditApiRequest } from "../api/redditApi.js";
 import Ph_UniversalFeed from "../components/feed/universalFeed/universalFeed.js";
 import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
 import Ph_About from "../components/photon/about/about.js";
+import Ph_Post from "../components/post/post.js";
+import PostDoubleLink from "../components/post/postDoubleLink/postDoubleLink.js";
 import Ph_SubmitPostForm from "../components/post/submit/submitPostForm.js";
 import Ph_PostAndComments from "../components/postAndComments/postAndComments.js";
+import Ph_CommentsViewStateLoader from "../components/viewState/commentsViewStateLoader/commentsViewStateLoader.js";
+import { Ph_ViewState } from "../components/viewState/viewState.js";
 import Ph_ViewStateLoader from "../components/viewState/viewStateLoader/viewStateLoader.js";
 import Ph_Wiki from "../components/wiki/wiki.js";
 import { $id } from "../utils/htmlStatics.js";
@@ -52,13 +56,13 @@ export enum PushType {
 }
 
 /** Use this function to redirect to a SPA link and the url could contain a query part */
-export function pushLinkToHistoryComb(pathAndQuery: string, pushType: PushType = PushType.pushAfter): void {
+export function pushLinkToHistoryComb(pathAndQuery: string, pushType: PushType = PushType.pushAfter, postHint?: PostDoubleLink): void {
 	const [path, query] = splitPathQuery(pathAndQuery);
-	pushLinkToHistorySep(path, query, pushType);
+	pushLinkToHistorySep(path, query, pushType, postHint);
 }
 
 /** Use this function to redirect to a SPA link and the url doesn't contain a query part */
-export async function pushLinkToHistorySep(path: string, query: string = "?", pushType: PushType = PushType.pushAfter): Promise<void> {
+export async function pushLinkToHistorySep(path: string, query: string = "?", pushType: PushType = PushType.pushAfter, postHint?: PostDoubleLink): Promise<void> {
 	// don't load new page if next history state has same url
 	const nextState = ViewsStack.getNextState();
 	if (nextState && nextState.state.url == (path + query)) {
@@ -66,9 +70,12 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 		return;
 	}
 
-	const stateLoader: Ph_ViewStateLoader = new Ph_ViewStateLoader(
-		ViewsStack.makeHistoryState(path, path + query)
-	);
+	const historyState = ViewsStack.makeHistoryState(path, path + query);
+	let stateLoader: Ph_ViewState;
+	if (postHint)
+		stateLoader = new Ph_CommentsViewStateLoader(historyState, postHint)
+	else
+		stateLoader = new Ph_ViewStateLoader(historyState);
 
 	if (pushType === PushType.pushAfter)
 		ViewsStack.pushAfter(stateLoader);
@@ -96,8 +103,10 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 		throw `Error making request to reddit (${path}, ${JSON.stringify(params)})`;
 	}
 
+	if (postHint)
+		stateLoader.finishWith(requestData);
 	// result is a posts comments
-	if (requestData instanceof Array) {		// --> [0]: post [1]: comments
+	else if (requestData instanceof Array) {		// --> [0]: post [1]: comments
 		stateLoader.finishWith(new Ph_PostAndComments(requestData));
 		ViewsStack.setCurrentStateTitle(`${requestData[0]["data"]["children"][0]["data"]["title"]} - Photon`);
 	}
@@ -125,7 +134,7 @@ function goToHash() {
 		$id(hash.slice(1)).scrollIntoView();
 }
 
-function handleSpecialPaths(path: string, query: string[][], stateLoader: Ph_ViewStateLoader): boolean {
+function handleSpecialPaths(path: string, query: string[][], stateLoader: Ph_ViewState): boolean {
 	if (/^\/about(#.*)?$/.test(path)) {
 		stateLoader.finishWith(new Ph_About());
 		return true;
