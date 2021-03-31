@@ -1,9 +1,11 @@
 import { getGfycatMp4SrcFromUrl, GfycatDomain } from "../../api/gfycatApi.js";
 import { youtubeDlUrl } from "../../api/photonApi.js";
 import { RedditApiType } from "../../types/misc.js";
+import { markPostAsSeen } from "../../utils/globals.js";
 import { escADQ, escHTML } from "../../utils/htmlStatics.js";
 import { classInElementTree, elementWithClassInTree } from "../../utils/htmlStuff.js";
 import { secondsToVideoTime } from "../../utils/utils.js";
+import { globalSettings } from "../global/photonSettings/photonSettings.js";
 import Ph_ControlsBar from "../misc/controlsBar/controlsBar.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
 import Ph_DropDownArea from "../misc/dropDown/dropDownArea/dropDownArea.js";
@@ -253,10 +255,13 @@ export default class Ph_VideoPlayer extends HTMLElement {
 	makeControls() {
 		window.addEventListener("ph-view-change", () => this.video.pause());
 
-		setTimeout(() => {
-			elementWithClassInTree(this.parentElement, "post").addEventListener("ph-intersection", (e: CustomEvent) => {
-				const entries: IntersectionObserverEntry[] = e.detail;
-				if (entries[0].intersectionRatio > .4 && !classInElementTree(this.parentElement, "covered")) {
+		const intersectionObserver = new IntersectionObserver(
+			(entries, obs) => {
+				if (
+					entries[0].intersectionRatio > .4 &&
+					!classInElementTree(this.parentElement, "covered") &&
+					globalSettings.autoplayVideos
+				) {
 					this.video.play();
 					this.focus({preventScroll: true});
 				}
@@ -264,8 +269,12 @@ export default class Ph_VideoPlayer extends HTMLElement {
 					this.video.pause();
 					this.blur();
 				}
-			});
-		}, 0);
+			},
+			{
+				threshold: .4,
+			}
+		);
+		intersectionObserver.observe(this);
 
 		this.draggableWrapper = new Ph_DraggableWrapper();
 		this.video.classList.add("draggable");

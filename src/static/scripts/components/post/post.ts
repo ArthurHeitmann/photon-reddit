@@ -228,10 +228,8 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 
 		const intersectionObserver = new IntersectionObserver(
 			(entries, obs) => {
-				this.dispatchEvent(new CustomEvent("ph-intersection", { detail: entries }))
-				if (globalSettings.markSeenPosts && entries[0].intersectionRatio > .4 && isInFeed) {
+				if (globalSettings.markSeenPosts && entries[0].intersectionRatio > .4 && isInFeed)
 					markPostAsSeen(this.fullName);
-				}
 			},
 			{
 				threshold: .4,

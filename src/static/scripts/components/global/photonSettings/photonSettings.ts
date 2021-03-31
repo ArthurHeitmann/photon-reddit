@@ -25,6 +25,8 @@ export interface PhotonSettings {
 	loadInlineImages?: boolean,
 	controlBarForImages?: boolean,
 	imageLimitedHeight?: number,
+	autoplayVideos?: boolean,
+	globalVideoVolume?: boolean,
 	nsfwPolicy?: NsfwPolicy,
 	markSeenPosts?: boolean,
 	hideSeenPosts?: boolean,
@@ -40,6 +42,8 @@ export let globalSettings: PhotonSettings = {
 	loadInlineImages: true,
 	controlBarForImages: false,
 	imageLimitedHeight: 95,
+	autoplayVideos: true,
+	globalVideoVolume: false,
 	nsfwPolicy: NsfwPolicy.covered,
 	markSeenPosts: true,
 	hideSeenPosts: true,
@@ -195,6 +199,38 @@ export default class Ph_PhotonSettings extends HTMLElement {
 				((e.currentTarget as HTMLInputElement).value);
 		});
 		this.optionsArea.appendChild(limitedHeightGroup);
+		this.optionsArea.appendChild(document.createElement("hr"));
+
+		// videos
+		// autoplay
+		const videoAutoplayGroup = this.makeCustomLabeledInput(
+			"checkbox",
+			"Autoplay videos",
+			"",
+			"checkboxVideoAutoplay",
+			"",
+			globalSettings.autoplayVideos
+		);
+		videoAutoplayGroup.$tag("input")[0].addEventListener("input", e => {
+			this.stageSettingChange(nameOf<PhotonSettings>("autoplayVideos"))
+				((e.currentTarget as HTMLInputElement).checked);
+		});
+		this.optionsArea.appendChild(videoAutoplayGroup);
+		// global volume
+		const videoGlobalVolumeGroup = this.makeCustomLabeledInput(
+			"checkbox",
+			"Sync video volume across all videos",
+			"",
+			"checkboxGlobalVolume",
+			"",
+			globalSettings.globalVideoVolume
+		);
+		videoGlobalVolumeGroup.$tag("input")[0].addEventListener("input", e => {
+			this.stageSettingChange(nameOf<PhotonSettings>("globalVideoVolume"))
+				((e.currentTarget as HTMLInputElement).checked);
+		});
+		this.optionsArea.appendChild(videoGlobalVolumeGroup);
+
 		this.optionsArea.appendChild(document.createElement("hr"));
 
 		// nsfw visibility
