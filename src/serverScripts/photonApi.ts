@@ -1,12 +1,10 @@
 import express from "express";
 import RateLimit from "express-rate-limit";
-import * as https from "https";
 import { basicRateLimitConfig, youtube_dlRateLimitConfig } from "./consts.js";
 import { safeExc, safeExcAsync } from "./utils.js";
-import youtube_dl from "youtube-dl";
+import youtube_dl from "youtube-dl-exec";
 import { photonChangelog, photonVersion } from "./version.js";
 import XMLHttpRequest from "xmlhttprequest"
-import fetch from "node-fetch";
 
 export const photonApiRouter = express.Router();
 
