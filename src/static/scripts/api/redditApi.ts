@@ -4,10 +4,10 @@
 
 import { checkTokenRefresh, initiateLogin } from "../auth/auth.js";
 import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
+import { RedditApiType } from "../types/misc.js";
 import Votable, { FullName } from "../types/votable.js";
 import { isLoggedIn, thisUser, } from "../utils/globals.js";
-import { RedditApiType } from "../types/misc.js";
-import { isObjectEmpty, splitPathQuery } from "../utils/utils.js";
+import { isObjectEmpty, splitPathQuery, throttle } from "../utils/utils.js";
 import { redditProxy, urlRequiresProxy } from "./photonApi.js";
 
 /**
@@ -55,7 +55,8 @@ async function oath2Request(pathAndQuery, params: string[][], options: RequestIn
 
 	try {
 		const response = await fetch(`https://oauth.reddit.com${ path }?${ parametersStr }`, fetchOptions);
-		const responseText = await response.text()
+		const responseText = await response.text();
+		rateLimitCheck(response.headers);
 		return response ? JSON.parse(responseText) : {};
 	} catch (e) {
 		// maybe the token has expired, try to refresh it
@@ -76,6 +77,18 @@ function fixUrl(url: string) {
 	if (new RegExp(`^/(u|user)/${thisUser.name}/m/([^/]+)`, "i").test(url))							// private multi reddits have CORS problems
 		url = url.replace(/^\/user\/[^/]+\/m\//, "/me/m/")									// /user/thisUser/m/... --> /me/m/...
 	return url;
+}
+
+function rateLimitCheck(headers: Headers) {
+	const rlReqRemaining = parseInt(headers.get("x-ratelimit-remaining"));
+	const rlTimeRemaining = parseInt(headers.get("x-ratelimit-reset"));
+	if (rlReqRemaining < 50)
+		rateLimitWarning(rlReqRemaining, rlTimeRemaining);
+}
+
+const rateLimitWarning = throttle(_rateLimitWarning, 15 * 1000);
+function _rateLimitWarning(reqRemaining, timeRemaining) {
+	new Ph_Toast(Level.warning, `Rate limit almost fully used (${reqRemaining} requests remaining for next ${timeRemaining}s)`);
 }
 
 export enum VoteDirection {

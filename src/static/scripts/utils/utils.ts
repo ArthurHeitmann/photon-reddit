@@ -134,7 +134,7 @@ export function throttle(func: (...any) => any, wait: number, options: { leading
 			context = args = null;
 		}
 	};
-	return function() {
+	return function(..._: any) {
 		const now = Date.now();
 		if (!previous && options.leading === false) previous = now;
 		const remaining = wait - (now - previous);
