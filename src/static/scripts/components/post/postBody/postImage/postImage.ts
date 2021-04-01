@@ -161,10 +161,7 @@ export default class Ph_PostImage extends HTMLElement {
 				const changed = e.detail as PhotonSettings;
 				if (changed.controlBarForImages === undefined)
 					return;
-				if (changed.controlBarForImages)
-					this.controls.classList.remove("hide");
-				else
-					this.controls.classList.add("hide");
+				this.controls.classList.toggle("hide", !changed.controlBarForImages);
 			});
 		}
 		// spacer

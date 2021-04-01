@@ -53,10 +53,7 @@ export default class PostDoubleLink {
 		}
 
 		this.post.isInFeed = isInFeed;
-		if (isInFeed)
-			this.post.classList.add("isInFeed");
-		else
-			this.post.classList.remove("isInFeed");
+		this.post.classList.toggle("isInFeed", isInFeed);
 	}
 
 	onPostAdded() {

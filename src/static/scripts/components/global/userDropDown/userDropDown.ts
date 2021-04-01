@@ -130,10 +130,7 @@ export default class Ph_UserDropDown extends HTMLElement {
 	setUnreadCount(unreadCount: number) {
 		this.unreadBadge.innerText = numberToShort(unreadCount);
 		thisUser.inboxUnread = unreadCount;
-		if (unreadCount === 0)
-			this.unreadBadge.classList.add("hide");
-		else
-			this.unreadBadge.classList.remove("hide");
+		this.unreadBadge.classList.toggle("hide", unreadCount === 0)
 	}
 
 	minimize() {

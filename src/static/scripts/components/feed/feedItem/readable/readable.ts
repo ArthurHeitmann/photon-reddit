@@ -67,10 +67,7 @@ export default abstract class Ph_Readable extends Ph_FeedItem implements FullNam
 	}
 
 	updateIsReadStatus() {
-		if (this.isRead)
-			this.classList.remove("unread");
-		else
-			this.classList.add("unread");
+		this.classList.toggle("unread", !this.isRead)
 	}
 
 	static markReadAllButton: HTMLButtonElement;

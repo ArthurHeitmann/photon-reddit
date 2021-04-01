@@ -45,7 +45,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 	isNsfw: boolean = false;
 	forceNsfw: boolean = false;
 	isSpoiler: boolean = false;
-	isSpoilerAllowed: boolean = false;
+	isSpoilerAllowed: boolean = true;
 	imagesAllowed: boolean = true;
 	videosAllowed: boolean = true;
 	notificationButton: HTMLButtonElement;
@@ -121,17 +121,11 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		// nsfw & spoiler
 		this.nsfwButton = this.makeSpecialButton("NSFW", "nsfw", leftItems, () => {
 			this.isNsfw = !this.isNsfw || this.forceNsfw;
-			if (this.isNsfw)
-				this.nsfwButton.classList.add("selected");
-			else
-				this.nsfwButton.classList.remove("selected");
+			this.nsfwButton.classList.toggle("selected", this.isNsfw);
 		});
 		this.spoilerButton = this.makeSpecialButton("Spoiler", "spoiler", leftItems, () => {
 			this.isSpoiler = !this.isSpoiler && this.isSpoilerAllowed;
-			if (this.isSpoiler)
-				this.spoilerButton.classList.add("selected");
-			else
-				this.spoilerButton.classList.remove("selected");
+			this.spoilerButton.classList.toggle("selected", this.isSpoiler);
 		});
 
 		// flair
@@ -392,10 +386,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 	setAllowedTypes(sections: SubmitPostType[]) {
 		this.allowedTypes = sections;
 		for (const button of this.sectionSelection.children) {
-			if (sections.includes(<SubmitPostType> (button as HTMLElement).innerText))
-				button.classList.remove("hide");
-			else
-				button.classList.add("hide");
+			button.classList.toggle("hide", !sections.includes(<SubmitPostType> (button as HTMLElement).innerText));
 		}
 		if (sections.length === 0)
 			return;
