@@ -69,7 +69,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		if (this.shouldPostBeHidden())
 			this.classList.add("hide");
 
-		window.addEventListener("settingsChanged", this.onSettingsChanged.bind(this));
+		this.addWindowEventListener("settingsChanged", this.onSettingsChanged.bind(this));
 
 		// actions bar
 		this.actionBar = document.createElement("div");
@@ -80,7 +80,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		actionWrapper.className = "wrapper";
 		// vote up button
 		this.voteUpButton = new Ph_VoteButton(true);
-		this.voteUpButton.addEventListener("click", () => this.vote(VoteDirection.up));
+		this.voteUpButton.addEventListener("click", this.vote.bind(this, VoteDirection.up));
 		actionWrapper.appendChild(this.voteUpButton);
 		// current votes
 		this.currentUpvotes = document.createElement("div");
@@ -88,7 +88,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		actionWrapper.appendChild(this.currentUpvotes);
 		// vote down button
 		this.voteDownButton = new Ph_VoteButton(false);
-		this.voteDownButton.addEventListener("click", () => this.vote(VoteDirection.down));
+		this.voteDownButton.addEventListener("click", this.vote.bind(this, VoteDirection.down));
 		actionWrapper.appendChild(this.voteDownButton);
 		this.setVotesState(this.currentVoteDirection);
 
@@ -138,7 +138,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		`;
 		actionWrapper.appendChild(commentsLink);
 
-		const isLocked = this.isLocked = postData.data["locked"] || postData.data["archived"];
+		this.isLocked = postData.data["locked"] || postData.data["archived"];
 		const lockedReason = postData.data["locked"] ? "locked" : "archived";
 		let userAdditionClasses = "";
 		if (postData.data["distinguished"] === "moderator") {
@@ -171,7 +171,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 					: ""
 					}
 					<div class="flairWrapper">					
-						${ 	isLocked
+						${ 	this.isLocked
 							? `<span data-tooltip="${lockedReason}" class="locked"><img src="/img/locked.svg" alt="locked"></span>`
 							: ""
 						}
@@ -221,14 +221,12 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			if (this.isInFeed)
 				return this.linkToCommentsClick(e);
 			document.scrollingElement.scrollBy(0, this.getBoundingClientRect().bottom);
-			e.stopImmediatePropagation();
-			e.preventDefault();
 			return false;
 		};
 
 		const intersectionObserver = new IntersectionObserver(
-			(entries, obs) => {
-				if (globalSettings.markSeenPosts && entries[0].intersectionRatio > .4 && isInFeed)
+			entries => {
+				if (globalSettings.markSeenPosts && entries[0].intersectionRatio > .4 && this.isInFeed)
 					markPostAsSeen(this.fullName);
 			},
 			{
@@ -243,7 +241,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 	}
 
 	private onSettingsChanged(e: CustomEvent) {
-		console.log("guys guys");
+		console.log("...");
 		const changed: PhotonSettings = e.detail;
 		if (this.shouldPostBeHidden(false, changed))
 			this.classList.add("hide");
@@ -293,11 +291,11 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		cover.className = "cover";
 		const removeBtn = document.createElement("div");
 		removeBtn.innerText = "Show Post";
-		cover.addEventListener("click", () => {
+		cover.addEventListener("click", e => {
 			this.$class("content")[0].classList.remove("covered");
-			cover.remove();
+			(e.currentTarget as HTMLElement).remove();
 			this.cover = null;
-		})
+		}, { once: true })
 		cover.appendChild(removeBtn);
 		return cover;
 	}
@@ -333,23 +331,17 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 
 		const isAnimated = voteDirection !== this.currentVoteDirection;
 
-		switch (this.currentVoteDirection) {
-			case VoteDirection.up:
-				this.voteUpButton.unVote();
-				break;
-			case VoteDirection.down:
-				this.voteDownButton.unVote();
-				break;
-		}
+		if (this.currentVoteDirection === VoteDirection.up)
+			this.voteUpButton.unVote()
+		else if (this.currentVoteDirection === VoteDirection.down)
+			this.voteDownButton.unVote();
+
 		this.currentVoteDirection = voteDirection;
-		switch (this.currentVoteDirection) {
-			case VoteDirection.up:
-				this.voteUpButton.vote(isAnimated);
-				break;
-			case VoteDirection.down:
-				this.voteDownButton.vote(isAnimated);
-				break;
-		}
+
+		if (this.currentVoteDirection === VoteDirection.up)
+			this.voteUpButton.vote(isAnimated)
+		else if (this.currentVoteDirection === VoteDirection.down)
+			this.voteDownButton.vote(isAnimated);
 	}
 
 	async toggleSave(valueChain: any[], _, __, source: Ph_DropDownEntry) {
@@ -367,7 +359,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 				navigator.clipboard.writeText(location.origin + this.link);
 				break;
 			case "reddit link":
-				navigator.clipboard.writeText(`reddit.com${this.link}`);
+				navigator.clipboard.writeText(`https://www.reddit.com${this.link}`);
 				break;
 			case "link":
 				if (this.url)
@@ -388,7 +380,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		new Ph_Toast(
 			Level.warning,
 			"Are you sure you want to delete this post?",
-			{ onConfirm: () => this.deletePost(source) }
+			{ onConfirm: this.deletePost.bind(this, source) }
 		);
 	}
 
@@ -415,15 +407,6 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 	crossPost() {
 		new Ph_Toast(Level.info, "Currently not supported", { timeout: 5000 });
 	}
-
-	connectedCallback() {
-		this.dispatchEvent(new Event("ph-added"));
-	}
-
-	disconnectedCallback() {
-		this.dispatchEvent(new Event("ph-removed"));
-	}
-
 }
 
 customElements.define("ph-post", Ph_Post);
