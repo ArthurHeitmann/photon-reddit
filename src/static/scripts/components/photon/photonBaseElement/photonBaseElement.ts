@@ -16,6 +16,7 @@ export default class Ph_PhotonBaseElement extends HTMLElement {
 	cleanup() {
 		for (let event of this.windowEventListeners)
 			window.removeEventListener(event.eventName, event.listener);
+		this.windowEventListeners = [];
 	}
 
 	connectedCallback() {
@@ -24,5 +25,10 @@ export default class Ph_PhotonBaseElement extends HTMLElement {
 
 	disconnectedCallback() {
 		this.dispatchEvent(new Event("ph-removed"));
+	}
+
+	remove() {
+		this.cleanup();
+		super.remove()
 	}
 }
