@@ -1,4 +1,6 @@
-export default class Ph_FeedItem extends HTMLElement {
+import Ph_PhotonBaseElement from "../../photon/photonBaseElement/photonBaseElement.js";
+
+export default class Ph_FeedItem extends Ph_PhotonBaseElement {
 	itemId: string;
 	link: string;
 	isInFeed: boolean;
