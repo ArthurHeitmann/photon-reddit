@@ -26,6 +26,7 @@ export default class Ph_ControlsBar extends HTMLElement {
 	leftItemsSlot: HTMLDivElement;
 	rightItemsSlot: HTMLDivElement;
 	progressBar: Ph_ProgressBar;
+	initialDropdownEntries: Ph_DropDownEntry[];
 
 	constructor(isInitiallyVisible: boolean) {
 		super();
@@ -54,7 +55,11 @@ export default class Ph_ControlsBar extends HTMLElement {
 	}
 
 	setupSlots(elements: HTMLElement[]) {
-		this.append(...elements)
+		this.append(...elements);
+		const dropdown = this.$class("dropDown")[0] as Ph_DropDown;
+		if (!dropdown)
+			return;
+		this.initialDropdownEntries = dropdown.$classAr("dropDownEntry") as Ph_DropDownEntry[];
 	}
 
 	updateSlotsWIth(newElements: ControlsLayoutSlots) {
@@ -65,6 +70,16 @@ export default class Ph_ControlsBar extends HTMLElement {
 		this.progressBar = newElements.progressBar;
 		if (this.progressBar)
 			this.appendChild(this.progressBar);
+		const dropDown = this.$class("dropDown")[0] as Ph_DropDown;
+		if (!newElements.settingsEntriesCached) {
+			const dropDownArea = dropDown.$class("dropDownArea ")[0] as Ph_DropDownArea;
+			newElements.settingsEntriesCached = newElements.settingsEntries.map(param => new Ph_DropDownEntry(param, dropDown, dropDownArea));
+		}
+		const entriesRoot = dropDown.$class("dropDownArea")[0];
+		Array.from(entriesRoot.children)
+			.filter((entry: Ph_DropDownEntry) => !this.initialDropdownEntries.includes(entry))
+			.forEach(entry => entry.remove());
+		entriesRoot.append(...newElements.settingsEntriesCached);
 	}
 
 	private replaceSlotElements(slot: HTMLElement, newElements: HTMLElement[]) {
