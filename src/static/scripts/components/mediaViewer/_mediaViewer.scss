@@ -1,0 +1,10 @@
+@use "../../../style/vars";
+
+.mediaViewer {
+	position: relative;
+	overflow: hidden;
+	user-select: none;
+
+	width: 100%;
+	max-height: vars.$image-height-limited;
+}

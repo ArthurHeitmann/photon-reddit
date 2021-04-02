@@ -11,31 +11,31 @@ export default class Ph_DraggableWrapper extends HTMLElement {
 	mouseDownRef;
 	mouseLeaveRef;
 	wheelRef;
-	keyRef;
-	activatedElem: HTMLElement = null;
+	// keyRef;
+	// activatedElem: HTMLElement = null;
 
 	constructor() {
 		super();
 		this.className = "draggableWrapper";
 	}
 
-	activateWith(elem: HTMLElement) {
-		elem.addEventListener("mousedown", this.mouseDownRef = e => this.beginDrag(e));
-		elem.addEventListener("mouseup", this.mouseUpRef = e => this.endDrag(e));
-		elem.addEventListener("mouseleave", this.mouseLeaveRef = e => this.endDrag(e));
-		elem.addEventListener("wheel", this.wheelRef = e => this.onZoom(e), { passive: false });
-		this.activatedElem = elem;
+	activate() {
+		this.addEventListener("mousedown", this.mouseDownRef = e => this.beginDrag(e));
+		this.addEventListener("mouseup", this.mouseUpRef = e => this.endDrag(e));
+		this.addEventListener("mouseleave", this.mouseLeaveRef = e => this.endDrag(e));
+		this.addEventListener("wheel", this.wheelRef = e => this.onZoom(e), { passive: false });
+		// this.activatedElem = elem;
 	}
 
 	deactivate() {
-		if (this.activatedElem === null)
-			throw "no dragging element active";
+		// if (this.activatedElem === null)
+		// 	throw "no dragging element active";
 
-		this.activatedElem.removeEventListener("mousedown", this.mouseDownRef);
-		this.activatedElem.removeEventListener("mouseup", this.mouseUpRef);
-		this.activatedElem.removeEventListener("mouseleave", this.mouseLeaveRef);
-		this.activatedElem.removeEventListener("wheel", this.wheelRef);
-		this.activatedElem = null;
+		this.removeEventListener("mousedown", this.mouseDownRef);
+		this.removeEventListener("mouseup", this.mouseUpRef);
+		this.removeEventListener("mouseleave", this.mouseLeaveRef);
+		this.removeEventListener("wheel", this.wheelRef);
+		// this.activatedElem = null;
 	}
 
 	beginDrag(e: MouseEvent) {

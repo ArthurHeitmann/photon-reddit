@@ -5,7 +5,7 @@
  */
 
 import { globalSettings } from "../components/global/photonSettings/photonSettings.js";
-import Ph_PostImage from "../components/mediaViewer/imageView/imageView.js";
+import Ph_ImageViewer from "../components/mediaViewer/imageView/imageView.js";
 import { pushLinkToHistoryComb } from "../historyState/historyStateManager.js";
 import { _replaceRedditLinks } from "./utils.js";
 
@@ -83,7 +83,7 @@ export function _linksToInlineImages(elem: HTMLElement) {
 		else if ((/preview\.redd\.it\/.*\.gif\?format=mp4/).test((link as HTMLAnchorElement).href))
 			continue;
 
-		const image = new Ph_PostImage([{originalUrl: (link as HTMLAnchorElement).href, caption: ""}]);
+		const image = new Ph_ImageViewer([{originalUrl: (link as HTMLAnchorElement).href, caption: ""}]);
 		const tmpChildren = Array.from(link.children);
 		const tmpInner = link.innerHTML;
 		tmpChildren.forEach(child => child.remove());

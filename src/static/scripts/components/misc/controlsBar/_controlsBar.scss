@@ -33,3 +33,7 @@
 		}
 	}
 }
+
+.controlsVisible > .controls {
+	transform: translateY(0);
+}

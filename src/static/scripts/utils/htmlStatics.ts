@@ -101,3 +101,11 @@ export function getLoadingIcon(): HTMLImageElement {
 	loadingIcon.className = "loadingIcon";
 	return loadingIcon;
 }
+
+export function nonDraggableImage(img: HTMLImageElement): HTMLImageElement {
+	img.addEventListener("dragstart", e => {
+		e.preventDefault();
+		return false;
+	});
+	return img;
+}
