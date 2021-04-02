@@ -5,7 +5,7 @@ import { RedditApiData, RedditApiType } from "../../../types/misc.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Ph_SimpleVideo from "../../videoPlayer/simpleVideo/simpleVideo.js";
 import Ph_VideoPlayer from "../../videoPlayer/videoPlayer.js";
-import Ph_PostImage, { GalleryInitData } from "./postImage/postImage.js";
+import Ph_PostImage, { GalleryInitData } from "../../mediaViewer/imageView/imageView.js";
 import Ph_PostText from "./postText/postText.js";
 
 /**
