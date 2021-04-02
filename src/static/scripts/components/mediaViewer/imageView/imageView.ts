@@ -1,6 +1,7 @@
 import { getLoadingIcon, nonDraggableImage } from "../../../utils/htmlStatics.js";
 import { globalSettings, ImageLoadingPolicy, PhotonSettings } from "../../global/photonSettings/photonSettings.js";
-import { ControlsLayoutSlots, MediaElement } from "../mediaElement.js";
+import { ControlsLayoutSlots } from "../../misc/controlsBar/controlsBar.js";
+import { MediaElement } from "../mediaElement.js";
 
 // export interface GalleryInitData {
 // 	originalUrl: string,

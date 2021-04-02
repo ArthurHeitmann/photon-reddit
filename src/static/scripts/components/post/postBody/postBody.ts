@@ -6,7 +6,6 @@ import Ph_MediaViewer from "../../mediaViewer/mediaViewer.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Ph_SimpleVideo from "../../videoPlayer/simpleVideo/simpleVideo.js";
 import Ph_VideoPlayer from "../../videoPlayer/videoPlayer.js";
-import Ph_ImageViewer, { GalleryInitData } from "../../mediaViewer/imageView/imageView.js";
 import Ph_PostText from "./postText/postText.js";
 
 /**
@@ -91,14 +90,9 @@ export default class Ph_PostBody extends HTMLElement {
 			this.innerHTML = `<a href="${escADQ(postData.data["url"])}" rel="noopener">${escHTML(postData.data["url"])}</a>`;
 	}
 
-	private makeMediaViewerBody(postData: RedditApiType) {
-		this.classList.add("fullScale");
-		this.appendChild(Ph_MediaViewer.fromPostData(postData));
-	}
-
 	private makeImageBody(postData: RedditApiType) {
 		this.classList.add("fullScale");
-		this.appendChild(Ph_MediaViewer.fromPostData(postData));
+		this.appendChild(Ph_MediaViewer.fromPostData_Image(postData));
 	}
 
 	private makeVideoBody(postData: RedditApiType) {

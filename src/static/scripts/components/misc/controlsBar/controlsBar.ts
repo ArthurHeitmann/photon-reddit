@@ -1,5 +1,18 @@
+import { nonDraggableImage } from "../../../utils/htmlStatics.js";
 import Ph_DropDown from "../dropDown/dropDown.js";
+import Ph_DropDownArea from "../dropDown/dropDownArea/dropDownArea.js";
+import { DropDownEntryParam } from "../dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_MorphingImage from "../morphingImage/morphingImage.js";
+import Ph_ProgressBar from "../progressBar/progressBar.js";
+import Ph_SwitchingImage from "../switchableImage/switchableImage.js";
+
+export interface ControlsLayoutSlots {
+	firstLeftItems?: HTMLElement[],
+	leftItems?: HTMLElement[],
+	rightItems?: HTMLElement[],
+	settingsEntries?: DropDownEntryParam[],
+	progressBar?: Ph_ProgressBar,
+}
 
 /**
  * A bar with control elements. Needs a content element (addHowHideListeners()). Will show when the cursor hovers
@@ -8,11 +21,19 @@ import Ph_MorphingImage from "../morphingImage/morphingImage.js";
 export default class Ph_ControlsBar extends HTMLElement {
 	hideTimeout = null;
 	contentElement: HTMLElement = null;
+	firstLeftItemsSlot: HTMLDivElement;
+	leftItemsSlot: HTMLDivElement;
+	rightItemsSlot: HTMLDivElement;
 
 	constructor(isInitiallyVisible: boolean) {
 		super();
 
 		this.className = "controls";
+
+		this.firstLeftItemsSlot = document.createElement("div");
+		this.leftItemsSlot = document.createElement("div");
+		this.rightItemsSlot = document.createElement("div");
+
 		if (isInitiallyVisible)
 			setTimeout(() => this.parentElement.classList.add("controlsVisible"), 0);
 	}
@@ -27,36 +48,39 @@ export default class Ph_ControlsBar extends HTMLElement {
 				e => this.contentElement.contains(e.relatedTarget as HTMLElement) || this.restartHideTimeout());
 	}
 
-	appendMakeImageButton(imgSrc: string, padded = false): HTMLButtonElement {
+	setupSlots(elements: HTMLElement[]) {
+		this.append(...elements)
+	}
+
+	static makeImageButton(imgSrc: string, padded = false): HTMLButtonElement {
 		const btn = document.createElement("button");
 		const img = document.createElement("img");
-		img.draggable = false;
-		if (padded) img.className = "padded";
+		nonDraggableImage(img);
+		if (padded)
+			img.className = "padded";
 		img.alt = imgSrc;
 		img.src = imgSrc;
 		btn.appendChild(img);
-		this.appendChild(btn);
 		return btn;
 	}
 
-	appendDropDown(dropdown: Ph_DropDown): Ph_DropDown {
-		return this.appendChild(dropdown);
+	static makeSwitchingImageBtn(img: Ph_SwitchingImage): { b: HTMLButtonElement, img: Ph_SwitchingImage } {
+		const button = document.createElement("button");
+		button.className = "imgBtn";
+		button.appendChild(img);
+		return { b: button, img: img };
 	}
 
-	appendMorphingImage(img: Ph_MorphingImage) {
-		return this.appendChild(img);
-	}
-
-	appendSpacer(): HTMLDivElement {
+	static makeSpacer(): HTMLDivElement {
 		const spacer = document.createElement("div");
 		spacer.className = "mla";
-		return this.appendChild(spacer)
+		return spacer;
 	}
 
 	showControls() {
 		this.parentElement.classList.add("controlsVisible");
 
-		this.hideTimeout = setTimeout(() => this.hideControls(), 2000);
+		this.hideTimeout = setTimeout(this.hideControls.bind(this), 2000);
 	}
 
 	restartHideTimeout() {
@@ -68,7 +92,7 @@ export default class Ph_ControlsBar extends HTMLElement {
 
 		this.clearHideTimeout();
 
-		this.hideTimeout = setTimeout(() => this.hideControls(), 2000);
+		this.hideTimeout = setTimeout(this.hideControls.bind(this), 2000);
 	}
 
 	clearHideTimeout() {
@@ -82,6 +106,7 @@ export default class Ph_ControlsBar extends HTMLElement {
 		this.parentElement.classList.remove("controlsVisible");
 		this.dispatchEvent(new Event("ph-hidecontrols"))
 		this.clearHideTimeout();
+		this.$classAr("dropDownArea").forEach((area: Ph_DropDownArea) => area.closeMenu(true));
 	}
 }
 

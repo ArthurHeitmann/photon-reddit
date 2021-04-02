@@ -7,4 +7,18 @@
 
 	width: 100%;
 	max-height: vars.$image-height-limited;
+
+	> .controls {
+		> .dropDown {
+			.dropDownButton {
+				background: none;
+				border: none;
+				padding: 0;
+
+				> img {
+					height: 100%;
+				}
+			}
+		}
+	}
 }

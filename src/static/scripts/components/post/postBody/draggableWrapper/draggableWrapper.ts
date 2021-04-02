@@ -84,6 +84,11 @@ export default class Ph_DraggableWrapper extends HTMLElement {
 		this.style.setProperty("--img-move-x", `${this.moveX}px`);
 		this.style.setProperty("--img-move-y", `${this.moveY}px`);
 	}
+
+	reset() {
+		this.setMoveXY(0, 0);
+		this.setZoom(1);
+	}
 }
 
 customElements.define("ph-draggable-wrapper", Ph_DraggableWrapper);
