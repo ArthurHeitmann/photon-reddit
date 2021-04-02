@@ -74,6 +74,7 @@ export default class Ph_MediaViewer extends HTMLElement {
 			nextBtn.addEventListener("click", this.nextGalleryElement.bind(this));
 			controlSlots.push(nextBtn);
 			this.currentIndexDisplay = document.createElement("div");
+			this.currentIndexDisplay.className = "textOnly";
 			controlSlots.push(this.currentIndexDisplay);
 		}
 		else
@@ -93,6 +94,7 @@ export default class Ph_MediaViewer extends HTMLElement {
 		controlSlots.push(this.controls.rightItemsSlot);
 		// reset view
 		const resetViewBtn = Ph_ControlsBar.makeImageButton("/img/reset.svg");
+		resetViewBtn.classList.add("resetView");
 		resetViewBtn.addEventListener("click", () => this.draggableWrapper.reset());
 		controlSlots.push(resetViewBtn);
 		// settings dropdown
@@ -133,6 +135,7 @@ export default class Ph_MediaViewer extends HTMLElement {
 		this.elementCaption.title = newMedia.caption || "";
 		this.elementLink.href = newMedia.url;
 		this.elementLink.innerText = newMedia.url.match(/[\w-_]+\.[\w-_]+(?=[/?#])+/)[0];
+		this.controls.updateSlotsWIth(newMedia.controls);
 		// TODO fs event
 	}
 
@@ -162,7 +165,8 @@ export default class Ph_MediaViewer extends HTMLElement {
 		this.isInFullscreenState = true;
 		this.mediaElements[this.currentIndex].element.dispatchEvent(new Event("ph-entered-fullscreen"));
 		this.draggableWrapper.activate();
-		this.fullscreenImage.showImage("minimize")
+		this.fullscreenImage.showImage("minimize");
+		this.classList.add("isInFullscreen");
 	}
 
 	onExitFullscreen() {
@@ -170,6 +174,7 @@ export default class Ph_MediaViewer extends HTMLElement {
 		this.draggableWrapper.deactivate();
 		this.draggableWrapper.reset();
 		this.fullscreenImage.showImage("fullscreen")
+		this.classList.remove("isInFullscreen");
 	}
 }
 

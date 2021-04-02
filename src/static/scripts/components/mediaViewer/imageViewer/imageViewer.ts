@@ -96,7 +96,8 @@ export default class Ph_ImageViewer extends HTMLElement implements MediaElement 
 		this.classList.add("imageViewer")
 
 		this.caption = initData.caption;
-		this.controls = {};
+		this.controls = { rightItems: [getLoadingIcon()] };
+		this.controls.rightItems[0].classList.add("hide");
 		this.element = this;
 		this.url = initData.displayUrl || initData.originalUrl;
 
@@ -281,13 +282,11 @@ export default class Ph_ImageViewer extends HTMLElement implements MediaElement 
 		if (this.originalImage.src)
 			return;
 
-		this.controls.rightItems = [getLoadingIcon()];
-		this.dispatchEvent(new Event("ph-controls-changed"));
+		this.controls.rightItems[0].classList.remove("hide");
 		this.originalImage.addEventListener("load", () => {
 			this.previewImage.remove();
 			this.previewImage = undefined;
-			this.controls.rightItems = [];
-			this.dispatchEvent(new Event("ph-controls-changed"));
+			this.controls.rightItems[0].classList.add("hide");
 		}, { once: true });
 		this.originalImage.src = this.originalSrc;
 		this.originalImage.classList.remove("hide");

@@ -16,9 +16,49 @@
 		padding: 10%;
 	}
 
-	> .morphingImage, > .morphingImage > svg, > .volumeWrapper .imgBtn > .switchableImg, > .switchableImg > img, > .settings > .dropDownButton, > .imgBtn, > .imgBtn > .switchableImg, > button, > button > img {
+	.morphingImage, .morphingImage > svg, .volumeWrapper .imgBtn > .switchableImg, .switchableImg > img, .imgBtn, .imgBtn > .switchableImg, button, button > img {
 		height: 2.5rem;
 		width: 2.5rem;
+	}
+
+	.slot {
+		display: flex;
+	}
+
+	.textOnly {
+		line-height: vars.$controls-height;
+	}
+
+	> .progressBar {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: .25rem;
+		cursor: pointer;
+
+
+		&:hover {
+			background: #f07f7f80;
+			transform: scaleY(3);
+
+			.accessibilitySpacer {
+				transform: scaleY(2);
+			}
+
+			&[data-tooltip]::after {
+				transform: translateX(-50%) translateY(-100%) scaleY(0.33333);
+			}
+		}
+
+		&[data-tooltip]::after {
+			transition-duration: .25s;
+		}
+
+		> .progress {
+			transition: width .1s linear;
+			border-right: .25rem solid white;
+		}
 	}
 
 	//> .morphingImage, > .volumeWrapper .imgBtn, > .switchableImg, > .settings > .dropDownButton, > .imgBtn, > button {

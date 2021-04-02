@@ -335,9 +335,8 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 		this.video.addEventListener("ph-playing", () => this.overlayIcon.showImage("none"));
 
 		// play, pause, progress bar
-		const playButton = new Ph_PlayImage();
+		const playButton = new Ph_PlayImage(true);
 		this.controls.firstLeftItems.push(playButton);
-		playButton.setAttribute("data-tooltip", "Shortcut: Space/P/K");
 		playButton.addEventListener("click", () => this.togglePlay());
 		this.video.addEventListener("ph-play", () => {
 			playButton.toPause();
@@ -358,6 +357,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 
 		// time text
 		const timeText = document.createElement("div");
+		timeText.className = "textOnly";
 		this.controls.leftItems.push(timeText);
 		timeText.innerText = "00:00 / 00:00";
 
@@ -370,10 +370,8 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 			{ src: "/img/audio.svg", key: "audio" },
 		]));
 		volumeWrapper.appendChild(muteButton);
-		muteButton.setAttribute("data-tooltip", "Shortcut: M");
 		muteButton.addEventListener("click", () => this.toggleMuted());
 		const volumeSlider = new Ph_ProgressBar(true, 20);
-		volumeSlider.setAttribute("data-tooltip", "Shortcut: Arrow Up/Down or Scroll");
 		volumeSlider.addEventListener("ph-drag", (e: CustomEvent) => this.setVolume(e.detail));
 		volumeWrapper.appendChild(volumeSlider);
 		this.video.addEventListener("ph-volumechange",
@@ -406,14 +404,13 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				]
 			},
 			// {
-			// 	displayHTML: `<span data-tooltip="Shortcut: I">Popout</span>`,
+			// 	displayHTML: `<span>Popout</span>`,
 			// 	onSelectCallback: this.popoutVideo.bind(this)
 			// },
 		];
 
 		// progress bar
 		this.controls.progressBar = new Ph_ProgressBar(true);
-		this.controls.progressBar.setAttribute("data-tooltip", "Shortcut: Arrow Left/K, Arrow Right/L, or Scroll");
 		this.controls.progressBar.addEventListener("ph-drag", (e: CustomEvent) => {
 			this.video.seekTo(e.detail * this.video.getMaxTime());
 		});

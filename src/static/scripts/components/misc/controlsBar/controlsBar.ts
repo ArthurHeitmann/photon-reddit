@@ -1,7 +1,7 @@
 import { nonDraggableImage } from "../../../utils/htmlStatics.js";
 import Ph_DropDown from "../dropDown/dropDown.js";
 import Ph_DropDownArea from "../dropDown/dropDownArea/dropDownArea.js";
-import { DropDownEntryParam } from "../dropDown/dropDownEntry/dropDownEntry.js";
+import Ph_DropDownEntry, { DropDownEntryParam } from "../dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_MorphingImage from "../morphingImage/morphingImage.js";
 import Ph_ProgressBar from "../progressBar/progressBar.js";
 import Ph_SwitchingImage from "../switchableImage/switchableImage.js";
@@ -11,6 +11,7 @@ export interface ControlsLayoutSlots {
 	leftItems?: HTMLElement[],
 	rightItems?: HTMLElement[],
 	settingsEntries?: DropDownEntryParam[],
+	settingsEntriesCached?: Ph_DropDownEntry[],
 	progressBar?: Ph_ProgressBar,
 }
 
@@ -24,6 +25,7 @@ export default class Ph_ControlsBar extends HTMLElement {
 	firstLeftItemsSlot: HTMLDivElement;
 	leftItemsSlot: HTMLDivElement;
 	rightItemsSlot: HTMLDivElement;
+	progressBar: Ph_ProgressBar;
 
 	constructor(isInitiallyVisible: boolean) {
 		super();
@@ -31,8 +33,11 @@ export default class Ph_ControlsBar extends HTMLElement {
 		this.className = "controls";
 
 		this.firstLeftItemsSlot = document.createElement("div");
+		this.firstLeftItemsSlot.className = "slot";
 		this.leftItemsSlot = document.createElement("div");
+		this.leftItemsSlot.className = "slot";
 		this.rightItemsSlot = document.createElement("div");
+		this.rightItemsSlot.className = "slot";
 
 		if (isInitiallyVisible)
 			setTimeout(() => this.parentElement.classList.add("controlsVisible"), 0);
@@ -50,6 +55,21 @@ export default class Ph_ControlsBar extends HTMLElement {
 
 	setupSlots(elements: HTMLElement[]) {
 		this.append(...elements)
+	}
+
+	updateSlotsWIth(newElements: ControlsLayoutSlots) {
+		this.replaceSlotElements(this.firstLeftItemsSlot, newElements.firstLeftItems);
+		this.replaceSlotElements(this.leftItemsSlot, newElements.leftItems);
+		this.replaceSlotElements(this.rightItemsSlot, newElements.rightItems);
+		this.progressBar?.remove();
+		this.progressBar = newElements.progressBar;
+		if (this.progressBar)
+			this.appendChild(this.progressBar);
+	}
+
+	private replaceSlotElements(slot: HTMLElement, newElements: HTMLElement[]) {
+		slot.innerText = "";
+		slot.append(...(newElements || []));
 	}
 
 	static makeImageButton(imgSrc: string, padded = false): HTMLButtonElement {

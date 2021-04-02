@@ -9,7 +9,7 @@
 	max-height: vars.$image-height-limited;
 
 	> .controls {
-		> .dropDown {
+		.dropDown {
 			.dropDownButton {
 				background: none;
 				border: none;
@@ -18,6 +18,18 @@
 				> img {
 					height: 100%;
 				}
+			}
+		}
+
+		.resetView {
+			display: none;
+		}
+	}
+
+	&.isInFullscreen {
+		> .controls {
+			.resetView {
+				display: initial;
 			}
 		}
 	}
