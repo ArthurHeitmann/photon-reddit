@@ -20,10 +20,10 @@ export default class Ph_DraggableWrapper extends HTMLElement {
 	}
 
 	activate() {
-		this.addEventListener("mousedown", this.mouseDownRef = e => this.beginDrag(e));
-		this.addEventListener("mouseup", this.mouseUpRef = e => this.endDrag(e));
-		this.addEventListener("mouseleave", this.mouseLeaveRef = e => this.endDrag(e));
-		this.addEventListener("wheel", this.wheelRef = e => this.onZoom(e), { passive: false });
+		this.addEventListener("mousedown", this.mouseDownRef = this.beginDrag.bind(this));
+		this.addEventListener("mouseup", this.mouseUpRef = this.endDrag.bind(this));
+		this.addEventListener("mouseleave", this.mouseLeaveRef = this.endDrag.bind(this));
+		this.addEventListener("wheel", this.wheelRef = this.onZoom.bind(this), { passive: false });
 		// this.activatedElem = elem;
 	}
 
@@ -35,6 +35,7 @@ export default class Ph_DraggableWrapper extends HTMLElement {
 		this.removeEventListener("mouseup", this.mouseUpRef);
 		this.removeEventListener("mouseleave", this.mouseLeaveRef);
 		this.removeEventListener("wheel", this.wheelRef);
+		this.endDrag();
 		// this.activatedElem = null;
 	}
 
@@ -44,7 +45,7 @@ export default class Ph_DraggableWrapper extends HTMLElement {
 		this.prevY = e.screenY;
 	}
 
-	endDrag(e: MouseEvent) {
+	endDrag() {
 		this.onmousemove = null;
 	}
 

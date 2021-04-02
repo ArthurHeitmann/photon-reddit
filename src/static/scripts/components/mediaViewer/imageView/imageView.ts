@@ -1,10 +1,5 @@
-import { RedditApiType } from "../../../types/misc.js";
 import { getLoadingIcon, nonDraggableImage } from "../../../utils/htmlStatics.js";
-import { elementWithClassInTree } from "../../../utils/htmlStuff.js";
 import { globalSettings, ImageLoadingPolicy, PhotonSettings } from "../../global/photonSettings/photonSettings.js";
-import Ph_ControlsBar from "../../misc/controlsBar/controlsBar.js";
-import Ph_Toast, { Level } from "../../misc/toast/toast.js";
-import Ph_DraggableWrapper from "../../post/postBody/draggableWrapper/draggableWrapper.js";
 import { ControlsLayoutSlots, MediaElement } from "../mediaElement.js";
 
 // export interface GalleryInitData {
@@ -101,8 +96,6 @@ export default class Ph_ImageViewer extends HTMLElement implements MediaElement 
 
 		this.caption = initData.caption;
 		this.controls = {};
-		if (initData.previewUrl)
-			this.controls.rightItems = [getLoadingIcon()];
 		this.element = this;
 		this.url = initData.displayUrl || initData.originalUrl;
 
@@ -110,20 +103,23 @@ export default class Ph_ImageViewer extends HTMLElement implements MediaElement 
 		this.originalImage.className = "original";
 		this.originalImage.alt = initData.caption || this.url;
 		nonDraggableImage(this.originalImage);
-		this.appendChild(this.originalImage);
-		if (initData.previewUrl) {
+		if (initData.previewUrl && globalSettings.imageLoadingPolicy !== ImageLoadingPolicy.alwaysOriginal) {
 			this.previewImage = document.createElement("img");
 			this.previewImage.className = "preview";
 			this.previewImage.src = initData.previewUrl
 			this.previewImage.alt = initData.caption || this.url;
-			this.originalSrc = initData.originalUrl;
 			nonDraggableImage(this.previewImage);
 			this.appendChild(this.previewImage);
+			this.addEventListener("ph-entered-fullscreen", this.onFullscreenEnter.bind(this));
+			this.originalSrc = initData.originalUrl;
+			this.originalImage.classList.add("hide");
 		}
 		else {
 			this.originalImage.src = initData.originalUrl;
 		}
+		this.appendChild(this.originalImage);
 
+		this.addEventListener("settingsChanged", this.onSettingsChange.bind(this));
 		// let hasUnloadedOriginals = false;
 		// for (const img of galleryInitData) {
 		// 	const imgData: GalleryDataInternal = {
@@ -276,6 +272,35 @@ export default class Ph_ImageViewer extends HTMLElement implements MediaElement 
 		// intersectionObserver.observe(this);
 		//
 		// this.updateTexts();
+	}
+
+	startLoadingOriginal() {
+		if (!this.previewImage)
+			return;
+		if (this.originalImage.src)
+			return;
+
+		this.controls.rightItems = [getLoadingIcon()];
+		this.dispatchEvent(new Event("ph-controls-changed"));
+		this.originalImage.addEventListener("load", () => {
+			this.previewImage.remove();
+			this.previewImage = undefined;
+			this.controls.rightItems = [];
+			this.dispatchEvent(new Event("ph-controls-changed"));
+		}, { once: true });
+		this.originalImage.src = this.originalSrc;
+		this.originalImage.classList.remove("hide");
+	}
+
+	onFullscreenEnter() {
+		this.startLoadingOriginal();
+	}
+
+	onSettingsChange(e: CustomEvent) {
+		const changed = e.detail as PhotonSettings;
+		if (changed.imageLoadingPolicy && changed.imageLoadingPolicy === ImageLoadingPolicy.alwaysOriginal) {
+			this.startLoadingOriginal();
+		}
 	}
 
 	//
