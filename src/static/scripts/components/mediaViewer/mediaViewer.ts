@@ -1,5 +1,6 @@
 import { RedditApiType } from "../../types/misc.js";
 import { nonDraggableImage } from "../../utils/htmlStatics.js";
+import { linksToSpa } from "../../utils/htmlStuff.js";
 import Ph_ControlsBar from "../misc/controlsBar/controlsBar.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
 import Ph_SwitchingImage from "../misc/switchableImage/switchableImage.js";
@@ -123,6 +124,7 @@ export default class Ph_MediaViewer extends HTMLElement {
 		this.addEventListener("fullscreenchange", this.onFullscreenChange.bind(this));
 		this.draggableWrapper.addEventListener("dblclick", this.toggleFullscreen.bind(this));
 
+		linksToSpa(this);
 		this.displayElement(0);
 	}
 

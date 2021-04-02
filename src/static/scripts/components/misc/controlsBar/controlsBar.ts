@@ -73,7 +73,7 @@ export default class Ph_ControlsBar extends HTMLElement {
 		const dropDown = this.$class("dropDown")[0] as Ph_DropDown;
 		if (!newElements.settingsEntriesCached) {
 			const dropDownArea = dropDown.$class("dropDownArea ")[0] as Ph_DropDownArea;
-			newElements.settingsEntriesCached = newElements.settingsEntries.map(param => new Ph_DropDownEntry(param, dropDown, dropDownArea));
+			newElements.settingsEntriesCached = (newElements.settingsEntries || []).map(param => new Ph_DropDownEntry(param, dropDown, dropDownArea));
 		}
 		const entriesRoot = dropDown.$class("dropDownArea")[0];
 		Array.from(entriesRoot.children)

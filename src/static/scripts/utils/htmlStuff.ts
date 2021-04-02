@@ -29,7 +29,7 @@ function _linksToSpa(elem: HTMLElement): void {
 function setLinkOnClick(elem: HTMLAnchorElement) {
 	if (elem.classList.contains("inlineImage"))
 		return;
-	if (elem.href.match(location.origin) && elem.target !== "_blank") {
+	if (elem.href.match(location.origin) && elem.target !== "_blank" && !elem.hasAttribute("excludeLinkFromSpa")) {
 		if (elem.getAttribute("href")[0] !== "#")
 			elem.onclick = linkOnClick;
 	}
