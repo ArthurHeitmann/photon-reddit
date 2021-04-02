@@ -82,20 +82,20 @@ export function _linksToInlineImages(elem: HTMLElement) {
 			continue;
 		else if ((/preview\.redd\.it\/.*\.gif\?format=mp4/).test((link as HTMLAnchorElement).href))
 			continue;
-
-		const image = new Ph_ImageViewer([{originalUrl: (link as HTMLAnchorElement).href, caption: ""}]);
-		const tmpChildren = Array.from(link.children);
-		const tmpInner = link.innerHTML;
-		tmpChildren.forEach(child => child.remove());
-		link.innerHTML = `<span class="backupLink"></span>`;
-		if (tmpChildren.length)
-			link.children[0].append(...tmpChildren);
-		else
-			link.children[0].innerHTML = tmpInner;
-		link.appendChild(image);
-		link.classList.add("inlineImage");
-
-		(link as HTMLAnchorElement).onclick = (e: MouseEvent) => Boolean(e.ctrlKey || !globalSettings.loadInlineImages);
+		// TODO
+		// const image = new Ph_ImageViewer([{originalUrl: (link as HTMLAnchorElement).href, caption: ""}]);
+		// const tmpChildren = Array.from(link.children);
+		// const tmpInner = link.innerHTML;
+		// tmpChildren.forEach(child => child.remove());
+		// link.innerHTML = `<span class="backupLink"></span>`;
+		// if (tmpChildren.length)
+		// 	link.children[0].append(...tmpChildren);
+		// else
+		// 	link.children[0].innerHTML = tmpInner;
+		// link.appendChild(image);
+		// link.classList.add("inlineImage");
+		//
+		// (link as HTMLAnchorElement).onclick = (e: MouseEvent) => Boolean(e.ctrlKey || !globalSettings.loadInlineImages);
 	}
 }
 

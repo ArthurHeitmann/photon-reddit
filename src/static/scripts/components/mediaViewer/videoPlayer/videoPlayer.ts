@@ -1,19 +1,16 @@
-import { getGfycatMp4SrcFromUrl, GfycatDomain } from "../../api/gfycatApi.js";
-import { youtubeDlUrl } from "../../api/photonApi.js";
-import { RedditApiType } from "../../types/misc.js";
-import { markPostAsSeen } from "../../utils/globals.js";
-import { $tag, $tagAr, escADQ, escHTML } from "../../utils/htmlStatics.js";
-import { classInElementTree, elementWithClassInTree } from "../../utils/htmlStuff.js";
-import { secondsToVideoTime } from "../../utils/utils.js";
-import { globalSettings } from "../global/photonSettings/photonSettings.js";
-import Ph_ControlsBar from "../misc/controlsBar/controlsBar.js";
-import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
-import Ph_DropDownArea from "../misc/dropDown/dropDownArea/dropDownArea.js";
-import Ph_ProgressBar from "../misc/progressBar/progressBar.js";
-import Ph_SwitchingImage from "../misc/switchableImage/switchableImage.js";
-import Ph_Toast, { Level } from "../misc/toast/toast.js";
-import Ph_DraggableWrapper from "../post/postBody/draggableWrapper/draggableWrapper.js";
-
+import { getGfycatMp4SrcFromUrl, GfycatDomain } from "../../../api/gfycatApi.js";
+import { youtubeDlUrl } from "../../../api/photonApi.js";
+import { RedditApiType } from "../../../types/misc.js";
+import { $tagAr, escADQ, escHTML } from "../../../utils/htmlStatics.js";
+import { classInElementTree } from "../../../utils/htmlStuff.js";
+import { secondsToVideoTime } from "../../../utils/utils.js";
+import { globalSettings } from "../../global/photonSettings/photonSettings.js";
+import Ph_ControlsBar, { ControlsLayoutSlots } from "../../misc/controlsBar/controlsBar.js";
+import Ph_ProgressBar from "../../misc/progressBar/progressBar.js";
+import Ph_SwitchingImage from "../../misc/switchableImage/switchableImage.js";
+import Ph_Toast, { Level } from "../../misc/toast/toast.js";
+import Ph_PhotonBaseElement from "../../photon/photonBaseElement/photonBaseElement.js";
+import { MediaElement } from "../mediaElement.js";
 import Ph_GifVideo from "./gifVideo/gifVideo.js";
 import Ph_PlayImage from "./icons/playImage.js";
 import Ph_SimpleVideo from "./simpleVideo/simpleVideo.js";
@@ -23,25 +20,26 @@ import Ph_VideoWrapper from "./videoWrapper.js";
 /**
  * A custom video player with custom controls
  */
-export default class Ph_VideoPlayer extends HTMLElement {
+export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements MediaElement {
+	caption: string;
+	controls: ControlsLayoutSlots;
+	element: HTMLElement;
+	url: string;
 	/** Video playing element */
 	video: Ph_VideoWrapper;
 	overlayIcon: Ph_SwitchingImage;
-	/** video url */
-	url: string;
 	videoProgressInterval = null;
-	controlsDropDown: Ph_DropDown;
-	draggableWrapper: Ph_DraggableWrapper;
-	resetViewBtn: HTMLButtonElement;
+	// controlsDropDown: Ph_DropDown;
+	// draggableWrapper: Ph_DraggableWrapper;
+	// resetViewBtn: HTMLButtonElement;
 	static globalVolume: number = 0.5;
 	static globalIsMuted: boolean = true;
 	// browsers don't allow auto playing videos with audio
 	static isVideoPlayAllowed = false;
 
 	/** Creates a video player from a reddit post (with a video link) */
-	static fromPostData(postData: RedditApiType): Ph_VideoPlayer {
-		const videoOut = new Ph_VideoPlayer();
-		videoOut.url = postData.data["url"];
+	static async fromPostData(postData: RedditApiType): Promise<Ph_VideoPlayer> {
+		const videoOut = new Ph_VideoPlayer(postData.data["url"]);
 
 		function defaultCase() {
 			if (/\.gif(\?.*)?$/.test(postData.data["url"])) {
@@ -57,7 +55,7 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		}
 
 		// task of this huuuuge switch: get the video file url (.mp4/.gif/...) of this post
-		switch (postData.data["url"].match(/^https?:\/\/w?w?w?\.?([\w\.]+)/)[1]) {
+		switch (postData.data["url"].match(/^https?:\/\/w?w?w?\.?([\w.]+)/)[1]) {
 			case "imgur.com":
 			case "m.imgur.com":
 			case "i.imgur.com":
@@ -228,11 +226,18 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		return videoOut;
 	}
 
-	constructor(video?: Ph_VideoWrapper) {
+	constructor(url: string) {
 		super();
 
 		this.classList.add("videoPlayer");
 		this.setAttribute("tabindex", "0");
+		this.url = url;
+		this.element = this;
+		this.controls = {
+			firstLeftItems: [],
+			leftItems: [],
+			rightItems: [],
+		};
 
 		this.overlayIcon = new Ph_SwitchingImage([
 			{src: "/img/loading.svg", key: "loading"},
@@ -241,16 +246,14 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		]);
 		this.overlayIcon.classList.add("initialIcon");
 		this.appendChild(this.overlayIcon);
-
-		if (video)
-			this.init(video);
 	}
 
 	init(video: Ph_VideoWrapper) {
 		this.video = video;
 
 		if (this.video) {
-			this.makeControls();
+			this.appendChild(this.video);
+			this.fullInit();
 			this.video.setVolume(Ph_VideoPlayer.globalVolume);
 			this.video.setIsMuted(Ph_VideoPlayer.globalIsMuted);
 		}
@@ -258,11 +261,10 @@ export default class Ph_VideoPlayer extends HTMLElement {
 			this.innerText = "No video supplied (maybe video was deleted)";
 	}
 
-	makeControls() {
-		window.addEventListener("ph-view-change", () => this.video.pause());
-
+	fullInit() {
+		// video autoplay
 		const intersectionObserver = new IntersectionObserver(
-			(entries, obs) => {
+			entries => {
 				if (!Ph_VideoPlayer.isVideoPlayAllowed)
 					return;
 				if (
@@ -285,65 +287,44 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		);
 		intersectionObserver.observe(this);
 
-		this.draggableWrapper = new Ph_DraggableWrapper();
-		this.video.classList.add("draggable");
-		this.draggableWrapper.appendChild(this.video);
-		this.appendChild(this.draggableWrapper);
-
-		const controls = new Ph_ControlsBar(true);
-		controls.addShowHideListeners(this.video);
-		this.appendChild(controls);
-
-		this.video.addEventListener("click", () => this.togglePlay());
-		this.video.addEventListener("dblclick", () => this.toggleFullscreen());
+		this.addWindowEventListener("ph-view-change", () => this.video.pause());
+		this.video.addEventListener("click", this.togglePlay.bind(this));
 		this.addEventListener("keydown", e => {
-			let actionExecuted = false;
 			switch (e.code) {
 				case "Space":
 				case "KeyP":
 				case "KeyK":
 					this.togglePlay();
-					actionExecuted = true;
 					break;
 				case "ArrowLeft":
 				case "KeyJ":
 					this.video.seekTo(this.video.getCurrentTime() - 5);
-					actionExecuted = true;
 					break;
 				case "ArrowRight":
 				case "KeyL":
 					this.video.seekTo(this.video.getCurrentTime() + 5);
-					actionExecuted = true;
 					break;
 				case "ArrowUp":
 					this.setVolume(this.video.getVolume() + .1);
-					actionExecuted = true;
 					break;
 				case "ArrowDown":
 					this.setVolume(this.video.getVolume() - .1);
-					actionExecuted = true;
 					break;
-				case "KeyF":
-					this.toggleFullscreen();
-					actionExecuted = true;
-					break;
+				// case "KeyF":
+				// 	this.toggleFullscreen();
+				// 	actionExecuted = true;
+				// 	break;
 				case "KeyM":
 					this.toggleMuted();
-					actionExecuted = true;
 					break;
 				case "KeyI":
 					this.popoutVideo();
-					actionExecuted = true;
 					break;
-				case "KeyR":
-					this.draggableWrapper.setMoveXY(0, 0);
-					this.draggableWrapper.setZoom(1);
-					actionExecuted = true;
-					break;
-			}
-			if (actionExecuted) {
-				e.preventDefault();
-				controls.restartHideTimeout();
+				// case "KeyR":
+				// 	this.draggableWrapper.setMoveXY(0, 0);
+				// 	this.draggableWrapper.setZoom(1);
+				// 	actionExecuted = true;
+				// 	break;
 			}
 		});
 		this.video.addEventListener("ph-ready", () => {
@@ -355,17 +336,18 @@ export default class Ph_VideoPlayer extends HTMLElement {
 
 		// play, pause, progress bar
 		const playButton = new Ph_PlayImage();
-		controls.appendMorphingImage(playButton);
+		this.controls.firstLeftItems.push(playButton);
 		playButton.setAttribute("data-tooltip", "Shortcut: Space/P/K");
 		playButton.addEventListener("click", () => this.togglePlay());
 		this.video.addEventListener("ph-play", () => {
 			playButton.toPause();
 			this.videoProgressInterval = setInterval(() => {
-				progressBar.setProgress(this.video.getCurrentTime() / this.video.getMaxTime());
+				this.controls.progressBar.setProgress(this.video.getCurrentTime() / this.video.getMaxTime());
 				timeText.innerText = `${secondsToVideoTime(this.video.getCurrentTime())} / ${secondsToVideoTime(this.video.getMaxTime())}`;
 			}, 100);
 		});
-		this.video.addEventListener("ph-seek", () => progressBar.setProgress(this.video.getCurrentTime() / this.video.getMaxTime()));
+		this.video.addEventListener("ph-seek",
+			() => this.controls.progressBar.setProgress(this.video.getCurrentTime() / this.video.getMaxTime()));
 		this.video.addEventListener("ph-pause", () => {
 			playButton.toPlay();
 			if (this.videoProgressInterval !== null) {
@@ -376,26 +358,27 @@ export default class Ph_VideoPlayer extends HTMLElement {
 
 		// time text
 		const timeText = document.createElement("div");
-		controls.appendChild(timeText);
+		this.controls.leftItems.push(timeText);
 		timeText.innerText = "00:00 / 00:00";
 
 		// volume
 		const volumeWrapper = document.createElement("div");
 		volumeWrapper.className = "volumeWrapper";
-		controls.appendChild(volumeWrapper);
-		const muteButton = this.makeImgBtn(new Ph_SwitchingImage([
-			{src: "/img/mute.svg", key: "mute"},
-			{src: "/img/audio.svg", key: "audio"},
-		]), volumeWrapper);
-		muteButton.parentElement.setAttribute("data-tooltip", "Shortcut: M");
-		muteButton.parentElement.addEventListener("click", () => this.toggleMuted());
+		this.controls.leftItems.push(volumeWrapper);
+		const { b: muteButton, img: muteImg } = Ph_ControlsBar.makeSwitchingImageBtn(new Ph_SwitchingImage([
+			{ src: "/img/mute.svg", key: "mute" },
+			{ src: "/img/audio.svg", key: "audio" },
+		]));
+		volumeWrapper.appendChild(muteButton);
+		muteButton.setAttribute("data-tooltip", "Shortcut: M");
+		muteButton.addEventListener("click", () => this.toggleMuted());
 		const volumeSlider = new Ph_ProgressBar(true, 20);
 		volumeSlider.setAttribute("data-tooltip", "Shortcut: Arrow Up/Down or Scroll");
 		volumeSlider.addEventListener("ph-drag", (e: CustomEvent) => this.setVolume(e.detail));
 		volumeWrapper.appendChild(volumeSlider);
 		this.video.addEventListener("ph-volumechange",
 			(e: CustomEvent) => {
-				muteButton.showImage(e.detail === 0 ? "mute" : "audio");
+				muteImg.showImage(e.detail === 0 ? "mute" : "audio");
 				volumeSlider.setProgress(e.detail);
 			}
 		);
@@ -408,32 +391,8 @@ export default class Ph_VideoPlayer extends HTMLElement {
 			setTimeout(() => volumeWrapper.remove(), 1000);
 		});
 
-		// left right divider
-		controls.appendSpacer();
-
-		// video src
-		if (this.url) {
-			const srcText = document.createElement("div");
-			controls.appendChild(srcText);
-			srcText.innerHTML = `<a href="${escADQ(this.url)}" target="_blank" rel="noopener">${escHTML(this.url.match(/([\w.\.]+)\//)[1])}</a>`;
-		}
-
-		// reset view
-		this.resetViewBtn = controls.appendMakeImageButton("/img/reset.svg");
-		this.resetViewBtn.classList.add("hide");
-		this.resetViewBtn.setAttribute("data-tooltip", "Shortcut: R");
-		this.resetViewBtn.addEventListener("click", () => {
-			this.draggableWrapper.setZoom(1);
-			this.draggableWrapper.setMoveXY(0, 0);
-		});
-		controls.appendChild(this.resetViewBtn);
-
 		// settings
-		const videoSettingsImg = document.createElement("img");
-		videoSettingsImg.src = "/img/settings2.svg";
-		videoSettingsImg.draggable = false;
-		videoSettingsImg.alt = "settings";
-		this.controlsDropDown = new Ph_DropDown([
+		this.controls.settingsEntries = [
 			{
 				displayHTML: "Speed", nestedEntries: [
 					{displayHTML: "0.10x", value: 0.10, onSelectCallback: this.setVideoSpeed.bind(this)},
@@ -450,63 +409,29 @@ export default class Ph_VideoPlayer extends HTMLElement {
 			// 	displayHTML: `<span data-tooltip="Shortcut: I">Popout</span>`,
 			// 	onSelectCallback: this.popoutVideo.bind(this)
 			// },
-		], videoSettingsImg, DirectionX.right, DirectionY.top, false);
-		this.controlsDropDown.classList.add("settings");
-		this.controlsDropDown.$class("dropDownButton")[0].classList.add("imgBtn");
-		controls.appendChild(this.controlsDropDown);
-		controls.addEventListener("ph-hidecontrols", () => {
-			for (let area of this.controlsDropDown.getElementsByClassName("dropDownArea")) {
-				(area as Ph_DropDownArea).closeMenu(true);
-			}
-		});
-
-		// fullscreen
-		const fullscreenButton = this.makeImgBtn(new Ph_SwitchingImage([
-			{src: "/img/fullscreen.svg", key: "fullscreen"},
-			{src: "/img/minimize.svg", key: "minimize"},
-		]), controls);
-		fullscreenButton.setAttribute("data-tooltip", "Shortcut: F");
-		fullscreenButton.parentElement.addEventListener("click", () => this.toggleFullscreen());
-		this.addEventListener("fullscreenchange",
-			() => {
-				fullscreenButton.showImage(document.fullscreenElement ? "minimize" : "fullscreen");
-				if (!document.fullscreenElement)
-					this.onExitFullscreen();
-			}
-		);
+		];
 
 		// progress bar
-		const progressBar = new Ph_ProgressBar(true);
-		controls.appendChild(progressBar);
-		progressBar.setAttribute("data-tooltip", "Shortcut: Arrow Left/K, Arrow Right/L, or Scroll");
-		progressBar.addEventListener("ph-drag", (e: CustomEvent) => {
+		this.controls.progressBar = new Ph_ProgressBar(true);
+		this.controls.progressBar.setAttribute("data-tooltip", "Shortcut: Arrow Left/K, Arrow Right/L, or Scroll");
+		this.controls.progressBar.addEventListener("ph-drag", (e: CustomEvent) => {
 			this.video.seekTo(e.detail * this.video.getMaxTime());
 		});
-		progressBar.addEventListener("wheel", e => {
+		this.controls.progressBar.addEventListener("wheel", e => {
 			e.preventDefault();
 			this.video.seekTo(this.video.getCurrentTime() + ((-e.deltaY || e.deltaX) > 0 ? 5 : -5));
 		}, {passive: false});
-		const timeTextHover = document.createElement("div");
+		const timeTextHover = document.createElement("div");		// TODO position
 		timeTextHover.className = "timeTextHover";
-		controls.appendChild(timeTextHover);
-		progressBar.addEventListener("mousemove", e => {
-			timeTextHover.innerText = secondsToVideoTime(e.offsetX / progressBar.offsetWidth * this.video.getMaxTime());
+		this.controls.progressBar.appendChild(timeTextHover);
+		this.controls.progressBar.addEventListener("mousemove", e => {
+			timeTextHover.innerText = secondsToVideoTime(e.offsetX / this.controls.progressBar.offsetWidth * this.video.getMaxTime());
 			timeTextHover.style.left = `${e.offsetX}px`;
 		});
-		progressBar.addEventListener("mouseenter", () => {
-			timeTextHover.classList.add("show");
-		});
-		progressBar.addEventListener("mouseleave", () => {
-			timeTextHover.classList.remove("show");
-		});
-	}
-
-	makeImgBtn(img: Ph_SwitchingImage, appendTo: HTMLElement): Ph_SwitchingImage {
-		const button = document.createElement("button");
-		button.className = "imgBtn";
-		button.appendChild(img);
-		appendTo.appendChild(button);
-		return img;
+		this.controls.progressBar.addEventListener("mouseenter",
+			() => timeTextHover.classList.add("show"));
+		this.controls.progressBar.addEventListener("mouseleave",
+			() => timeTextHover.classList.remove("show"));
 	}
 
 	setVideoSpeed(valueChain: any[]) {
@@ -521,7 +446,9 @@ export default class Ph_VideoPlayer extends HTMLElement {
 		// );
 	}
 
-	togglePlay() {
+	togglePlay(e?: Event) {
+		e?.stopImmediatePropagation();
+		e?.stopPropagation();
 		this.video.togglePlay();
 		Ph_VideoPlayer.isVideoPlayAllowed = true;
 	}
@@ -545,33 +472,6 @@ export default class Ph_VideoPlayer extends HTMLElement {
 			return;
 		Ph_VideoPlayer.globalIsMuted = newMuted;
 		$tagAr("ph-video-player").forEach((player: Ph_VideoPlayer) => player.toggleMuted(false, newMuted));
-	}
-
-	toggleFullscreen(): boolean {
-		if (document.fullscreenElement) {
-			document.exitFullscreen();
-			this.onExitFullscreen();
-			return false;
-		}
-		else if (this.requestFullscreen) {
-			this.requestFullscreen();
-			this.onEnterFullscreen();
-			return true;
-		}
-		throw "can't enter fullscreen";
-	}
-
-	onEnterFullscreen() {
-		this.draggableWrapper.activateWith(this.video);
-		this.resetViewBtn.classList.remove("hide");
-		this.classList.add("fullscreen");
-	}
-
-	onExitFullscreen() {
-		this.resetViewBtn.click();
-		this.draggableWrapper.deactivate();
-		this.resetViewBtn.classList.add("hide");
-		this.classList.remove("fullscreen");
 	}
 }
 

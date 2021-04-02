@@ -1,10 +1,8 @@
-@use '../../../style/vars';
+@use '../../../../style/vars';
 
 .videoPlayer {
-	overflow: hidden;
 	width: 100%;
-	position: relative;
-	cursor: none;
+	height: 100%;
 
 	.initialIcon {
 		position: absolute;
@@ -123,15 +121,6 @@
 		video {
 			max-height: 100vh;
 			height: 100%;
-		}
-	}
-
-	&.controlsVisible {
-		cursor: default;
-
-		.controls {
-			transform: translateY(0%);
-
 		}
 	}
 }

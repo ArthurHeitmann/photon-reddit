@@ -1,4 +1,4 @@
-import Ph_MorphingImage from "../../misc/morphingImage/morphingImage.js";
+import Ph_MorphingImage from "../../../misc/morphingImage/morphingImage.js";
 
 export default class Ph_PlayImage extends Ph_MorphingImage {
 	constructor(isButton = false) {

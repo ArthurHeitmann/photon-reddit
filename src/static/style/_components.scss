@@ -31,8 +31,8 @@
 @use '../scripts/components/mediaViewer/imageViewer/imageView';
 @use '../scripts/components/post/postBody/postText/postText';
 @use '../scripts/components/postAndComments/postAndComment';
-@use '../scripts/components/videoPlayer/gifVideo/gifVideo';
-@use '../scripts/components/videoPlayer/videoPlayer';
+@use '../scripts/components/mediaViewer/videoPlayer/gifVideo/gifVideo';
+@use '../scripts/components/mediaViewer/videoPlayer/videoPlayer';
 @use '../scripts/components/viewState/viewState';
 @use '../scripts/components/viewState/viewStateLoader/viewStateLoader';
 @use '../scripts/components/wiki/wiki';

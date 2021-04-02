@@ -6,6 +6,7 @@ import Ph_SwitchingImage from "../misc/switchableImage/switchableImage.js";
 import Ph_DraggableWrapper from "../post/postBody/draggableWrapper/draggableWrapper.js";
 import Ph_ImageViewer from "./imageViewer/imageViewer.js";
 import { MediaElement } from "./mediaElement.js";
+import Ph_VideoPlayer from "./videoPlayer/videoPlayer.js";
 
 export default class Ph_MediaViewer extends HTMLElement {
 	controls: Ph_ControlsBar;
@@ -18,6 +19,7 @@ export default class Ph_MediaViewer extends HTMLElement {
 	elementLink: HTMLAnchorElement;
 	elementCaption: HTMLDivElement;
 	currentIndexDisplay: HTMLDivElement;
+	// TODO photon base element cleanup
 
 	static fromPostData_Image(postData: RedditApiType): Ph_MediaViewer {
 		if (postData.data["preview"]) {
@@ -35,9 +37,11 @@ export default class Ph_MediaViewer extends HTMLElement {
 	}
 
 	static fromPostData_Video(postData: RedditApiType): Ph_MediaViewer {
-
+		const mediaViewer = new Ph_MediaViewer();
+		const video = Ph_VideoPlayer.fromPostData(postData)
+		video.then(readyVideo => mediaViewer.init([ readyVideo]));
+		return mediaViewer;
 	}
-
 
 	constructor(initElements?: MediaElement[]) {
 		super();
