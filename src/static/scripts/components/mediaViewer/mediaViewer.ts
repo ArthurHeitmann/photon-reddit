@@ -4,7 +4,7 @@ import Ph_ControlsBar from "../misc/controlsBar/controlsBar.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
 import Ph_SwitchingImage from "../misc/switchableImage/switchableImage.js";
 import Ph_DraggableWrapper from "../post/postBody/draggableWrapper/draggableWrapper.js";
-import Ph_ImageViewer from "./imageView/imageView.js";
+import Ph_ImageViewer from "./imageViewer/imageViewer.js";
 import { MediaElement } from "./mediaElement.js";
 
 export default class Ph_MediaViewer extends HTMLElement {
@@ -33,6 +33,11 @@ export default class Ph_MediaViewer extends HTMLElement {
 			})]);
 		}
 	}
+
+	static fromPostData_Video(postData: RedditApiType): Ph_MediaViewer {
+
+	}
+
 
 	constructor(initElements?: MediaElement[]) {
 		super();

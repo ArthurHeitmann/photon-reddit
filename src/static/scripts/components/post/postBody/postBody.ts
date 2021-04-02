@@ -97,7 +97,7 @@ export default class Ph_PostBody extends HTMLElement {
 
 	private makeVideoBody(postData: RedditApiType) {
 		this.classList.add("fullScale");
-		this.appendChild(Ph_VideoPlayer.fromPostData(postData));
+		this.appendChild(Ph_MediaViewer.fromPostData_Video(postData));
 	}
 
 	private makeEmbeddedVideoBody(postData: RedditApiType) {

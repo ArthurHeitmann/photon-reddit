@@ -5,7 +5,7 @@
  */
 
 import { globalSettings } from "../components/global/photonSettings/photonSettings.js";
-import Ph_ImageViewer from "../components/mediaViewer/imageView/imageView.js";
+import Ph_ImageViewer from "../components/mediaViewer/imageViewer/imageViewer.js";
 import { pushLinkToHistoryComb } from "../historyState/historyStateManager.js";
 import { _replaceRedditLinks } from "./utils.js";
 

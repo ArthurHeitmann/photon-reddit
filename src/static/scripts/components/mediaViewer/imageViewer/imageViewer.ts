@@ -156,7 +156,7 @@ export default class Ph_ImageViewer extends HTMLElement implements MediaElement 
 		// if (hasUnloadedOriginals)
 		// 	window.addEventListener("settingsChanged", (e: CustomEvent) => this.onAlwaysLoadOriginals(e.detail), { once: true });
 		//
-		// this.classList.add("imageView");
+		// this.classList.add("imageViewer");
 		// this.setAttribute("tabindex", "0");
 		//
 		// // gallery wrapper

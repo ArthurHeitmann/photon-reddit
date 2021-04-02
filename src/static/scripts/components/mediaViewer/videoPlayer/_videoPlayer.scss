@@ -1,0 +1,137 @@
+@use '../../../style/vars';
+
+.videoPlayer {
+	overflow: hidden;
+	width: 100%;
+	position: relative;
+	cursor: none;
+
+	.initialIcon {
+		position: absolute;
+		z-index: 1;
+		top: 50%;
+		left: 50%;
+		transform: translateX(-50%) translateY(-50%);
+		width: 7rem;
+		filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
+		pointer-events: none;
+	}
+
+	video {
+		width: 100%;
+		display: block;
+		object-fit: contain;
+		max-height: vars.$image-height-limited;
+	}
+
+	.controls {
+		.volumeWrapper {
+			height: 2.5rem;
+			display: flex;
+			transition: all .5s ease;
+
+			> .progressBar {
+				&:hover {
+					background: #f07f7f80;
+				}
+
+				.accessibilitySpacer {
+					transform: scaleY(6);
+				}
+
+				width: 5rem;
+				height: .4rem;
+				margin: auto 0;
+				background: black;
+			}
+
+			&.remove {
+				opacity: 0;
+				visibility: hidden;
+			}
+		}
+
+		.settings {
+			.dropDownButton {
+				height: 2.5rem;
+				width: 2.5rem;
+				border: none;
+				background: none;
+				padding: 0;
+
+				img {
+					height: 2.5rem;
+					width: 2.5rem;
+					padding: 15%;
+				}
+			}
+		}
+
+		> .progressBar {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: .25rem;
+			cursor: pointer;
+
+
+			&:hover {
+				background: #f07f7f80;
+				transform: scaleY(3);
+
+				.accessibilitySpacer {
+					transform: scaleY(2);
+				}
+
+				&[data-tooltip]::after {
+					transform: translateX(-50%) translateY(-100%) scaleY(0.33333);
+				}
+			}
+
+			&[data-tooltip]::after {
+				transition-duration: .25s;
+			}
+
+			> .progress {
+				transition: width .1s linear;
+				border-right: .25rem solid white;
+			}
+		}
+
+		.timeTextHover {
+			position: absolute;
+			top: -2.5rem;
+			padding: 0 0.6rem;
+			line-height: 2rem;
+			width: max-content;
+			transform: translateX(-50%);
+			background: #121212ad;
+			border-radius: 1rem;
+			opacity: 0;
+			visibility: collapse;
+			transition: visibility .25s ease, opacity .25s ease;
+
+			&.show {
+				visibility: visible;
+				opacity: 1;
+			}
+		}
+	}
+
+	&.fullscreen {
+		video {
+			max-height: 100vh;
+			height: 100%;
+		}
+	}
+
+	&.controlsVisible {
+		cursor: default;
+
+		.controls {
+			transform: translateY(0%);
+
+		}
+	}
+}
