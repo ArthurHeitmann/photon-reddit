@@ -56,6 +56,7 @@ async function init(): Promise<void> {
 	loadPosts();
 
 	checkForNewVersion();
+	disableSpaceBarScroll();
 
 	window.dispatchEvent(new Event("ph-page-ready"));
 	if (localStorage["firstTimeFlag"] !== "set")
@@ -134,6 +135,14 @@ async function registerServiceWorker() {
 				setWaitingServiceWorker(event.target);
 		});
 	});
+}
+
+function disableSpaceBarScroll() {
+
+	window.addEventListener("keydown", (e: KeyboardEvent) => {
+		if (e.code === "Space")
+			e.preventDefault();
+	})
 }
 
 window.addEventListener("load", init);

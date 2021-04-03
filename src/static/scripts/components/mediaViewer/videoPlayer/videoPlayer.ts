@@ -230,7 +230,6 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 		super();
 
 		this.classList.add("videoPlayer");
-		this.setAttribute("tabindex", "0");
 		this.url = url;
 		this.element = this;
 		this.controls = {
@@ -274,11 +273,9 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 					!classInElementTree(this.parentElement, "covered")
 				) {
 					this.video.play();
-					this.focus({preventScroll: true});
 				}
 				else {
 					this.video.pause();
-					this.blur();
 				}
 			},
 			{
@@ -289,44 +286,6 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 
 		this.addWindowEventListener("ph-view-change", () => this.video.pause());
 		this.video.addEventListener("click", this.togglePlay.bind(this));
-		this.addEventListener("keydown", e => {
-			switch (e.code) {
-				case "Space":
-				case "KeyP":
-				case "KeyK":
-					this.togglePlay();
-					break;
-				case "ArrowLeft":
-				case "KeyJ":
-					this.video.seekTo(this.video.getCurrentTime() - 5);
-					break;
-				case "ArrowRight":
-				case "KeyL":
-					this.video.seekTo(this.video.getCurrentTime() + 5);
-					break;
-				case "ArrowUp":
-					this.setVolume(this.video.getVolume() + .1);
-					break;
-				case "ArrowDown":
-					this.setVolume(this.video.getVolume() - .1);
-					break;
-				// case "KeyF":
-				// 	this.toggleFullscreen();
-				// 	actionExecuted = true;
-				// 	break;
-				case "KeyM":
-					this.toggleMuted();
-					break;
-				case "KeyI":
-					this.popoutVideo();
-					break;
-				// case "KeyR":
-				// 	this.draggableWrapper.setMoveXY(0, 0);
-				// 	this.draggableWrapper.setZoom(1);
-				// 	actionExecuted = true;
-				// 	break;
-			}
-		});
 		this.video.addEventListener("ph-ready", () => {
 			this.overlayIcon.showImage("ready");
 			timeText.innerText = `${secondsToVideoTime(this.video.getCurrentTime())} / ${secondsToVideoTime(this.video.getMaxTime())}`;
@@ -429,6 +388,38 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 			() => timeTextHover.classList.add("show"));
 		this.controls.progressBar.addEventListener("mouseleave",
 			() => timeTextHover.classList.remove("show"));
+	}
+
+	onKeyDownEvent(e: KeyboardEvent) {
+		switch (e.code) {
+			case "Space":
+			case "KeyP":
+			case "KeyK":
+				this.togglePlay();
+				break;
+			case "ArrowLeft":
+			case "KeyJ":
+				if (!(e.ctrlKey || e.shiftKey))
+					this.video.seekTo(this.video.getCurrentTime() - 5);
+				break;
+			case "ArrowRight":
+			case "KeyL":
+				if (!(e.ctrlKey || e.shiftKey))
+					this.video.seekTo(this.video.getCurrentTime() + 5);
+				break;
+			case "ArrowUp":
+				this.setVolume(this.video.getVolume() + .1);
+				break;
+			case "ArrowDown":
+				this.setVolume(this.video.getVolume() - .1);
+				break;
+			case "KeyM":
+				this.toggleMuted();
+				break;
+			// case "KeyI":
+			// 	this.popoutVideo();
+			// 	break;
+		}
 	}
 
 	setVideoSpeed(valueChain: any[]) {

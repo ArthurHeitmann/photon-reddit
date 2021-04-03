@@ -215,12 +215,41 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 
 		this.controls.setupSlots(controlSlots);
 
+		this.setupKeyListeners();
 		this.addEventListener("fullscreenchange", this.onFullscreenChange.bind(this));
 		this.draggableWrapper.addEventListener("dblclick", this.toggleFullscreen.bind(this));
 
 		linksToSpa(this);
 		this.currentIndex = 0;
 		this.displayCurrentElement();
+	}
+
+	setupKeyListeners() {
+		this.tabIndex = 0;
+		this.addEventListener("keyup", (e: KeyboardEvent) => {
+			this.mediaElements[this.currentIndex].onKeyDownEvent?.(e);
+			switch (e.code) {
+				case "KeyF":
+					this.toggleFullscreen();
+					break;
+				case "KeyR":
+					this.draggableWrapper.setMoveXY(0, 0);
+					this.draggableWrapper.setZoom(1);
+					break;
+				case "ArrowRight":
+					if ((e.ctrlKey || e.shiftKey) && this.mediaElements.length > 1)
+						this.nextGalleryElement();
+					break;
+				case "ArrowLeft":
+					if ((e.ctrlKey || e.shiftKey) && this.mediaElements.length > 1)
+						this.previousGalleryElement();
+					break;
+			}
+		});
+		this.addEventListener("keydown", (e: KeyboardEvent) => {
+			if (["Space", "ArrowUp", "ArrowDown", "ArrowRight", "ArrowLeft"].includes(e.code))
+				e.preventDefault();
+		})
 	}
 
 	displayCurrentElement() {

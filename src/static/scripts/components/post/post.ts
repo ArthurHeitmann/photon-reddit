@@ -226,8 +226,19 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 
 		const intersectionObserver = new IntersectionObserver(
 			entries => {
-				if (globalSettings.markSeenPosts && entries[0].intersectionRatio > .4 && this.isInFeed)
-					markPostAsSeen(this.fullName);
+				const focusableChild = this.$css("[tabindex]") as HTMLCollectionOf<HTMLHtmlElement>;
+				if (entries[0].intersectionRatio > .4) {
+					if (globalSettings.markSeenPosts && this.isInFeed) {
+						markPostAsSeen(this.fullName);
+					}
+					if (focusableChild.length > 0)
+						focusableChild[0].focus({ preventScroll: true });
+				}
+				else {
+					if (focusableChild.length > 0 && !document.fullscreenElement)
+						focusableChild[0].blur();
+					// this.blur();
+				}
 			},
 			{
 				threshold: .4,
