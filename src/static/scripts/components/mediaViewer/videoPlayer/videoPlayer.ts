@@ -418,7 +418,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 			e.preventDefault();
 			this.video.seekTo(this.video.getCurrentTime() + ((-e.deltaY || e.deltaX) > 0 ? 5 : -5));
 		}, {passive: false});
-		const timeTextHover = document.createElement("div");		// TODO position
+		const timeTextHover = document.createElement("div");
 		timeTextHover.className = "timeTextHover";
 		this.controls.progressBar.appendChild(timeTextHover);
 		this.controls.progressBar.addEventListener("mousemove", e => {

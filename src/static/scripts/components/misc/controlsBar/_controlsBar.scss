@@ -30,6 +30,14 @@
 		margin: 0 .125rem;
 	}
 
+	.smaller, .smaller > img {
+		height: 2rem;
+	}
+
+	.evenSmaller, .evenSmaller > img {
+		height: 1.75rem;
+	}
+
 	> .progressBar {
 		position: absolute;
 		top: 0;
@@ -63,13 +71,36 @@
 	}
 
 	//> .morphingImage, > .volumeWrapper .imgBtn, > .switchableImg, > .settings > .dropDownButton, > .imgBtn, > button {
-	//	transition: filter .25s ease;
-	//	cursor: pointer;
+	&, > .slot {
+		> button, > * > button {
+			> :is(img, svg), > .imgWrapper > :is(img, svg) {
+				transition: filter .25s ease;
+			}
+
+			&:hover {
+				> :is(img, svg), > .imgWrapper > :is(img, svg) {
+					filter: drop-shadow(0px 0px 3px vars.$primary) drop-shadow(0px 0px 0px vars.$primary);
+				}
+			}
+
+			&:active {
+				> :is(img, svg), > .imgWrapper > :is(img, svg) {
+					filter: drop-shadow(0px 0px 3px vars.$primary) drop-shadow(0px 0px 7px vars.$primary);
+				}
+			}
+		}
+	}
+
+	//> button, > * > button, > * > * > button, > * > * > * > button {
+	//	> img {
+	//		transition: filter .25s ease;
+	//	}
 	//
-	//	&:hover {
+	//	&:hover > img {
 	//		filter: drop-shadow(0px 0px 3px vars.$primary) drop-shadow(0px 0px 0px vars.$primary);
 	//	}
-	//	&:active {
+	//
+	//	&:active > img {
 	//		filter: drop-shadow(0px 0px 3px vars.$primary) drop-shadow(0px 0px 7px vars.$primary);
 	//	}
 	//}

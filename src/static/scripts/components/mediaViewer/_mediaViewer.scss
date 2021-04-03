@@ -27,6 +27,8 @@
 	}
 
 	&.isInFullscreen {
+		max-height: 100vh;
+
 		> .controls {
 			.resetView {
 				display: initial;

@@ -8,15 +8,24 @@ export default class Ph_SwitchingImage extends HTMLElement {
 	constructor(imgDictionary: { src: string, key: any }[], isButton = false) {
 		super();
 
-		this.className = "switchableImg";
+		this.className = "switchableImg imgWrapper";
 		this.setAttribute("draggable", "false");
+
+		let root: HTMLElement;
+		if (isButton) {
+			const wrapperBtn = document.createElement("button");
+			this.appendChild(wrapperBtn);
+			root = wrapperBtn
+		}
+		else
+			root = this;
 
 		for (let src of imgDictionary) {
 			this.dict[src.key] = document.createElement("img");
 			this.dict[src.key].alt = src.src;
 			this.dict[src.key].src = src.src;
 			this.dict[src.key].className = "hide";
-			this.appendChild(this.dict[src.key]);
+			root.appendChild(this.dict[src.key]);
 		}
 
 		this.lastActive = this.dict[imgDictionary[0].key];

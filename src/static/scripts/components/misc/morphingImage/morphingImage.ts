@@ -9,7 +9,7 @@ export default class Ph_MorphingImage extends HTMLElement {
 	constructor(initPath: string, viewBox: string, isButton = false) {
 		super();
 
-		this.classList.add("morphingImage");
+		this.className = "morphingImage  imgWrapper";
 
 
 		this.svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -19,7 +19,7 @@ export default class Ph_MorphingImage extends HTMLElement {
 			this.appendChild(wrapperBtn);
 		}
 		else
-			this.appendChild(this.svg)
+			this.appendChild(this.svg);
 		this.svg.setAttribute("viewBox", viewBox);
 
 		this.path = document.createElementNS("http://www.w3.org/2000/svg", "path");

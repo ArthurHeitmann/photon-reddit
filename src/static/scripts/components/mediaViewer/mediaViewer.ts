@@ -188,6 +188,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		// reset view
 		const resetViewBtn = Ph_ControlsBar.makeImageButton("/img/reset.svg");
 		resetViewBtn.classList.add("resetView");
+		resetViewBtn.classList.add("evenSmaller");
 		resetViewBtn.addEventListener("click", () => this.draggableWrapper.reset());
 		controlSlots.push(resetViewBtn);
 		// settings dropdown
@@ -201,6 +202,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 			],
 			settingsImg, DirectionX.right, DirectionY.top, false
 		)
+		this.settingsDropDown.toggleButton.classList.add("smaller");
 		controlSlots.push(this.settingsDropDown);
 		// fullscreen
 		const { b: fsBtn, img: fsImg } = Ph_ControlsBar.makeSwitchingImageBtn(new Ph_SwitchingImage([
