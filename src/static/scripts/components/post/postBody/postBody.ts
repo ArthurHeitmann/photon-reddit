@@ -126,39 +126,40 @@ export default class Ph_PostBody extends HTMLElement {
 	}
 
 	private makeImgurBody(postData: RedditApiType) {
-		// this.classList.add("fullScale");
+		this.classList.add("fullScale");
+		this.appendChild(Ph_MediaViewer.fromImgurUrl(postData.data["url"]));
 		// if (/imgur\.com\/(a|album|gallery)\/[^/]+\/?$/.test(postData.data["url"])) {
 		// 	getImgurAlbumContents(postData.data["url"]).then((contents: ImgurContent[]) => {
 		// 		if (contents[0].type === ImgurContentType.video) {
-		// 			this.appendChild(new Ph_VideoPlayer(
-		// 				new Ph_SimpleVideo([{ src: contents[0].link, type: "video/mp4" }])
-		// 			));
+		// 			// this.appendChild(new Ph_VideoPlayer(
+		// 			// 	new Ph_SimpleVideo([{ src: contents[0].link, type: "video/mp4" }])
+		// 			// ));
 		// 			if (contents.length > 1)
 		// 				new Ph_Toast(Level.warning, "Imgur album with video and more than 1 items --> only displaying video");
 		// 		}
 		// 		else {
-		// 			this.appendChild(new Ph_ImageViewer(
-		// 				contents.map(content => <GalleryInitData> {
-		// 					originalUrl: content.link,
-		// 					caption: content.caption
-		// 				}))
-		// 			);
+		// 			// this.appendChild(new Ph_ImageViewer(
+		// 			// 	contents.map(content => <GalleryInitData> {
+		// 			// 		originalUrl: content.link,
+		// 			// 		caption: content.caption
+		// 			// 	}))
+		// 			// );
 		// 		}
 		// 	});
 		// }
 		// else {
 		// 	getImgurContent(postData.data["url"]).then(content => {
 		// 		if (content.type === ImgurContentType.image) {
-		// 			this.appendChild(new Ph_ImageViewer([{
-		// 				originalUrl: content.link,
-		// 				caption: content.caption
-		// 			}]));
+		// 			// this.appendChild(new Ph_ImageViewer([{
+		// 			// 	originalUrl: content.link,
+		// 			// 	caption: content.caption
+		// 			// }]));
 		// 		}
 		// 		else {
-		// 			this.appendChild(new Ph_VideoPlayer(new Ph_SimpleVideo([{
-		// 				src: content.link,
-		// 				type: "video/mp4"
-		// 			}])))
+		// 			// this.appendChild(new Ph_VideoPlayer(new Ph_SimpleVideo([{
+		// 			// 	src: content.link,
+		// 			// 	type: "video/mp4"
+		// 			// }])))
 		// 		}
 		// 	})
 		// }

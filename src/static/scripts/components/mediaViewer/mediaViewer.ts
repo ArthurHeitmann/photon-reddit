@@ -1,3 +1,4 @@
+import { getImgurAlbumContents, getImgurContent, ImgurContent, ImgurContentType } from "../../api/imgurApi.js";
 import { RedditApiType } from "../../types/misc.js";
 import { nonDraggableImage } from "../../utils/htmlStatics.js";
 import { linksToSpa } from "../../utils/htmlStuff.js";
@@ -7,6 +8,7 @@ import Ph_SwitchingImage from "../misc/switchableImage/switchableImage.js";
 import Ph_DraggableWrapper from "../post/postBody/draggableWrapper/draggableWrapper.js";
 import Ph_ImageViewer from "./imageViewer/imageViewer.js";
 import { MediaElement } from "./mediaElement.js";
+import Ph_SimpleVideo from "./videoPlayer/simpleVideo/simpleVideo.js";
 import Ph_VideoPlayer from "./videoPlayer/videoPlayer.js";
 
 export default class Ph_MediaViewer extends HTMLElement {
@@ -42,6 +44,50 @@ export default class Ph_MediaViewer extends HTMLElement {
 		const video = Ph_VideoPlayer.fromPostData(postData)
 		video.then(readyVideo => mediaViewer.init([ readyVideo]));
 		return mediaViewer;
+	}
+
+	static fromImgurUrl(url: string): Ph_MediaViewer {
+		const mediaViewer = new Ph_MediaViewer();
+		if (/imgur\.com\/(a|album|gallery)\/[^/]+\/?$/.test(url)) {
+			getImgurAlbumContents(url).then((contents: ImgurContent[]) => {
+				mediaViewer.init(contents.map(imgurElement => {
+					if (imgurElement.type === ImgurContentType.image)
+						return  Ph_MediaViewer.makeImgurImage(imgurElement, url);
+					else
+						return  Ph_MediaViewer.makeImgurVideo(imgurElement, url);
+				}));
+			});
+		}
+		else {
+			getImgurContent(url).then(content => {
+				if (content.type === ImgurContentType.image) {
+					const img = Ph_MediaViewer.makeImgurImage(content, url);
+					mediaViewer.init([img]);
+				}
+				else {
+					const video = Ph_MediaViewer.makeImgurVideo(content, url);
+					mediaViewer.init([video]);
+				}
+			});
+		}
+		return mediaViewer;
+	}
+
+	private static makeImgurImage(data: ImgurContent, url: string) {
+		return new Ph_ImageViewer({
+			originalUrl: data.link,
+			caption: data.caption,
+			displayUrl: url
+		});
+	}
+
+	private static makeImgurVideo(data: ImgurContent, url: string) {
+		const videoPlayer = new Ph_VideoPlayer(url);
+		videoPlayer.init(new Ph_SimpleVideo([{
+			src: data.link,
+			type: "video/mp4"
+		}]));
+		return videoPlayer;
 	}
 
 	constructor(initElements?: MediaElement[]) {
