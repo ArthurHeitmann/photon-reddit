@@ -5,13 +5,14 @@ import { linksToSpa } from "../../utils/htmlStuff.js";
 import Ph_ControlsBar from "../misc/controlsBar/controlsBar.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
 import Ph_SwitchingImage from "../misc/switchableImage/switchableImage.js";
+import Ph_PhotonBaseElement from "../photon/photonBaseElement/photonBaseElement.js";
 import Ph_DraggableWrapper from "../post/postBody/draggableWrapper/draggableWrapper.js";
 import Ph_ImageViewer from "./imageViewer/imageViewer.js";
 import { MediaElement } from "./mediaElement.js";
 import Ph_SimpleVideo from "./videoPlayer/simpleVideo/simpleVideo.js";
 import Ph_VideoPlayer from "./videoPlayer/videoPlayer.js";
 
-export default class Ph_MediaViewer extends HTMLElement {
+export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	controls: Ph_ControlsBar;
 	draggableWrapper: Ph_DraggableWrapper;
 	mediaElements: MediaElement[];
@@ -22,7 +23,6 @@ export default class Ph_MediaViewer extends HTMLElement {
 	elementLink: HTMLAnchorElement;
 	elementCaption: HTMLDivElement;
 	currentIndexDisplay: HTMLDivElement;
-	// TODO photon base element cleanup
 
 	static fromPostData_Image(postData: RedditApiType): Ph_MediaViewer {
 		if (postData.data["preview"]) {
@@ -83,6 +83,7 @@ export default class Ph_MediaViewer extends HTMLElement {
 
 	private static makeImgurVideo(data: ImgurContent, url: string) {
 		const videoPlayer = new Ph_VideoPlayer(url);
+		videoPlayer.caption = data.caption;
 		videoPlayer.init(new Ph_SimpleVideo([{
 			src: data.link,
 			type: "video/mp4"
@@ -116,10 +117,10 @@ export default class Ph_MediaViewer extends HTMLElement {
 			const prevBtn = Ph_ControlsBar.makeImageButton("/img/playBack.svg");
 			prevBtn.addEventListener("click", this.previousGalleryElement.bind(this));
 			controlSlots.push(prevBtn);
-			controlSlots.push(this.controls.firstLeftItemsSlot);
 			const nextBtn = Ph_ControlsBar.makeImageButton("/img/playNext.svg");
 			nextBtn.addEventListener("click", this.nextGalleryElement.bind(this));
 			controlSlots.push(nextBtn);
+			controlSlots.push(this.controls.firstLeftItemsSlot);
 			this.currentIndexDisplay = document.createElement("div");
 			this.currentIndexDisplay.className = "textOnly";
 			controlSlots.push(this.currentIndexDisplay);
@@ -132,10 +133,12 @@ export default class Ph_MediaViewer extends HTMLElement {
 		controlSlots.push(spacer);
 		//caption
 		this.elementCaption = document.createElement("div");
+		this.elementCaption.className = "textOnly";
 		controlSlots.push(this.elementCaption);
 		// link
 		this.elementLink = document.createElement("a");
-		this.elementLink.href = ""
+		this.elementLink.className = "textOnly";
+		this.elementLink.href = "";
 		this.elementLink.setAttribute("excludeLinkFromSpa", "");
 		controlSlots.push(this.elementLink);
 		controlSlots.push(this.controls.rightItemsSlot);
@@ -171,28 +174,39 @@ export default class Ph_MediaViewer extends HTMLElement {
 		this.draggableWrapper.addEventListener("dblclick", this.toggleFullscreen.bind(this));
 
 		linksToSpa(this);
-		this.displayElement(0);
+		this.currentIndex = 0;
+		this.displayCurrentElement();
 	}
 
-	displayElement(i: number) {
-		this.currentIndex = i;
+	displayCurrentElement() {
+		const newMedia = this.mediaElements[this.currentIndex];
+		// replace element
 		this.draggableWrapper.children[0]?.remove();
-		const newMedia = this.mediaElements[i];
 		this.draggableWrapper.appendChild(newMedia.element);
+		// gallery index
+		if (this.mediaElements.length > 1)
+			this.currentIndexDisplay.innerText = `${this.currentIndex + 1}/${this.mediaElements.length}`;
+		// capation
 		this.elementCaption.innerText = newMedia.caption || "";
 		this.elementCaption.title = newMedia.caption || "";
+		// link
 		this.elementLink.href = newMedia.url;
 		this.elementLink.innerText = newMedia.url.match(/[\w-_]+\.[\w-_]+(?=[/?#])+/)[0];
+		// controls slots
 		this.controls.updateSlotsWIth(newMedia.controls);
-		// TODO fs event
+		// fs event
+		if (document.fullscreenElement)
+			newMedia.element.dispatchEvent(new Event("ph-entered-fullscreen"));
 	}
 
 	nextGalleryElement() {
-
+		this.currentIndex = (this.currentIndex + 1) % this.mediaElements.length;
+		this.displayCurrentElement();
 	}
 
 	previousGalleryElement() {
-
+		this.currentIndex = this.currentIndex > 0 ? this.currentIndex - 1 : this.mediaElements.length - 1;
+		this.displayCurrentElement();
 	}
 
 	toggleFullscreen() {
@@ -223,6 +237,13 @@ export default class Ph_MediaViewer extends HTMLElement {
 		this.draggableWrapper.reset();
 		this.fullscreenImage.showImage("fullscreen")
 		this.classList.remove("isInFullscreen");
+	}
+
+	cleanup() {
+		super.cleanup();
+		this.mediaElements
+			.filter(elem => elem.element instanceof Ph_PhotonBaseElement)
+			.forEach(elem => (elem.element as Ph_PhotonBaseElement).cleanup());
 	}
 }
 
