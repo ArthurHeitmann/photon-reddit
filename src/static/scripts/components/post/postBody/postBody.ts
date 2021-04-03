@@ -32,9 +32,11 @@ export default class Ph_PostBody extends HTMLElement {
 			case PostType.video:
 				this.makeVideoBody(postData);
 				break;
+			case PostType.redditGallery:
+				this.makeRedditGalleryBody(postData);
+				break;
 			case PostType.tweet:
 				this.makeTweetBody(postData);
-				break;
 			case PostType.imgur:
 				this.makeImgurBody(postData);
 				break;
@@ -55,19 +57,19 @@ export default class Ph_PostBody extends HTMLElement {
 			"(https?://w?w?w?\\.?redgifs.com/watch/\\w+))|" +
 			"(https?://gfycat.com/[\\w-]+)|" +
 			"(\\.(gif|mp4)(\\?.*)?$)"
-		).test(postData["url"])
-		)
+		).test(postData["url"]))
 			return PostType.video;
 		else if (/https?:\/\/clips.twitch.tv\/[\w-]+/.test(postData["url"]) && postData["media"])
 			return PostType.video;
 		else if (postData["post_hint"] == "image" ||
-			/(?<!#.*)\.(png|jpg|jpeg|svg)$/.test(postData["url"]) ||
-			postData["gallery_data"])
+			/(?<!#.*)\.(png|jpg|jpeg|svg)$/.test(postData["url"]))
 			return PostType.image;
 		else if (postData["post_hint"] == "hosted:video")
 			return PostType.video;
 		else if (/^(https?:\/\/)?imgur\.com\/\w+(\/\w+)?/.test(postData["url"]))
 			return PostType.imgur;
+		else if (postData["gallery_data"])
+			return PostType.redditGallery;
 		else if (postData["post_hint"] == "rich:video")
 			return PostType.embeddedVideo;
 		else if (/^(https?:\/\/)?(www\.)?twitter\.com\/[^/]+\/status\/\d+/.test(postData["url"]))
@@ -96,6 +98,11 @@ export default class Ph_PostBody extends HTMLElement {
 	private makeVideoBody(postData: RedditApiType) {
 		this.classList.add("fullScale");
 		this.appendChild(Ph_MediaViewer.fromPostData_Video(postData));
+	}
+
+	private makeRedditGalleryBody(postData: RedditApiType) {
+		this.classList.add("fullScale");
+		this.appendChild(Ph_MediaViewer.fromPostData_RedditGallery(postData));
 	}
 
 	private makeEmbeddedVideoBody(postData: RedditApiType) {
@@ -128,41 +135,6 @@ export default class Ph_PostBody extends HTMLElement {
 	private makeImgurBody(postData: RedditApiType) {
 		this.classList.add("fullScale");
 		this.appendChild(Ph_MediaViewer.fromImgurUrl(postData.data["url"]));
-		// if (/imgur\.com\/(a|album|gallery)\/[^/]+\/?$/.test(postData.data["url"])) {
-		// 	getImgurAlbumContents(postData.data["url"]).then((contents: ImgurContent[]) => {
-		// 		if (contents[0].type === ImgurContentType.video) {
-		// 			// this.appendChild(new Ph_VideoPlayer(
-		// 			// 	new Ph_SimpleVideo([{ src: contents[0].link, type: "video/mp4" }])
-		// 			// ));
-		// 			if (contents.length > 1)
-		// 				new Ph_Toast(Level.warning, "Imgur album with video and more than 1 items --> only displaying video");
-		// 		}
-		// 		else {
-		// 			// this.appendChild(new Ph_ImageViewer(
-		// 			// 	contents.map(content => <GalleryInitData> {
-		// 			// 		originalUrl: content.link,
-		// 			// 		caption: content.caption
-		// 			// 	}))
-		// 			// );
-		// 		}
-		// 	});
-		// }
-		// else {
-		// 	getImgurContent(postData.data["url"]).then(content => {
-		// 		if (content.type === ImgurContentType.image) {
-		// 			// this.appendChild(new Ph_ImageViewer([{
-		// 			// 	originalUrl: content.link,
-		// 			// 	caption: content.caption
-		// 			// }]));
-		// 		}
-		// 		else {
-		// 			// this.appendChild(new Ph_VideoPlayer(new Ph_SimpleVideo([{
-		// 			// 	src: content.link,
-		// 			// 	type: "video/mp4"
-		// 			// }])))
-		// 		}
-		// 	})
-		// }
 	}
 
 	private makeDefaultBody(postData: RedditApiType) {
@@ -178,6 +150,7 @@ enum PostType {
 	media,
 	image,
 	video,
+	redditGallery,
 	embeddedVideo,
 	text,
 	tweet,

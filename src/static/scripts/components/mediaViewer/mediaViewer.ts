@@ -5,10 +5,12 @@ import { linksToSpa } from "../../utils/htmlStuff.js";
 import Ph_ControlsBar from "../misc/controlsBar/controlsBar.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
 import Ph_SwitchingImage from "../misc/switchableImage/switchableImage.js";
+import Ph_Toast, { Level } from "../misc/toast/toast.js";
 import Ph_PhotonBaseElement from "../photon/photonBaseElement/photonBaseElement.js";
 import Ph_DraggableWrapper from "../post/postBody/draggableWrapper/draggableWrapper.js";
 import Ph_ImageViewer from "./imageViewer/imageViewer.js";
 import { MediaElement } from "./mediaElement.js";
+import Ph_GifVideo from "./videoPlayer/gifVideo/gifVideo.js";
 import Ph_SimpleVideo from "./videoPlayer/simpleVideo/simpleVideo.js";
 import Ph_VideoPlayer from "./videoPlayer/videoPlayer.js";
 
@@ -44,6 +46,47 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		const video = Ph_VideoPlayer.fromPostData(postData)
 		video.then(readyVideo => mediaViewer.init([ readyVideo]));
 		return mediaViewer;
+	}
+
+	static fromPostData_RedditGallery(postData: RedditApiType): Ph_MediaViewer {
+		const mediaElements: MediaElement[] = [];
+		const items: {}[] = postData.data["gallery_data"]["items"];
+		for (const item of items) {
+			const itemData = postData.data["media_metadata"][item["media_id"]];
+			if (itemData["status"] === "failed") {
+				new Ph_Toast(Level.warning, "Couldn't load a gallery image");
+				continue;
+			}
+			switch (itemData["e"]) {
+					case "Image":
+					const previews: {}[] = itemData["p"];
+					mediaElements.push(new Ph_ImageViewer({
+						originalUrl: itemData["s"]["u"],
+						previewUrl: previews.length > 0 && previews[previews.length - 1]["u"] || undefined,
+						caption: item["caption"] || "",
+						displayUrl: item["outbound_url"]
+					}))
+					break;
+				case "AnimatedImage":
+					const videoPlayer = new Ph_VideoPlayer(item["outbound_url"] || postData.data["url"]);
+					mediaElements.push(videoPlayer);
+					if ("mp4" in itemData["s"]) {
+						videoPlayer.init(new Ph_SimpleVideo([{
+							src: itemData["s"]["mp4"],
+							type: "video/mp4"
+						}]));
+					}
+					else {
+						videoPlayer.init(new Ph_GifVideo(itemData["s"]["gif"]));
+					}
+					break;
+				default:
+					console.warn(`Unknown gallery item type ${itemData["e"]}`, itemData);
+					new Ph_Toast(Level.warning, `Unknown gallery item type ${itemData["e"]}`)
+			}
+		}
+
+		return  new Ph_MediaViewer(mediaElements);
 	}
 
 	static fromImgurUrl(url: string): Ph_MediaViewer {
