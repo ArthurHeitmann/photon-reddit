@@ -9,7 +9,7 @@ export enum GfycatDomain {
 
 /** */
 export async function getGfycatMp4SrcFromUrl(url: string, domain: GfycatDomain): Promise<string> {
-	const idMatches = url.match(/(?<=\.com\/\w+\/)\w+/);
+	const idMatches = url.match(/(?<=\.com\/(\w+\/)?)\w+/);
 	if (!idMatches)
 		throw "invalid redgifs url";
 	const req = await fetch(`https://api.${domain}.com/v1/gfycats/${idMatches[0]}`);
