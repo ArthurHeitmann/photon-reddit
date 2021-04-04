@@ -4,17 +4,17 @@ import { env } from "./consts.js";
 
 /** Fallback for when service worker doesn't work */
 export function cacheControl(req: express.Request, res: express.Response, next: express.NextFunction) {
-	let cacheSeconds = 0;
-	if (env === "production") {
-		if (/\.js([#?].*)?$/.test(req.url)) {
-			cacheSeconds = 60 * 60;
-		} else if (/\.(svg|png|jpg)([#?].*)?$/.test(req.url)) {
-			cacheSeconds = 60 * 60 * 24;
-		} else if (/\.css([#?].*)?$/.test(req.url)) {
-			cacheSeconds = 60 * 60 * 4;
-		}
-	}
-	res.setHeader("Cache-Control", `public, max-age=${cacheSeconds}`);
+	// let cacheSeconds = 0;
+	// if (env === "production") {
+	// 	if (/\.js([#?].*)?$/.test(req.url)) {
+	// 		cacheSeconds = 60 * 60;
+	// 	} else if (/\.(svg|png|jpg)([#?].*)?$/.test(req.url)) {
+	// 		cacheSeconds = 60 * 60 * 24;
+	// 	} else if (/\.css([#?].*)?$/.test(req.url)) {
+	// 		cacheSeconds = 60 * 60 * 4;
+	// 	}
+	// }
+	// res.setHeader("Cache-Control", `public, max-age=${cacheSeconds}`);
 	next();
 }
 
