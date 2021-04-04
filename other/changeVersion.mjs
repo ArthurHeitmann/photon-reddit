@@ -37,7 +37,7 @@ async function actuallySetVersion(version) {
 		fs.promises.readFile(path)
 			.then(content => {
 				const newContent = content.toString()
-					.replaceAll(/"[^"]+"(?=.*\/\/\/ <change version script>)/g, `"${version}"`);
+					.replace(/"[^"]+"(?=.*\/\/\/ <change version script>)/g, `"${version}"`);
 				return fs.promises.writeFile(path, newContent);
 			});
 	}));
@@ -46,6 +46,22 @@ async function actuallySetVersion(version) {
 			.then(content => {
 				const newContent = content.toString().replace(/(?<="version":\s*")[^"]+(?=")/, version);
 				return fs.promises.writeFile(`./${"../".repeat(parentDirs)}package.json`, newContent);
+			})
+	);
+	filePromises.push(
+		fs.promises.readFile(`./${"../".repeat(parentDirs)}package.json`)
+			.then(content => {
+				const newContent = content.toString().replace(/(?<="version":\s*")[^"]+(?=")/, version);
+				return fs.promises.writeFile(`./${"../".repeat(parentDirs)}package.json`, newContent);
+			})
+	);
+	filePromises.push(
+		fs.promises.readFile(`./${"../".repeat(parentDirs)}package-lock.json`)
+			.then(content => {
+				console.log(content.toString().slice(0,75))
+				const newContent = content.toString().replace(/(?<="version":\s*")[^"]+(?=")/, version);
+				console.log(newContent.slice(0,75))
+				return fs.promises.writeFile(`./${"../".repeat(parentDirs)}package-lock.json`, newContent);
 			})
 	);
 
@@ -57,19 +73,23 @@ function getVersionNumber(index) {
 	return parseInt(splitVersion[index]);
 }
 
-function replaceVersionAt(index, newNumber) {
+function replaceVersionAt(index, newNumber, zeroAllAfterIndex = false) {
 	splitVersion[index] = newNumber.toString();
+	if (zeroAllAfterIndex) {
+		for (let i = index + 1; i < 3; ++i)
+			splitVersion[i] = "0";
+	}
 	return splitVersion.join(".");
 }
 
 
 if (args[0] === "bump" || args[0] === "b") {
 	if (args[1] === "major" || args[1] === "ma")
-		setVersion(replaceVersionAt(0, getVersionNumber(0) + 1));
+		setVersion(replaceVersionAt(0, getVersionNumber(0) + 1, true));
 	else if (args[1] === "minor" || args[1] === "mi")
-		setVersion(replaceVersionAt(1, getVersionNumber(1) + 1));
+		setVersion(replaceVersionAt(1, getVersionNumber(1) + 1, true));
 	else if (args[1] === "patch" || args[1] === "pa" || args[1] === "p")
-		setVersion(replaceVersionAt(2, getVersionNumber(2) + 1));
+		setVersion(replaceVersionAt(2, getVersionNumber(2) + 1, true));
 	else
 		throw "Invalid version type";
 }
@@ -106,7 +126,7 @@ arguments:
     
     use y or -y to skip confirmation
     `);
-    consoleInput.close();
+	consoleInput.close();
 }
 else
 	throw "invalid argument, use \"help\" to get more infos";
