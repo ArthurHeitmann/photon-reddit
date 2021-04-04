@@ -1,5 +1,5 @@
 import { getImgurAlbumContents, getImgurContent, ImgurContent, ImgurContentType } from "../../api/imgurApi.js";
-import { RedditApiType } from "../../types/misc.js";
+import { RedditApiData, RedditApiType } from "../../types/misc.js";
 import { nonDraggableImage } from "../../utils/htmlStatics.js";
 import { linksToSpa } from "../../utils/htmlStuff.js";
 import Ph_ControlsBar from "../misc/controlsBar/controlsBar.js";
@@ -35,15 +35,26 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 			})]);
 		}
 		else {
-			return new Ph_MediaViewer([new Ph_ImageViewer({
-				originalUrl: postData.data["url"],
-			})]);
+			return Ph_MediaViewer.fromUrl_Image(postData.data["url"]);
 		}
+	}
+
+	static fromUrl_Image(url: string): Ph_MediaViewer {
+		return new Ph_MediaViewer([new Ph_ImageViewer({
+			originalUrl: url,
+		})]);
 	}
 
 	static fromPostData_Video(postData: RedditApiType): Ph_MediaViewer {
 		const mediaViewer = new Ph_MediaViewer();
-		const video = Ph_VideoPlayer.fromPostData(postData)
+		const video = Ph_VideoPlayer.fromPostData({ postData })
+		video.then(readyVideo => mediaViewer.init([ readyVideo]));
+		return mediaViewer;
+	}
+
+	static fromUrl_Video(url: string): Ph_MediaViewer {
+		const mediaViewer = new Ph_MediaViewer();
+		const video = Ph_VideoPlayer.fromPostData({ url })
 		video.then(readyVideo => mediaViewer.init([ readyVideo]));
 		return mediaViewer;
 	}
@@ -89,6 +100,17 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		return  new Ph_MediaViewer(mediaElements);
 	}
 
+	static fromUrl(url: string): Ph_MediaViewer | null {
+		if (Ph_MediaViewer.isUrlVideo(url))
+			return Ph_MediaViewer.fromUrl_Video(url);
+		else if (Ph_MediaViewer.isUrlImgur(url))
+			return Ph_MediaViewer.fromImgurUrl(url);
+		else if (Ph_MediaViewer.isUrlImage(url))
+			return Ph_MediaViewer.fromUrl_Image(url);
+		else
+			return null;
+	}
+
 	static fromImgurUrl(url: string): Ph_MediaViewer {
 		const mediaViewer = new Ph_MediaViewer();
 		if (/imgur\.com\/(a|album|gallery)\/[^/]+\/?$/.test(url)) {
@@ -119,6 +141,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	private static makeImgurImage(data: ImgurContent, url: string) {
 		return new Ph_ImageViewer({
 			originalUrl: data.link,
+			previewUrl: data.preview,
 			caption: data.caption,
 			displayUrl: url
 		});
@@ -132,6 +155,39 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 			type: "video/mp4"
 		}]));
 		return videoPlayer;
+	}
+
+	static isPostVideo(postData: RedditApiData): boolean {
+		if (Ph_MediaViewer.isUrlVideo(postData["url"]))
+			return true
+		else if (/https?:\/\/clips.twitch.tv\/[\w-]+/.test(postData["url"]) && postData["media"])
+			return true;
+		else if (postData["post_hint"] == "hosted:video")
+			return true;
+		return false
+	}
+
+	static isUrlVideo(url: string): boolean {
+		return new RegExp(
+			"^((https?://(i|m)?\.?imgur\\.com\/[\\w-]+.(gifv|mp4))|" +
+			"(https?://v.redd.it\\/[\\w-]+)|" +
+			"(https?://w?w?w?\\.?redgifs.com/watch/\\w+))|" +
+			"(https?://gfycat.com/[\\w-]+)|" +
+			"(\\.(gif|mp4)(\\?.*)?$)"
+		).test(url);
+	}
+
+	static isPostImage(postData: RedditApiData): boolean {
+		return postData["post_hint"] == "image" ||
+			Ph_MediaViewer.isUrlImage(postData["url"])
+	}
+
+	static isUrlImage(url: string): boolean {
+		return /(?<!#.*)\.(png|jpg|jpeg|svg)(\?.*)?$/.test(url)
+	}
+
+	static isUrlImgur(url: string): boolean {
+		return /^(https?:\/\/)?imgur\.com\/\w+(\/\w+)?/.test(url);
 	}
 
 	constructor(initElements?: MediaElement[]) {
@@ -174,6 +230,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		// spacer
 		const spacer = Ph_ControlsBar.makeSpacer();
 		controlSlots.push(spacer);
+		controlSlots.push(this.controls.rightItemsSlot);
 		//caption
 		this.elementCaption = document.createElement("div");
 		this.elementCaption.className = "textOnly";
@@ -183,8 +240,8 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		this.elementLink.className = "textOnly";
 		this.elementLink.href = "";
 		this.elementLink.setAttribute("excludeLinkFromSpa", "");
+		this.elementLink.setAttribute("excludeLinkFromMedia", "");
 		controlSlots.push(this.elementLink);
-		controlSlots.push(this.controls.rightItemsSlot);
 		// reset view
 		const resetViewBtn = Ph_ControlsBar.makeImageButton("/img/reset.svg");
 		resetViewBtn.classList.add("resetView");

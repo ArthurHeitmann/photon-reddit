@@ -36,3 +36,43 @@
 		}
 	}
 }
+
+.inlineMediaViewer {
+	> button {
+		width: 1rem;
+		height: 1rem;
+		position: relative;
+
+		img {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translateX(-50%) translateY(-80%) rotate(90deg);
+			height: 1.25rem;
+		}
+	}
+
+	+ .mediaViewer {
+		display: none;
+		width: auto;
+		height: max-content;
+		min-width: 0;
+		font-size: 1rem;
+		transition: min-width .25s ease .75s;
+
+		&:hover {
+			min-width: 25rem;
+		}
+	}
+
+	&.isExpanded {
+		> button img {
+			transform: translateX(-50%) translateY(-80%) rotate(-90deg);
+		}
+
+		+ .mediaViewer {
+			display: inline-block;
+
+		}
+	}
+}

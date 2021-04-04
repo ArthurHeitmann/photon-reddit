@@ -5,7 +5,7 @@
  */
 
 import { globalSettings } from "../components/global/photonSettings/photonSettings.js";
-import Ph_ImageViewer from "../components/mediaViewer/imageViewer/imageViewer.js";
+import Ph_MediaViewer from "../components/mediaViewer/mediaViewer.js";
 import { pushLinkToHistoryComb } from "../historyState/historyStateManager.js";
 import { _replaceRedditLinks } from "./utils.js";
 
@@ -69,33 +69,34 @@ export function isElementIn(container: HTMLElement, checkElement: HTMLElement): 
 
 /** converts all <a> where href ends with an image file extension to an <img>  */
 export function _linksToInlineImages(elem: HTMLElement) {
-	const links = elem.$tag("a");
-	for (let link of links) {
-		// test for file endings
-		if (!(/^[^?]+(?<!#.*)\.(png|jpg|jpeg|gif)(\?.*)?$/).test((link as HTMLAnchorElement).href))
+	const links = elem.$tag("a") as HTMLCollectionOf<HTMLAnchorElement>;
+	for (const link of links) {
+		if (link.hasAttribute("excludeLinkFromMedia") || link.classList.contains("inlineMediaViewer"))
 			continue;
-		// no images with http
-		else if ((/^http:\/\//).test((link as HTMLAnchorElement).href))
+		const mediaViewer = Ph_MediaViewer.fromUrl(link.href)
+		if (!mediaViewer)
 			continue;
-		// wikipedia & reddit exceptions
-		else if ((/wikipedia\.org.*File:/).test((link as HTMLAnchorElement).href))
-			continue;
-		else if ((/preview\.redd\.it\/.*\.gif\?format=mp4/).test((link as HTMLAnchorElement).href))
-			continue;
-		// TODO
-		// const image = new Ph_ImageViewer([{originalUrl: (link as HTMLAnchorElement).href, caption: ""}]);
-		// const tmpChildren = Array.from(link.children);
-		// const tmpInner = link.innerHTML;
-		// tmpChildren.forEach(child => child.remove());
-		// link.innerHTML = `<span class="backupLink"></span>`;
-		// if (tmpChildren.length)
-		// 	link.children[0].append(...tmpChildren);
-		// else
-		// 	link.children[0].innerHTML = tmpInner;
-		// link.appendChild(image);
-		// link.classList.add("inlineImage");
-		//
-		// (link as HTMLAnchorElement).onclick = (e: MouseEvent) => Boolean(e.ctrlKey || !globalSettings.loadInlineImages);
+
+		link.classList.add("inlineMediaViewer");
+		link.classList.toggle("isExpanded", !globalSettings.loadInlineImages);
+
+		const initial = document.createElement("span");
+		initial.innerHTML = link.innerHTML;
+		link.innerHTML = "";
+		link.appendChild(initial);
+
+		const expandButton = document.createElement("button");
+		expandButton.innerHTML = `<img src="/img/arrowFilled.svg" alt="expand">`;
+		link.onclick = e => {
+			link.classList.toggle("isExpanded");
+			return Boolean(e.ctrlKey);
+		};
+		link.click();
+		link.appendChild(expandButton);
+
+		link.insertAdjacentElement("afterend", mediaViewer);
+		setTimeout(() => mediaViewer.controls.hideControls(), 0);
+
+		link.setAttribute("excludeLinkFromSpa", "")
 	}
 }
-

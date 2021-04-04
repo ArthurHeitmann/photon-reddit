@@ -28,6 +28,9 @@
 	.textOnly {
 		line-height: vars.$controls-height;
 		margin: 0 .125rem;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
 	}
 
 	.smaller, .smaller > img {

@@ -51,22 +51,11 @@ export default class Ph_PostBody extends HTMLElement {
 	private getPostType(postData: RedditApiData): PostType {
 		if (postData["is_self"])
 			return PostType.text;
-		else if (new RegExp(
-			"^((https?://(i|m)?\.?imgur\\.com\/[\\w-]+.(gifv|mp4))|" +
-			"(https?://v.redd.it\\/[\\w-]+)|" +
-			"(https?://w?w?w?\\.?redgifs.com/watch/\\w+))|" +
-			"(https?://gfycat.com/[\\w-]+)|" +
-			"(\\.(gif|mp4)(\\?.*)?$)"
-		).test(postData["url"]))
-			return PostType.video;
-		else if (/https?:\/\/clips.twitch.tv\/[\w-]+/.test(postData["url"]) && postData["media"])
-			return PostType.video;
-		else if (postData["post_hint"] == "image" ||
-			/(?<!#.*)\.(png|jpg|jpeg|svg)$/.test(postData["url"]))
+		else if (Ph_MediaViewer.isPostVideo(postData))
+			return PostType.video
+		else if (Ph_MediaViewer.isPostImage(postData))
 			return PostType.image;
-		else if (postData["post_hint"] == "hosted:video")
-			return PostType.video;
-		else if (/^(https?:\/\/)?imgur\.com\/\w+(\/\w+)?/.test(postData["url"]))
+		else if (Ph_MediaViewer.isUrlImgur(postData["url"]))
 			return PostType.imgur;
 		else if (postData["gallery_data"])
 			return PostType.redditGallery;

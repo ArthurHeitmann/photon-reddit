@@ -13,9 +13,10 @@
 			display: inline-block;
 			width: 0;
 			height: 0;
-			border-bottom: 0.6em solid lightgreen;
+			border-top: 0.6em solid lightgreen;
 			border-left: 0.3em solid transparent;
 			border-right: 0.3em solid transparent;
+			border-radius: 50%;
 		}
 
 		* {

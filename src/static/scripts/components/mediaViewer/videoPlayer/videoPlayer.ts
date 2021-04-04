@@ -38,28 +38,33 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 	static isVideoPlayAllowed = false;
 
 	/** Creates a video player from a reddit post (with a video link) */
-	static async fromPostData(postData: RedditApiType): Promise<Ph_VideoPlayer> {
-		const videoOut = new Ph_VideoPlayer(postData.data["url"]);
+	static async fromPostData({ postData, url }: { postData?: RedditApiType, url?: string }): Promise<Ph_VideoPlayer> {
+		if (!(postData || url))
+			throw "either postData or url is needed";
+		if (postData)
+			url = postData.data["url"];
+
+		const videoOut = new Ph_VideoPlayer(url);
 
 		function defaultCase() {
-			if (/\.gif(\?.*)?$/.test(postData.data["url"])) {
-				videoOut.init(new Ph_GifVideo(postData.data["url"]));
+			if (/\.gif(\?.*)?$/.test(url)) {
+				videoOut.init(new Ph_GifVideo(url));
 				return;
 			}
-			else if (/\.mp4(\?.*)?$/.test(postData.data["url"])) {
-				videoOut.init(new Ph_SimpleVideo([{src: postData.data["url"], type: "video/mp4"}]));
+			else if (/\.mp4(\?.*)?$/.test(url)) {
+				videoOut.init(new Ph_SimpleVideo([{src: url, type: "video/mp4"}]));
 				return;
 			}
-			console.error(`Unknown video provider for ${postData.data["url"]}`);
-			new Ph_Toast(Level.error, `Unknown video provider for ${escHTML(postData.data["url"])}`);
+			console.error(`Unknown video provider for ${url}`);
+			new Ph_Toast(Level.error, `Unknown video provider for ${escHTML(url)}`);
 		}
 
 		// task of this huuuuge switch: get the video file url (.mp4/.gif/...) of this post
-		switch (postData.data["url"].match(/^https?:\/\/w?w?w?\.?([\w.]+)/)[1]) {
+		switch (url.match(/^https?:\/\/w?w?w?\.?([\w.]+)/)[1]) {
 			case "imgur.com":
 			case "m.imgur.com":
 			case "i.imgur.com":
-				const typelessUrl = postData.data["url"].match(/^https?:\/\/([im])?\.?imgur\.com\/\w+/)[0];
+				const typelessUrl = url.match(/^https?:\/\/([im])?\.?imgur\.com\/\w+/)[0];
 				videoOut.init(new Ph_SimpleVideo([
 					{src: typelessUrl + ".mp4", type: "video/mp4"},
 				]));
@@ -67,7 +72,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 			case "gfycat.com":
 				// gfycats paths are case sensitive, but the urls usually are all lower case
 				// however in the media oembed property there is a correctly capitalized path
-				if (postData.data["media"]) {
+				if (postData && postData.data["media"]) {
 					let capitalizedPath;
 					if (/^https?:\/\/thumbs\.gfycat\.com\/./.test(postData.data["media"]["oembed"]["thumbnail_url"])) {
 						capitalizedPath = postData.data["media"]["oembed"]["thumbnail_url"].match(/^https?:\/\/thumbs\.gfycat\.com\/(\w+)/)[1];
@@ -85,7 +90,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				}
 				// if no oembed data, use gfycat api
 				else {
-					getGfycatMp4SrcFromUrl(postData.data["url"], GfycatDomain.gfycat)
+					getGfycatMp4SrcFromUrl(url, GfycatDomain.gfycat)
 						.then(mp4Url => videoOut.init(new Ph_SimpleVideo([{ src: mp4Url, type: "video/mp4" }])))
 						.catch(() => videoOut.init(null));
 				}
@@ -93,19 +98,19 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 			case "v.redd.it":
 				// wtf is this inconsistency v.redd.it ??????!
 				// trying to minimize sources list and failed requests
-				if (postData.data["media"] && postData.data["media"]["reddit_video"]) {
+				if (postData && postData.data["media"] && postData.data["media"]["reddit_video"]) {
 					const helperUrl = postData.data["media"]["reddit_video"]["fallback_url"];
 					const resolutions = [1080, 720, 480, 360, 240, 96];
 					if (/DASH_\d+\?source=fallback/.test(helperUrl)) {
 						const maxRes = helperUrl.match(/(?<=DASH_)\d+/)[0];
 						const resOptions = resolutions.slice(resolutions.indexOf(parseInt(maxRes)));
 						videoOut.init(new Ph_VideoAudio(
-							resOptions.map(res => ({src: `${postData.data["url"]}/DASH_${res}`, type: "video/mp4"})),
+							resOptions.map(res => ({src: `${url}/DASH_${res}`, type: "video/mp4"})),
 							[
-								{src: postData.data["url"] + "/DASH_audio.mp4", type: "video/mp4"},
-								{src: postData.data["url"] + "/DASH_audio", type: "video/mp4"},
-								{src: postData.data["url"] + "/audio.mp4", type: "video/mp4"},
-								{src: postData.data["url"] + "/audio", type: "video/mp4"},
+								{src: url + "/DASH_audio.mp4", type: "video/mp4"},
+								{src: url + "/DASH_audio", type: "video/mp4"},
+								{src: url + "/audio.mp4", type: "video/mp4"},
+								{src: url + "/audio", type: "video/mp4"},
 							]
 						));
 					}
@@ -113,38 +118,38 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 						const maxRes = helperUrl.match(/(?<=DASH_)\d+/)[0];
 						const resOptions = resolutions.slice(resolutions.indexOf(parseInt(maxRes)));
 						videoOut.init(new Ph_VideoAudio(
-							resOptions.map(res => <any> {src: `${postData.data["url"]}/DASH_${res}.mp4`, type: "video/mp4"}),
+							resOptions.map(res => <any> {src: `${url}/DASH_${res}.mp4`, type: "video/mp4"}),
 							[
-								{src: postData.data["url"] + "/DASH_audio.mp4", type: "video/mp4"},
-								{src: postData.data["url"] + "/DASH_audio", type: "video/mp4"},
-								{src: postData.data["url"] + "/audio.mp4", type: "video/mp4"},
-								{src: postData.data["url"] + "/audio", type: "video/mp4"},
+								{src: url + "/DASH_audio.mp4", type: "video/mp4"},
+								{src: url + "/DASH_audio", type: "video/mp4"},
+								{src: url + "/audio.mp4", type: "video/mp4"},
+								{src: url + "/audio", type: "video/mp4"},
 							]));
 					}
 					else if (/DASH_[\d_]+[KM]\.mp4\?source=fallback/.test(helperUrl)) {
 						videoOut.init(new Ph_VideoAudio([
-							{src: postData.data["url"] + "/DASH_4_8_M.mp4", type: "video/mp4"},
-							{src: postData.data["url"] + "/DASH_2_4_M.mp4", type: "video/mp4"},
-							{src: postData.data["url"] + "/DASH_1_2_M.mp4", type: "video/mp4"},
-							{src: postData.data["url"] + "/DASH_600_K.mp4", type: "video/mp4"},
+							{src: url + "/DASH_4_8_M.mp4", type: "video/mp4"},
+							{src: url + "/DASH_2_4_M.mp4", type: "video/mp4"},
+							{src: url + "/DASH_1_2_M.mp4", type: "video/mp4"},
+							{src: url + "/DASH_600_K.mp4", type: "video/mp4"},
 						], [
-							{src: postData.data["url"] + "/DASH_audio.mp4", type: "video/mp4"},
-							{src: postData.data["url"] + "/DASH_audio", type: "video/mp4"},
-							{src: postData.data["url"] + "/audio.mp4", type: "video/mp4"},
-							{src: postData.data["url"] + "/audio", type: "video/mp4"},
+							{src: url + "/DASH_audio.mp4", type: "video/mp4"},
+							{src: url + "/DASH_audio", type: "video/mp4"},
+							{src: url + "/audio.mp4", type: "video/mp4"},
+							{src: url + "/audio", type: "video/mp4"},
 						]));
 					}
 					else if (/DASH_[\d_]+[KM]\?source=fallback/.test(helperUrl)) {
 						videoOut.init(new Ph_VideoAudio([
-							{src: postData.data["url"] + "/DASH_4_8_M", type: "video/mp4"},
-							{src: postData.data["url"] + "/DASH_2_4_M", type: "video/mp4"},
-							{src: postData.data["url"] + "/DASH_1_2_M", type: "video/mp4"},
-							{src: postData.data["url"] + "/DASH_600_K", type: "video/mp4"},
+							{src: url + "/DASH_4_8_M", type: "video/mp4"},
+							{src: url + "/DASH_2_4_M", type: "video/mp4"},
+							{src: url + "/DASH_1_2_M", type: "video/mp4"},
+							{src: url + "/DASH_600_K", type: "video/mp4"},
 						], [
-							{src: postData.data["url"] + "/DASH_audio.mp4", type: "video/mp4"},
-							{src: postData.data["url"] + "/DASH_audio", type: "video/mp4"},
-							{src: postData.data["url"] + "/audio.mp4", type: "video/mp4"},
-							{src: postData.data["url"] + "/audio", type: "video/mp4"},
+							{src: url + "/DASH_audio.mp4", type: "video/mp4"},
+							{src: url + "/DASH_audio", type: "video/mp4"},
+							{src: url + "/audio.mp4", type: "video/mp4"},
+							{src: url + "/audio", type: "video/mp4"},
 						]));
 					}
 					else {
@@ -156,33 +161,33 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				else {
 					// when everything fails: bruteforce
 					videoOut.init(new Ph_VideoAudio([
-						{src: postData.data["url"] + "/DASH_1080.mp4", type: "video/mp4"},
-						{src: postData.data["url"] + "/DASH_1080", type: "video/mp4"},
-						{src: postData.data["url"] + "/DASH_720.mp4", type: "video/mp4"},
-						{src: postData.data["url"] + "/DASH_720", type: "video/mp4"},
-						{src: postData.data["url"] + "/DASH_480.mp4", type: "video/mp4"},
-						{src: postData.data["url"] + "/DASH_480", type: "video/mp4"},
-						{src: postData.data["url"] + "/DASH_360.mp4", type: "video/mp4"},
-						{src: postData.data["url"] + "/DASH_360", type: "video/mp4"},
-						{src: postData.data["url"] + "/DASH_240.mp4", type: "video/mp4"},
-						{src: postData.data["url"] + "/DASH_240", type: "video/mp4"},
-						{src: postData.data["url"] + "/DASH_96.mp4", type: "video/mp4"},
-						{src: postData.data["url"] + "/DASH_96", type: "video/mp4"},
-						{src: postData.data["url"] + "/DASH_4_8_M", type: "video/mp4"},
-						{src: postData.data["url"] + "/DASH_2_4_M", type: "video/mp4"},
-						{src: postData.data["url"] + "/DASH_1_2_M", type: "video/mp4"},
-						{src: postData.data["url"] + "/DASH_600_K", type: "video/mp4"},
+						{src: url + "/DASH_1080.mp4", type: "video/mp4"},
+						{src: url + "/DASH_1080", type: "video/mp4"},
+						{src: url + "/DASH_720.mp4", type: "video/mp4"},
+						{src: url + "/DASH_720", type: "video/mp4"},
+						{src: url + "/DASH_480.mp4", type: "video/mp4"},
+						{src: url + "/DASH_480", type: "video/mp4"},
+						{src: url + "/DASH_360.mp4", type: "video/mp4"},
+						{src: url + "/DASH_360", type: "video/mp4"},
+						{src: url + "/DASH_240.mp4", type: "video/mp4"},
+						{src: url + "/DASH_240", type: "video/mp4"},
+						{src: url + "/DASH_96.mp4", type: "video/mp4"},
+						{src: url + "/DASH_96", type: "video/mp4"},
+						{src: url + "/DASH_4_8_M", type: "video/mp4"},
+						{src: url + "/DASH_2_4_M", type: "video/mp4"},
+						{src: url + "/DASH_1_2_M", type: "video/mp4"},
+						{src: url + "/DASH_600_K", type: "video/mp4"},
 					], [
-						{src: postData.data["url"] + "/DASH_audio.mp4", type: "video/mp4"},
-						{src: postData.data["url"] + "/DASH_audio", type: "video/mp4"},
-						{src: postData.data["url"] + "/audio.mp4", type: "video/mp4"},
-						{src: postData.data["url"] + "/audio", type: "video/mp4"},
+						{src: url + "/DASH_audio.mp4", type: "video/mp4"},
+						{src: url + "/DASH_audio", type: "video/mp4"},
+						{src: url + "/audio.mp4", type: "video/mp4"},
+						{src: url + "/audio", type: "video/mp4"},
 					]));
 				}
 				break;
 			case "i.redd.it":
 				// from i.reddit only gifs come; try to get the mp4 preview
-				if (postData.data["preview"] && postData.data["preview"]["images"][0]["variants"]["mp4"]) {
+				if (postData && postData.data["preview"] && postData.data["preview"]["images"][0]["variants"]["mp4"]) {
 					videoOut.init(new Ph_SimpleVideo([{
 						src: postData.data["preview"]["images"][0]["variants"]["mp4"]["source"]["url"],
 						type: "video/mp4"
@@ -194,7 +199,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 			case "clips.twitch.tv":
 				// try to get mp4 url from oembed data
 				let twitchMp4Found = false;
-				if (postData.data["media"] && postData.data["media"]["oembed"]) {
+				if (postData && postData.data["media"] && postData.data["media"]["oembed"]) {
 					const twitchUrlMatches = postData.data["media"]["oembed"]["thumbnail_url"].match(/(.*)-social-preview.jpg$/);
 					if (twitchUrlMatches && twitchUrlMatches.length == 2) {
 						videoOut.init(new Ph_SimpleVideo([{src: twitchUrlMatches[1] + ".mp4", type: "video/mp4"}]));
@@ -203,7 +208,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				}
 				// if not suitable oembed data use youtube-dl
 				if (!twitchMp4Found) {
-					youtubeDlUrl(postData.data["url"]).then(async clipMp4 => {
+					youtubeDlUrl(url).then(async clipMp4 => {
 						videoOut.init(new Ph_SimpleVideo([{ src: clipMp4, type: "video/mp4" }]));
 					}).catch(err => {
 						new Ph_Toast(Level.error, "Error getting Twitch clip");
@@ -214,7 +219,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				break;
 			case "redgifs.com":
 				// like gfycat but there is no usable info in the oembed data
-				getGfycatMp4SrcFromUrl(postData.data["url"], GfycatDomain.redgifs)
+				getGfycatMp4SrcFromUrl(url, GfycatDomain.redgifs)
 					.then(mp4Url => videoOut.init(new Ph_SimpleVideo([ { src: mp4Url, type: "video/mp4" } ])))
 					.catch(() => videoOut.init(null));
 				break;

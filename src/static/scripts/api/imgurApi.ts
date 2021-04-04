@@ -12,6 +12,7 @@ export enum ImgurContentType {
 export interface ImgurContent {
 	type: ImgurContentType,
 	link: string,
+	preview?: string,
 	caption: string
 }
 
@@ -28,6 +29,7 @@ function makeContentData(data): ImgurContent {
 	else {
 		content.type = ImgurContentType.image;
 		content.link = data.link;
+		content.preview = data.link.replace(/(?=\.\w+(\?.*)?$)/, "h");
 	}
 	return content;
 }
