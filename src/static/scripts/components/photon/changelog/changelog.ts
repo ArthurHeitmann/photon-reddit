@@ -1,5 +1,7 @@
 import { getChangelog } from "../../../api/photonApi.js";
 import { getLoadingIcon } from "../../../utils/htmlStatics.js";
+import { photonWebVersion } from "../../../utils/version.js";
+import VersionNumber from "../../../utils/versionNumber.js";
 
 export default class Ph_Changelog extends HTMLElement {
 	changelogContent: HTMLElement;
@@ -41,9 +43,10 @@ export default class Ph_Changelog extends HTMLElement {
 	}
 
 	async populate() {
+		const currentVersion = new VersionNumber(photonWebVersion);
 		const changelogData = await getChangelog();
 		const newHtml = Object.entries(changelogData).map(version => `
-			<h2>v${version[0]}</h2>
+			<h2>v${version[0]} ${new VersionNumber(version[0]).greaterThan(currentVersion) ? "(not installed)" : ""}</h2>
 			${Object.entries(version[1]).map(versionChanges => `
 				<h3>${versionChanges[0]}</h3>
 				<ul>

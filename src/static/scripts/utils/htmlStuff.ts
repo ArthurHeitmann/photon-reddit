@@ -100,7 +100,7 @@ export function _linksToInlineMedia(elem: HTMLElement) {
 	}
 }
 
-window.addEventListener("settingsChanged", (e: CustomEvent) => {
+window.addEventListener("ph-settings-changed", (e: CustomEvent) => {
 	const changed = e.detail as PhotonSettings;
 	if (!("loadInlineMedia" in changed))
 		return;

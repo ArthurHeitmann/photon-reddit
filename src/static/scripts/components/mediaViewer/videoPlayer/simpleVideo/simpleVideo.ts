@@ -31,7 +31,7 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 				this.video.removeEventListener("timeupdate", this.noAudioProgressCallback);
 				this.noAudioProgressCallback = undefined;
 				if (this.video["webkitAudioDecodedByteCount"] === 0 || this.video["mozHasAudio"] === false || this.video["audioTracks"] && this.video["audioTracks"]["length"] === 0)
-					this.dispatchEvent(new Event("ph-noaudio"));
+					this.dispatchEvent(new Event("ph-no-audio"));
 			}
 		});
 
@@ -42,7 +42,7 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 		this.video.addEventListener("play", () => this.dispatchEvent( new Event("ph-play")));
 		this.video.addEventListener("pause", () => this.dispatchEvent( new Event("ph-pause")));
 		this.video.addEventListener("volumechange", () => this.dispatchEvent(
-			new CustomEvent("ph-volumechange", { detail: this.video.muted ? 0 : this.video.volume })));
+			new CustomEvent("ph-volume-change", { detail: this.video.muted ? 0 : this.video.volume })));
 		this.video.addEventListener("seeked", () => this.dispatchEvent(new Event("ph-seek")));
 		this.video.addEventListener("seeking", () => this.dispatchEvent(new Event("ph-seek")));
 	}

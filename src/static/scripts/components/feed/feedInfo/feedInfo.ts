@@ -167,8 +167,6 @@ export default class Ph_FeedInfo extends HTMLElement {
 			}
 			this.classList.remove("loading");
 		}
-		else
-			window.dispatchEvent(new CustomEvent("feedInfoReady", { detail: this }));
 
 		// display it
 		switch (this.loadedInfo.feedType) {
@@ -734,7 +732,6 @@ export default class Ph_FeedInfo extends HTMLElement {
 	/** caches feed info to localstorage */
 	saveInfo() {
 		localStorage.setItem(this.feedUrl.toLowerCase(), JSON.stringify(this.loadedInfo));
-		window.dispatchEvent(new CustomEvent("feedInfoReady", { detail: this }));
 	}
 
 	/** removes a cached feed info from localstorage */

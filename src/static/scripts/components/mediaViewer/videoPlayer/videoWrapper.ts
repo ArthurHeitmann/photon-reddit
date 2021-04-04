@@ -23,9 +23,9 @@ export default abstract class Ph_VideoWrapper extends HTMLElement {
 	// should be dispatching the following events
 	// - ph-play			video starts playing
 	// - ph-pause			video pauses
-	// - ph-volumechange	volume changes
+	// - ph-volume-change	volume changes
 	// - ph-seek			video playing position has changed
-	// - ph-noaudio			signals that is video has no audio
+	// - ph-no-audio			signals that is video has no audio
 	// - ph-ready			video is ready to be played
 	// - ph-buffering		video is buffering/loading
 	// - ph-playing			video has stopped buffering

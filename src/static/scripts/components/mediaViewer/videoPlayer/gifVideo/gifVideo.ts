@@ -42,7 +42,7 @@ export default class Ph_GifVideo extends Ph_VideoWrapper {
 		this.gifCanvas = document.createElement("canvas");
 		this.canvasWrapper.appendChild(this.gifCanvas);
 
-		setTimeout(() => this.dispatchEvent(new Event("ph-noaudio")), 0);
+		setTimeout(() => this.dispatchEvent(new Event("ph-no-audio")), 0);
 	}
 
 	getCurrentTime(): number {

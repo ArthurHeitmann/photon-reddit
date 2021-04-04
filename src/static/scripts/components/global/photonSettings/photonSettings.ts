@@ -123,7 +123,7 @@ export default class Ph_PhotonSettings extends HTMLElement {
 				...globalSettings,
 				...deepClone(this.temporarySettings),
 			};
-			window.dispatchEvent(new CustomEvent("settingsChanged", { detail: deepClone(this.temporarySettings) }));
+			window.dispatchEvent(new CustomEvent("ph-settings-changed", { detail: deepClone(this.temporarySettings) }));
 			this.temporarySettings = {};
 			localStorage.settings = JSON.stringify(globalSettings);
 			new Ph_Toast(Level.success, "", { timeout: 1500 });

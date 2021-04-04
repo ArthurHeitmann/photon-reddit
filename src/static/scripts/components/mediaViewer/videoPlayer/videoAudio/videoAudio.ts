@@ -50,7 +50,7 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 				this.video.removeEventListener("timeupdate", this.noAudioProgressCallback);
 				this.noAudioProgressCallback = undefined;
 				if (this.audio["webkitAudioDecodedByteCount"] === 0 || this.audio["mozHasAudio"] === false || this.audio["audioTracks"] && this.audio["audioTracks"]["length"] === 0)
-					this.dispatchEvent(new Event("ph-noaudio"));
+					this.dispatchEvent(new Event("ph-no-audio"));
 			}
 		});
 		
@@ -60,7 +60,7 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 		this.video.addEventListener("play", () => this.dispatchEvent( new Event("ph-play")));
 		this.video.addEventListener("pause", () => this.dispatchEvent( new Event("ph-pause")));
 		this.audio.addEventListener("volumechange", () => this.dispatchEvent(
-			new CustomEvent("ph-volumechange", { detail: this.audio.muted ? 0 : this.audio.volume })));
+			new CustomEvent("ph-volume-change", { detail: this.audio.muted ? 0 : this.audio.volume })));
 		this.video.addEventListener("seeked", () => this.dispatchEvent(new Event("ph-seek")));
 		this.video.addEventListener("seeking", () => this.dispatchEvent(new Event("ph-seek")));
 	}

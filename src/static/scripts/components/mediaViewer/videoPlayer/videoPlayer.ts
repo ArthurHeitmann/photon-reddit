@@ -336,7 +336,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 		const volumeSlider = new Ph_ProgressBar(true, 20);
 		volumeSlider.addEventListener("ph-drag", (e: CustomEvent) => this.setVolume(e.detail));
 		volumeWrapper.appendChild(volumeSlider);
-		this.video.addEventListener("ph-volumechange",
+		this.video.addEventListener("ph-volume-change",
 			(e: CustomEvent) => {
 				muteImg.showImage(e.detail === 0 ? "mute" : "audio");
 				volumeSlider.setProgress(e.detail);
@@ -346,7 +346,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 			e.preventDefault();
 			this.setVolume(this.video.getVolume() + ((-e.deltaY || e.deltaX) > 0 ? .05 : -.05));
 		}, {passive: false});
-		this.video.addEventListener("ph-noaudio", () => {
+		this.video.addEventListener("ph-no-audio", () => {
 			volumeWrapper.classList.add("remove");
 			setTimeout(() => volumeWrapper.remove(), 1000);
 		});

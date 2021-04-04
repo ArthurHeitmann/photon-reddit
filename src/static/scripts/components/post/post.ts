@@ -69,7 +69,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		if (this.shouldPostBeHidden())
 			this.classList.add("hide");
 
-		this.addWindowEventListener("settingsChanged", this.onSettingsChanged.bind(this));
+		this.addWindowEventListener("ph-settings-changed", this.onSettingsChanged.bind(this));
 
 		// actions bar
 		this.actionBar = document.createElement("div");

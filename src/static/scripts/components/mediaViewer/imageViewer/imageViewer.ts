@@ -54,7 +54,7 @@ export default class Ph_ImageViewer extends HTMLElement implements MediaElement 
 		}
 		this.appendChild(this.originalImage);
 
-		this.addEventListener("settingsChanged", this.onSettingsChange.bind(this));
+		this.addEventListener("ph-settings-changed", this.onSettingsChange.bind(this));
 	}
 
 	startLoadingOriginal() {

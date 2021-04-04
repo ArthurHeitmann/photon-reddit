@@ -1,6 +1,6 @@
 import { globalSettings, PhotonSettings } from "./photonSettings.js";
 
-window.addEventListener("settingsChanged", (e: CustomEvent) => handleSettings(e.detail));
+window.addEventListener("ph-settings-changed", (e: CustomEvent) => handleSettings(e.detail));
 
 function handleSettings(settings: PhotonSettings) {
 	setClassOnBody("disableTooltips", settings.tooltipsVisible, true);

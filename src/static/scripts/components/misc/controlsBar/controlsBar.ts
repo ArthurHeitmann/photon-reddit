@@ -139,7 +139,6 @@ export default class Ph_ControlsBar extends HTMLElement {
 
 	hideControls() {
 		this.parentElement.classList.remove("controlsVisible");
-		this.dispatchEvent(new Event("ph-hidecontrols"))
 		this.clearHideTimeout();
 		this.$classAr("dropDownArea").forEach((area: Ph_DropDownArea) => area.closeMenu(true));
 	}
