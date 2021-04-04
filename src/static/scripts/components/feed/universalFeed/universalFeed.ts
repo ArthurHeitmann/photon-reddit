@@ -254,12 +254,6 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			}
 			const newTop = viewScrollTop - removedHeight;
 			document.scrollingElement.scrollTo({ top: newTop });
-			// setTimeout(() => {
-				// if (Math.abs(document.scrollingElement.scrollTop - newTop) < 50)
-				// 	return;
-				// document.scrollingElement.scrollTo({ top: newTop });
-				// console.log("fixing");
-			// }, 1000);
 			this.beforeData = this.firstElementChild.getAttribute("data-id");
 		}
 	}

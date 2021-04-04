@@ -3,7 +3,7 @@ export const photonVersion = "0.1.3";		/// <change version script>
 export const photonChangelog = {
 	"0.1.3": {
 		"New": [
-			"Improved comments loading npm install youtube-dl-exec --saveby instantly displaying post",
+			"Improved comments loading by instantly displaying already loaded post",
 			"Added option for autoplaying videos",
 			"Added option for syncing volume between all videos",
 			"Bug fixes",

@@ -11,8 +11,6 @@ export default class Ph_DraggableWrapper extends HTMLElement {
 	mouseDownRef;
 	mouseLeaveRef;
 	wheelRef;
-	// keyRef;
-	// activatedElem: HTMLElement = null;
 
 	constructor() {
 		super();
@@ -24,19 +22,14 @@ export default class Ph_DraggableWrapper extends HTMLElement {
 		this.addEventListener("mouseup", this.mouseUpRef = this.endDrag.bind(this));
 		this.addEventListener("mouseleave", this.mouseLeaveRef = this.endDrag.bind(this));
 		this.addEventListener("wheel", this.wheelRef = this.onZoom.bind(this), { passive: false });
-		// this.activatedElem = elem;
 	}
 
 	deactivate() {
-		// if (this.activatedElem === null)
-		// 	throw "no dragging element active";
-
 		this.removeEventListener("mousedown", this.mouseDownRef);
 		this.removeEventListener("mouseup", this.mouseUpRef);
 		this.removeEventListener("mouseleave", this.mouseLeaveRef);
 		this.removeEventListener("wheel", this.wheelRef);
 		this.endDrag();
-		// this.activatedElem = null;
 	}
 
 	beginDrag(e: MouseEvent) {

@@ -29,12 +29,8 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 	video: Ph_VideoWrapper;
 	overlayIcon: Ph_SwitchingImage;
 	videoProgressInterval = null;
-	// controlsDropDown: Ph_DropDown;
-	// draggableWrapper: Ph_DraggableWrapper;
-	// resetViewBtn: HTMLButtonElement;
 	static globalVolume: number = 0.5;
 	static globalIsMuted: boolean = true;
-	// browsers don't allow auto playing videos with audio
 	static isVideoPlayAllowed = false;
 
 	/** Creates a video player from a reddit post (with a video link) */
