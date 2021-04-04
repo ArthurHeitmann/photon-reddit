@@ -9,8 +9,17 @@ import XMLHttpRequest from "xmlhttprequest"
 export const photonApiRouter = express.Router();
 
 photonApiRouter.get("/youtube-dl", RateLimit(youtube_dlRateLimitConfig), safeExcAsync(async (req, res) => {
-	const url = await youtube_dl(req.query["url"], { getUrl: true });
-	res.json({ url });
+	const url = await youtube_dl(req.query["url"], {getUrl: true});
+	if (!url) {
+		res.json({ error: "¯\\_(ツ)_/¯" });
+		return;
+	}
+	const urlTrimmed = url.match(/https:\/\/.*$/);
+	if (!urlTrimmed) {
+		res.json({ error: "¯\\_(ツ)_/¯" });
+		return;
+	}
+	res.json({ url: urlTrimmed[0] });
 }));
 
 photonApiRouter.get("/latestVersion", RateLimit(basicRateLimitConfig), safeExc((req, res) => {

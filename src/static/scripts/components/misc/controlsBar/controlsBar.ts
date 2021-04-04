@@ -62,7 +62,7 @@ export default class Ph_ControlsBar extends HTMLElement {
 		this.initialDropdownEntries = dropdown.$classAr("dropDownEntry") as Ph_DropDownEntry[];
 	}
 
-	updateSlotsWIth(newElements: ControlsLayoutSlots) {
+	updateSlotsWith(newElements: ControlsLayoutSlots) {
 		this.replaceSlotElements(this.firstLeftItemsSlot, newElements.firstLeftItems);
 		this.replaceSlotElements(this.leftItemsSlot, newElements.leftItems);
 		this.replaceSlotElements(this.rightItemsSlot, newElements.rightItems);

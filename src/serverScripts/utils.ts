@@ -33,7 +33,6 @@ export function safeExc(func: (req: express.Request, res: express.Response, next
 		}
 		catch (e) {
 			console.error(e);
-			res.setHeader('Content-Type', 'application/json');
 			res.json({ error: "¯\\_(ツ)_/¯" });
 		}
 	}
@@ -46,8 +45,7 @@ export function safeExcAsync(func: (req: express.Request, res: express.Response,
 		}
 		catch (e) {
 			console.error(e);
-			res.setHeader('Content-Type', 'application/json');
-			res.send('{ "error": "¯\\_(ツ)_/¯"}');
+			res.json({ error: "¯\\_(ツ)_/¯"});
 		}
 	}
 }

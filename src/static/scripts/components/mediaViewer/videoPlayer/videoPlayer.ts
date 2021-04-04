@@ -91,7 +91,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				// if no oembed data, use gfycat api
 				else {
 					getGfycatMp4SrcFromUrl(url, GfycatDomain.gfycat)
-						.then(mp4Url => videoOut.init(new Ph_SimpleVideo([{ src: mp4Url, type: "video/mp4" }])))
+						.then(mp4Url => videoOut.init(new Ph_SimpleVideo([{ src: mp4Url, type: "video/mp4" }]), true))
 						.catch(() => videoOut.init(null));
 				}
 				break;
@@ -209,7 +209,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				// if not suitable oembed data use youtube-dl
 				if (!twitchMp4Found) {
 					youtubeDlUrl(url).then(async clipMp4 => {
-						videoOut.init(new Ph_SimpleVideo([{ src: clipMp4, type: "video/mp4" }]));
+						videoOut.init(new Ph_SimpleVideo([{ src: clipMp4, type: "video/mp4" }]), true);
 					}).catch(err => {
 						new Ph_Toast(Level.error, "Error getting Twitch clip");
 						console.error("Error getting twitch clip url");
@@ -220,7 +220,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 			case "redgifs.com":
 				// like gfycat but there is no usable info in the oembed data
 				getGfycatMp4SrcFromUrl(url, GfycatDomain.redgifs)
-					.then(mp4Url => videoOut.init(new Ph_SimpleVideo([ { src: mp4Url, type: "video/mp4" } ])))
+					.then(mp4Url => videoOut.init(new Ph_SimpleVideo([ { src: mp4Url, type: "video/mp4" } ]), true))
 					.catch(() => videoOut.init(null));
 				break;
 			default:
@@ -252,7 +252,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 		this.appendChild(this.overlayIcon);
 	}
 
-	init(video: Ph_VideoWrapper) {
+	init(video: Ph_VideoWrapper, isLateInit = false) {
 		this.video = video;
 
 		if (this.video) {
@@ -260,6 +260,8 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 			this.fullInit();
 			this.video.setVolume(Ph_VideoPlayer.globalVolume);
 			this.video.setIsMuted(Ph_VideoPlayer.globalIsMuted);
+			if (isLateInit)
+				this.dispatchEvent(new Event("ph-controls-changed"));
 		}
 		else
 			this.innerText = "No video supplied (maybe video was deleted)";

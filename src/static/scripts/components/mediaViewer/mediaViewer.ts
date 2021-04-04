@@ -275,6 +275,10 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		this.setupKeyListeners();
 		this.addEventListener("fullscreenchange", this.onFullscreenChange.bind(this));
 		this.draggableWrapper.addEventListener("dblclick", this.toggleFullscreen.bind(this));
+		for (const media of this.mediaElements) {
+			media.element.addEventListener("ph-controls-changed",
+				e => this.controls.updateSlotsWith(media.controls));
+		}
 
 		linksToSpa(this);
 		this.currentIndex = 0;
@@ -324,7 +328,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		this.elementLink.href = newMedia.url;
 		this.elementLink.innerText = newMedia.url.match(/[\w-_]+\.[\w-_]+(?=[/?#])+/)[0];
 		// controls slots
-		this.controls.updateSlotsWIth(newMedia.controls);
+		this.controls.updateSlotsWith(newMedia.controls);
 		// fs event
 		if (document.fullscreenElement)
 			newMedia.element.dispatchEvent(new Event("ph-entered-fullscreen"));
