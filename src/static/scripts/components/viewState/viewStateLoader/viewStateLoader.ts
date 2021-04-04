@@ -26,7 +26,7 @@ export default class Ph_ViewStateLoader extends Ph_ViewState {
 					<li>The page you tried to visit was deleted or isn't publicly visible.</li>
 					<li>You entered an invalid Url.</li>
 					<li>Reddit is having problems. Check <a href="https://www.redditstatus.com" target="_blank">redditstatus.com</a></li>
-					<li>If you are using firefox, you might have to disable "Enhanced Tracking Protection".</li>
+					<li>If you are using Firefox in Private Mode, you have to disable "Enhanced Tracking Protection" for this site <br>(a Firefox bug).</li>
 					<li>Some internal error occurred. Check the browser console logs.</li>
 				</ul>
 			</div>

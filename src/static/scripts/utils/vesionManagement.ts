@@ -34,7 +34,7 @@ function updateVersion() {
 	waitingServiceWorker.postMessage({ action: "updateAll" });
 }
 
-navigator.serviceWorker.addEventListener("message", (e: MessageEvent) => {
+navigator.serviceWorker?.addEventListener("message", (e: MessageEvent) => {
 	if (e.data["action"] === "reload")
 		location.reload();
 });

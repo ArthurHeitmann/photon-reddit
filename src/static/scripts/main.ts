@@ -119,8 +119,10 @@ function checkForNewVersion() {
 }
 
 async function registerServiceWorker() {
-	// adapted from https://stackoverflow.com/a/37582216/9819447
+	if (!navigator.serviceWorker)
+		return;
 
+	// adapted from https://stackoverflow.com/a/37582216/9819447
 	// register service worker
 	const registration = await navigator.serviceWorker.register("/serviceWorker.js");
 
