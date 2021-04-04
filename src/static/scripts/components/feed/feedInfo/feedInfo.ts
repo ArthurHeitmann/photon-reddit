@@ -585,12 +585,6 @@ export default class Ph_FeedInfo extends HTMLElement {
 				true,
 				(e.currentTarget as HTMLElement).parentElement.parentElement)
 			);
-			addSubInput.addEventListener("keypress", e => e.code === "Enter" && this.addSubToMulti(
-				addSubInput.value,
-				this.feedUrl,
-				true,
-				(e.currentTarget as HTMLElement).parentElement.parentElement)
-			);
 			addSubInput.addEventListener("input", throttle(async () => {
 				addSubInput.value = addSubInput.value.replace(/^\/?r\//, "");
 				if (addSubInput.value) {
@@ -615,6 +609,12 @@ export default class Ph_FeedInfo extends HTMLElement {
 					subsSearchResults.classList.add("remove");
 				}
 			}, 500, {leading: true, trailing: true}));
+			addSubInput.addEventListener("keypress", e => ["Enter", "NumpadEnter"].includes(e.code) && this.addSubToMulti(
+				addSubInput.value,
+				this.feedUrl,
+				true,
+				(e.currentTarget as HTMLElement).parentElement.parentElement)
+			);
 			addSubInput.addEventListener("blur", () => subsSearchResults.classList.add("remove"));
 
 			outElements.push(addSubredditBar);

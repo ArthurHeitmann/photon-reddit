@@ -70,7 +70,7 @@ export default class Ph_Search extends HTMLElement {
 		this.searchBar.autocomplete = "off";
 		this.searchBar.id = "quickSearch";
 		this.appendChild(this.searchBar);
-		this.searchBar.addEventListener("keypress", e => e.code === "Enter" && this.search(e));
+		this.searchBar.addEventListener("keypress", e => ["Enter", "NumpadEnter"].includes(e.code) && this.search(e));
 		this.searchBar.addEventListener("input", this.onTextEnter.bind(this));
 		this.searchBar.addEventListener("focus", this.onFocus.bind(this));
 
