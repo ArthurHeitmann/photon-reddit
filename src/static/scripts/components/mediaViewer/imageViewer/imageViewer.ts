@@ -1,6 +1,7 @@
 import { getLoadingIcon, nonDraggableImage } from "../../../utils/htmlStatics.js";
 import { globalSettings, ImageLoadingPolicy, PhotonSettings } from "../../global/photonSettings/photonSettings.js";
 import { ControlsLayoutSlots } from "../../misc/controlsBar/controlsBar.js";
+import Ph_PhotonBaseElement from "../../photon/photonBaseElement/photonBaseElement.js";
 import { MediaElement } from "../mediaElement.js";
 
 interface ImageInitData {
@@ -14,7 +15,7 @@ interface ImageInitData {
  * A single image or a gallery of images. Can (depending on user settings) first load preview images and in fullscreen
  * load origin high res images.
  */
-export default class Ph_ImageViewer extends HTMLElement implements MediaElement {
+export default class Ph_ImageViewer extends Ph_PhotonBaseElement implements MediaElement {
 	caption: string;
 	controls: ControlsLayoutSlots;
 	element: HTMLElement;
@@ -54,7 +55,7 @@ export default class Ph_ImageViewer extends HTMLElement implements MediaElement 
 		}
 		this.appendChild(this.originalImage);
 
-		this.addEventListener("ph-settings-changed", this.onSettingsChange.bind(this));
+		this.addWindowEventListener("ph-settings-changed", this.onSettingsChange.bind(this));
 	}
 
 	startLoadingOriginal() {
@@ -74,7 +75,8 @@ export default class Ph_ImageViewer extends HTMLElement implements MediaElement 
 	}
 
 	onFullscreenEnter() {
-		this.startLoadingOriginal();
+		if (globalSettings.imageLoadingPolicy !== ImageLoadingPolicy.alwaysPreview)
+			this.startLoadingOriginal();
 	}
 
 	onSettingsChange(e: CustomEvent) {
