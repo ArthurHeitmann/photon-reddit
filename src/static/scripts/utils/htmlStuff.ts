@@ -9,9 +9,9 @@ import Ph_MediaViewer from "../components/mediaViewer/mediaViewer.js";
 import { pushLinkToHistoryComb } from "../historyState/historyStateManager.js";
 import { _replaceRedditLinks } from "./utils.js";
 
-export function linksToSpa(elem: HTMLElement, inlineImage: boolean = false) {
-	if (inlineImage)
-		_linksToInlineImages(elem);
+export function linksToSpa(elem: HTMLElement, inlineMedia: boolean = false) {
+	if (inlineMedia)
+		_linksToInlineMedia(elem);
 	_replaceRedditLinks(elem);
 	_linksToSpa(elem);
 }
@@ -27,8 +27,6 @@ function _linksToSpa(elem: HTMLElement): void {
 }
 
 function setLinkOnClick(elem: HTMLAnchorElement) {
-	if (elem.classList.contains("inlineImage"))
-		return;
 	if (elem.href.match(location.origin) && elem.target !== "_blank" && !elem.hasAttribute("excludeLinkFromSpa")) {
 		if (elem.getAttribute("href")[0] !== "#")
 			elem.onclick = linkOnClick;
@@ -68,7 +66,7 @@ export function isElementIn(container: HTMLElement, checkElement: HTMLElement): 
 }
 
 /** converts all <a> where href ends with an image file extension to an <img>  */
-export function _linksToInlineImages(elem: HTMLElement) {
+export function _linksToInlineMedia(elem: HTMLElement) {
 	const links = elem.$tag("a") as HTMLCollectionOf<HTMLAnchorElement>;
 	for (const link of links) {
 		if (link.hasAttribute("excludeLinkFromMedia") || link.classList.contains("inlineMediaViewer"))
@@ -78,7 +76,7 @@ export function _linksToInlineImages(elem: HTMLElement) {
 			continue;
 
 		link.classList.add("inlineMediaViewer");
-		link.classList.toggle("isExpanded", !globalSettings.loadInlineImages);
+		link.classList.toggle("isExpanded", !globalSettings.loadInlineMedia);
 
 		const initial = document.createElement("span");
 		initial.innerHTML = link.innerHTML;

@@ -22,7 +22,7 @@ export enum NsfwPolicy {
 
 export interface PhotonSettings {
 	imageLoadingPolicy?: ImageLoadingPolicy,
-	loadInlineImages?: boolean,
+	loadInlineMedia?: boolean,
 	controlBarForImages?: boolean,
 	imageLimitedHeight?: number,
 	autoplayVideos?: boolean,
@@ -39,7 +39,7 @@ export interface PhotonSettings {
 // default config
 export let globalSettings: PhotonSettings = {
 	imageLoadingPolicy: ImageLoadingPolicy.originalInFs,
-	loadInlineImages: true,
+	loadInlineMedia: true,
 	controlBarForImages: false,
 	imageLimitedHeight: 95,
 	autoplayVideos: true,
@@ -158,20 +158,20 @@ export default class Ph_PhotonSettings extends HTMLElement {
 			],
 			this.stageSettingChange(nameOf<PhotonSettings>("imageLoadingPolicy"))
 		));
-		// inline images
-		const inlineImagesGroup = this.makeCustomLabeledInput(
+		// inline media
+		const inlineMediaGroup = this.makeCustomLabeledInput(
 			"checkbox",
-			"Load images in comments & text posts instead of links",
+			"Load images & videos in comments & posts instead of links",
 			"",
-			"inlineImages",
+			"inlineMedia",
 			"",
-			globalSettings.loadInlineImages
+			globalSettings.loadInlineMedia
 		);
-		inlineImagesGroup.$tag("input")[0].addEventListener("input", e =>
-			this.stageSettingChange(nameOf<PhotonSettings>("loadInlineImages"))
+		inlineMediaGroup.$tag("input")[0].addEventListener("input", e =>
+			this.stageSettingChange(nameOf<PhotonSettings>("loadInlineMedia"))
 				((e.currentTarget as HTMLInputElement).checked)
 		);
-		this.optionsArea.appendChild(inlineImagesGroup);
+		this.optionsArea.appendChild(inlineMediaGroup);
 		// show control bar for images
 		const imageControlsGroup = this.makeCustomLabeledInput(
 			"checkbox",

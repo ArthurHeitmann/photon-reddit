@@ -79,48 +79,6 @@ a {
 	}
 }
 
-a.inlineImage {
-	max-width: 100%;
-	max-height: vars.$image-height-limited;
-
-	&, > .postImage, > .postImage > .draggableWrapper {
-		display: inline-block;
-	}
-
-	*:not(img, .controls) {
-		max-width: 100%;
-	}
-
-	.fullscreen {
-		.galleryWrapper img {
-			width: 100% !important;
-		}
-	}
-
-	&:hover {
-		filter: none;
-	}
-
-	.backupLink {
-		display: none;
-	}
-}
-
-.disableInlineImages .inlineImage {
-	.postImage {
-		display: none !important;
-	}
-
-	.backupLink {
-		display: inherit;
-	}
-}
-
-.inlineImage {
-	max-width: 100%;
-	max-height: vars.$image-height-limited;
-}
-
 .transparentButton {
 	background-color: unset;
 	border-radius: 50%;

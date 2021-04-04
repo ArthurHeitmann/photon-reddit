@@ -3,7 +3,6 @@ import { globalSettings, PhotonSettings } from "./photonSettings.js";
 window.addEventListener("settingsChanged", (e: CustomEvent) => handleSettings(e.detail));
 
 function handleSettings(settings: PhotonSettings) {
-	setClassOnBody("disableInlineImages", settings.loadInlineImages, true);
 	setClassOnBody("disableTooltips", settings.tooltipsVisible, true);
 	if (settings.imageLimitedHeight !== undefined) {
 		document.documentElement.style.setProperty("--image-height-limited",
