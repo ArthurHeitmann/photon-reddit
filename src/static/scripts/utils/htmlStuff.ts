@@ -4,9 +4,10 @@
  * Might import other files
  */
 
-import { globalSettings } from "../components/global/photonSettings/photonSettings.js";
+import { globalSettings, PhotonSettings } from "../components/global/photonSettings/photonSettings.js";
 import Ph_MediaViewer from "../components/mediaViewer/mediaViewer.js";
 import { pushLinkToHistoryComb } from "../historyState/historyStateManager.js";
+import { $classAr } from "./htmlStatics.js";
 import { _replaceRedditLinks } from "./utils.js";
 
 export function linksToSpa(elem: HTMLElement, inlineMedia: boolean = false) {
@@ -86,7 +87,7 @@ export function _linksToInlineMedia(elem: HTMLElement) {
 		const expandButton = document.createElement("button");
 		expandButton.innerHTML = `<img src="/img/arrowFilled.svg" alt="expand">`;
 		link.onclick = e => {
-			link.classList.toggle("isExpanded");
+			(e.currentTarget as HTMLElement).classList.toggle("isExpanded");
 			return Boolean(e.ctrlKey);
 		};
 		link.click();
@@ -98,3 +99,11 @@ export function _linksToInlineMedia(elem: HTMLElement) {
 		link.setAttribute("excludeLinkFromSpa", "")
 	}
 }
+
+window.addEventListener("settingsChanged", (e: CustomEvent) => {
+	const changed = e.detail as PhotonSettings;
+	if (!("loadInlineMedia" in changed))
+		return;
+	$classAr("inlineMediaViewer")
+		.forEach(a => a.classList.toggle("isExpanded", changed.loadInlineMedia));
+});

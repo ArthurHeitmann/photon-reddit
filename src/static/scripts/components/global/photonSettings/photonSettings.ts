@@ -23,7 +23,7 @@ export enum NsfwPolicy {
 export interface PhotonSettings {
 	imageLoadingPolicy?: ImageLoadingPolicy,
 	loadInlineMedia?: boolean,
-	controlBarForImages?: boolean,
+	firstShowControlBar?: boolean,
 	imageLimitedHeight?: number,
 	autoplayVideos?: boolean,
 	globalVideoVolume?: boolean,
@@ -39,9 +39,9 @@ export interface PhotonSettings {
 // default config
 export let globalSettings: PhotonSettings = {
 	imageLoadingPolicy: ImageLoadingPolicy.originalInFs,
-	loadInlineMedia: true,
-	controlBarForImages: false,
-	imageLimitedHeight: 95,
+	loadInlineMedia: false,
+	firstShowControlBar: true,
+	imageLimitedHeight: 80,
 	autoplayVideos: true,
 	globalVideoVolume: false,
 	nsfwPolicy: NsfwPolicy.covered,
@@ -175,14 +175,14 @@ export default class Ph_PhotonSettings extends HTMLElement {
 		// show control bar for images
 		const imageControlsGroup = this.makeCustomLabeledInput(
 			"checkbox",
-			"Show controls bar for images",
+			"Initially show bottom bar on images & videos",
 			"",
-			"checkboxControlsImage",
+			"checkboxFirstShowControls",
 			"",
-			globalSettings.controlBarForImages
+			globalSettings.firstShowControlBar
 		);
 		imageControlsGroup.$tag("input")[0].addEventListener("input", e => {
-			this.stageSettingChange(nameOf<PhotonSettings>("controlBarForImages"))
+			this.stageSettingChange(nameOf<PhotonSettings>("firstShowControlBar"))
 			((e.currentTarget as HTMLInputElement).checked);
 		});
 		this.optionsArea.appendChild(imageControlsGroup);

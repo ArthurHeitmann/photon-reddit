@@ -2,6 +2,7 @@ import { getImgurAlbumContents, getImgurContent, ImgurContent, ImgurContentType 
 import { RedditApiData, RedditApiType } from "../../types/misc.js";
 import { nonDraggableImage } from "../../utils/htmlStatics.js";
 import { linksToSpa } from "../../utils/htmlStuff.js";
+import { globalSettings } from "../global/photonSettings/photonSettings.js";
 import Ph_ControlsBar from "../misc/controlsBar/controlsBar.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
 import Ph_SwitchingImage from "../misc/switchableImage/switchableImage.js";
@@ -198,7 +199,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		this.draggableWrapper = new Ph_DraggableWrapper();
 		this.appendChild(this.draggableWrapper);
 
-		this.controls = new Ph_ControlsBar(true);
+		this.controls = new Ph_ControlsBar(globalSettings.firstShowControlBar);
 		this.controls.addShowHideListeners(this.draggableWrapper);
 		this.appendChild(this.controls);
 
