@@ -16,11 +16,6 @@
 		padding: 10%;
 	}
 
-	.morphingImage, .morphingImage > svg, .volumeWrapper .imgBtn > .switchableImg, .switchableImg > img, .imgBtn, .imgBtn > .switchableImg, button, button > img {
-		height: 2.5rem;
-		width: 2.5rem;
-	}
-
 	.slot {
 		display: flex;
 	}
@@ -81,6 +76,8 @@
 	&, > .slot {
 		> button, > * > button {
 			> :is(img, svg), > .imgWrapper > :is(img, svg) {
+				height: 2.5rem;
+				width: 2.5rem;
 				transition: filter .25s ease;
 			}
 

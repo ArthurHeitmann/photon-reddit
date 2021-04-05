@@ -7,6 +7,7 @@ export default class Ph_DraggableWrapper extends HTMLElement {
 	moveX = 0;
 	moveY = 0;
 	scale = 1;
+	rotate = 0;
 	mouseUpRef;
 	mouseDownRef;
 	mouseLeaveRef;
@@ -76,6 +77,16 @@ export default class Ph_DraggableWrapper extends HTMLElement {
 		this.moveY += y / this.scale;
 		this.style.setProperty("--img-move-x", `${this.moveX}px`);
 		this.style.setProperty("--img-move-y", `${this.moveY}px`);
+	}
+
+	addRotation(deg: number) {
+		this.rotate += deg;
+		this.style.setProperty("--img-rotate", `${this.rotate}deg`);
+	}
+
+	setRotation(deg: number) {
+		this.rotate = deg;
+		this.style.setProperty("--img-rotate", `${this.rotate}deg`);
 	}
 
 	reset() {

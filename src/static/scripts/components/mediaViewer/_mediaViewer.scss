@@ -24,6 +24,44 @@
 		.resetView {
 			display: none;
 		}
+
+		.dropDown .dropDownArea {
+			overflow: visible;
+		}
+
+		.filterWrapper {
+			width: 100%;
+			height: 100%;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+
+			button, img {
+				height: 2rem;
+			}
+		}
+
+		.rotateFilter {
+			img {
+				transition: transform .2s ease;
+			}
+
+			.cw img {
+				transform: rotate(120deg) scaleX(-1);
+
+				&:hover {
+					transform: rotate(140deg) scaleX(-1);
+				}
+			}
+
+			.ccw img {
+				transform: rotate(240deg);
+
+				&:hover {
+					transform: rotate(220deg);
+				}
+			}
+		}
 	}
 
 	&.isInFullscreen {

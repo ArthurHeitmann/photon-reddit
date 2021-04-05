@@ -145,7 +145,7 @@
 			}
 		}
 
-		&:hover {
+		&:not(.nonSelectable):hover {
 			> :first-child {
 				transform: translateX(.125rem);
 			}
@@ -155,8 +155,12 @@
 			}
 		}
 
-		&:active {
+		&:not(.nonSelectable):active {
 			border: 1px solid vars.$primary;
+		}
+
+		&.nonSelectable {
+			cursor: default;
 		}
 
 		.nextMenuWrapper {

@@ -5,6 +5,7 @@ import { linksToSpa } from "../../utils/htmlStuff.js";
 import { globalSettings } from "../global/photonSettings/photonSettings.js";
 import Ph_ControlsBar from "../misc/controlsBar/controlsBar.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
+import { DropDownEntryParam } from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_SwitchingImage from "../misc/switchableImage/switchableImage.js";
 import Ph_Toast, { Level } from "../misc/toast/toast.js";
 import Ph_PhotonBaseElement from "../photon/photonBaseElement/photonBaseElement.js";
@@ -255,9 +256,14 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		nonDraggableImage(settingsImg)
 		settingsImg.alt = "settings";
 		this.settingsDropDown = new Ph_DropDown(
-			[
-				{ displayHTML: "filters" }
-			],
+			[{
+				displayHTML: "filters",
+				nestedEntries: [
+					this.makeRotateFilter(),
+					// this.makeBgFilter(),
+					// this.makeFiltersFilter()
+				]
+			}],
 			settingsImg, DirectionX.right, DirectionY.top, false
 		)
 		this.settingsDropDown.toggleButton.classList.add("smaller");
@@ -380,6 +386,34 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		this.mediaElements
 			.filter(elem => elem.element instanceof Ph_PhotonBaseElement)
 			.forEach(elem => (elem.element as Ph_PhotonBaseElement).cleanup());
+	}
+
+	private makeRotateFilter(): DropDownEntryParam {
+		const wrapper = document.createElement("div");
+		wrapper.className = "filterWrapper rotateFilter"
+		const makeRotateButton = (rotateDir: "cw" | "ccw") => {
+			const rotateBtn = document.createElement("button");
+			rotateBtn.className = `rotateBtn transparentButtonAlt ${rotateDir}`;
+			rotateBtn.setAttribute("data-tooltip",`rotate ${rotateDir}`);
+			rotateBtn.innerHTML = `<img src="/img/reset.svg" alt="rotate ${rotateDir}">`;
+			rotateBtn.addEventListener("click", this.onRotate.bind(this));
+			return rotateBtn;
+		}
+		wrapper.appendChild(makeRotateButton("ccw"));
+		wrapper.appendChild(makeRotateButton("cw"));
+		return <DropDownEntryParam> { displayElement: wrapper, nonSelectable: true };
+	}
+
+	private onRotate(e: MouseEvent) {
+		this.draggableWrapper.addRotation((e.currentTarget as HTMLElement).classList.contains("cw") ? 90 : -90);
+	}
+
+	private makeBgFilter(): DropDownEntryParam {
+
+	}
+
+	private makeFiltersFilter(): DropDownEntryParam {
+
 	}
 }
 

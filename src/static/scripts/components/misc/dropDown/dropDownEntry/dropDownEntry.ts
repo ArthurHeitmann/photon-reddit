@@ -20,6 +20,8 @@ export default class Ph_DropDownEntry extends HTMLButtonElement {
 
 		this.dropDown = dropDown;
 		this.classList.add("dropDownEntry");
+		if (param.nonSelectable)
+			this.classList.add("nonSelectable");
 
 		if (parentEntry)
 			this.valueChain = [...parentEntry.valueChain, param.value];
@@ -44,21 +46,22 @@ export default class Ph_DropDownEntry extends HTMLButtonElement {
 			this.nextDropDown.classList.add("remove");
 		}
 
-		this.addEventListener("click", () => {
-			if (param.nestedEntries) {
-				this.nextDropDown.showMenu();
-				dropDownArea.closeMenu();
-			}
-			else if (param.onSelectCallback) {
-				param.onSelectCallback(
-					this.valueChain,
-					(newLabel) => this.dropDown.setLabel(newLabel),
-					this.dropDown.getLabel(),
-					this
-				);
-				dropDownArea.closeMenu(true);
-			}
-		});
+		if (param.nonSelectable !== true) {
+			this.addEventListener("click", () => {
+				if (param.nestedEntries) {
+					this.nextDropDown.showMenu();
+					dropDownArea.closeMenu();
+				} else if (param.onSelectCallback) {
+					param.onSelectCallback(
+						this.valueChain,
+						(newLabel) => this.dropDown.setLabel(newLabel),
+						this.dropDown.getLabel(),
+						this
+					);
+					dropDownArea.closeMenu(true);
+				}
+			});
+		}
 	}
 
 	setText(text: string) {
@@ -80,7 +83,9 @@ export interface DropDownEntryParam {
 	 */
 	onSelectCallback?: (valueChain: any[], setButtonLabel: (newLabel: ButtonLabel) => void, initialLabel: HTMLElement, source: Ph_DropDownEntry) => void,
 	/** When clicking this entry don't execute an action, instead show the next nested drop down */
-	nestedEntries?: DropDownEntryParam[]
+	nestedEntries?: DropDownEntryParam[],
+	/** if true --> this entry will not be clickable */
+	nonSelectable?: boolean
 }
 
 customElements.define("ph-drop-down-entry", Ph_DropDownEntry, { extends: "button" });
