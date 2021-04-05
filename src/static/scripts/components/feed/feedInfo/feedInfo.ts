@@ -633,7 +633,9 @@ export default class Ph_FeedInfo extends HTMLElement {
 
 	private checkMultiMaxSubCount() {
 		const currentSubCount = this.loadedInfo.data.subreddits.length;
-		(this.multiSubManager.$css(".editableSub.addSub input")[0] as HTMLInputElement).disabled = currentSubCount >= 100;
+		const subInput = this.multiSubManager.$css(".editableSub.addSub input");
+		if (subInput.length)
+			(subInput[0] as HTMLInputElement).disabled = currentSubCount >= 100;
 		this.multiSubManager.$class("multiSubCounter")[0].innerHTML = `${currentSubCount}/100`;
 	}
 
