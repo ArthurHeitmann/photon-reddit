@@ -62,6 +62,23 @@
 				}
 			}
 		}
+
+		.bgFilter {
+			> span {
+				margin-right: .25rem;
+				font-size: .75rem;
+			}
+
+			> input {
+				width: 3.25rem;
+				border-bottom: 1px solid vars.$border-color;
+				font-size: .75rem;
+
+				&:focus {
+					border-color: vars.$primary;
+				}
+			}
+		}
 	}
 
 	&.isInFullscreen {

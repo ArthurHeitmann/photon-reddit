@@ -260,7 +260,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 				displayHTML: "filters",
 				nestedEntries: [
 					this.makeRotateFilter(),
-					// this.makeBgFilter(),
+					this.makeBgFilter(),
 					// this.makeFiltersFilter()
 				]
 			}],
@@ -390,7 +390,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 
 	private makeRotateFilter(): DropDownEntryParam {
 		const wrapper = document.createElement("div");
-		wrapper.className = "filterWrapper rotateFilter"
+		wrapper.className = "filterWrapper rotateFilter";
 		const makeRotateButton = (rotateDir: "cw" | "ccw") => {
 			const rotateBtn = document.createElement("button");
 			rotateBtn.className = `rotateBtn transparentButtonAlt ${rotateDir}`;
@@ -409,11 +409,26 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	}
 
 	private makeBgFilter(): DropDownEntryParam {
+		const wrapper = document.createElement("div");
+		wrapper.className = "filterWrapper bgFilter";
+		const label = document.createElement("span");
+		label.innerText = "Background:";
+		wrapper.appendChild(label);
+		const colorInput = document.createElement("input");
+		colorInput.type = "text";
+		colorInput.value = "initial";
+		colorInput.addEventListener("input", this.onBgColorChange.bind(this));
+		wrapper.appendChild(colorInput);
+		return <DropDownEntryParam> { displayElement: wrapper, nonSelectable: true };
+	}
 
+	private onBgColorChange(e: InputEvent) {
+		const newColor = (e.target as HTMLInputElement).value;
+		this.draggableWrapper.style.setProperty("--draggableBg", `${newColor}`);
 	}
 
 	private makeFiltersFilter(): DropDownEntryParam {
-
+		return undefined;
 	}
 }
 
