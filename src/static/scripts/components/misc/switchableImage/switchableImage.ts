@@ -20,7 +20,7 @@ export default class Ph_SwitchingImage extends HTMLElement {
 		else
 			root = this;
 
-		for (let src of imgDictionary) {
+		for (const src of imgDictionary) {
 			this.dict[src.key] = document.createElement("img");
 			this.dict[src.key].alt = src.src;
 			this.dict[src.key].src = src.src;

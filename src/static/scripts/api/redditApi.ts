@@ -3,10 +3,12 @@
  */
 
 import { checkTokenRefresh, initiateLogin } from "../auth/auth.js";
+import Ph_CommentsFeed from "../components/feed/commentsFeed/commentsFeed.js";
 import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
 import { RedditApiType } from "../types/misc.js";
 import Votable, { FullName } from "../types/votable.js";
 import { isLoggedIn, thisUser, } from "../utils/globals.js";
+import { elementWithClassInTree } from "../utils/htmlStuff.js";
 import { isObjectEmpty, splitPathQuery, throttle } from "../utils/utils.js";
 import { redditProxy, urlRequiresProxy } from "./photonApi.js";
 
@@ -171,6 +173,10 @@ export async function deleteThing(votable: Votable) {
 	return await redditApiRequest("/api/del", [["id", votable.fullName]], true, { method: "POST" });
 }
 
+export async function searchSubredditNames(query: string) {
+	return await redditApiRequest("/api/search_reddit_names", [["query", query]], false);
+}
+
 export async function searchSubreddits(query: string, limit = 5): Promise<RedditApiType> {
 	return await redditApiRequest("/subreddits/search", [["q", query], ["limit", limit.toString()]], false);
 }
@@ -194,4 +200,95 @@ export async function subscribe(subredditFullName: string, shouldSubscribe: bool
 		console.error(e);
 		return false;
 	}
+}
+
+export async function loadMoreComments(children: string[], postFullName: string, sort: string, id: string): Promise<RedditApiType[]> {
+	return  await redditApiRequest("/api/morechildren", [
+		["api_type", "json"],
+		["children", children.join(",")],
+		["link_id", postFullName],
+		["sort", sort],
+		["limit_children", "false"],
+		["id", id]
+	], false, {method: "POST"});
+}
+
+export async function getMultiInfo(multiPath: string) {
+	return await redditApiRequest(`/api/multi${multiPath}`, [], false);
+}
+
+export async function getUserMultis(userName: string) {
+	return await redditApiRequest(`/api/multi/user/${userName}`, [], false);
+}
+
+export async function getMyMultis() {
+	return await redditApiRequest("/api/multi/mine", [], true);
+}
+
+export async function addSubToMulti(multiPath: string, subName: string) {
+	return await redditApiRequest(
+		`/api/multi${multiPath}/r/${subName}`,
+		[
+			["model", JSON.stringify({ name: subName })]
+		],
+		true,
+		{ method: "PUT" }
+	);
+}
+
+export async function removeSubFromMulti(multiPath: string, subName: string) {
+	return await redditApiRequest(
+		`/api/multi${multiPath}/r/${subName}`,
+		[],
+		true,
+		{ method: "DELETE" }
+	);
+}
+
+export async function getSubInfo(subPath: string) {
+	return await redditApiRequest(`${subPath}/about`, [], false)
+}
+
+export async function getSubRules(subPath: string) {
+	return await redditApiRequest(`${subPath}/about/rules`, [], false)
+}
+
+export async function getSubModerators(subPath: string) {
+	return await redditApiRequest(`${subPath}/about/moderators`, [], false)
+}
+
+export async function setMessageReadStatus(isRead: boolean, messageFullName: string) {
+	return await redditApiRequest(
+		isRead ? "/api/read_message" : "/api/unread_message",
+		[["id", messageFullName]],
+		true,
+		{ method: "POST" }
+	);
+}
+
+export async function readAllMessages() {
+	return await redditApiRequest("/api/read_all_messages", [], true, { method: "POST" })
+}
+
+export async function getSubFlairs(subPath: string) {
+	return await redditApiRequest(`${subPath}/api/link_flair_v2`, [], true);
+}
+
+export async function editCommentOrPost(newText: string, thingFullName: string) {
+	return await redditApiRequest(
+		"/api/editusertext", [
+			["api_type", "json"],
+			["text", newText],
+			["thing_id", thingFullName],
+		],
+		true,
+		{ method: "POST" }
+	);
+}
+
+export async function getMySubs(limit: number, after?: string) {
+	const params = [["limit", limit.toString()]];
+	if (after)
+		params.push(["after", after]);
+	return await redditApiRequest("/subreddits/mine/subscriber", params, true);
 }

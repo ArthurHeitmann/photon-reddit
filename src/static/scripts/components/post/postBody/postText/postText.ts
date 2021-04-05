@@ -1,4 +1,4 @@
-import { redditApiRequest } from "../../../../api/redditApi.js";
+import { editCommentOrPost, redditApiRequest } from "../../../../api/redditApi.js";
 import { escHTML } from "../../../../utils/htmlStatics.js";
 import { elementWithClassInTree } from "../../../../utils/htmlStuff.js";
 import Ph_MarkdownForm from "../../../misc/markdownForm/markdownForm.js";
@@ -82,28 +82,12 @@ export default class Ph_PostText extends HTMLElement {
 	}
 
 	async edit() {
-		let editData: any;
-		try {
-			editData = await redditApiRequest(
-				"/api/editusertext", [
-					["api_type", "json"],
-					["text", this.editForm.textField.value],
-					["thing_id", this.postFullName],
-				],
-				true,
-				{method: "POST"}
-			);
-		}
-		catch (e) {
-			console.error("Error editing post", e);
-			new Ph_Toast(Level.error, "Error editing post", { timeout: 3000 });
-			return;
-		}
+		const editData: any = await editCommentOrPost(this.editForm.textField.value, this.postFullName);
 		if (editData.json.errors.length > 0) {
 			console.error("Error editing post");
 			console.error(editData);
 			console.error(JSON.stringify(editData));
-			for (let error of editData.json.errors)
+			for (const error of editData.json.errors)
 				new Ph_Toast(Level.error, error instanceof Array ? error.join(" | ") : escHTML(JSON.stringify(error)));
 			return;
 		}

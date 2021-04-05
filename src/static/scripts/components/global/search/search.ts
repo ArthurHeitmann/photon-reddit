@@ -1,4 +1,4 @@
-import { redditApiRequest, searchSubreddits, searchUser } from "../../../api/redditApi.js";
+import { getSubFlairs, redditApiRequest, searchSubreddits, searchUser } from "../../../api/redditApi.js";
 import { pushLinkToHistoryComb, pushLinkToHistorySep } from "../../../historyState/historyStateManager.js";
 import { ViewChangeData } from "../../../historyState/viewsStack.js";
 import { isLoggedIn } from "../../../utils/globals.js";
@@ -172,7 +172,7 @@ export default class Ph_Search extends HTMLElement {
 		this.flairSearch.toggleButton.addEventListener("click", async  () => {
 			if (this.areFlairsLoaded || !this.currentSubreddit)
 				return;
-			let flairData: Object[] = await redditApiRequest(`${this.currentSubreddit}/api/link_flair_v2`, [], true);
+			let flairData: Object[] = await getSubFlairs(this.currentSubreddit);
 			if (flairData["error"])
 				flairData = [];
 			const flairs = flairData
@@ -302,7 +302,7 @@ export default class Ph_Search extends HTMLElement {
 		this.resultsWrapper.classList.remove("loading");
 
 		this.resultsWrapper.innerText = "";
-		for (let entry of result.data.children) {
+		for (const entry of result.data.children) {
 			try {
 				this.resultsWrapper.insertAdjacentElement("beforeend", this.makeEntry(entry));
 			}

@@ -1,4 +1,4 @@
-import { redditApiRequest } from "../../../api/redditApi.js";
+import { getSubFlairs, getSubInfo, redditApiRequest } from "../../../api/redditApi.js";
 import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager.js";
 import { thisUser } from "../../../utils/globals.js";
 import { linksToSpa } from "../../../utils/htmlStuff.js";
@@ -322,7 +322,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 			this.imagesAllowed = subData["allow_images"];
 			this.videosAllowed = subData["allow_videos"];
 			// flair selection
-			const flairs: {}[] = await redditApiRequest(`${community}/api/link_flair_v2`, [], true);
+			const flairs: {}[] = await getSubFlairs(community);
 			this.flairSelectorWrapper.innerText = "";
 			this.selectedFlairId = null;
 			if (!flairs["error"]) {
@@ -359,7 +359,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		}
 		// TODO for user
 		else {
-			const r = await redditApiRequest(`${community}/about`, [], false);
+			const r = await getSubInfo(community);
 			if (r["kind"] === "listing" || r["error"]) {
 				new Ph_Toast(Level.error, "User not found", {timeout: 2500});
 				this.setCommunityIsInvalid();

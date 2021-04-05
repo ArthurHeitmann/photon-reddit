@@ -14,7 +14,7 @@ export default class Ph_PhotonBaseElement extends HTMLElement {
 	}
 
 	cleanup() {
-		for (let event of this.windowEventListeners)
+		for (const event of this.windowEventListeners)
 			window.removeEventListener(event.eventName, event.listener);
 		this.windowEventListeners = [];
 	}

@@ -100,7 +100,7 @@ self.addEventListener("message", async (e: MessageEvent) => {
 	if (e.data["action"] === "updateAll") {
 		await skipWaiting();
 		const allClients = await clients.matchAll();
-		for (let client of allClients)
+		for (const client of allClients)
 			client.postMessage({ action: "reload" });
 	}
 });

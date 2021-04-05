@@ -147,7 +147,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 
 			this.comments.innerText = "";
 
-			for (let comment of newComments[1].data.children) {
+			for (const comment of newComments[1].data.children) {
 				this.comments.appendChild(new Ph_Comment(comment, false, false, this.post));
 			}
 

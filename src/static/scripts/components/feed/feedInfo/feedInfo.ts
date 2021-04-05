@@ -1,4 +1,10 @@
-import { redditApiRequest, subscribe } from "../../../api/redditApi.js";
+import {
+	addSubToMulti,
+	getMultiInfo, getSubInfo, getSubModerators, getSubRules, getUserMultis,
+	redditApiRequest, removeSubFromMulti,
+	searchSubredditNames,
+	subscribe
+} from "../../../api/redditApi.js";
 import { RedditApiType } from "../../../types/misc.js";
 import { StoredData, thisUser } from "../../../utils/globals.js";
 import { $class, escADQ, escHTML } from "../../../utils/htmlStatics.js";
@@ -192,14 +198,14 @@ export default class Ph_FeedInfo extends HTMLElement {
 		let rules: SubredditRule[];
 		let mods: SubredditModerator[];
 		try {
-			feedAbout = await redditApiRequest(`${this.feedUrl}/about`, [], false);
+			feedAbout = await getSubInfo(this.feedUrl);
 			if (feedAbout["error"] || !(feedAbout["kind"] && feedAbout["data"]))
 				throw `Invalid about response ${JSON.stringify(feedAbout)}`;
-			const tmpRules = await redditApiRequest(`${this.feedUrl}/about/rules`, [], false);
+			const tmpRules = await getSubRules(this.feedUrl);
 			if (tmpRules["error"] || !tmpRules["rules"])
 				throw `Invalid rules response ${JSON.stringify(tmpRules)}`;
 			rules = tmpRules["rules"];
-			const tmpMods = await redditApiRequest(`${this.feedUrl}/about/moderators`, [], false);
+			const tmpMods = await getSubModerators(this.feedUrl);
 			if (tmpMods["error"] || !(tmpMods["kind"] === "UserList" && tmpMods["data"]))
 				throw `Invalid mods response ${JSON.stringify(tmpRules)}`;
 			mods = tmpMods["data"]["children"];
@@ -326,10 +332,10 @@ export default class Ph_FeedInfo extends HTMLElement {
 		let feedAbout: RedditApiType;
 		let multis: RedditApiType[];
 		try {
-			feedAbout = await redditApiRequest(`${this.feedUrl}/about`, [], false);
+			feedAbout = await getSubInfo(this.feedUrl);
 			if (feedAbout["error"] || !(feedAbout["kind"] && feedAbout["data"]))
 				throw `Invalid about response ${JSON.stringify(feedAbout)}`;
-			multis = await redditApiRequest(`/api/multi/user/${this.feedUrl.match(/(?<=(u|user)\/)[^/]*/)[0]}`, [], false);
+			multis = await getUserMultis(this.feedUrl.match(/(?<=(u|user)\/)[^/]*/)[0]);
 			if (multis["error"])
 				throw `Invalid user multis response ${JSON.stringify(feedAbout)}`;
 		} catch (e) {
@@ -417,7 +423,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 	async loadMultiInfo() {
 		let feedAbout: RedditApiType;
 		try {
-			feedAbout = await redditApiRequest(`/api/multi${this.feedUrl}`, [], false);
+			feedAbout = await getMultiInfo(this.feedUrl);
 			if (feedAbout["error"] || !(feedAbout["kind"] && feedAbout["data"]))
 				throw `Invalid about response ${JSON.stringify(feedAbout)}`;
 		} catch (e) {
@@ -587,7 +593,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 				addSubInput.value = addSubInput.value.replace(/^\/?r\//, "");
 				if (addSubInput.value) {
 					subsSearchResults.classList.remove("remove");
-					const subs: { names: string[] } = await redditApiRequest("/api/search_reddit_names", [["query", addSubInput.value]], false);
+					const subs: { names: string[] } = await searchSubredditNames(addSubInput.value);
 					subsSearchResults.innerText = "";
 					subs.names.forEach(sub => {
 						const selectSubBtn = document.createElement("button");
@@ -663,14 +669,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 			return;
 		}
 		try {
-			const response = await redditApiRequest(
-				`/api/multi${multiPath}/r/${subName}`,
-				[
-					["model", JSON.stringify({ name: subName })]
-				],
-				true,
-				{ method: "PUT" }
-			);
+			const response = await addSubToMulti(multiPath, subName);
 			if (response["explanation"]) {
 				new Ph_Toast(Level.error, escHTML(response["explanation"]), { timeout: 6000 });
 				return;
@@ -708,12 +707,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 			return;
 		}
 		try {
-			await redditApiRequest(
-				`/api/multi${multiPath}/r/${subName}`,
-				[],
-				true,
-				{ method: "DELETE" }
-			);
+			await removeSubFromMulti(multiPath, subName);
 			editSubBar.remove();
 			this.loadedInfo.data.subreddits.splice(this.loadedInfo.data.subreddits.indexOf(subName), 1);
 			this.saveInfo();

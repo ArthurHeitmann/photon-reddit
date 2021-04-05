@@ -1,6 +1,6 @@
 import {
 	deleteThing,
-	edit,
+	edit, loadMoreComments,
 	redditApiRequest,
 	save,
 	vote,
@@ -258,14 +258,12 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 	}
 
 	async loadMoreComments(children: string[], id: string): Promise<RedditApiType[]> {
-		const childData = await redditApiRequest("/api/morechildren", [
-			["api_type", "json"],
-			["children", children.join(",")],
-			["link_id", this.postFullName],
-			["sort", (elementWithClassInTree(this.parentElement, "commentsFeed") as Ph_CommentsFeed).sort],
-			["limit_children", "false"],
-			["id", id]
-		], false, {method: "POST"});
+		const childData = await loadMoreComments(
+			children,
+			this.postFullName,
+			(elementWithClassInTree(this.parentElement, "commentsFeed") as Ph_CommentsFeed).sort
+			, id
+		);
 
 		// reddit returns here just an array of all comments, regardless whether they are parents/children of each other
 		// therefore we have to assemble the comment tree with all the relations ourselves -_-
@@ -279,7 +277,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 	}
 
 	private tryAttachToCommentTree(tree: RedditApiType[], commentData): boolean {
-		for (let elem of tree) {
+		for (const elem of tree) {
 			if (elem.data["name"] === commentData.data["parent_id"]) {
 				if (!elem.data["replies"] || elem.data["replies"]["kind"] !== "Listing") {
 					elem.data["replies"] = <RedditApiType> {

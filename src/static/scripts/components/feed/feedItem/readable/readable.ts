@@ -1,4 +1,4 @@
-import { redditApiRequest } from "../../../../api/redditApi.js";
+import { readAllMessages, redditApiRequest, setMessageReadStatus } from "../../../../api/redditApi.js";
 import { FullName } from "../../../../types/votable.js";
 import { thisUser } from "../../../../utils/globals.js";
 import { $class, $css } from "../../../../utils/htmlStatics.js";
@@ -35,17 +35,7 @@ export default abstract class Ph_Readable extends Ph_FeedItem implements FullNam
 	}
 
 	async onToggleRead() {
-		let path = "";
-		if (this.isRead)
-			path = "/api/unread_message" ;
-		else
-			path = "/api/read_message" ;
-		const r = await redditApiRequest(
-			path,
-			[["id", this.fullName]],
-			true,
-			{ method: "POST" }
-		);
+		const r = await setMessageReadStatus(!this.isRead, this.fullName);
 		if (r["error"]) {
 			new Ph_Toast(Level.error, "Failed to change read status");
 			console.error("Failed to change read status");
@@ -98,7 +88,7 @@ export default abstract class Ph_Readable extends Ph_FeedItem implements FullNam
 	}
 
 	static async readAllMessages() {
-		const r = await redditApiRequest("/api/read_all_messages", [], true, { method: "POST" });
+		const r = await readAllMessages();
 		if (r["error"]) {
 			new Ph_Toast(Level.error, "Error reading all messages");
 			console.error("Error reading all messages");

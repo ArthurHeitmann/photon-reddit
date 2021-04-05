@@ -1,4 +1,4 @@
-import { redditApiRequest } from "../../../api/redditApi.js";
+import { redditApiRequest, setMessageReadStatus } from "../../../api/redditApi.js";
 import { RedditApiType } from "../../../types/misc.js";
 import { isLoggedIn, thisUser } from "../../../utils/globals.js";
 import { $class, $css } from "../../../utils/htmlStatics.js";
@@ -58,12 +58,7 @@ export default class Ph_MessageNotification extends HTMLElement {
 		if (this.isRequestInProgress || this.isClosing)
 			return;
 		this.isRequestInProgress = true;
-		const r = await redditApiRequest(
-			"/api/read_message",
-			[["id", messageFullNames.join(",")]],
-			true,
-			{method: "POST"}
-		);
+		const r = await setMessageReadStatus(true, messageFullNames.join(","));
 		this.isRequestInProgress = false;
 		if (r["error"]) {
 			new Ph_Toast(Level.error, "Failed mark as read read");
@@ -73,7 +68,7 @@ export default class Ph_MessageNotification extends HTMLElement {
 		}
 		thisUser.inboxUnread -= messageFullNames.length;
 		($class("userDropDown")[0] as Ph_UserDropDown).setUnreadCount(thisUser.inboxUnread);
-		for (let msg of messageFullNames) {
+		for (const msg of messageFullNames) {
 			$css(`.readable[data-id="${msg}"]`)
 				.forEach((readable: Ph_Readable) => readable.setIsRead(true));
 		}

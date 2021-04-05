@@ -9,7 +9,7 @@
  *  - manage seen posts
  */
 
-import { redditApiRequest } from "../api/redditApi.js";
+import { getMyMultis, getMySubs, redditApiRequest } from "../api/redditApi.js";
 import { RedditApiType } from "../types/misc.js";
 import { stringSortComparer } from "./utils.js";
 
@@ -77,17 +77,9 @@ export class User {
 	}
 
 	private async fetchSubs() {
-		const subs: RedditApiType = await redditApiRequest(
-			"/subreddits/mine/subscriber",
-			[["limit", "100"]],
-			true
-		);
+		const subs: RedditApiType = await getMySubs(100);
 		while(subs.data.after !== null) {
-			const tmpSubs: RedditApiType = await redditApiRequest(
-				"/subreddits/mine/subscriber",
-				[["limit", "100"], ["after", subs.data.after]],
-				true
-			);
+			const tmpSubs: RedditApiType = await getMySubs(100, subs.data.after);
 			subs.data.children.push(...tmpSubs.data.children);
 			subs.data.after = tmpSubs.data.after;
 		}
@@ -101,7 +93,7 @@ export class User {
 
 	private async fetchMultis() {
 		this.multireddits = <MultiReddit[]>
-			(await redditApiRequest("/api/multi/mine", [], true) as RedditApiType[])
+			(await getMyMultis() as RedditApiType[])
 				.map(multi => multi.data)						// simplify, by only using the data property
 				.map(multi => Object.entries(multi))													// split
 				.map(multi => multi.filter(entries => Object.keys(_MultiReddit).includes(entries[0])))		// remove all entries that are not part of MultiReddit
@@ -136,7 +128,7 @@ export function saveSeenPosts() {
 	try {
 		// in case from another tab new posts have been seen
 		const tmpSeenPosts = JSON.parse(localStorage.seenPosts);
-		for (let [name, time] of Object.entries(tmpSeenPosts)) {
+		for (const [name, time] of Object.entries(tmpSeenPosts)) {
 			if (!seenPosts[name])
 				seenPosts[name] = time as number;
 		}

@@ -165,7 +165,7 @@ export default class ViewsStack {
 	/** Remove all view state from the DOM, except for the currently active one */
 	static clear() {
 		const viewIds: string[] = Object.keys(ViewsStack.views);
-		for (let i of viewIds) {
+		for (const i of viewIds) {
 			if (i === ViewsStack.pos.toString())
 				continue;
 			ViewsStack.views[i].remove();
