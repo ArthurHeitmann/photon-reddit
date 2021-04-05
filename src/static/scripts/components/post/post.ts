@@ -252,7 +252,6 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 	}
 
 	private onSettingsChanged(e: CustomEvent) {
-		console.log("...");
 		const changed: PhotonSettings = e.detail;
 		this.classList.toggle("hide", this.shouldPostBeHidden(false, changed));
 

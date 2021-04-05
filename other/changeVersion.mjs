@@ -58,9 +58,7 @@ async function actuallySetVersion(version) {
 	filePromises.push(
 		fs.promises.readFile(`./${"../".repeat(parentDirs)}package-lock.json`)
 			.then(content => {
-				console.log(content.toString().slice(0,75))
 				const newContent = content.toString().replace(/(?<="version":\s*")[^"]+(?=")/, version);
-				console.log(newContent.slice(0,75))
 				return fs.promises.writeFile(`./${"../".repeat(parentDirs)}package-lock.json`, newContent);
 			})
 	);
