@@ -3,12 +3,17 @@
  */
 const version = "0.2.1";			/// <change version script>
 const CACHE_NAME = `photon-cache-${version}`;
-const filetypesToCache = [
-	".css",
-	".js",
-	".png",
-	".jpg",
-	".svg",
+interface CacheDescription {
+	hostname: "/" | string,
+	path: string,
+	fileEnding?: string
+}
+const typesToCache: CacheDescription[] = [
+	{ hostname: "/", path: "/", fileEnding: "css|js|png|jpg|svg" },
+	{ hostname: "/", path: "/api/youtube-dl" },
+	{ hostname: "api.imgur.com", path: "/" },
+	{ hostname: "api.gfycat.com", path: "/" },
+	{ hostname: "api.redgifs.com", path: "/" },
 ];
 const forceCacheFiles = [
 	"/offline.html",
@@ -23,7 +28,12 @@ let environment: Environment;
 
 self.addEventListener("install", (e: InstallEvent) => {
 	console.log("Installing sw...");
+
 	environment = location.hostname === "localhost" ? Environment.development : Environment.production;
+	typesToCache
+		.filter(type => type.hostname === "/")
+		.forEach(type => type.hostname = location.hostname);
+
 	e.waitUntil(
 		caches.open(CACHE_NAME)
 			.then(cache => {
@@ -50,11 +60,8 @@ self.addEventListener("activate", (e: ActivateEvent) => {
 self.addEventListener('fetch', (event: FetchEvent) => {
 	const url = new URL(event.request.url);
 
-	if (url.origin !== location.origin)
-		return;
-
 	let isDocument = event.request.destination === "document";
-	if (!filetypesToCache.some(type => url.pathname.endsWith(type)) && !isDocument)
+	if (!shouldUrlBeCached(url) && !isDocument)
 		return;
 
 	let useCaches = environment === Environment.production;
@@ -74,7 +81,7 @@ self.addEventListener('fetch', (event: FetchEvent) => {
 				response = null;
 			}
 
-			if(!response || response.status !== 200 || response.type !== 'basic') {
+			if(!response || response.status !== 200) {
 				if (isDocument && (!response || response.type === "basic")) {		// if document and connection problem --> offline page
 					const cache = await caches.open(CACHE_NAME);
 					const keys = await cache.keys();
@@ -104,3 +111,11 @@ self.addEventListener("message", async (e: MessageEvent) => {
 			client.postMessage({ action: "reload" });
 	}
 });
+
+function shouldUrlBeCached(url: URL): boolean {
+	const matchingTypes = typesToCache
+		.filter(type => type.hostname === "*" || type.hostname === url.hostname)
+		.filter(type => url.pathname.startsWith(type.path))
+		.filter(type => !type.fileEnding || (new RegExp(`\.(${type.fileEnding})$`)).test(url.pathname));
+	return matchingTypes.length > 0;
+}

@@ -112,7 +112,7 @@ function checkForNewVersion() {
 		new Ph_Toast(
 			Level.info,
 			"New version installed! View changelog?",
-			{ timeout: 5000, onConfirm: () => Ph_Changelog.show() }
+			{ onConfirm: () => Ph_Changelog.show() }
 		);
 	}
 	localStorage.version = photonWebVersion;
