@@ -1,6 +1,11 @@
-export const photonVersion = "0.2.0";		/// <change version script>
+export const photonVersion = "0.2.1";		/// <change version script>
 
 export const photonChangelog = {
+	"0.2.1": {
+		"New": [
+			"Added option to rotate & apply filters to media elements"
+		]
+	},
 	"0.2.0": {
 		"New": [
 			"Reworked image & video viewer",
