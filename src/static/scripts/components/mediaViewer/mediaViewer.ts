@@ -261,7 +261,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 				nestedEntries: [
 					this.makeRotateFilter(),
 					this.makeBgFilter(),
-					// this.makeFiltersFilter()
+					...this.makeFiltersFilter()
 				]
 			}],
 			settingsImg, DirectionX.right, DirectionY.top, false
@@ -295,6 +295,8 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	setupKeyListeners() {
 		this.tabIndex = 0;
 		this.addEventListener("keyup", (e: KeyboardEvent) => {
+			if ((e.target as HTMLElement).tagName === "INPUT")
+				return;
 			this.mediaElements[this.currentIndex].onKeyDownEvent?.(e);
 			switch (e.code) {
 				case "KeyF":
@@ -315,7 +317,8 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 			}
 		});
 		this.addEventListener("keydown", (e: KeyboardEvent) => {
-			if (["Space", "ArrowUp", "ArrowDown", "ArrowRight", "ArrowLeft"].includes(e.code))
+			if (["Space", "ArrowUp", "ArrowDown", "ArrowRight", "ArrowLeft"].includes(e.code)
+				&& (e.target as HTMLElement).tagName !== "INPUT")
 				e.preventDefault();
 		})
 	}
@@ -427,8 +430,27 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		this.draggableWrapper.style.setProperty("--draggableBg", `${newColor}`);
 	}
 
-	private makeFiltersFilter(): DropDownEntryParam {
-		return undefined;
+	private makeFiltersFilter(): DropDownEntryParam[] {
+		const out: HTMLElement[] = [];
+		const makeSlider = (filterName: string, init: number, min: number, max: number, append = "") => {
+			const sliderWrapper = document.createElement("div");
+			sliderWrapper.className = "filterWrapper filtersFilterWrapper";
+			sliderWrapper.insertAdjacentHTML("afterbegin", `<span>${filterName}</span>`);
+			const manualInput = document.createElement("input");
+			manualInput.type = "text";
+			manualInput.value = init.toString();
+			manualInput.oninput = e => this.draggableWrapper.style.setProperty(`--${filterName}`, manualInput.value + append);
+			sliderWrapper.appendChild(manualInput);
+			return sliderWrapper;
+
+		};
+		out.push(makeSlider("brightness", 1, 0, 4));
+		out.push(makeSlider("contrast", 1, 0, 2));
+		out.push(makeSlider("saturate", 1, 0, 2));
+		out.push(makeSlider("grayscale", 0, 0, 1));
+		out.push(makeSlider("hue-rotate", 0, 0, 360, "deg"));
+		out.push(makeSlider("invert", 0, 0, 1));
+		return out.map(el => (<DropDownEntryParam> { displayElement: el, nonSelectable: true }));
 	}
 }
 

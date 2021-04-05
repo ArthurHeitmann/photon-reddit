@@ -39,6 +39,23 @@
 			button, img {
 				height: 2rem;
 			}
+
+			> span {
+				margin-right: .25rem;
+				font-size: .75rem;
+			}
+
+			> input {
+				width: 3rem;
+				border-bottom: 1px solid vars.$border-color;
+				font-size: .75rem;
+				text-align: right;
+				transition: border-color .15s ease;
+
+				&:focus {
+					border-color: vars.$primary;
+				}
+			}
 		}
 
 		.rotateFilter {
@@ -63,21 +80,7 @@
 			}
 		}
 
-		.bgFilter {
-			> span {
-				margin-right: .25rem;
-				font-size: .75rem;
-			}
-
-			> input {
-				width: 3.25rem;
-				border-bottom: 1px solid vars.$border-color;
-				font-size: .75rem;
-
-				&:focus {
-					border-color: vars.$primary;
-				}
-			}
+		.filtersFilterWrapper {
 		}
 	}
 
