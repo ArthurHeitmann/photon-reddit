@@ -72,8 +72,10 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 
 	const historyState = ViewsStack.makeHistoryState(path, path + query);
 	let stateLoader: Ph_ViewState;
-	if (postHint)
-		stateLoader = new Ph_CommentsViewStateLoader(historyState, postHint)
+	if (postHint) {
+		stateLoader = new Ph_CommentsViewStateLoader(historyState, postHint);
+		ViewsStack.setCurrentStateTitle(`${postHint.post.postTitle} - Photon`);
+	}
 	else
 		stateLoader = new Ph_ViewStateLoader(historyState);
 

@@ -34,6 +34,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 	url: string;
 	feedUrl: string;
 	permalink: string;
+	postTitle: string
 	cover: HTMLElement = null;
 	totalVotes: number;
 	fullName: string;
@@ -60,6 +61,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		this.url = postData.data["url"];
 		this.feedUrl = feedUrl;
 		this.permalink = postData.data["permalink"];
+		this.postTitle = postData.data["title"];
 		this.isPinned = postData.data["stickied"];
 		this.isNsfw = postData.data["over_18"];
 		this.isSpoiler = postData.data["spoiler"];
@@ -178,7 +180,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 					</div>
 				</div>
 				<div class="bottom flex">
-					<div class="title">${escHTML(postData.data["title"])}</div>
+					<div class="title">${escHTML(this.postTitle)}</div>
 				</div>
 			</div>
 		`;
