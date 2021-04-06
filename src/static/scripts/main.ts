@@ -142,7 +142,7 @@ async function registerServiceWorker() {
 function disableSpaceBarScroll() {
 
 	window.addEventListener("keydown", (e: KeyboardEvent) => {
-		if (e.code === "Space")
+		if (e.code === "Space" && !["INPUT", "TEXTAREA"].includes((e.target as HTMLElement).tagName))
 			e.preventDefault();
 	})
 }
