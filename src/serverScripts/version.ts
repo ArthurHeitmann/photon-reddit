@@ -1,6 +1,15 @@
-export const photonVersion = "0.2.1";		/// <change version script>
+export const photonVersion = "0.2.2";		/// <change version script>
 
 export const photonChangelog = {
+	"0.2.2": {
+		"New": [
+			"Caching of imgur, gfycat, and youtube-dl api requests"
+		],
+		"Fixed": [
+			"Space bar not working",
+			"Gallery item captions being too large",
+		]
+	},
 	"0.2.1": {
 		"New": [
 			"Added option to rotate & apply filters to media elements"
