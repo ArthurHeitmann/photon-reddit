@@ -235,7 +235,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		controlSlots.push(this.controls.rightItemsSlot);
 		//caption
 		this.elementCaption = document.createElement("div");
-		this.elementCaption.className = "textOnly";
+		this.elementCaption.className = "textOnly caption";
 		controlSlots.push(this.elementCaption);
 		// link
 		this.elementLink = document.createElement("a");

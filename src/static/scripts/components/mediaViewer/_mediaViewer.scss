@@ -21,6 +21,13 @@
 			}
 		}
 
+		.caption {
+			max-width: 60%;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
 		.resetView {
 			display: none;
 		}
