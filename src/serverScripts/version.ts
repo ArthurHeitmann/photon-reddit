@@ -1,6 +1,12 @@
-export const photonVersion = "0.2.2";		/// <change version script>
+export const photonVersion = "0.2.3";		/// <change version script>
 
 export const photonChangelog = {
+	"0.2.3": {
+		"Fixed": [
+			"Tweet display error",
+			"Caching",
+		]
+	},
 	"0.2.2": {
 		"New": [
 			"Caching of imgur, gfycat, and youtube-dl api requests"
