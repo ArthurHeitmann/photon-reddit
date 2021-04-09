@@ -37,6 +37,7 @@ export default class Ph_PostBody extends HTMLElement {
 				break;
 			case PostType.tweet:
 				this.makeTweetBody(postData);
+				break;
 			case PostType.imgur:
 				this.makeImgurBody(postData);
 				break;
