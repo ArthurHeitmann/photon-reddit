@@ -24,12 +24,10 @@ const forceCacheFiles = [
 enum Environment {
 	production, development
 }
-let environment: Environment;
 
 self.addEventListener("install", (e: InstallEvent) => {
 	console.log("Installing sw...");
 
-	environment = location.hostname === "localhost" ? Environment.development : Environment.production;
 	typesToCache
 		.filter(type => type.hostname === "/")
 		.forEach(type => type.hostname = location.hostname);
@@ -58,6 +56,7 @@ self.addEventListener("activate", (e: ActivateEvent) => {
 });
 
 self.addEventListener('fetch', (event: FetchEvent) => {
+	const environment = location.hostname === "localhost" ? Environment.development : Environment.production;
 	const url = new URL(event.request.url);
 
 	let isDocument = event.request.destination === "document";
