@@ -4,10 +4,10 @@ if (env !== "production")
 	config();
 
 import express from "express";
-import mariadb from "mariadb";
+import mariadb, { PoolConnection } from "mariadb";
 import RateLimit from "express-rate-limit";
 import { analyticsRateLimitConfig, basicRateLimitConfig } from "./consts.js";
-import { safeExcAsync } from "./utils.js";
+import { safeExc, safeExcAsync } from "./utils.js";
 
 export const analyticsRouter = express.Router();
 
@@ -16,12 +16,36 @@ const pool = mariadb.createPool({
 	port: parseInt(process.env.DB_PORT),
 	user: process.env.DB_USER,
 	password: process.env.DB_PW,
-	database: "cebjr7ve9iuq6def",
+	database: process.env.DB_DB,
 	connectionLimit: 4
 });
+let connectionSuccessFull = false;
+pool.query("SELECT id FROM trackedEvents LIMIT 1;")
+	.then(connection => {
+		connectionSuccessFull = true;
+		console.log("Connected to DB");
 
-async function trackEvent(clientId: string, path: string, referrer: string, timeMillisUtc: number) {
-	const connection = await pool.getConnection();
+	})
+	.catch(err => {
+		connectionSuccessFull = false;
+		console.error("Couldn't connect to DB");
+	});
+
+async function getConnection(): Promise<mariadb.PoolConnection> {
+	if (!connectionSuccessFull)
+		return null;
+	try {
+		return  await pool.getConnection();
+	}
+	catch {
+		return null;
+	}
+}
+
+async function trackEvent(clientId: string, path: string, referrer: string, timeMillisUtc: number): Promise<void> {
+	const connection = await getConnection();
+	if (connection === null)
+		return;
 	try {
 		await connection.query(`
 		INSERT INTO trackedEvents 
@@ -41,7 +65,9 @@ async function trackEvent(clientId: string, path: string, referrer: string, time
 }
 
 async function getEventsInTimeFrame(timeFrame: number, resolution: number): Promise<number[]> {
-	const connection = await pool.getConnection();
+	const connection = await getConnection();
+	if (connection === null)
+		return [];
 	const stepSize = timeFrame / resolution;
 	const firstEntry = Date.now() - timeFrame;
 	const valueRanges = Array(resolution).fill(0)
@@ -69,8 +95,10 @@ async function getEventsInTimeFrame(timeFrame: number, resolution: number): Prom
 	}
 }
 
-async function getUniqueClientIdsInTimeFrame(timeFrame: number) {
-	const connection = await pool.getConnection();
+async function getUniqueClientIdsInTimeFrame(timeFrame: number): Promise<string> {
+	const connection = await getConnection();
+	if (connection === null)
+		return "-1";
 	try {
 		const rows = await connection.query(`
 			SELECT COUNT(DISTINCT(clientId)) as cnt
@@ -85,8 +113,10 @@ async function getUniqueClientIdsInTimeFrame(timeFrame: number) {
 	}
 }
 
-async function getPopularPathsInTimeFrame(timeFrame: number, limit: number) {
-	const connection = await pool.getConnection();
+async function getPopularPathsInTimeFrame(timeFrame: number, limit: number): Promise<object[]> {
+	const connection = await getConnection();
+	if (connection === null)
+		return [];
 	try {
 		const rows = await connection.query(`
 			SELECT path, COUNT(path) AS percent
@@ -119,19 +149,19 @@ async function getPopularPathsInTimeFrame(timeFrame: number, limit: number) {
 analyticsRouter.post("/event", RateLimit(analyticsRateLimitConfig), safeExcAsync(async (req, res) => {
 	const { clientId, path, referer, timeMillisUtc } = req.body;
 	if (!clientId || typeof clientId !== "string" || clientId.length > 128) {
-		res.send("Invalid parameters").status(400);
+		res.status(400).json({ error: "invalid parameters" });
 		return;
 	}
 	if (!path || typeof path !== "string" ) {
-		res.send("Invalid parameters").status(400);
+		res.status(400).json({ error: "invalid parameters" });
 		return;
 	}
 	if (referer && (typeof referer !== "string" || referer.length > 128)) {
-		res.send("Invalid parameters").status(400);
+		res.status(400).json({ error: "invalid parameters" });
 		return;
 	}
 	if (!timeMillisUtc || typeof timeMillisUtc !== "number" || referer.length > 128) {
-		res.send("Invalid parameters").status(400);
+		res.status(400).json({ error: "invalid parameters" });
 		return;
 	}
 	try {
@@ -151,22 +181,21 @@ async function analyticsQueryMiddleware(req: express.Request, res: express.Respo
 		?.split("=")[1];
 
 	if (!pw || pw !== process.env.analyticsPw) {
-		res.status(401);
+		res.status(401).json({ error: "invalid password" });
 		return;
 	}
-
 	next();
 }
 
 analyticsRouter.get("/events", RateLimit(basicRateLimitConfig), analyticsQueryMiddleware, safeExcAsync(async (req, res) => {
-	const timeFrame = parseInt(req.query["timeFrame"].toString());
-	const resolution = parseInt(req.query["resolution"].toString());
+	const timeFrame = parseInt(req.query["timeFrame"]?.toString());
+	const resolution = parseInt(req.query["resolution"]?.toString());
 	if (timeFrame <= 0 || !isFinite(timeFrame) || typeof timeFrame !== "number") {
-		res.send("Invalid parameters").status(400);
+		res.status(400).json({ error: "invalid parameters" });
 		return;
 	}
 	if (resolution <= 0 || !isFinite(resolution) || typeof resolution !== "number" || resolution > 100) {
-		res.send("Invalid parameters").status(400);
+		res.status(400).json({ error: "invalid parameters" });
 		return;
 	}
 	try {
@@ -179,9 +208,9 @@ analyticsRouter.get("/events", RateLimit(basicRateLimitConfig), analyticsQueryMi
 }));
 
 analyticsRouter.get("/uniqueClients", RateLimit(basicRateLimitConfig), analyticsQueryMiddleware, safeExcAsync(async (req, res) => {
-	const timeFrame = parseInt(req.query["timeFrame"].toString());
+	const timeFrame = parseInt(req.query["timeFrame"]?.toString());
 	if (timeFrame <= 0 || !isFinite(timeFrame) || typeof timeFrame !== "number") {
-		res.send("Invalid parameters").status(400);
+		res.status(400).json({ error: "invalid parameters" });
 		return;
 	}
 
@@ -195,14 +224,14 @@ analyticsRouter.get("/uniqueClients", RateLimit(basicRateLimitConfig), analytics
 }));
 
 analyticsRouter.get("/popularPaths", RateLimit(basicRateLimitConfig), analyticsQueryMiddleware, safeExcAsync(async (req, res) => {
-	const timeFrame = parseInt(req.query["timeFrame"].toString());
-	const limit = parseInt(req.query["limit"].toString());
+	const timeFrame = parseInt(req.query["timeFrame"]?.toString());
+	const limit = parseInt(req.query["limit"]?.toString());
 	if (timeFrame <= 0 || !isFinite(timeFrame) || typeof timeFrame !== "number") {
-		res.send("Invalid parameters").status(400);
+		res.status(400).json({ error: "invalid parameters" });
 		return;
 	}
 	if (limit <= 0 || !isFinite(limit) || typeof limit !== "number" || limit > 50) {
-		res.send("Invalid parameters").status(400);
+		res.status(400).json({ error: "invalid parameters" });
 		return;
 	}
 

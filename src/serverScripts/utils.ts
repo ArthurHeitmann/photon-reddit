@@ -38,14 +38,11 @@ export function safeExc(func: (req: express.Request, res: express.Response, next
 	}
 }
 
-export function safeExcAsync(func: (req: express.Request, res: express.Response, next?: express.NextFunction) => void) {
-	return async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-		try {
-			expressAsyncHandler(func)(req, res, next);
-		}
-		catch (e) {
-			console.error(e);
-			res.json({ error: "¯\\_(ツ)_/¯"});
-		}
-	}
+export function safeExcAsync(func: (req: express.Request, res: express.Response, next?: express.NextFunction) => Promise<void>) {
+	return (req: express.Request, res: express.Response, next: express.NextFunction) =>
+		func(req, res, next)
+			.catch(err => {
+				console.error(err);
+				return res.status(400).json({ error: "¯\\_(ツ)_/¯" });
+			});
 }
