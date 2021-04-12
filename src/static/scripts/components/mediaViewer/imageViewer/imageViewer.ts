@@ -1,3 +1,4 @@
+import { trackMediaHost } from "../../../api/photonApi.js";
 import { getLoadingIcon, nonDraggableImage } from "../../../utils/htmlStatics.js";
 import { globalSettings, ImageLoadingPolicy, PhotonSettings } from "../../global/photonSettings/photonSettings.js";
 import { ControlsLayoutSlots } from "../../misc/controlsBar/controlsBar.js";
@@ -56,6 +57,8 @@ export default class Ph_ImageViewer extends Ph_PhotonBaseElement implements Medi
 		this.appendChild(this.originalImage);
 
 		this.addWindowEventListener("ph-settings-changed", this.onSettingsChange.bind(this));
+
+		trackMediaHost(initData.originalUrl, this.url, "img");
 	}
 
 	startLoadingOriginal() {

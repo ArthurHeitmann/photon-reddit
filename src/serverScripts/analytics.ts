@@ -146,6 +146,29 @@ async function getPopularPathsInTimeFrame(timeFrame: number, limit: number): Pro
 	}
 }
 
+interface MediaHost {
+	mediaHost: string, linkHost: string, type: string
+}
+
+async function trackMediaHost(hosts: MediaHost[]): Promise<void> {
+	const connection = await getConnection();
+	if (connection === null)
+		return;
+	const insertValues = hosts
+		.map(host => `(${connection.escape(host.mediaHost)}, ${connection.escape(host.linkHost)}, ${connection.escape(host.type)}, 1)`)
+		.join(",");
+	try {
+		await connection.query(`
+			INSERT INTO mediaHosts 
+				VALUES ${insertValues}
+				ON DUPLICATE KEY UPDATE count = count + 1
+		`);
+	}
+	finally {
+		connection.release();
+	}
+}
+
 analyticsRouter.post("/event", RateLimit(analyticsRateLimitConfig), safeExcAsync(async (req, res) => {
 	const { clientId, path, referer, timeMillisUtc } = req.body;
 	if (!clientId || typeof clientId !== "string" || clientId.length > 128) {
@@ -240,6 +263,28 @@ analyticsRouter.get("/popularPaths", RateLimit(basicRateLimitConfig), analyticsQ
 		res.send(values);
 	}
 	catch (e) {
+		res.status(400).send("nope")
+	}
+}));
+
+analyticsRouter.post("/mediaHost", safeExcAsync(async (req, res) => {
+	const rawHosts = req.body;
+	if (!(rawHosts instanceof Array)) {
+		res.status(400).json({ error: "invalid parameters" });
+		return;
+	}
+	const hosts = rawHosts.map(data => (<MediaHost> {
+		mediaHost: (new URL(data["mediaUrl"])).hostname,
+		linkHost: (new URL(data["linkUrl"])).hostname,
+		type: data.type
+	}));
+
+	try {
+		await trackMediaHost(hosts);
+		res.send("yep");
+	}
+	catch (e) {
+		console.error(e);
 		res.status(400).send("nope")
 	}
 }));

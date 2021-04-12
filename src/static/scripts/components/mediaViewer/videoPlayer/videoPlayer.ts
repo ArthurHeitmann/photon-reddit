@@ -1,5 +1,5 @@
 import { getGfycatMp4SrcFromUrl, GfycatDomain } from "../../../api/gfycatApi.js";
-import { youtubeDlUrl } from "../../../api/photonApi.js";
+import { trackMediaHost, youtubeDlUrl } from "../../../api/photonApi.js";
 import { RedditApiType } from "../../../types/misc.js";
 import { $tagAr, escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { classInElementTree } from "../../../utils/htmlStuff.js";
@@ -258,6 +258,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 			this.video.setIsMuted(Ph_VideoPlayer.globalIsMuted);
 			if (isLateInit)
 				this.dispatchEvent(new Event("ph-controls-changed"));
+			setTimeout(() => trackMediaHost(this.video.getUrl(), this.url, "vid"), 1000);
 		}
 		else
 			this.innerText = "No video supplied (maybe video was deleted)";

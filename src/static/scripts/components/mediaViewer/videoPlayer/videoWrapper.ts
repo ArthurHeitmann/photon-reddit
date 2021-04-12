@@ -20,6 +20,7 @@ export default abstract class Ph_VideoWrapper extends HTMLElement {
 	abstract getVolume(): number;
 	abstract setPlaybackSpeed(speed: number): void;
 	abstract getDimensions(): number[];
+	abstract getUrl(): string;
 	// should be dispatching the following events
 	// - ph-play			video starts playing
 	// - ph-pause			video pauses

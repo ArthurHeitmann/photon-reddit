@@ -99,6 +99,10 @@ export default class Ph_GifVideo extends Ph_VideoWrapper {
 		else
 			this.play();
 	}
+
+	getUrl(): string {
+		return this.gifSrc;
+	}
 }
 
 customElements.define("ph-gif-video", Ph_GifVideo);

@@ -122,6 +122,10 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 	getDimensions(): number[] {
 		return [ this.video.videoWidth, this.video.videoHeight ];
 	}
+
+	getUrl(): string {
+		return this.video.currentSrc;
+	}
 }
 
 customElements.define("ph-video-audio", Ph_VideoAudio);
