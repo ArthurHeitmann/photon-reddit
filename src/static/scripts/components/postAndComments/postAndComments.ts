@@ -7,12 +7,10 @@ import { extractPath, extractQuery } from "../../utils/utils.js";
 import Ph_Comment from "../comment/comment.js";
 import Ph_CommentsFeed from "../feed/commentsFeed/commentsFeed.js";
 import Ph_FeedInfo, { FeedType } from "../feed/feedInfo/feedInfo.js";
-import { MessageSection } from "../feed/universalFeed/universalFeed.js";
 import Ph_DropDown, { ButtonLabel, DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
 import Ph_CommentForm from "../misc/markdownForm/commentForm/commentForm.js";
 import Ph_Toast, { Level } from "../misc/toast/toast.js";
 import Ph_Post from "../post/post.js";
-import PostDoubleLink from "../post/postDoubleLink/postDoubleLink.js";
 import { Ph_ViewState } from "../viewState/viewState.js";
 
 /**
@@ -25,6 +23,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 	subredditPrefixed: string;
 	userPrefixed: string;
 	tmpLoadingIcon: HTMLElement;
+	areHeaderElementsSet = false;
 
 	constructor(data?: RedditApiType[], postHint?: { post: Ph_Post, subredditPrefixed: string, userPrefixed: string }) {
 		super();
@@ -100,9 +99,17 @@ export default class Ph_PostAndComments extends HTMLElement {
 
 		const newScrollPosition = document.scrollingElement.scrollTop;
 		document.scrollingElement.scrollBy(0, initialScrollPosition - newScrollPosition);
+
+		if (!this.areHeaderElementsSet && this.isConnected)
+			this.setHeaderElements();
 	}
 
 	connectedCallback() {
+		if (this.comments)
+			this.setHeaderElements();
+	}
+
+	setHeaderElements() {
 		const headerElements: HTMLElement[] = [];
 
 		// user info button
@@ -130,6 +137,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 		headerElements.push(this.sorter);
 
 		(elementWithClassInTree(this.parentElement, "viewState") as Ph_ViewState).setHeaderElements(headerElements);
+		this.areHeaderElementsSet = true;
 	}
 
 	async handleSort([sorting]: SortCommentsOrder[], setLabel: (newLabel: ButtonLabel) => void, initialLabel: HTMLElement) {
