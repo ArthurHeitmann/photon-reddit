@@ -142,6 +142,12 @@
 			&:empty {
 				display: none !important;
 			}
+
+			.feedTitle {
+				max-width: 12rem;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
 		}
 
 		#loginButton {

@@ -1,14 +1,12 @@
 import { redditApiRequest } from "../../../api/redditApi.js";
 import ViewsStack from "../../../historyState/viewsStack.js";
-import { thisUser } from "../../../utils/globals.js";
 import { escHTML, getLoadingIcon } from "../../../utils/htmlStatics.js";
 import { elementWithClassInTree } from "../../../utils/htmlStuff.js";
 import { RedditApiType } from "../../../types/misc.js";
 import { sleep, throttle, waitForFullScreenExit } from "../../../utils/utils.js";
 import Ph_Comment from "../../comment/comment.js";
-import Ph_DropDown, { ButtonLabel, DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
+import { ButtonLabel} from "../../misc/dropDown/dropDown.js";
 import Ph_Message from "../../message/message.js";
-import { DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Ph_Post from "../../post/post.js";
 import { Ph_ViewState } from "../../viewState/viewState.js";
@@ -100,7 +98,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			else if (/^\/message\//.test(requestUrl))
 				feedType = FeedType.messages;
 			headerElements.push(title);
-			if (Ph_FeedInfo.supportedFeedTypes.includes(feedType))
+			if (Ph_FeedInfo.supportedFeedTypes.includes(feedType) && !feedBaseUrl.includes("+"))
 				headerElements.push(Ph_FeedInfo.getInfoButton(feedType, feedBaseUrl));
 			if (feedType === FeedType.user) {
 			}

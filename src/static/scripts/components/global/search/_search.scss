@@ -158,6 +158,12 @@
 					max-width: 1.3em;
 					max-height: 1.3em;
 				}
+
+				label[for=limitToSubreddit] {
+					max-width: 12rem;
+					overflow: hidden;
+					text-overflow: ellipsis;
+				}
 			}
 		}
 
