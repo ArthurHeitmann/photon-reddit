@@ -28,10 +28,6 @@ enum Environment {
 self.addEventListener("install", (e: InstallEvent) => {
 	console.log("Installing sw...");
 
-	typesToCache
-		.filter(type => type.hostname === "/")
-		.forEach(type => type.hostname = location.hostname);
-
 	e.waitUntil(
 		caches.open(CACHE_NAME)
 			.then(cache => {
@@ -113,7 +109,7 @@ self.addEventListener("message", async (e: MessageEvent) => {
 
 function shouldUrlBeCached(url: URL): boolean {
 	const matchingTypes = typesToCache
-		.filter(type => type.hostname === "*" || type.hostname === url.hostname)
+		.filter(type => type.hostname === "*" || type.hostname === url.hostname || type.hostname === "/" && url.hostname === location.hostname)
 		.filter(type => url.pathname.startsWith(type.path))
 		.filter(type => !type.fileEnding || (new RegExp(`\.(${type.fileEnding})$`)).test(url.pathname));
 	return matchingTypes.length > 0;
