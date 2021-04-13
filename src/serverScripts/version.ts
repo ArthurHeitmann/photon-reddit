@@ -1,6 +1,12 @@
-export const photonVersion = "0.2.3";		/// <change version script>
+export const photonVersion = "0.2.4";		/// <change version script>
 
 export const photonChangelog = {
+	"0.2.4": {
+		"Fixed": [
+			"Comments sorting button not appearing",
+			"long subreddit names breaking the UI",
+		]
+	},
 	"0.2.3": {
 		"Fixed": [
 			"Tweet display error",
