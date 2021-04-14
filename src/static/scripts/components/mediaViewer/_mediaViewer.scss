@@ -6,7 +6,8 @@
 	user-select: none;
 
 	width: 100%;
-	max-height: vars.$image-height-limited;
+	--max-media-height: #{vars.$image-height-limited};
+	max-height: var(--max-media-height);
 
 	> .controls {
 		.dropDown {
@@ -92,7 +93,7 @@
 	}
 
 	&.isInFullscreen {
-		max-height: 100vh;
+		--max-media-height: 100vh;
 
 		> .controls {
 			.resetView {
@@ -127,6 +128,10 @@
 
 		&:hover {
 			min-width: 25rem;
+		}
+
+		.imageViewer img, .videoPlayer video {
+			max-height: var(--max-media-height);
 		}
 	}
 
