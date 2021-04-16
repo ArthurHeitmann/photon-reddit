@@ -9,7 +9,8 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 	video: HTMLVideoElement;
 	audio: HTMLVideoElement;
 	lastNon0Volume: number;
-	noAudioProgressCallback: () => void;
+	audioCheckCompleted: boolean = false;
+	hasAudio: boolean = true;
 
 	constructor(videoSources: { src: string, type: string }[], audioSources: { src: string, type: string }[]) {
 		super();
@@ -44,14 +45,25 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 		this.audio.addEventListener("play", () => this.video.play());
 		this.audio.addEventListener("pause", () => this.video.readyState !== 1 && this.video.pause());
 
-		// this mess is needed in order to know if the video has audio
-		this.video.addEventListener("timeupdate", this.noAudioProgressCallback = () => {
-			if (this.video.currentTime > 0) {
-				this.video.removeEventListener("timeupdate", this.noAudioProgressCallback);
-				this.noAudioProgressCallback = undefined;
-				if (this.audio["webkitAudioDecodedByteCount"] === 0 || this.audio["mozHasAudio"] === false || this.audio["audioTracks"] && this.audio["audioTracks"]["length"] === 0)
+		this.video.addEventListener("timeupdate", () => {
+			// this mess is needed in order to know if the video has audio
+			if (!this.audioCheckCompleted && this.video.currentTime > 0) {
+				this.audioCheckCompleted = true;
+				if (
+					this.audio["webkitAudioDecodedByteCount"] === 0
+					|| this.audio["mozHasAudio"] === false ||
+					this.audio["audioTracks"] && this.audio["audioTracks"]["length"] === 0
+				) {
 					this.dispatchEvent(new Event("ph-no-audio"));
+					this.hasAudio = false;
+				}
 			}
+			if (!this.hasAudio)
+				return;
+			// making sure that audio & video is in sync
+			const videoAudioDeSync = Math.abs(this.video.currentTime - this.audio.currentTime);
+			if (this.video.playbackRate <= 1 && videoAudioDeSync > 0.25)
+				this.audio.currentTime = this.video.currentTime;
 		});
 		
 		this.lastNon0Volume = this.audio.volume;
