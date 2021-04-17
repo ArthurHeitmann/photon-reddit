@@ -1,6 +1,16 @@
-export const photonVersion = "0.2.4";		/// <change version script>
+export const photonVersion = "0.2.5";		/// <change version script>
 
 export const photonChangelog = {
+	"0.2.5": {
+		"New": [
+			"Support for giphy.com gifs",
+			"Reddit gifs in comments now use the media player",
+		],
+		"Fixed": [
+			"Inline media with portrait orientation being too big",
+			"Caching problems",
+		]
+	},
 	"0.2.4": {
 		"Fixed": [
 			"Comments sorting button not appearing",
