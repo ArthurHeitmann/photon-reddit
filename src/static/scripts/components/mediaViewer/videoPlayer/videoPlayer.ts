@@ -219,6 +219,12 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 					.then(mp4Url => videoOut.init(new Ph_SimpleVideo([ { src: mp4Url, type: "video/mp4" } ]), true))
 					.catch(() => videoOut.init(null));
 				break;
+			case "media2.giphy.com":
+			case "giphy.com":
+				const giphyId = url.match(/(?<=giphy\.com\/\w+\/)\w+/)[0];
+				const giphyMp4 = `https://i.giphy.com/media/${giphyId}/giphy.mp4`;
+				videoOut.init(new Ph_SimpleVideo([{ src: giphyMp4, type: "video/mp4" }]));
+				break;
 			default:
 				// some other .mp4 or .gif file
 				defaultCase();

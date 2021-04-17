@@ -72,6 +72,7 @@ export function _linksToInlineMedia(elem: HTMLElement) {
 	for (const link of links) {
 		if (link.hasAttribute("excludeLinkFromMedia") || link.classList.contains("inlineMediaViewer"))
 			continue;
+
 		const mediaViewer = Ph_MediaViewer.fromUrl(link.href)
 		if (!mediaViewer)
 			continue;
@@ -80,6 +81,8 @@ export function _linksToInlineMedia(elem: HTMLElement) {
 		link.classList.toggle("isExpanded", !globalSettings.loadInlineMedia);
 
 		const initial = document.createElement("span");
+		if (link.innerText === "" && link.$tag("img").length > 0)
+			link.innerText = link.href;
 		initial.innerHTML = link.innerHTML;
 		link.innerHTML = "";
 		link.appendChild(initial);
