@@ -4,6 +4,7 @@
 
 import { checkTokenRefresh, initiateLogin } from "../auth/auth.js";
 import Ph_CommentsFeed from "../components/feed/commentsFeed/commentsFeed.js";
+import Ph_Flair from "../components/misc/flair/flair.js";
 import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
 import { RedditApiType } from "../types/misc.js";
 import Votable, { FullName } from "../types/votable.js";
@@ -271,7 +272,10 @@ export async function readAllMessages() {
 }
 
 export async function getSubFlairs(subPath: string) {
-	return await redditApiRequest(`${subPath}/api/link_flair_v2`, [], true);
+	let flairs = await redditApiRequest(`${subPath}/api/link_flair_v2`, [], true);
+	if (flairs["error"] === 403)
+		flairs = [];
+	return flairs;
 }
 
 export async function editCommentOrPost(newText: string, thingFullName: string) {
@@ -321,4 +325,16 @@ export async function setPostSendReplies(fullName: string, sendReplies: boolean)
 		{ method: "POST" }
 	)
 	return !("error" in r) && isObjectEmpty(r);
+}
+
+export async function setPostFlair(fullName: string, subredditName: string, flair: Ph_Flair) {
+	const flairId = flair.data.id;
+	const flairText = flair.hasTextChanged ? flair.data.text : null;
+	const r = await redditApiRequest(
+		`/r/${subredditName}/api/selectflair`,
+		[["link", fullName], ["flair_template_id", flairId], flairText ? ["text", flairText] : ["", ""]],
+		true,
+		{ method: "POST" }
+	)
+	return !("error" in r) && r["success"];
 }

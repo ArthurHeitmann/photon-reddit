@@ -1,7 +1,10 @@
 import {
 	deleteThing,
+	getSubFlairs, redditApiRequest,
 	save,
-	setPostNsfw, setPostSendReplies,
+	setPostFlair,
+	setPostNsfw,
+	setPostSendReplies,
 	setPostSpoiler,
 	vote,
 	VoteDirection,
@@ -11,7 +14,7 @@ import { pushLinkToHistoryComb, PushType } from "../../historyState/historyState
 import { RedditApiType } from "../../types/misc.js";
 import Votable from "../../types/votable.js";
 import { hasPostsBeenSeen, markPostAsSeen, thisUser } from "../../utils/globals.js";
-import { escADQ, escHTML } from "../../utils/htmlStatics.js";
+import { escADQ, escHTML, getLoadingIcon } from "../../utils/htmlStatics.js";
 import { linksToSpa } from "../../utils/htmlStuff.js";
 import {
 	isObjectEmpty,
@@ -22,9 +25,9 @@ import {
 import Ph_FeedItem from "../feed/feedItem/feedItem.js";
 import { globalSettings, NsfwPolicy, PhotonSettings } from "../global/photonSettings/photonSettings.js";
 import Ph_AwardsInfo from "../misc/awardsInfo/awardsInfo.js";
-import Ph_DropDown, { ButtonLabel, DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
+import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
 import Ph_DropDownEntry, { DropDownEntryParam } from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
-import Ph_Flair from "../misc/flair/flair.js";
+import Ph_Flair, { FlairApiData } from "../misc/flair/flair.js";
 import Ph_Toast, { Level } from "../misc/toast/toast.js";
 import Ph_VoteButton from "../misc/voteButton/voteButton.js";
 import Ph_PostBody from "./postBody/postBody.js";
@@ -56,6 +59,8 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 	isSpoiler: boolean;
 	wasInitiallySeen: boolean;
 	doubleLink: PostDoubleLink = null;
+	haveFlairsLoaded = false;
+	postFlair: Ph_Flair;
 
 	constructor(postData: RedditApiType, isInFeed: boolean, feedUrl?: string) {
 		super(postData.data["name"], postData.data["permalink"], isInFeed);
@@ -123,6 +128,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 					{ displayHTML: "Crosspost", onSelectCallback: this.crossPost.bind(this) },
 				] }
 		];
+		this.postFlair = Ph_Flair.fromThingData(postData.data, "link");
 		if (thisUser && thisUser.name === postData.data["author"]) {
 			const editEntries: DropDownEntryParam[] = [];
 			if (this.postBody.children[0] instanceof Ph_PostText)
@@ -130,6 +136,11 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			editEntries.push({ displayHTML: this.isNsfw ? "Unmark NSFW" : "Mark NSFW", onSelectCallback: this.toggleNsfw.bind(this) });
 			editEntries.push({ displayHTML: this.isSpoiler ? "Unmark Spoiler" : "Mark Spoiler", onSelectCallback: this.toggleSpoiler.bind(this) });
 			editEntries.push({ displayHTML: `${this.sendReplies ? "Disable" : "Enable"} Reply Notifications`, onSelectCallback: this.toggleSendReplies.bind(this) });
+			if (!this.postFlair.classList.contains("empty")) {
+				editEntries.push({ displayHTML: "Change Flair", onSelectCallback: this.onEditFlairClick.bind(this), nestedEntries: [
+					{ displayElement: getLoadingIcon() }
+				]});
+			}
 			dropDownEntries.push({ displayHTML: "Edit", nestedEntries: editEntries });
 			dropDownEntries.push({ displayHTML: "Delete", onSelectCallback: this.deletePostPrompt.bind(this) });
 		}
@@ -205,7 +216,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		this.appendChild(mainPart);
 
 		mainPart.$class("flairWrapper")[0]
-			.appendChild(Ph_Flair.fromThingData(postData.data, "link"));
+			.appendChild(this.postFlair);
 		mainPart.$class("user")[0]
 			.insertAdjacentElement("afterend", Ph_Flair.fromThingData(postData.data, "author"));
 		const makeCoverNFlair = (flairColor: string, flairText: string, makeCover: boolean) => {
@@ -224,10 +235,10 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			if (globalSettings.nsfwPolicy === NsfwPolicy.never)
 				this.classList.add("hide");
 		}
-		makeCoverNFlair("darkred", "NSFW", globalSettings.nsfwPolicy === NsfwPolicy.covered);
+		makeCoverNFlair("darkred", "NSFW", this.isNsfw && globalSettings.nsfwPolicy === NsfwPolicy.covered);
 		if (this.isSpoiler)
 			this.classList.add("spoiler");
-		makeCoverNFlair("orange", "Spoiler", true);
+		makeCoverNFlair("orange", "Spoiler", this.isSpoiler);
 
 		linksToSpa(this)
 
@@ -458,6 +469,42 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		}
 		this.sendReplies = !this.sendReplies;
 		entry.setText(`${this.sendReplies ? "Disable" : "Enable"} Reply Notifications`);
+	}
+
+	async onEditFlairClick(_, __, ___, source: Ph_DropDownEntry) {
+		if (this.haveFlairsLoaded)
+			return;
+		this.haveFlairsLoaded = true;
+		const sub = this.permalink.match(/(?<=\/\w+\/)[^/]+/)[0];
+		const flairs: FlairApiData[] = await getSubFlairs("/r/" + sub);
+		const flairSelection: DropDownEntryParam[] = flairs.map(flair => {
+			const flairElem = Ph_Flair.fromFlairApi(flair);
+			return {
+				displayElement: flairElem,
+				value: { flair: flairElem, sub },
+				onSelectCallback: this.selectFlair.bind(this)
+			};
+		});
+		source.nextDropDown.setEntries(flairSelection, source.dropDown);
+	}
+
+	async selectFlair([_, __, flairData]) {
+		const { flair, sub } = flairData;
+		if ((flair as Ph_Flair).isEditing)
+			return;
+
+		const success = await setPostFlair(this.fullName, sub, flair);
+		if (!success) {
+			new Ph_Toast(Level.error, "Error changing post flair");
+			return;
+		}
+
+		const newPostData: RedditApiType[] = await redditApiRequest(this.permalink, [["limit", "1"]], true);
+		const postData = newPostData[0].data.children[0].data;
+		const newFlair = Ph_Flair.fromThingData(postData, "link");
+		this.postFlair.insertAdjacentElement("afterend", newFlair);
+		this.postFlair.remove();
+		this.postFlair = newFlair;
 	}
 
 	crossPost() {

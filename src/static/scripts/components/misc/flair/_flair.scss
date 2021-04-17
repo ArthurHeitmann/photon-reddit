@@ -16,21 +16,31 @@
 
 	* {
 		color: var(--flair-tc);
+		white-space: nowrap;
+		font-size: inherit;
 	}
 
-	> img {
-		height: .8rem;
+	> div {
+		> img {
+			height: .8rem;
 
-		+ span {
-			margin-left: .25rem;
+			+ span {
+				margin-left: .25rem;
+			}
+		}
+
+		> span {
+			+ img {
+				margin-right: .25rem;
+			}
 		}
 	}
 
-	> span {
-		font-size: inherit;
+	button {
+		height: 1.5rem;
 
-		+ img {
-			margin-right: .25rem;
+		img {
+			height: 1.5rem;
 		}
 	}
 
@@ -43,9 +53,9 @@
 
 .dropDownEntry {
 	.flair {
-		height: 80%;
+		height: 1.6rem;
 		width: 100%;
-		margin-top: 2%;
+		margin-top: .35rem;
 	}
 
 	&:hover .flair * {

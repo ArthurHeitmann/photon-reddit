@@ -325,27 +325,27 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 			const flairs: {}[] = await getSubFlairs(community);
 			this.flairSelectorWrapper.innerText = "";
 			this.selectedFlairId = null;
-			if (!flairs["error"]) {
-				const flairDropdownEntries: DropDownEntryParam[] = flairs.map(flair => <DropDownEntryParam> {
-					displayElement: new Ph_Flair({
-						type: flair["type"],
-						richText: flair["richtext"],
-						text: flair["text"],
-						backgroundColor: flair["background_color"],
-						textColor: flair["text_color"]
-					}),
-					value: flair["id"],
-					onSelectCallback: this.selectFlair.bind(this)
-				});
-				if (flairDropdownEntries.length) {
-					this.flairSelectorWrapper.appendChild(new Ph_DropDown(
-						flairDropdownEntries,
-						"Select Flair",
-						DirectionX.left,
-						DirectionY.bottom,
-						false
-					));
-				}
+			const flairDropdownEntries: DropDownEntryParam[] = flairs.map(flair => <DropDownEntryParam> {
+				displayElement: new Ph_Flair({
+					id: flair["id"],
+					type: flair["type"],
+					richText: flair["richtext"],
+					text: flair["text"],
+					backgroundColor: flair["background_color"],
+					textColor: flair["text_color"],
+					isEditable: flair["text_editable"]
+				}),
+				value: flair["id"],
+				onSelectCallback: this.selectFlair.bind(this)
+			});
+			if (flairDropdownEntries.length > 0) {
+				this.flairSelectorWrapper.appendChild(new Ph_DropDown(
+					flairDropdownEntries,
+					"Select Flair",
+					DirectionX.left,
+					DirectionY.bottom,
+					false
+				));
 			}
 			// nsfw & spoiler
 			this.forceNsfw = subData["over18"];
@@ -373,6 +373,8 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 	}
 
 	selectFlair([flairId], setLabel: (newLabel: ButtonLabel) => void, _, source: HTMLElement) {
+		if ((source.$class("flair")[0] as Ph_Flair).isEditing)
+			return true;
 		if (this.selectedFlairId === flairId) {
 			this.selectedFlairId = null;
 			setLabel("Select Flair")

@@ -19,10 +19,10 @@ export default class Ph_DropDownArea extends HTMLElement {
 		if (parentEntry)
 			this.parentEntry = parentEntry;
 
-		this.init(entryParams, dropDown);
+		this.setEntries(entryParams, dropDown);
 	}
 
-	init(entryParams: DropDownEntryParam[], dropDown: Ph_DropDown) {
+	setEntries(entryParams: DropDownEntryParam[], dropDown: Ph_DropDown) {
 		this.innerText = "";
 
 		for (const param of entryParams)

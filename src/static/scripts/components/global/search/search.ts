@@ -172,19 +172,10 @@ export default class Ph_Search extends HTMLElement {
 		this.flairSearch.toggleButton.addEventListener("click", async  () => {
 			if (this.areFlairsLoaded || !this.currentSubreddit)
 				return;
-			let flairData: Object[] = await getSubFlairs(this.currentSubreddit);
-			if (flairData["error"])
-				flairData = [];
+			let flairData: any[] = await getSubFlairs(this.currentSubreddit);
 			const flairs = flairData
-				.map(flair => (<FlairData> {
-					type: flair["type"],
-					text: flair["text"],
-					backgroundColor: flair["background_color"],
-					richText: flair["richtext"],
-					textColor: flair["text_color"]
-				}))
 				.map(flair => (<DropDownEntryParam> {
-					displayElement: new Ph_Flair(flair),
+					displayElement: Ph_Flair.fromFlairApi(flair),
 					value: flair.text,
 					onSelectCallback: this.searchByFlair.bind(this),
 				}));

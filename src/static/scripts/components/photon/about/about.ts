@@ -1,4 +1,6 @@
 import { linksToSpa } from "../../../utils/htmlStuff.js";
+import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
+import Ph_Flair from "../../misc/flair/flair.js";
 
 const template = `
 <h1>Photon</h1>
@@ -86,6 +88,16 @@ export default class Ph_About extends HTMLElement {
 	connectedCallback() {
 		this.classList.add("about");
 		this.innerHTML = template;
+		this.insertAdjacentElement("afterbegin", new Ph_DropDown([{
+			displayElement: new Ph_Flair({
+				type: "text",
+				text: "$LIBRARY_NAME Maintainer",
+				backgroundColor: "",
+				richText: [],
+				textColor: "dark",
+				isEditable: true,
+			}),
+		}], "Flairs", DirectionX.right, DirectionY.bottom, false));
 
 		linksToSpa(this);
 	}

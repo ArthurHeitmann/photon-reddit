@@ -6,23 +6,50 @@ export interface FlairData {
 	backgroundColor?: string,
 	textColor?: string,
 	richText?: {}[],
-	text?: string
+	text?: string,
+	isEditable?: boolean,
+	id?: string
+}
+
+export interface FlairApiData {
+	background_color: string,
+	id: string,
+	richtext: object[],
+	text: string,
+	text_color: string,
+	text_editable: boolean,
+	type: string
 }
 
 /**
  * A reddit flair (for example user or post related)
  */
 export default class Ph_Flair extends HTMLElement {
+	data: FlairData;
+	hasTextChanged: boolean = false;
+	isEditing: boolean = false;
+	flairContent: HTMLDivElement;
+	editButton: HTMLButtonElement;
+	confirmButton: HTMLButtonElement;
+	cancelButton: HTMLButtonElement;
+	editInput: HTMLInputElement;
+	initialText: string;
+
 	constructor(data: FlairData) {
 		super();
 
 		if (!data || !data.type)
 			return;
 
+		this.data = data;
+
 		this.className = "flair";
 		const [bgColor, textColor] = this.makeFlairColorScheme(data.backgroundColor, data.textColor);
 		this.style.setProperty("--flair-bg", bgColor);
 		this.style.setProperty("--flair-tc", textColor);
+
+		this.flairContent = document.createElement("div");
+		this.appendChild(this.flairContent);
 
 		if (data.type === "richtext") {
 			for (const flairPart of data.richText) {
@@ -30,17 +57,17 @@ export default class Ph_Flair extends HTMLElement {
 					case "text":
 						const text = document.createElement("span");
 						text.innerText = flairPart["t"];
-						this.append(text);
+						this.flairContent.append(text);
 						break;
 					case "emoji":
 						const flairImg = document.createElement("img");
 						flairImg.src = flairPart["u"];
 						flairImg.alt = "flairImg";
 						flairImg.setAttribute("data-tooltip", flairPart["a"]);
-						this.append(flairImg);
+						this.flairContent.append(flairImg);
 						break;
 					default:
-						this.append(`Unknown Flair ${flairPart["e"]}`);
+						this.flairContent.append(`Unknown Flair ${flairPart["e"]}`);
 						console.error("Unknown flair part");
 						console.error(flairPart);
 						break;
@@ -48,11 +75,49 @@ export default class Ph_Flair extends HTMLElement {
 			}
 		}
 		else if (data.type === "text") {
-			this.innerText = data.text;
+			this.flairContent.innerText = data.text;
 		}
 		else {
-			this.innerText = `Unknown Flair ${data.text}`;
+			this.flairContent.innerText = `Unknown Flair ${data.text}`;
 			console.log(data);
+		}
+
+		if (data.isEditable) {
+			this.editButton = document.createElement("button");
+			this.editButton.className = "transparentButton";
+			this.editButton.innerHTML = `<img src="/img/edit.svg" alt="edit flair">`;
+			this.editButton.addEventListener("click" , e => {
+				stopPropagation(e);
+				this.showEdit();
+				this.initialText = this.data.text;
+				this.editInput.value = this.data.text;
+			});
+			this.appendChild(this.editButton);
+
+			this.editInput = document.createElement("input");
+			this.editInput.classList.add("hide");
+			this.editInput.maxLength = 64;
+			this.editInput.onclick = stopPropagation;
+			this.appendChild(this.editInput);
+			this.confirmButton = document.createElement("button");
+			this.confirmButton.className = "transparentButton hide";
+			this.confirmButton.innerHTML = `<img src="/img/check.svg" alt="confirm edits">`;
+			this.confirmButton.addEventListener("click" , e => {
+				stopPropagation(e);
+				this.hideEdit();
+				this.data.text = this.editInput.value;
+				this.flairContent.innerText = this.editInput.value;
+				this.hasTextChanged = true;
+			});
+			this.appendChild(this.confirmButton);
+			this.cancelButton = document.createElement("button");
+			this.cancelButton.className = "transparentButton hide";
+			this.cancelButton.innerHTML = `<img src="/img/close.svg" alt="discard edits">`;
+			this.cancelButton.addEventListener("click" , e => {
+				stopPropagation(e);
+				this.hideEdit();
+			});
+			this.appendChild(this.cancelButton);
 		}
 
 		if ((!this.innerText || /^\s*$/.test(this.innerText)) && this.$tag("img").length === 0)
@@ -60,18 +125,31 @@ export default class Ph_Flair extends HTMLElement {
 	}
 
 	/**
-	 * Use this when using reddit api response data
+	 * Use this when using reddit api response data of post or comment
 	 *
 	 * @param thingData raw api response
 	 * @param prefix like "author" (for users) or "link" (for posts)
 	 */
 	static fromThingData(thingData: RedditApiData, prefix: string): Ph_Flair {
 		return new Ph_Flair({
+			id: thingData[`${prefix}_flair_template_id`],
 			type: thingData[`${prefix}_flair_type`],
 			backgroundColor: thingData[`${prefix}_flair_background_color`],
 			textColor: thingData[`${prefix}_flair_text_color`],
 			richText: thingData[`${prefix}_flair_richtext`],
 			text: thingData[`${prefix}_flair_text`],
+		});
+	}
+	
+	static fromFlairApi(data: FlairApiData): Ph_Flair {
+		return new Ph_Flair({
+			id: data.id,
+			backgroundColor: data.background_color,
+			isEditable: data.text_editable,
+			richText: data.richtext,
+			text: data.text,
+			textColor: data.text_color,
+			type: data.type
 		});
 	}
 
@@ -124,6 +202,28 @@ export default class Ph_Flair extends HTMLElement {
 				return colorOrShortColor;
 		}
 	}
+
+	showEdit() {
+		this.editInput.classList.remove("hide");
+		this.confirmButton.classList.remove("hide");
+		this.cancelButton.classList.remove("hide");
+		this.editButton.classList.add("hide");
+		this.flairContent.classList.add("hide");
+		this.isEditing = true;
+	}
+
+	hideEdit() {
+		this.editInput.classList.add("hide");
+		this.confirmButton.classList.add("hide");
+		this.cancelButton.classList.add("hide");
+		this.editButton.classList.remove("hide");
+		this.flairContent.classList.remove("hide");
+		this.isEditing = false;
+	}
+}
+
+function stopPropagation(e: Event) {
+	e.stopImmediatePropagation()
 }
 
 customElements.define("ph-flair", Ph_Flair);

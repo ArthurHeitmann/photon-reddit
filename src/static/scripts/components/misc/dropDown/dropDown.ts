@@ -35,7 +35,7 @@ export default class Ph_DropDown extends HTMLElement {
 	}
 
 	setEntries(params: DropDownEntryParam[]) {
-		(this.$class("dropDownArea")[0] as Ph_DropDownArea).init(params, this);
+		(this.$class("dropDownArea")[0] as Ph_DropDownArea).setEntries(params, this);
 	}
 
 	setLabel(newLabel: ButtonLabel) {

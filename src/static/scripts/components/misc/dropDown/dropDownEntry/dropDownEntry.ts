@@ -1,3 +1,4 @@
+import { isElementIn } from "../../../../utils/htmlStuff.js";
 import Ph_DropDown, { ButtonLabel } from "../dropDown.js";
 import Ph_DropDownArea from "../dropDownArea/dropDownArea.js";
 
@@ -8,6 +9,7 @@ export default class Ph_DropDownEntry extends HTMLButtonElement {
 	/** Content of this entry */
 	label: HTMLDivElement;
 	dropDown: Ph_DropDown;
+	dropDownArea: Ph_DropDownArea;
 
 	/**
 	 * @param param determines content & behaviour of this entry
@@ -19,6 +21,7 @@ export default class Ph_DropDownEntry extends HTMLButtonElement {
 		super();
 
 		this.dropDown = dropDown;
+		this.dropDownArea = dropDownArea;
 		this.classList.add("dropDownEntry");
 		if (param.nonSelectable)
 			this.classList.add("nonSelectable");
@@ -42,26 +45,43 @@ export default class Ph_DropDownEntry extends HTMLButtonElement {
 			this.appendChild(expandList);
 
 			this.nextDropDown = new Ph_DropDownArea(param.nestedEntries, this.dropDown, this);
-			setTimeout(() => dropDownArea.insertAdjacentElement("afterend", this.nextDropDown), 0);
+			if (this.isConnected)
+				this.insertNextDropdown();
 			this.nextDropDown.classList.add("remove");
 		}
 
 		if (param.nonSelectable !== true) {
-			this.addEventListener("click", () => {
+			this.addEventListener("click", e => {
+				// if inside this entry is a focused <input> ignore
+				if (document.activeElement?.tagName === "INPUT" && isElementIn(this, document.activeElement as HTMLElement))
+					return;
+				// open next nesting level
 				if (param.nestedEntries) {
+					dropDownArea.closeMenu(true);
 					this.nextDropDown.showMenu();
-					dropDownArea.closeMenu();
-				} else if (param.onSelectCallback) {
-					param.onSelectCallback(
+				}
+				// call callback
+				if (param.onSelectCallback) {
+					const shouldBeOpen = param.onSelectCallback(
 						this.valueChain,
 						(newLabel) => this.dropDown.setLabel(newLabel),
 						this.dropDown.getLabel(),
 						this
-					);
-					dropDownArea.closeMenu(true);
+					) || false;
+					if (!shouldBeOpen || shouldBeOpen instanceof Promise)
+						dropDownArea.closeMenu(true);
 				}
 			});
 		}
+	}
+
+	connectedCallback() {
+		if (this.nextDropDown && !this.nextDropDown.parentElement)
+			this.insertNextDropdown();
+	}
+
+	insertNextDropdown() {
+		this.dropDownArea.insertAdjacentElement("afterend", this.nextDropDown);
 	}
 
 	setText(text: string) {
@@ -80,8 +100,9 @@ export interface DropDownEntryParam {
 	 * called when the user clicks on this entry (not if this expands to a nested drop down)
 	 *
 	 * @param valueChain values of this and all previous entries
+	 * @return if true the dropdown should NOT be closed after the click, Promise is equal to false
 	 */
-	onSelectCallback?: (valueChain: any[], setButtonLabel: (newLabel: ButtonLabel) => void, initialLabel: HTMLElement, source: Ph_DropDownEntry) => void,
+	onSelectCallback?: (valueChain: any[], setButtonLabel: (newLabel: ButtonLabel) => void, initialLabel: HTMLElement, source: Ph_DropDownEntry) => boolean | Promise<any> | undefined,
 	/** When clicking this entry don't execute an action, instead show the next nested drop down */
 	nestedEntries?: DropDownEntryParam[],
 	/** if true --> this entry will not be clickable */

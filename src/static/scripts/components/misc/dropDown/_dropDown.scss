@@ -155,10 +155,6 @@
 			}
 		}
 
-		&:not(.nonSelectable):active {
-			border: 1px solid vars.$primary;
-		}
-
 		&.nonSelectable {
 			cursor: default;
 		}
