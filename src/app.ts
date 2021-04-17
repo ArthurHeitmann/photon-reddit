@@ -66,7 +66,7 @@ app.use("/data", analyticsRouter);
 
 const indexFile = __dirname + "/src/static/index.html"
 // catch all paths and check ssl, since app.use middleware doesn't seem to get called here
-app.get('*', [RateLimit(basicRateLimitConfig), checkSslAndWww], safeExc((req, res) => {
+app.get("*", [RateLimit(basicRateLimitConfig), checkSslAndWww], safeExc((req, res) => {
 	res.sendFile(indexFile);
 }));
 

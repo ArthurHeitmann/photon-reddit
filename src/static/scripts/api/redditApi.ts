@@ -292,3 +292,23 @@ export async function getMySubs(limit: number, after?: string) {
 		params.push(["after", after]);
 	return await redditApiRequest("/subreddits/mine/subscriber", params, true);
 }
+
+export async function setPostNsfw(fullName: string, isNsfw: boolean): Promise<boolean> {
+	const r = await redditApiRequest(
+		isNsfw ? "/api/marknsfw" : "/api/unmarknsfw",
+		[["id", fullName]],
+		true,
+		{ method: "POST" }
+	)
+	return !("error" in r) && isObjectEmpty(r);
+}
+
+export async function setPostSpoiler(fullName: string, isSpoiler: boolean): Promise<boolean> {
+	const r = await redditApiRequest(
+		isSpoiler ? "/api/spoiler" : "/api/unspoiler",
+		[["id", fullName]],
+		true,
+		{ method: "POST" }
+	)
+	return !("error" in r) && isObjectEmpty(r);
+}

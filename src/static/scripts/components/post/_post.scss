@@ -216,4 +216,16 @@
 			}
 		}
 	}
+
+	&:not(.nsfw) {
+		.flair.nsfw {
+			display: none;
+		}
+	}
+
+	&:not(.spoiler) {
+		.flair.spoiler {
+			display: none;
+		}
+	}
 }

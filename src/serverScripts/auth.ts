@@ -46,7 +46,7 @@ async function implicitGrant(clientId: string): Promise<Object> {
 	const r = await fetch("https://www.reddit.com/api/v1/access_token", {
 		method: "POST",
 		headers: {
-			"Authorization": `Basic ${Buffer.from(`${appId}:`).toString('base64')}`,
+			"Authorization": `Basic ${Buffer.from(`${appId}:`).toString("base64")}`,
 			"Content-Type": "application/x-www-form-urlencoded"
 		},
 		body: new URLSearchParams([

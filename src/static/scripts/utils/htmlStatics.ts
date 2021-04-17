@@ -91,7 +91,9 @@ export function escHTML(unsafeHTML: string): string {
 
 /** escape attribute text, where attribute is a string in "double quotation marks" */
 export function escADQ(unsafeAttribute: string): string {
-	return unsafeAttribute?.replace(`"`, `\\"`)
+	const dummy = document.createElement("div");
+	dummy.setAttribute("data-escape", unsafeAttribute);
+	return dummy.outerHTML.match(/(?<=").*(?=")/s)[0];
 }
 
 export function getLoadingIcon(): HTMLImageElement {

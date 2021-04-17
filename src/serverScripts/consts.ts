@@ -1,5 +1,5 @@
 import { config } from "dotenv";
-export const env = process.env.NODE_ENV || 'development';
+export const env = process.env.NODE_ENV || "development";
 if (env !== "production")
 	config();
 

@@ -131,9 +131,9 @@ async function registerServiceWorker() {
 	if (registration.waiting && registration.active)
 		setWaitingServiceWorker(registration.waiting);
 
-	registration.addEventListener('updatefound', () => {
-		registration.installing.addEventListener('statechange', (event) => {
-			if ((event.target as ServiceWorker).state === 'installed' && registration.active)
+	registration.addEventListener("updatefound", () => {
+		registration.installing.addEventListener("statechange", (event) => {
+			if ((event.target as ServiceWorker).state === "installed" && registration.active)
 				setWaitingServiceWorker(event.target);
 		});
 	});

@@ -1,4 +1,12 @@
-import { deleteThing, save, vote, VoteDirection, voteDirectionFromLikes } from "../../api/redditApi.js";
+import {
+	deleteThing,
+	save,
+	setPostNsfw,
+	setPostSpoiler,
+	vote,
+	VoteDirection,
+	voteDirectionFromLikes
+} from "../../api/redditApi.js";
 import { pushLinkToHistoryComb, PushType } from "../../historyState/historyStateManager.js";
 import { RedditApiType } from "../../types/misc.js";
 import Votable from "../../types/votable.js";
@@ -14,8 +22,8 @@ import {
 import Ph_FeedItem from "../feed/feedItem/feedItem.js";
 import { globalSettings, NsfwPolicy, PhotonSettings } from "../global/photonSettings/photonSettings.js";
 import Ph_AwardsInfo from "../misc/awardsInfo/awardsInfo.js";
-import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
-import Ph_DropDownEntry from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
+import Ph_DropDown, { ButtonLabel, DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
+import Ph_DropDownEntry, { DropDownEntryParam } from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_Flair from "../misc/flair/flair.js";
 import Ph_Toast, { Level } from "../misc/toast/toast.js";
 import Ph_VoteButton from "../misc/voteButton/voteButton.js";
@@ -104,7 +112,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		}
 
 		// additional actions drop down
-		const dropDownEntries = [
+		const dropDownEntries: DropDownEntryParam[] = [
 			{ displayHTML: this.isSaved ? "Unsave" : "Save", onSelectCallback: this.toggleSave.bind(this) },
 			{ displayHTML: "Share", nestedEntries: [
 					{ displayHTML: "Copy Post Link", value: "post link", onSelectCallback: this.share.bind(this) },
@@ -114,9 +122,13 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 				] }
 		];
 		if (thisUser && thisUser.name === postData.data["author"]) {
+			const editEntries: DropDownEntryParam[] = [];
 			if (this.postBody.children[0] instanceof Ph_PostText)
-				dropDownEntries.push({displayHTML: "Edit", onSelectCallback: this.editPost.bind(this)});
-			dropDownEntries.push({displayHTML: "Delete", onSelectCallback: this.deletePostPrompt.bind(this)});
+				editEntries.push({ displayHTML: "Edit Text", onSelectCallback: this.editPost.bind(this) });
+			editEntries.push({ displayHTML: this.isNsfw ? "Unmark NSFW" : "Mark NSFW", onSelectCallback: this.toggleNsfw.bind(this) });
+			editEntries.push({ displayHTML: this.isSpoiler ? "Unmark Spoiler" : "Mark Spoiler", onSelectCallback: this.toggleSpoiler.bind(this) });
+			dropDownEntries.push({ displayHTML: "Edit", nestedEntries: editEntries });
+			dropDownEntries.push({ displayHTML: "Delete", onSelectCallback: this.deletePostPrompt.bind(this) });
 		}
 		const moreDropDown = new Ph_DropDown(dropDownEntries, "", DirectionX.left, DirectionY.bottom, true);
 		moreDropDown.toggleButton.classList.add("transparentButtonAlt");
@@ -194,8 +206,9 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		mainPart.$class("user")[0]
 			.insertAdjacentElement("afterend", Ph_Flair.fromThingData(postData.data, "author"));
 		const makeCoverNFlair = (flairColor: string, flairText: string, makeCover: boolean) => {
-			mainPart.$class("flairWrapper")[0]
-				.appendChild(new Ph_Flair({type: "text", backgroundColor: flairColor, text: flairText}));
+			const flair = new Ph_Flair({ type: "text", backgroundColor: flairColor, text: flairText });
+			flair.classList.add(flairText.toLowerCase());
+			mainPart.$class("flairWrapper")[0].appendChild(flair);
 			if (makeCover && !this.cover && isInFeed && !this.isEmpty(this.postBody)) {
 				this.postBody.classList.add("covered");
 				this.cover = this.postBody.appendChild(this.makeContentCover());
@@ -207,18 +220,17 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			this.classList.add("nsfw");
 			if (globalSettings.nsfwPolicy === NsfwPolicy.never)
 				this.classList.add("hide");
-			else
-				makeCoverNFlair("darkred", "NSFW", globalSettings.nsfwPolicy === NsfwPolicy.covered);
 		}
-		if (this.isSpoiler) {
+		makeCoverNFlair("darkred", "NSFW", globalSettings.nsfwPolicy === NsfwPolicy.covered);
+		if (this.isSpoiler)
 			this.classList.add("spoiler");
-			makeCoverNFlair("orange", "Spoiler", true);
-		}
+		makeCoverNFlair("orange", "Spoiler", true);
 
 		linksToSpa(this)
 
 		if (isInFeed)
 			(this.$class("backgroundLink")[0] as HTMLAnchorElement).onclick = this.linkToCommentsClick.bind(this);
+
 		commentsLink.onclick = (e: MouseEvent) => {
 			if (this.isInFeed)
 				return this.linkToCommentsClick(e);
@@ -411,6 +423,28 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			.forEach(entry => entry.remove());
 
 		new Ph_Toast(Level.success, "Deleted post", { timeout: 2000 });
+	}
+
+	async toggleNsfw (_, __, ___, entry: Ph_DropDownEntry) {
+		const success = await setPostNsfw(this.fullName, !this.isNsfw);
+		if (!success) {
+			new Ph_Toast(Level.error, "Error changing nsfw", { timeout: 2500 });
+			return;
+		}
+		this.isNsfw = !this.isNsfw;
+		this.classList.toggle("nsfw", this.isNsfw);
+		entry.setText(this.isNsfw ? "Unmark NSFW" : "Mark NSFW");
+	}
+
+	async toggleSpoiler (_, __, ___, entry: Ph_DropDownEntry) {
+		const success = await setPostSpoiler(this.fullName, !this.isSpoiler);
+		if (!success) {
+			new Ph_Toast(Level.error, "Error changing spoiler", { timeout: 2500 });
+			return;
+		}
+		this.isSpoiler = !this.isSpoiler;
+		this.classList.toggle("spoiler", this.isSpoiler);
+		entry.setText(this.isSpoiler ? "Unmark Spoiler" : "Mark Spoiler");
 	}
 
 	crossPost() {

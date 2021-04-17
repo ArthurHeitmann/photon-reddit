@@ -51,7 +51,7 @@ self.addEventListener("activate", (e: ActivateEvent) => {
 	console.log("Activated sw!");
 });
 
-self.addEventListener('fetch', (event: FetchEvent) => {
+self.addEventListener("fetch", (event: FetchEvent) => {
 	const environment = location.hostname === "localhost" ? Environment.development : Environment.production;
 	const url = new URL(event.request.url);
 
