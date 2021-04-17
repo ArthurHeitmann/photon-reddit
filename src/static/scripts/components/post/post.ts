@@ -1,7 +1,7 @@
 import {
 	deleteThing,
 	save,
-	setPostNsfw,
+	setPostNsfw, setPostSendReplies,
 	setPostSpoiler,
 	vote,
 	VoteDirection,
@@ -49,6 +49,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 	currentVoteDirection: VoteDirection;
 	isSaved: boolean;
 	isLocked: boolean;
+	sendReplies: boolean;
 	postBody: Ph_PostBody;
 	isPinned: boolean;
 	isNsfw: boolean;
@@ -71,6 +72,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		this.permalink = postData.data["permalink"];
 		this.postTitle = postData.data["title"];
 		this.isPinned = postData.data["stickied"];
+		this.sendReplies = postData.data["send_replies"];
 		this.isNsfw = postData.data["over_18"];
 		this.isSpoiler = postData.data["spoiler"];
 		this.wasInitiallySeen = hasPostsBeenSeen(this.fullName);
@@ -127,6 +129,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 				editEntries.push({ displayHTML: "Edit Text", onSelectCallback: this.editPost.bind(this) });
 			editEntries.push({ displayHTML: this.isNsfw ? "Unmark NSFW" : "Mark NSFW", onSelectCallback: this.toggleNsfw.bind(this) });
 			editEntries.push({ displayHTML: this.isSpoiler ? "Unmark Spoiler" : "Mark Spoiler", onSelectCallback: this.toggleSpoiler.bind(this) });
+			editEntries.push({ displayHTML: `${this.sendReplies ? "Disable" : "Enable"} Reply Notifications`, onSelectCallback: this.toggleSendReplies.bind(this) });
 			dropDownEntries.push({ displayHTML: "Edit", nestedEntries: editEntries });
 			dropDownEntries.push({ displayHTML: "Delete", onSelectCallback: this.deletePostPrompt.bind(this) });
 		}
@@ -445,6 +448,16 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		this.isSpoiler = !this.isSpoiler;
 		this.classList.toggle("spoiler", this.isSpoiler);
 		entry.setText(this.isSpoiler ? "Unmark Spoiler" : "Mark Spoiler");
+	}
+
+	async toggleSendReplies (_, __, ___, entry: Ph_DropDownEntry) {
+		const success = await setPostSendReplies(this.fullName, !this.sendReplies);
+		if (!success) {
+			new Ph_Toast(Level.error, "Error changing send replies", { timeout: 2500 });
+			return;
+		}
+		this.sendReplies = !this.sendReplies;
+		entry.setText(`${this.sendReplies ? "Disable" : "Enable"} Reply Notifications`);
 	}
 
 	crossPost() {

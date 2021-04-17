@@ -312,3 +312,13 @@ export async function setPostSpoiler(fullName: string, isSpoiler: boolean): Prom
 	)
 	return !("error" in r) && isObjectEmpty(r);
 }
+
+export async function setPostSendReplies(fullName: string, sendReplies: boolean): Promise<boolean> {
+	const r = await redditApiRequest(
+		"/api/sendreplies",
+		[["id", fullName], ["state", sendReplies.toString()]],
+		true,
+		{ method: "POST" }
+	)
+	return !("error" in r) && isObjectEmpty(r);
+}
