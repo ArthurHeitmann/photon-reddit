@@ -5,7 +5,7 @@ import { linksToSpa } from "../../../utils/htmlStuff.js";
 import Ph_FeedInfo, { FeedType } from "../../feed/feedInfo/feedInfo.js";
 import Ph_DropDown, { ButtonLabel, DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import { DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
-import Ph_Flair from "../../misc/flair/flair.js";
+import Ph_Flair, { FlairApiData } from "../../misc/flair/flair.js";
 import Ph_MarkdownForm from "../../misc/markdownForm/markdownForm.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 
@@ -39,7 +39,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 	flairSelectorWrapper: HTMLDivElement;
 	textSubmitText: string = "Submit";
 	linkSubmitText: string = "Submit";
-	selectedFlairId: string;
+	selectedFlair: Ph_Flair;
 	nsfwButton: HTMLButtonElement;
 	spoilerButton: HTMLButtonElement;
 	isNsfw: boolean = false;
@@ -223,8 +223,11 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		const params = [];
 		params.push(["sr", this.subInput.$tag("input")[0]["value"]]);
 		params.push(["title", this.titleInput.$tag("input")[0]["value"]]);
-		if (this.selectedFlairId !== null)
-			params.push(["flair_id", this.selectedFlairId]);
+		if (this.selectedFlair !== null) {
+			params.push(["flair_id", this.selectedFlair.data.id]);
+			if (this.selectedFlair.hasTextChanged)
+				params.push(["flair_text", this.selectedFlair.data.text]);
+		}
 		params.push(["nsfw", this.isNsfw]);
 		if (this.isSpoilerAllowed)
 			params.push(["spoiler", this.isSpoiler]);
@@ -322,21 +325,16 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 			this.imagesAllowed = subData["allow_images"];
 			this.videosAllowed = subData["allow_videos"];
 			// flair selection
-			const flairs: {}[] = await getSubFlairs(community);
+			const flairs: FlairApiData[] = await getSubFlairs(community);
 			this.flairSelectorWrapper.innerText = "";
-			this.selectedFlairId = null;
-			const flairDropdownEntries: DropDownEntryParam[] = flairs.map(flair => <DropDownEntryParam> {
-				displayElement: new Ph_Flair({
-					id: flair["id"],
-					type: flair["type"],
-					richText: flair["richtext"],
-					text: flair["text"],
-					backgroundColor: flair["background_color"],
-					textColor: flair["text_color"],
-					isEditable: flair["text_editable"]
-				}),
-				value: flair["id"],
-				onSelectCallback: this.selectFlair.bind(this)
+			this.selectedFlair = null;
+			const flairDropdownEntries: DropDownEntryParam[] = flairs.map(flair => {
+				const flairElem = Ph_Flair.fromFlairApi(flair);
+				return <DropDownEntryParam> {
+					displayElement: flairElem,
+					value: flairElem,
+					onSelectCallback: this.selectFlair.bind(this)
+				};
 			});
 			if (flairDropdownEntries.length > 0) {
 				this.flairSelectorWrapper.appendChild(new Ph_DropDown(
@@ -372,16 +370,16 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		}
 	}
 
-	selectFlair([flairId], setLabel: (newLabel: ButtonLabel) => void, _, source: HTMLElement) {
-		if ((source.$class("flair")[0] as Ph_Flair).isEditing)
+	selectFlair([flair]: Ph_Flair[], setLabel: (newLabel: ButtonLabel) => void) {
+		if (flair.isEditing)
 			return true;
-		if (this.selectedFlairId === flairId) {
-			this.selectedFlairId = null;
+		if (this.selectedFlair?.data.id === flair.id) {
+			this.selectedFlair = null;
 			setLabel("Select Flair")
 		}
 		else {
-			this.selectedFlairId = flairId;
-			setLabel(source.$class("flair")[0].cloneNode(true) as HTMLElement);
+			this.selectedFlair = flair;
+			setLabel(flair.clone(false));
 		}
 	}
 

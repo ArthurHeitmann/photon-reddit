@@ -4,7 +4,7 @@
 
 import { checkTokenRefresh, initiateLogin } from "../auth/auth.js";
 import Ph_CommentsFeed from "../components/feed/commentsFeed/commentsFeed.js";
-import Ph_Flair from "../components/misc/flair/flair.js";
+import Ph_Flair, { FlairApiData } from "../components/misc/flair/flair.js";
 import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
 import { RedditApiType } from "../types/misc.js";
 import Votable, { FullName } from "../types/votable.js";
@@ -271,7 +271,7 @@ export async function readAllMessages() {
 	return await redditApiRequest("/api/read_all_messages", [], true, { method: "POST" })
 }
 
-export async function getSubFlairs(subPath: string) {
+export async function getSubFlairs(subPath: string): Promise<FlairApiData[]> {
 	let flairs = await redditApiRequest(`${subPath}/api/link_flair_v2`, [], true);
 	if (flairs["error"] === 403)
 		flairs = [];

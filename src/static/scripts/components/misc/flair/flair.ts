@@ -35,7 +35,7 @@ export default class Ph_Flair extends HTMLElement {
 	editInput: HTMLInputElement;
 	initialText: string;
 
-	constructor(data: FlairData) {
+	constructor(data: FlairData, allowEdits: boolean = true) {
 		super();
 
 		if (!data || !data.type)
@@ -82,7 +82,7 @@ export default class Ph_Flair extends HTMLElement {
 			console.log(data);
 		}
 
-		if (data.isEditable) {
+		if (data.isEditable && allowEdits) {
 			this.editButton = document.createElement("button");
 			this.editButton.className = "transparentButton";
 			this.editButton.innerHTML = `<img src="/img/edit.svg" alt="edit flair">`;
@@ -97,7 +97,10 @@ export default class Ph_Flair extends HTMLElement {
 			this.editInput = document.createElement("input");
 			this.editInput.classList.add("hide");
 			this.editInput.maxLength = 64;
-			this.editInput.onclick = stopPropagation;
+			this.editInput.addEventListener("keydown", e => {
+				if (e.code === "Enter")
+					this.confirmButton.click();
+			})
 			this.appendChild(this.editInput);
 			this.confirmButton = document.createElement("button");
 			this.confirmButton.className = "transparentButton hide";
@@ -138,7 +141,7 @@ export default class Ph_Flair extends HTMLElement {
 			textColor: thingData[`${prefix}_flair_text_color`],
 			richText: thingData[`${prefix}_flair_richtext`],
 			text: thingData[`${prefix}_flair_text`],
-		});
+		}, false);
 	}
 	
 	static fromFlairApi(data: FlairApiData): Ph_Flair {
@@ -151,6 +154,10 @@ export default class Ph_Flair extends HTMLElement {
 			textColor: data.text_color,
 			type: data.type
 		});
+	}
+
+	clone(allowEdits: boolean) {
+		return new Ph_Flair(this.data, allowEdits);
 	}
 
 	private makeFlairColorScheme(color: string, secondaryColor?: string): string[] {
