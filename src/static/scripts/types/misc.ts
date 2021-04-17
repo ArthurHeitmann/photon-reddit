@@ -5,11 +5,11 @@ export interface RedditApiType {
 }
 
 export interface RedditApiData {
-	modhash: string,
-	dist: number,
-	children: RedditApiType[],
-	before: string,
-	after: string
+	dist?: number,
+	children?: RedditApiType[],
+	before?: string,
+	after?: string,
+	[other: string]: any
 }
 
 export interface SVGAnimationElement extends SVGElement {

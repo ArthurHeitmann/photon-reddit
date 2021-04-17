@@ -32,14 +32,14 @@ export async function checkAuthOnPageLoad(): Promise<AuthState> {
 			if (hasTokenExpired() && !await refreshAccessToken()) {
 				authError("Failed to refresh authentication! If this is breaking the website, log out & reload?");
 			}
-			else if (!await verifyTokenWorksLoggedIn() && !await refreshAccessToken()) {
+			else if (!await verifyTokenWorks() && !await refreshAccessToken()) {
 				authError("Invalid authentication! If this is breaking the website, log out & reload?");
 			}
 			return AuthState.loggedIn;
 		}
 		else {
 			setIsLoggedIn(false);
-			if (hasTokenExpired() && !await getImplicitGrant() || !await verifyTokenWorksImplicit() && !await getImplicitGrant())
+			if (hasTokenExpired() && !await getImplicitGrant() || !await verifyTokenWorks() && !await getImplicitGrant())
 				authError("Failed to get authentication! Do you want to clear data & reload?");
 			return AuthState.implicitGrant;
 		}
@@ -94,14 +94,9 @@ async function refreshAccessToken(): Promise<boolean> {
 	return true;
 }
 
-async function verifyTokenWorksLoggedIn(): Promise<boolean> {
+async function verifyTokenWorks(): Promise<boolean> {
 	const r = await redditApiRequest("/api/v1/me", [], true);
-	return !("error" in r);
-}
-
-async function verifyTokenWorksImplicit(): Promise<boolean> {
-	const r = await redditApiRequest("/r/all/new", [["limit", "1"]], false);
-	return !("error" in r);
+	return !("error" in r) && "features" in r;
 }
 
 function hasTokenExpired(): boolean {
