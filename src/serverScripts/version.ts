@@ -1,6 +1,11 @@
-export const photonVersion = "0.2.6";		/// <change version script>
+export const photonVersion = "0.2.7";		/// <change version script>
 
 export const photonChangelog = {
+	"0.2.7": {
+		"New": [
+			"Images and Video will only be loaded if they are from trusted sources"
+		],
+	},
 	"0.2.6": {
 		"New": [
 			"Editing post flairs",
