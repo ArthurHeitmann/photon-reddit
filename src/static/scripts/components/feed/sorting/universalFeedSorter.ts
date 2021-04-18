@@ -65,7 +65,7 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 			dropDownParams = [
 				{ displayHTML: "Default", value: SortPostsOrder.default, onSelectCallback: this.handleSortSelect.bind(this) },
 				{ displayHTML: "Hot", value: SortPostsOrder.hot, onSelectCallback: this.handleSortSelect.bind(this) },
-				{ displayHTML: "Top", value: SortPostsOrder.top, onSelectCallback: this.handleSortSelect.bind(this), nestedEntries: [
+				{ displayHTML: "Top", value: SortPostsOrder.top, nestedEntries: [
 						{ displayHTML: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.handleSortSelect.bind(this) },
 						{ displayHTML: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.handleSortSelect.bind(this) },
 						{ displayHTML: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.handleSortSelect.bind(this) },
@@ -75,7 +75,7 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 					] },
 				{ displayHTML: "Rising", value: SortPostsOrder.rising, onSelectCallback: this.handleSortSelect.bind(this) },
 				{ displayHTML: "New", value: SortPostsOrder.new, onSelectCallback: this.handleSortSelect.bind(this) },
-				{ displayHTML: "Controversial", value: SortPostsOrder.controversial, onSelectCallback: this.handleSortSelect.bind(this), nestedEntries: [
+				{ displayHTML: "Controversial", value: SortPostsOrder.controversial, nestedEntries: [
 						{ displayHTML: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.handleSortSelect.bind(this) },
 						{ displayHTML: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.handleSortSelect.bind(this) },
 						{ displayHTML: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.handleSortSelect.bind(this) },
@@ -90,7 +90,7 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 			dropDownParams = [
 				{ displayHTML: "Default", value: SortUserPostsOrder.default, onSelectCallback: this.handleSortSelect.bind(this) },
 				{ displayHTML: "Hot", value: SortUserPostsOrder.hot, onSelectCallback: this.handleSortSelect.bind(this) },
-				{ displayHTML: "Top", value: SortUserPostsOrder.top, onSelectCallback: this.handleSortSelect.bind(this), nestedEntries: [
+				{ displayHTML: "Top", value: SortUserPostsOrder.top, nestedEntries: [
 						{ displayHTML: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.handleSortSelect.bind(this) },
 						{ displayHTML: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.handleSortSelect.bind(this) },
 						{ displayHTML: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.handleSortSelect.bind(this) },
@@ -99,7 +99,7 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 						{ displayHTML: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.handleSortSelect.bind(this) }
 					] },
 				{ displayHTML: "New", value: SortUserPostsOrder.new, onSelectCallback: this.handleSortSelect.bind(this) },
-				{ displayHTML: "Controversial", value: SortUserPostsOrder.controversial, onSelectCallback: this.handleSortSelect.bind(this), nestedEntries: [
+				{ displayHTML: "Controversial", value: SortUserPostsOrder.controversial, nestedEntries: [
 						{ displayHTML: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.handleSortSelect.bind(this) },
 						{ displayHTML: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.handleSortSelect.bind(this) },
 						{ displayHTML: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.handleSortSelect.bind(this) },

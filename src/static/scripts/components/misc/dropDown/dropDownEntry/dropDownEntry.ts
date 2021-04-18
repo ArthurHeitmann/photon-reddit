@@ -102,7 +102,7 @@ export interface DropDownEntryParam {
 	 * @param valueChain values of this and all previous entries
 	 * @return if true the dropdown should NOT be closed after the click, Promise is equal to false
 	 */
-	onSelectCallback?: (valueChain: any[], setButtonLabel: (newLabel: ButtonLabel) => void, initialLabel: HTMLElement, source: Ph_DropDownEntry) => boolean | Promise<any> | undefined,
+	onSelectCallback?: (valueChain: any[], setButtonLabel: (newLabel: ButtonLabel) => void, initialLabel: HTMLElement, source: Ph_DropDownEntry) => boolean | Promise<any> | void,
 	/** When clicking this entry don't execute an action, instead show the next nested drop down */
 	nestedEntries?: DropDownEntryParam[],
 	/** if true --> this entry will not be clickable */

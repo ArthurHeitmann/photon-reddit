@@ -175,7 +175,7 @@ export default class Ph_Search extends HTMLElement {
 			let flairData: any[] = await getSubFlairs(this.currentSubreddit);
 			const flairs = flairData
 				.map(flair => (<DropDownEntryParam> {
-					displayElement: Ph_Flair.fromFlairApi(flair),
+					displayElement: Ph_Flair.fromFlairApi(flair, false),
 					value: flair.text,
 					onSelectCallback: this.searchByFlair.bind(this),
 				}));

@@ -71,7 +71,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 				continue;
 			}
 			switch (itemData["e"]) {
-					case "Image":
+				case "Image":
 					const previews: {}[] = itemData["p"];
 					mediaElements.push(new Ph_ImageViewer({
 						originalUrl: itemData["s"]["u"],
@@ -337,7 +337,8 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		this.elementCaption.title = newMedia.caption || "";
 		// link
 		this.elementLink.href = newMedia.url;
-		this.elementLink.innerText = newMedia.url.match(/[\w-_]+\.[\w-_]+(?=[/?#])+/)[0];
+		const shortLinkMatches = newMedia.url.match(/[\w-_]+\.[\w-_]+(?=([/?#].*)?$)/);
+		this.elementLink.innerText = shortLinkMatches?.[0] || newMedia.url.slice(0, 10);
 		// controls slots
 		this.controls.updateSlotsWith(newMedia.controls);
 		// fs event

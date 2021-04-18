@@ -144,7 +144,7 @@ export default class Ph_Flair extends HTMLElement {
 		}, false);
 	}
 	
-	static fromFlairApi(data: FlairApiData): Ph_Flair {
+	static fromFlairApi(data: FlairApiData, allowEdits = true): Ph_Flair {
 		return new Ph_Flair({
 			id: data.id,
 			backgroundColor: data.background_color,
@@ -153,7 +153,7 @@ export default class Ph_Flair extends HTMLElement {
 			text: data.text,
 			textColor: data.text_color,
 			type: data.type
-		});
+		}, allowEdits);
 	}
 
 	clone(allowEdits: boolean) {
