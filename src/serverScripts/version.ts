@@ -1,6 +1,15 @@
-export const photonVersion = "0.2.5";		/// <change version script>
+export const photonVersion = "0.2.6";		/// <change version script>
 
 export const photonChangelog = {
+	"0.2.6": {
+		"New": [
+			"Editing post flairs",
+			"Changing a users subreddit flair",
+			"Flairs with editable text are now supported",
+			"On posts the nsfw or spoiler state can now be changed",
+			"Reply notifications on posts can now be edited"
+		],
+	},
 	"0.2.5": {
 		"New": [
 			"Support for giphy.com gifs",
