@@ -1,8 +1,14 @@
 import {
-	addSubToMulti,
-	getMultiInfo, getSubInfo, getSubModerators, getSubRules, getUserMultis,
-	redditApiRequest, removeSubFromMulti,
+	addSubToMulti, deleteUserFlair,
+	getMultiInfo,
+	getSubFlairs,
+	getSubInfo,
+	getSubModerators,
+	getSubRules, getSubUserFlairs,
+	getUserMultis,
+	removeSubFromMulti,
 	searchSubredditNames,
+	setUserFlair,
 	subscribe
 } from "../../../api/redditApi.js";
 import { RedditApiType } from "../../../types/misc.js";
@@ -12,8 +18,9 @@ import { classInElementTree, linksToSpa } from "../../../utils/htmlStuff.js";
 import { numberToShort, stringSortComparer, throttle } from "../../../utils/utils.js";
 import Ph_BetterButton from "../../global/betterElements/betterButton.js";
 import Ph_Header from "../../global/header/header.js";
-import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
-import { DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
+import Ph_DropDown, { ButtonLabel, DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
+import Ph_DropDownEntry, { DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
+import Ph_Flair, { FlairApiData } from "../../misc/flair/flair.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import { clearAllOldData } from "./feedInfoCleanup.js";
 
@@ -197,6 +204,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		let feedAbout: RedditApiType;
 		let rules: SubredditRule[];
 		let mods: SubredditModerator[];
+		let flairs: FlairApiData[];
 		try {
 			feedAbout = await getSubInfo(this.feedUrl);
 			if (feedAbout["error"] || !(feedAbout["kind"] && feedAbout["data"]))
@@ -209,7 +217,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 			if (tmpMods["error"] || !(tmpMods["kind"] === "UserList" && tmpMods["data"]))
 				throw `Invalid mods response ${JSON.stringify(tmpRules)}`;
 			mods = tmpMods["data"]["children"];
-
+			flairs = await getSubUserFlairs(this.feedUrl);
 		} catch (e) {
 			new Ph_Toast(Level.error, "Error getting subreddit info");
 			console.error(`Error getting subreddit info for ${this.feedUrl}`);
@@ -218,6 +226,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		this.loadedInfo.data = feedAbout.data;
 		this.loadedInfo.data.rules = rules;
 		this.loadedInfo.data.mods = mods;
+		this.loadedInfo.data.flairs = flairs;
 		this.loadedInfo.lastUpdatedMsUTC = Date.now();
 		this.saveInfo();
 	}
@@ -265,16 +274,31 @@ export default class Ph_FeedInfo extends HTMLElement {
 		});
 		subActionsWrapper.appendChild(subscribeButton);
 		const dropDownEntries: DropDownEntryParam[] = [];
-		dropDownEntries.push({displayHTML: `<a href="${this.feedUrl}">Visit</a>`})
-		dropDownEntries.push({displayHTML: `<a href="${this.feedUrl}/submit">Submit Post</a>`})
+		dropDownEntries.push({label: `<a href="${this.feedUrl}">Visit</a>`})
+		dropDownEntries.push({label: `<a href="${this.feedUrl}/submit">Submit Post</a>`})
 		if (thisUser.multireddits.length > 0) {
 			dropDownEntries.push({
-				displayHTML: "Add to Multireddit",
+				label: "Add to Multireddit",
 				nestedEntries:
 					thisUser.multireddits.map(multi => ({
-						displayHTML: multi.display_name,
+						label: multi.display_name,
 						value: multi.path,
 						onSelectCallback: ([_, multiPath]) => this.addSubToMulti(this.feedUrl, multiPath.replace(/\/?$/, ""), false)
+					}))
+			});
+		}
+		if (this.loadedInfo.data.flairs.length > 0) {
+			dropDownEntries.push({
+				label: this.loadedInfo.data["user_flair_template_id"] ? Ph_Flair.fromThingData(this.loadedInfo.data, "user") : "Select User Flair",
+				nestedEntries:
+					[{ label: "No FLair", value: null, onSelectCallback: this.setSubFlair.bind(this) }].concat(
+					this.loadedInfo.data["flairs"].map((flair: FlairApiData) => {
+						const flairElem = Ph_Flair.fromFlairApi(flair);
+						return <DropDownEntryParam> {
+							label: flairElem,
+							value: flairElem,
+							onSelectCallback: this.setSubFlair.bind(this)
+						}
 					}))
 			});
 		}
@@ -717,6 +741,23 @@ export default class Ph_FeedInfo extends HTMLElement {
 			new Ph_Toast(Level.error, "Error removing sub from multi");
 			console.error("Error removing sub from multi");
 			console.error(subName);
+		}
+	}
+	
+	private async setSubFlair([_, flair]: any[], __, ___, source: Ph_DropDownEntry) {
+		if (flair instanceof Ph_Flair) {
+			const success = await setUserFlair(this.feedUrl, flair);
+			if (success)
+				source.parentEntry.setLabel(flair.clone(false));
+			else
+				new Ph_Toast(Level.error, "Couldn't change flair");
+		}
+		else {
+			const success = await deleteUserFlair(this.feedUrl);
+			if (success)
+				source.parentEntry.setLabel("Select Subreddit Flair");
+			else
+				new Ph_Toast(Level.error, "Couldn't change flair");
 		}
 	}
 

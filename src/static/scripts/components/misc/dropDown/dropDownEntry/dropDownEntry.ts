@@ -10,6 +10,7 @@ export default class Ph_DropDownEntry extends HTMLButtonElement {
 	label: HTMLDivElement;
 	dropDown: Ph_DropDown;
 	dropDownArea: Ph_DropDownArea;
+	parentEntry: Ph_DropDownEntry = null;
 
 	/**
 	 * @param param determines content & behaviour of this entry
@@ -26,16 +27,18 @@ export default class Ph_DropDownEntry extends HTMLButtonElement {
 		if (param.nonSelectable)
 			this.classList.add("nonSelectable");
 
-		if (parentEntry)
+		if (parentEntry) {
 			this.valueChain = [...parentEntry.valueChain, param.value];
+			this.parentEntry = parentEntry;
+		}
 		else
 			this.valueChain = [param.value];
 
 		this.label = document.createElement("div");
-		if (param.displayElement)
-			this.label.appendChild(param.displayElement);
+		if (param.label instanceof  HTMLElement)
+			this.label.appendChild(param.label);
 		else
-			this.label.innerHTML = param.displayHTML;
+			this.label.innerHTML = param.label;
 		this.appendChild(this.label);
 
 		if (param.nestedEntries && param.nestedEntries.length > 0) {
@@ -84,16 +87,19 @@ export default class Ph_DropDownEntry extends HTMLButtonElement {
 		this.dropDownArea.insertAdjacentElement("afterend", this.nextDropDown);
 	}
 
-	setText(text: string) {
-		this.label.innerHTML = text;
+	setLabel(text: ButtonLabel) {
+		if (text instanceof HTMLElement) {
+			this.label.innerText = "";
+			this.label.appendChild(text);
+		}
+		else
+			this.label.innerHTML = text;
 	}
 }
 
 export interface DropDownEntryParam {
 	/** innerHTML of the label, if empty displayElement has to be set */
-	displayHTML?: string,
-	/** child element of the label, if empty displayHTML has to be set */
-	displayElement?: HTMLElement,
+	label?: string | HTMLElement,
 	/** the value associated with this entry, will be passed to onSelectCallback */
 	value?: any,
 	/**

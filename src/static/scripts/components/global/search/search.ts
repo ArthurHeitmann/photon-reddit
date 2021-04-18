@@ -115,38 +115,38 @@ export default class Ph_Search extends HTMLElement {
 		else
 			curSortStr = `Sort - relevance/all`;
 		this.sortBy = new Ph_DropDown([
-			{ displayHTML: "Relevance", value: SortSearchOrder.relevance, nestedEntries: [
-				{ displayHTML: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.setSortOrder.bind(this) },
-				{ displayHTML: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.setSortOrder.bind(this) },
-				{ displayHTML: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.setSortOrder.bind(this) },
-				{ displayHTML: "Month", value: SortPostsTimeFrame.month, onSelectCallback: this.setSortOrder.bind(this) },
-				{ displayHTML: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.setSortOrder.bind(this) },
-				{ displayHTML: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.setSortOrder.bind(this) },
+			{ label: "Relevance", value: SortSearchOrder.relevance, nestedEntries: [
+				{ label: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.setSortOrder.bind(this) },
+				{ label: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.setSortOrder.bind(this) },
+				{ label: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.setSortOrder.bind(this) },
+				{ label: "Month", value: SortPostsTimeFrame.month, onSelectCallback: this.setSortOrder.bind(this) },
+				{ label: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.setSortOrder.bind(this) },
+				{ label: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.setSortOrder.bind(this) },
 			] },
-			{ displayHTML: "Hot", value: SortSearchOrder.hot, nestedEntries: [
-				{ displayHTML: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.setSortOrder.bind(this) },
-				{ displayHTML: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.setSortOrder.bind(this) },
-				{ displayHTML: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.setSortOrder.bind(this) },
-				{ displayHTML: "Month", value: SortPostsTimeFrame.month, onSelectCallback: this.setSortOrder.bind(this) },
-				{ displayHTML: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.setSortOrder.bind(this) },
-				{ displayHTML: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.setSortOrder.bind(this) },
+			{ label: "Hot", value: SortSearchOrder.hot, nestedEntries: [
+				{ label: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.setSortOrder.bind(this) },
+				{ label: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.setSortOrder.bind(this) },
+				{ label: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.setSortOrder.bind(this) },
+				{ label: "Month", value: SortPostsTimeFrame.month, onSelectCallback: this.setSortOrder.bind(this) },
+				{ label: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.setSortOrder.bind(this) },
+				{ label: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.setSortOrder.bind(this) },
 			] },
-			{ displayHTML: "top", value: SortSearchOrder.top, nestedEntries: [
-				{ displayHTML: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.setSortOrder.bind(this) },
-				{ displayHTML: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.setSortOrder.bind(this) },
-				{ displayHTML: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.setSortOrder.bind(this) },
-				{ displayHTML: "Month", value: SortPostsTimeFrame.month, onSelectCallback: this.setSortOrder.bind(this) },
-				{ displayHTML: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.setSortOrder.bind(this) },
-				{ displayHTML: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.setSortOrder.bind(this) },
+			{ label: "top", value: SortSearchOrder.top, nestedEntries: [
+				{ label: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.setSortOrder.bind(this) },
+				{ label: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.setSortOrder.bind(this) },
+				{ label: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.setSortOrder.bind(this) },
+				{ label: "Month", value: SortPostsTimeFrame.month, onSelectCallback: this.setSortOrder.bind(this) },
+				{ label: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.setSortOrder.bind(this) },
+				{ label: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.setSortOrder.bind(this) },
 			] },
-			{ displayHTML: "New", value: SortSearchOrder.new, onSelectCallback: this.setSortOrder.bind(this) },
-			{ displayHTML: "Comments", value: SortSearchOrder.comments, nestedEntries: [
-				{ displayHTML: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.setSortOrder.bind(this) },
-				{ displayHTML: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.setSortOrder.bind(this) },
-				{ displayHTML: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.setSortOrder.bind(this) },
-				{ displayHTML: "Month", value: SortPostsTimeFrame.month, onSelectCallback: this.setSortOrder.bind(this) },
-				{ displayHTML: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.setSortOrder.bind(this) },
-				{ displayHTML: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.setSortOrder.bind(this) },
+			{ label: "New", value: SortSearchOrder.new, onSelectCallback: this.setSortOrder.bind(this) },
+			{ label: "Comments", value: SortSearchOrder.comments, nestedEntries: [
+				{ label: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.setSortOrder.bind(this) },
+				{ label: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.setSortOrder.bind(this) },
+				{ label: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.setSortOrder.bind(this) },
+				{ label: "Month", value: SortPostsTimeFrame.month, onSelectCallback: this.setSortOrder.bind(this) },
+				{ label: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.setSortOrder.bind(this) },
+				{ label: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.setSortOrder.bind(this) },
 			] },
 		], curSortStr, DirectionX.right, DirectionY.bottom, false);
 		expandedOptions.appendChild(this.sortBy);
@@ -175,12 +175,12 @@ export default class Ph_Search extends HTMLElement {
 			let flairData: any[] = await getSubFlairs(this.currentSubreddit);
 			const flairs = flairData
 				.map(flair => (<DropDownEntryParam> {
-					displayElement: Ph_Flair.fromFlairApi(flair, false),
+					label: Ph_Flair.fromFlairApi(flair, false),
 					value: flair.text,
 					onSelectCallback: this.searchByFlair.bind(this),
 				}));
 			if (flairs.length === 0)
-				this.flairSearch.setEntries([{ displayHTML: `No flairs for ${this.currentSubreddit}` }]);
+				this.flairSearch.setEntries([{ label: `No flairs for ${this.currentSubreddit}` }]);
 			else
 				this.flairSearch.setEntries(flairs);
 			this.areFlairsLoaded = true;
@@ -208,7 +208,7 @@ export default class Ph_Search extends HTMLElement {
 			if (this.currentSubreddit) {
 				limitToLabel.innerText = `Limit to ${this.currentSubreddit}`;
 				this.limitToSubreddit.nextElementSibling.classList.remove("hide");
-				this.flairSearch.setEntries([isLoggedIn ? {displayElement: getLoadingIcon()} : {displayHTML: "Log in to list flairs"}]);
+				this.flairSearch.setEntries([isLoggedIn ? {label: getLoadingIcon()} : {label: "Log in to list flairs"}]);
 				this.flairSearch.classList.remove("hide");
 			}
 			else {

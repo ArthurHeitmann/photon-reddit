@@ -120,29 +120,29 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 
 		// additional actions drop down
 		const dropDownEntries: DropDownEntryParam[] = [
-			{ displayHTML: this.isSaved ? "Unsave" : "Save", onSelectCallback: this.toggleSave.bind(this) },
-			{ displayHTML: "Share", nestedEntries: [
-					{ displayHTML: "Copy Post Link", value: "post link", onSelectCallback: this.share.bind(this) },
-					{ displayHTML: "Copy Reddit Link", value: "reddit link", onSelectCallback: this.share.bind(this) },
-					{ displayHTML: "Copy Link", value: "link", onSelectCallback: this.share.bind(this) },
-					{ displayHTML: "Crosspost", onSelectCallback: this.crossPost.bind(this) },
+			{ label: this.isSaved ? "Unsave" : "Save", onSelectCallback: this.toggleSave.bind(this) },
+			{ label: "Share", nestedEntries: [
+					{ label: "Copy Post Link", value: "post link", onSelectCallback: this.share.bind(this) },
+					{ label: "Copy Reddit Link", value: "reddit link", onSelectCallback: this.share.bind(this) },
+					{ label: "Copy Link", value: "link", onSelectCallback: this.share.bind(this) },
+					{ label: "Crosspost", onSelectCallback: this.crossPost.bind(this) },
 				] }
 		];
 		this.postFlair = Ph_Flair.fromThingData(postData.data, "link");
 		if (thisUser && thisUser.name === postData.data["author"]) {
 			const editEntries: DropDownEntryParam[] = [];
 			if (this.postBody.children[0] instanceof Ph_PostText)
-				editEntries.push({ displayHTML: "Edit Text", onSelectCallback: this.editPost.bind(this) });
-			editEntries.push({ displayHTML: this.isNsfw ? "Unmark NSFW" : "Mark NSFW", onSelectCallback: this.toggleNsfw.bind(this) });
-			editEntries.push({ displayHTML: this.isSpoiler ? "Unmark Spoiler" : "Mark Spoiler", onSelectCallback: this.toggleSpoiler.bind(this) });
-			editEntries.push({ displayHTML: `${this.sendReplies ? "Disable" : "Enable"} Reply Notifications`, onSelectCallback: this.toggleSendReplies.bind(this) });
+				editEntries.push({ label: "Edit Text", onSelectCallback: this.editPost.bind(this) });
+			editEntries.push({ label: this.isNsfw ? "Unmark NSFW" : "Mark NSFW", onSelectCallback: this.toggleNsfw.bind(this) });
+			editEntries.push({ label: this.isSpoiler ? "Unmark Spoiler" : "Mark Spoiler", onSelectCallback: this.toggleSpoiler.bind(this) });
+			editEntries.push({ label: `${this.sendReplies ? "Disable" : "Enable"} Reply Notifications`, onSelectCallback: this.toggleSendReplies.bind(this) });
 			if (!this.postFlair.classList.contains("empty")) {
-				editEntries.push({ displayHTML: "Change Flair", onSelectCallback: this.onEditFlairClick.bind(this), nestedEntries: [
-					{ displayElement: getLoadingIcon() }
+				editEntries.push({ label: "Change Flair", onSelectCallback: this.onEditFlairClick.bind(this), nestedEntries: [
+					{ label: getLoadingIcon() }
 				]});
 			}
-			dropDownEntries.push({ displayHTML: "Edit", nestedEntries: editEntries });
-			dropDownEntries.push({ displayHTML: "Delete", onSelectCallback: this.deletePostPrompt.bind(this) });
+			dropDownEntries.push({ label: "Edit", nestedEntries: editEntries });
+			dropDownEntries.push({ label: "Delete", onSelectCallback: this.deletePostPrompt.bind(this) });
 		}
 		const moreDropDown = new Ph_DropDown(dropDownEntries, "", DirectionX.left, DirectionY.bottom, true);
 		moreDropDown.toggleButton.classList.add("transparentButtonAlt");
@@ -447,7 +447,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		}
 		this.isNsfw = !this.isNsfw;
 		this.classList.toggle("nsfw", this.isNsfw);
-		entry.setText(this.isNsfw ? "Unmark NSFW" : "Mark NSFW");
+		entry.setLabel(this.isNsfw ? "Unmark NSFW" : "Mark NSFW");
 	}
 
 	async toggleSpoiler (_, __, ___, entry: Ph_DropDownEntry) {
@@ -458,7 +458,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		}
 		this.isSpoiler = !this.isSpoiler;
 		this.classList.toggle("spoiler", this.isSpoiler);
-		entry.setText(this.isSpoiler ? "Unmark Spoiler" : "Mark Spoiler");
+		entry.setLabel(this.isSpoiler ? "Unmark Spoiler" : "Mark Spoiler");
 	}
 
 	async toggleSendReplies (_, __, ___, entry: Ph_DropDownEntry) {
@@ -468,7 +468,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			return;
 		}
 		this.sendReplies = !this.sendReplies;
-		entry.setText(`${this.sendReplies ? "Disable" : "Enable"} Reply Notifications`);
+		entry.setLabel(`${this.sendReplies ? "Disable" : "Enable"} Reply Notifications`);
 	}
 
 	async onEditFlairClick(_, __, ___, source: Ph_DropDownEntry) {
@@ -480,7 +480,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		const flairSelection: DropDownEntryParam[] = flairs.map(flair => {
 			const flairElem = Ph_Flair.fromFlairApi(flair);
 			return {
-				displayElement: flairElem,
+				label: flairElem,
 				value: { flair: flairElem, sub },
 				onSelectCallback: this.selectFlair.bind(this)
 			};

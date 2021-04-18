@@ -142,16 +142,16 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 		const lockedReason = commentData.data["locked"] ? "locked" : "archived";
 		let dropDownParams: DropDownEntryParam[] = [];
 		if (!isLocked)
-			dropDownParams.push({ displayHTML: "Reply", onSelectCallback: this.showReplyForm.bind(this) });
+			dropDownParams.push({ label: "Reply", onSelectCallback: this.showReplyForm.bind(this) });
 		if (commentData.data["author"] === thisUser.name) {
-			dropDownParams.push({ displayHTML: "Edit", onSelectCallback: this.edit.bind(this) });
-			dropDownParams.push({ displayHTML: "Delete", onSelectCallback: this.deletePrompt.bind(this) });
+			dropDownParams.push({ label: "Edit", onSelectCallback: this.edit.bind(this) });
+			dropDownParams.push({ label: "Delete", onSelectCallback: this.deletePrompt.bind(this) });
 		}
 		dropDownParams.push(...[
-			{ displayHTML: this.isSaved ? "Unsave" : "Save", onSelectCallback: this.toggleSave.bind(this) },
-			{ displayHTML: "Share", nestedEntries: [
-					{ displayHTML: "Copy Comment Link", value: "comment link", onSelectCallback: this.share.bind(this) },
-					{ displayHTML: "Copy Reddit Link", value: "reddit link", onSelectCallback: this.share.bind(this) },
+			{ label: this.isSaved ? "Unsave" : "Save", onSelectCallback: this.toggleSave.bind(this) },
+			{ label: "Share", nestedEntries: [
+					{ label: "Copy Comment Link", value: "comment link", onSelectCallback: this.share.bind(this) },
+					{ label: "Copy Reddit Link", value: "reddit link", onSelectCallback: this.share.bind(this) },
 				]
 			}
 		]);

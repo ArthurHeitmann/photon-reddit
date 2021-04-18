@@ -361,19 +361,19 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 		// settings
 		this.controls.settingsEntries = [
 			{
-				displayHTML: "Speed", nestedEntries: [
-					{displayHTML: "0.10x", value: 0.10, onSelectCallback: this.setVideoSpeed.bind(this)},
-					{displayHTML: "0.25x", value: 0.25, onSelectCallback: this.setVideoSpeed.bind(this)},
-					{displayHTML: "0.50x", value: 0.50, onSelectCallback: this.setVideoSpeed.bind(this)},
-					{displayHTML: "1.00x", value: 1.00, onSelectCallback: this.setVideoSpeed.bind(this)},
-					{displayHTML: "2.00x", value: 2.00, onSelectCallback: this.setVideoSpeed.bind(this)},
-					{displayHTML: "4.00x", value: 4.00, onSelectCallback: this.setVideoSpeed.bind(this)},
-					{displayHTML: "8.00x", value: 8.00, onSelectCallback: this.setVideoSpeed.bind(this)},
-					{displayHTML: "16.00x", value: 16.00, onSelectCallback: this.setVideoSpeed.bind(this)},
+				label: "Speed", nestedEntries: [
+					{label: "0.10x", value: 0.10, onSelectCallback: this.setVideoSpeed.bind(this)},
+					{label: "0.25x", value: 0.25, onSelectCallback: this.setVideoSpeed.bind(this)},
+					{label: "0.50x", value: 0.50, onSelectCallback: this.setVideoSpeed.bind(this)},
+					{label: "1.00x", value: 1.00, onSelectCallback: this.setVideoSpeed.bind(this)},
+					{label: "2.00x", value: 2.00, onSelectCallback: this.setVideoSpeed.bind(this)},
+					{label: "4.00x", value: 4.00, onSelectCallback: this.setVideoSpeed.bind(this)},
+					{label: "8.00x", value: 8.00, onSelectCallback: this.setVideoSpeed.bind(this)},
+					{label: "16.00x", value: 16.00, onSelectCallback: this.setVideoSpeed.bind(this)},
 				]
 			},
 			// {
-			// 	displayHTML: `<span>Popout</span>`,
+			// 	label: `<span>Popout</span>`,
 			// 	onSelectCallback: this.popoutVideo.bind(this)
 			// },
 		];

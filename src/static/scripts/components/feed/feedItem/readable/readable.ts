@@ -65,12 +65,12 @@ export default abstract class Ph_Readable extends Ph_FeedItem implements FullNam
 		const elements = [];
 		elements.push(new Ph_DropDown(
 			[
-				{ displayHTML: "All", value: MessageSection.all, onSelectCallback: setMessageSection },
-				{ displayHTML: "Unread", value: MessageSection.unread, onSelectCallback: setMessageSection },
-				{ displayHTML: "Messages", value: MessageSection.messages, onSelectCallback: setMessageSection },
-				{ displayHTML: "Comment Replies", value: MessageSection.commentReplies, onSelectCallback: setMessageSection },
-				{ displayHTML: "Post Replies", value: MessageSection.postReplies, onSelectCallback: setMessageSection },
-				{ displayHTML: "Username mentions", value: MessageSection.mentions, onSelectCallback: setMessageSection },
+				{ label: "All", value: MessageSection.all, onSelectCallback: setMessageSection },
+				{ label: "Unread", value: MessageSection.unread, onSelectCallback: setMessageSection },
+				{ label: "Messages", value: MessageSection.messages, onSelectCallback: setMessageSection },
+				{ label: "Comment Replies", value: MessageSection.commentReplies, onSelectCallback: setMessageSection },
+				{ label: "Post Replies", value: MessageSection.postReplies, onSelectCallback: setMessageSection },
+				{ label: "Username mentions", value: MessageSection.mentions, onSelectCallback: setMessageSection },
 			],
 			"Sections",
 			DirectionX.left,

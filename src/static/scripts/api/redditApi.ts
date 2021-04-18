@@ -77,6 +77,7 @@ function fixUrl(url: string) {
 	url = url.replace(/#[^?]*/, "");														// ...#...?... --> ...?...
 	url = url.replace(/(?<=^\/\w+\/[^/]+\/)w(?=([#?\/]).*)/, "wiki");						// /.../.../w --> /.../.../wiki
 	url = url.replace(/(?<=^\/)gallery(?=\/\w+)/, "comments");								// /gallery/... --> /comments/...
+	url = url.replace(/^\/[^\/]+\/[^\/]+\/comments\/([^/]+)(?:\/[^/]+)?/, "/comments/$1");	// /r/.../comments/.../... --> /comments/... if the word "advertisement" is in the post title, UBlock origin will block the request
 	if (new RegExp(`^/(u|user)/${thisUser.name}/m/([^/]+)`, "i").test(url))							// private multi reddits have CORS problems
 		url = url.replace(/^\/user\/[^/]+\/m\//, "/me/m/")									// /user/thisUser/m/... --> /me/m/...
 	return url;
@@ -278,6 +279,13 @@ export async function getSubFlairs(subPath: string): Promise<FlairApiData[]> {
 	return flairs;
 }
 
+export async function getSubUserFlairs(subPath: string): Promise<FlairApiData[]> {
+	let flairs = await redditApiRequest(`${subPath}/api/user_flair_v2`, [], true);
+	if (flairs["error"] === 403)
+		flairs = [];
+	return flairs;
+}
+
 export async function editCommentOrPost(newText: string, thingFullName: string) {
 	return await redditApiRequest(
 		"/api/editusertext", [
@@ -336,5 +344,25 @@ export async function setPostFlair(fullName: string, subredditName: string, flai
 		true,
 		{ method: "POST" }
 	)
+	return !("error" in r) && r["success"];
+}
+
+export async function setUserFlair(subredditPath: string, flair: Ph_Flair) {
+	const flairId = flair.data.id;
+	const flairText = flair.hasTextChanged ? flair.data.text : null;
+	const r = await redditApiRequest(
+		subredditPath + "/api/selectflair",
+		[["name", thisUser.name], ["flair_template_id", flairId], flairText ? ["text", flairText] : ["", ""]],
+		true, { method: "POST" }
+	);
+	return !("error" in r) && r["success"];
+}
+
+export async function deleteUserFlair(subredditPath: string) {
+	const r = await redditApiRequest(
+		subredditPath + "/api/selectflair",
+		[["name", thisUser.name], ["flair_template_id", ""]],
+		true, { method: "POST" }
+	);
 	return !("error" in r) && r["success"];
 }

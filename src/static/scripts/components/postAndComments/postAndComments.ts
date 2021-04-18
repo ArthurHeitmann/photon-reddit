@@ -87,13 +87,13 @@ export default class Ph_PostAndComments extends HTMLElement {
 		// sorting
 		const curSort = extractQuery(history.state.url).match(/(?<=sort=)\w+/);
 		this.sorter = new Ph_DropDown([
-			{ displayHTML: "Best", value: SortCommentsOrder.best, onSelectCallback: this.handleSort.bind(this) },
-			{ displayHTML: "Top", value: SortCommentsOrder.top, onSelectCallback: this.handleSort.bind(this) },
-			{ displayHTML: "New", value: SortCommentsOrder.new, onSelectCallback: this.handleSort.bind(this) },
-			{ displayHTML: "Controversial", value: SortCommentsOrder.controversial, onSelectCallback: this.handleSort.bind(this) },
-			{ displayHTML: "Old", value: SortCommentsOrder.old, onSelectCallback: this.handleSort.bind(this) },
-			{ displayHTML: "Q & A", value: SortCommentsOrder.qa, onSelectCallback: this.handleSort.bind(this) },
-			{ displayHTML: "Random", value: SortCommentsOrder.random, onSelectCallback: this.handleSort.bind(this) },
+			{ label: "Best", value: SortCommentsOrder.best, onSelectCallback: this.handleSort.bind(this) },
+			{ label: "Top", value: SortCommentsOrder.top, onSelectCallback: this.handleSort.bind(this) },
+			{ label: "New", value: SortCommentsOrder.new, onSelectCallback: this.handleSort.bind(this) },
+			{ label: "Controversial", value: SortCommentsOrder.controversial, onSelectCallback: this.handleSort.bind(this) },
+			{ label: "Old", value: SortCommentsOrder.old, onSelectCallback: this.handleSort.bind(this) },
+			{ label: "Q & A", value: SortCommentsOrder.qa, onSelectCallback: this.handleSort.bind(this) },
+			{ label: "Random", value: SortCommentsOrder.random, onSelectCallback: this.handleSort.bind(this) },
 		], curSort ? `Sort - ${curSort[0]}` : "Sorting", DirectionX.right, DirectionY.bottom, false);
 		this.sorter.classList.add("commentsSorter");
 

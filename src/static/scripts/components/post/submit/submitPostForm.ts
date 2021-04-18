@@ -331,7 +331,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 			const flairDropdownEntries: DropDownEntryParam[] = flairs.map(flair => {
 				const flairElem = Ph_Flair.fromFlairApi(flair);
 				return <DropDownEntryParam> {
-					displayElement: flairElem,
+					label: flairElem,
 					value: flairElem,
 					onSelectCallback: this.selectFlair.bind(this)
 				};

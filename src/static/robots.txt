@@ -1,4 +1,2 @@
 User-agent: *
-Disallow: /r/
-Disallow: /u/
-Disallow: /user/
+allow: /

@@ -258,7 +258,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		settingsImg.alt = "settings";
 		this.settingsDropDown = new Ph_DropDown(
 			[{
-				displayHTML: "filters",
+				label: "filters",
 				nestedEntries: [
 					this.makeRotateFilter(),
 					this.makeBgFilter(),
@@ -406,7 +406,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		}
 		wrapper.appendChild(makeRotateButton("ccw"));
 		wrapper.appendChild(makeRotateButton("cw"));
-		return <DropDownEntryParam> { displayElement: wrapper, nonSelectable: true };
+		return <DropDownEntryParam> { label: wrapper, nonSelectable: true };
 	}
 
 	private onRotate(e: MouseEvent) {
@@ -424,7 +424,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		colorInput.value = "initial";
 		colorInput.addEventListener("input", this.onBgColorChange.bind(this));
 		wrapper.appendChild(colorInput);
-		return <DropDownEntryParam> { displayElement: wrapper, nonSelectable: true };
+		return <DropDownEntryParam> { label: wrapper, nonSelectable: true };
 	}
 
 	private onBgColorChange(e: InputEvent) {
@@ -452,7 +452,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		out.push(makeSlider("grayscale", 0, 0, 1));
 		out.push(makeSlider("hue-rotate", 0, 0, 360, "deg"));
 		out.push(makeSlider("invert", 0, 0, 1));
-		return out.map(el => (<DropDownEntryParam> { displayElement: el, nonSelectable: true }));
+		return out.map(el => (<DropDownEntryParam> { label: el, nonSelectable: true }));
 	}
 }
 

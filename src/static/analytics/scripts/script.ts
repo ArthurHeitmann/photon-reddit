@@ -93,7 +93,7 @@ window.addEventListener("load", () => {
 	timeFrameIndicator.innerText = "day";
 	$id("optionsRow").appendChild(new Ph_DropDown(
 		timeFrameLabels.map(label => ( <DropDownEntryParam> {
-			displayHTML: label[0],
+			label: label[0],
 			value: label[1],
 			onSelectCallback: setTimeFrame
 		})),

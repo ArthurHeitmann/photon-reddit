@@ -89,7 +89,7 @@ export default class Ph_About extends HTMLElement {
 		this.classList.add("about");
 		this.innerHTML = template;
 		this.insertAdjacentElement("afterbegin", new Ph_DropDown([{
-			displayElement: new Ph_Flair({
+			label: new Ph_Flair({
 				type: "text",
 				text: "$LIBRARY_NAME Maintainer",
 				backgroundColor: "",

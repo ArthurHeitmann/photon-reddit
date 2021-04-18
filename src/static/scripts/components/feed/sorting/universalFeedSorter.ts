@@ -36,17 +36,17 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 			const tmpCurSection = feed.requestUrl.match(/(?<=^\/(u|user)\/[^/]+\/)\w+/);
 			const curSection = tmpCurSection && tmpCurSection[0] || "Overview";
 			const userSections = <DropDownEntryParam[]> [
-				{ displayHTML: "Overview", value: UserSection.overview, onSelectCallback: this.setUserSection.bind(this) },
-				{ displayHTML: "Posts", value: UserSection.posts, onSelectCallback: this.setUserSection.bind(this) },
-				{ displayHTML: "Comments", value: UserSection.comments, onSelectCallback: this.setUserSection.bind(this) },
-				{ displayHTML: "Gilded", value: UserSection.gilded, onSelectCallback: this.setUserSection.bind(this) },
+				{ label: "Overview", value: UserSection.overview, onSelectCallback: this.setUserSection.bind(this) },
+				{ label: "Posts", value: UserSection.posts, onSelectCallback: this.setUserSection.bind(this) },
+				{ label: "Comments", value: UserSection.comments, onSelectCallback: this.setUserSection.bind(this) },
+				{ label: "Gilded", value: UserSection.gilded, onSelectCallback: this.setUserSection.bind(this) },
 			];
 			if (new RegExp(`/${thisUser.name}$`, "i").test(baseUrl)) {
 				userSections.push(...[
-					{ displayHTML: "Upvoted", value: UserSection.upvoted, onSelectCallback: this.setUserSection.bind(this) },
-					{ displayHTML: "Downvoted", value: UserSection.downvoted, onSelectCallback: this.setUserSection.bind(this) },
-					{ displayHTML: "Hidden", value: UserSection.hidden, onSelectCallback: this.setUserSection.bind(this) },
-					{ displayHTML: "Saved", value: UserSection.saved, onSelectCallback: this.setUserSection.bind(this) }
+					{ label: "Upvoted", value: UserSection.upvoted, onSelectCallback: this.setUserSection.bind(this) },
+					{ label: "Downvoted", value: UserSection.downvoted, onSelectCallback: this.setUserSection.bind(this) },
+					{ label: "Hidden", value: UserSection.hidden, onSelectCallback: this.setUserSection.bind(this) },
+					{ label: "Saved", value: UserSection.saved, onSelectCallback: this.setUserSection.bind(this) }
 				]);
 			}
 			this.sectionDropDown = new Ph_DropDown(userSections, curSection, DirectionX.left, DirectionY.bottom, false);
@@ -63,49 +63,49 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 		let dropDownParams: DropDownEntryParam[];
 		if (feedType !== FeedType.user) {
 			dropDownParams = [
-				{ displayHTML: "Default", value: SortPostsOrder.default, onSelectCallback: this.handleSortSelect.bind(this) },
-				{ displayHTML: "Hot", value: SortPostsOrder.hot, onSelectCallback: this.handleSortSelect.bind(this) },
-				{ displayHTML: "Top", value: SortPostsOrder.top, nestedEntries: [
-						{ displayHTML: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.handleSortSelect.bind(this) },
-						{ displayHTML: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.handleSortSelect.bind(this) },
-						{ displayHTML: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.handleSortSelect.bind(this) },
-						{ displayHTML: "Month", value: SortPostsTimeFrame.month, onSelectCallback: this.handleSortSelect.bind(this) },
-						{ displayHTML: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.handleSortSelect.bind(this) },
-						{ displayHTML: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.handleSortSelect.bind(this) }
+				{ label: "Default", value: SortPostsOrder.default, onSelectCallback: this.handleSortSelect.bind(this) },
+				{ label: "Hot", value: SortPostsOrder.hot, onSelectCallback: this.handleSortSelect.bind(this) },
+				{ label: "Top", value: SortPostsOrder.top, nestedEntries: [
+						{ label: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.handleSortSelect.bind(this) },
+						{ label: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.handleSortSelect.bind(this) },
+						{ label: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.handleSortSelect.bind(this) },
+						{ label: "Month", value: SortPostsTimeFrame.month, onSelectCallback: this.handleSortSelect.bind(this) },
+						{ label: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.handleSortSelect.bind(this) },
+						{ label: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.handleSortSelect.bind(this) }
 					] },
-				{ displayHTML: "Rising", value: SortPostsOrder.rising, onSelectCallback: this.handleSortSelect.bind(this) },
-				{ displayHTML: "New", value: SortPostsOrder.new, onSelectCallback: this.handleSortSelect.bind(this) },
-				{ displayHTML: "Controversial", value: SortPostsOrder.controversial, nestedEntries: [
-						{ displayHTML: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.handleSortSelect.bind(this) },
-						{ displayHTML: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.handleSortSelect.bind(this) },
-						{ displayHTML: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.handleSortSelect.bind(this) },
-						{ displayHTML: "Moth", value: SortPostsTimeFrame.month, onSelectCallback: this.handleSortSelect.bind(this) },
-						{ displayHTML: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.handleSortSelect.bind(this) },
-						{ displayHTML: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.handleSortSelect.bind(this) }
+				{ label: "Rising", value: SortPostsOrder.rising, onSelectCallback: this.handleSortSelect.bind(this) },
+				{ label: "New", value: SortPostsOrder.new, onSelectCallback: this.handleSortSelect.bind(this) },
+				{ label: "Controversial", value: SortPostsOrder.controversial, nestedEntries: [
+						{ label: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.handleSortSelect.bind(this) },
+						{ label: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.handleSortSelect.bind(this) },
+						{ label: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.handleSortSelect.bind(this) },
+						{ label: "Moth", value: SortPostsTimeFrame.month, onSelectCallback: this.handleSortSelect.bind(this) },
+						{ label: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.handleSortSelect.bind(this) },
+						{ label: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.handleSortSelect.bind(this) }
 					] },
-				{ displayHTML: "Gilded", value: SortPostsOrder.gilded, onSelectCallback: this.handleSortSelect.bind(this) },
+				{ label: "Gilded", value: SortPostsOrder.gilded, onSelectCallback: this.handleSortSelect.bind(this) },
 			];
 		}
 		else {
 			dropDownParams = [
-				{ displayHTML: "Default", value: SortUserPostsOrder.default, onSelectCallback: this.handleSortSelect.bind(this) },
-				{ displayHTML: "Hot", value: SortUserPostsOrder.hot, onSelectCallback: this.handleSortSelect.bind(this) },
-				{ displayHTML: "Top", value: SortUserPostsOrder.top, nestedEntries: [
-						{ displayHTML: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.handleSortSelect.bind(this) },
-						{ displayHTML: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.handleSortSelect.bind(this) },
-						{ displayHTML: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.handleSortSelect.bind(this) },
-						{ displayHTML: "Month", value: SortPostsTimeFrame.month, onSelectCallback: this.handleSortSelect.bind(this) },
-						{ displayHTML: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.handleSortSelect.bind(this) },
-						{ displayHTML: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.handleSortSelect.bind(this) }
+				{ label: "Default", value: SortUserPostsOrder.default, onSelectCallback: this.handleSortSelect.bind(this) },
+				{ label: "Hot", value: SortUserPostsOrder.hot, onSelectCallback: this.handleSortSelect.bind(this) },
+				{ label: "Top", value: SortUserPostsOrder.top, nestedEntries: [
+						{ label: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.handleSortSelect.bind(this) },
+						{ label: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.handleSortSelect.bind(this) },
+						{ label: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.handleSortSelect.bind(this) },
+						{ label: "Month", value: SortPostsTimeFrame.month, onSelectCallback: this.handleSortSelect.bind(this) },
+						{ label: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.handleSortSelect.bind(this) },
+						{ label: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.handleSortSelect.bind(this) }
 					] },
-				{ displayHTML: "New", value: SortUserPostsOrder.new, onSelectCallback: this.handleSortSelect.bind(this) },
-				{ displayHTML: "Controversial", value: SortUserPostsOrder.controversial, nestedEntries: [
-						{ displayHTML: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.handleSortSelect.bind(this) },
-						{ displayHTML: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.handleSortSelect.bind(this) },
-						{ displayHTML: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.handleSortSelect.bind(this) },
-						{ displayHTML: "Moth", value: SortPostsTimeFrame.month, onSelectCallback: this.handleSortSelect.bind(this) },
-						{ displayHTML: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.handleSortSelect.bind(this) },
-						{ displayHTML: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.handleSortSelect.bind(this) }
+				{ label: "New", value: SortUserPostsOrder.new, onSelectCallback: this.handleSortSelect.bind(this) },
+				{ label: "Controversial", value: SortUserPostsOrder.controversial, nestedEntries: [
+						{ label: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.handleSortSelect.bind(this) },
+						{ label: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.handleSortSelect.bind(this) },
+						{ label: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.handleSortSelect.bind(this) },
+						{ label: "Moth", value: SortPostsTimeFrame.month, onSelectCallback: this.handleSortSelect.bind(this) },
+						{ label: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.handleSortSelect.bind(this) },
+						{ label: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.handleSortSelect.bind(this) }
 					] },
 			];
 		}
