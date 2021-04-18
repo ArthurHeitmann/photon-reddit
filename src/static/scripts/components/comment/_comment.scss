@@ -30,6 +30,15 @@
 		> div >.content {
 			display: none;
 		}
+
+		.markdownForm {
+			display: inherit;
+		}
+	}
+
+	.markdownForm {
+		display: none;
+		margin-left: .2rem;
 	}
 
 	.header {
@@ -115,10 +124,6 @@
 				margin-block-end: 0.5em;
 			}
 		}
-	}
-
-	.markdownForm {
-		margin-left: .2rem;
 	}
 
 	.replies {

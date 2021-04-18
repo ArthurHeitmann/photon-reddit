@@ -1,5 +1,6 @@
 import { getImgurAlbumContents, getImgurContent, ImgurContent, ImgurContentType } from "../../api/imgurApi.js";
 import { RedditApiData, RedditApiType } from "../../types/misc.js";
+import { mediaHostsWhiteList } from "../../utils/consts.js";
 import { nonDraggableImage } from "../../utils/htmlStatics.js";
 import { linksToSpa } from "../../utils/htmlStuff.js";
 import { globalSettings } from "../global/photonSettings/photonSettings.js";
@@ -170,7 +171,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	}
 
 	static isUrlVideo(url: string): boolean {
-		return new RegExp(
+		return Ph_MediaViewer.isUrlOnWhiteList(url) && new RegExp(
 			"^((https?://(i|m)?\.?imgur\\.com\/[\\w-]+.(gifv|mp4))|" +
 			"(https?://v.redd.it\\/[\\w-]+)|" +
 			"(https?://w?w?w?\\.?redgifs.com/watch/\\w+))|" +
@@ -186,11 +187,26 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	}
 
 	static isUrlImage(url: string): boolean {
-		return /(?<!#.*)\.(png|jpg|jpeg|svg)(\?.*)?$/.test(url)
+		return Ph_MediaViewer.isUrlOnWhiteList(url) && /(?<!#.*)\.(png|jpg|jpeg|svg)(\?.*)?$/.test(url)
 	}
 
 	static isUrlImgur(url: string): boolean {
 		return /^(https?:\/\/)?imgur\.com\/\w+(\/\w+)?/.test(url);
+	}
+
+	static isUrlOnWhiteList(url: string): boolean {
+		let urlHost: string;
+		try {
+			urlHost = (new URL(url)).hostname.match(/[^.]+\.[^.]+$/)[0];
+		}
+		catch {
+			return false;
+		}
+		for (const host of mediaHostsWhiteList) {
+			if (host === urlHost)
+				return true;
+		}
+		return false;
 	}
 
 	constructor(initElements?: MediaElement[]) {

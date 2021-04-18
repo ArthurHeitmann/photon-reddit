@@ -42,6 +42,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 	isSaved: boolean;
 	postFullName: string;
 	bodyMarkdown: string;
+	editForm: Ph_MarkdownForm;
 
 	/**
 	 * @param commentData Data returned by the reddit API
@@ -50,7 +51,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 	 * @param post parent posplt if available should be supied (needed to load possible child comments)
 	 */
 	constructor(commentData: RedditApiType, isChild: boolean, isInFeed: boolean, post?: Ph_Post) {
-		super(commentData.data["name"], commentData.data["permalink"] || commentData.data["context"], isInFeed,
+		super(commentData.data["name"], commentData.data["permalink"] + "?context=3" || commentData.data["context"], isInFeed,
 			"first_message" in commentData.data, !commentData.data["new"]);
 
 		this.classList.add("comment");
@@ -144,7 +145,8 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 		if (!isLocked)
 			dropDownParams.push({ label: "Reply", onSelectCallback: this.showReplyForm.bind(this) });
 		if (commentData.data["author"] === thisUser.name) {
-			dropDownParams.push({ label: "Edit", onSelectCallback: this.edit.bind(this) });
+			this.setupEditForm();
+			dropDownParams.push({ label: "Edit", onSelectCallback: this.editStart.bind(this) });
 			dropDownParams.push({ label: "Delete", onSelectCallback: this.deletePrompt.bind(this) });
 		}
 		dropDownParams.push(...[
@@ -369,14 +371,12 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 		}
 	}
 
-	async edit() {
-		this.classList.add("isEditing");
-
-		const editForm = new Ph_MarkdownForm("Edit", true);
-		editForm.textField.value = this.bodyMarkdown;
-		editForm.addEventListener("ph-submit", async () => {
+	setupEditForm() {
+		this.editForm = new Ph_MarkdownForm("Edit", true);
+		this.editForm.textField.value = this.bodyMarkdown;
+		this.editForm.addEventListener("ph-submit", async () => {
 			try {
-				const resp = await edit(this, editForm.textField.value);
+				const resp = await edit(this, this.editForm.textField.value);
 
 				if (resp["json"] && resp["json"]["errors"]) {
 					new Ph_Toast(Level.error, resp["json"]["errors"][0].join(" | "));
@@ -390,7 +390,6 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 				const content = this.getElementsByClassName("content")[0] as HTMLElement;
 				content.innerHTML = resp["body_html"];
 				linksToSpa(content, true);
-				editForm.remove();
 				new Ph_Toast(Level.success, "Edited comment", { timeout: 2000 });
 			} catch (e) {
 				console.error("Error editing comment");
@@ -398,8 +397,12 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 				new Ph_Toast(Level.error, "Error editing comment");
 			}
 		});
-		editForm.addEventListener("ph-cancel", () => editForm.remove());
-		this.childComments.insertAdjacentElement("beforebegin", editForm);
+		this.editForm.addEventListener("ph-cancel", () => this.classList.remove("isEditing"));
+		setTimeout(() => this.childComments.insertAdjacentElement("beforebegin", this.editForm), 0);
+	}
+
+	async editStart() {
+		this.classList.add("isEditing");
 	}
 
 	deletePrompt(_, __, ___, source: Ph_DropDownEntry) {
