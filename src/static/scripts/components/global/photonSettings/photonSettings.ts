@@ -161,7 +161,7 @@ export default class Ph_PhotonSettings extends HTMLElement {
 		// inline media
 		const inlineMediaGroup = this.makeCustomLabeledInput(
 			"checkbox",
-			"Load images & videos in comments & posts instead of links",
+			"Auto expand images & videos in comments & posts",
 			"",
 			"inlineMedia",
 			"",
