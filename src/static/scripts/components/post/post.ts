@@ -334,8 +334,8 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 	}
 
 	forceShowWhenSeen() {
-		if (!this.shouldPostBeHidden(true) && this.classList.contains("hidden"))
-			this.classList.remove("hidden");
+		if (!this.shouldPostBeHidden(true) && this.classList.contains("hide"))
+			this.classList.remove("hide");
 	}
 
 	linkToCommentsClick(e) {
