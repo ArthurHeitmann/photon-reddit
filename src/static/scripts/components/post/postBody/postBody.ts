@@ -10,6 +10,8 @@ import Ph_PostText from "./postText/postText.js";
  * Determines the post type and generates the type specific content
  */
 export default class Ph_PostBody extends HTMLElement {
+	private isInitialized = false;
+
 	constructor(postData?: RedditApiType) {
 		super();
 
@@ -21,6 +23,9 @@ export default class Ph_PostBody extends HTMLElement {
 	}
 
 	init(postData: RedditApiType) {
+		if (this.isInitialized)
+			return;
+		this.isInitialized = true;
 		this.classList.remove("aspect-ratio-16-9-wrapper");
 
 		const postType = this.getPostType(postData.data);
