@@ -1,6 +1,7 @@
 import {
 	deleteThing,
-	getSubFlairs, redditApiRequest,
+	getSubFlairs,
+	redditApiRequest,
 	save,
 	setPostFlair,
 	setPostNsfw,
@@ -109,14 +110,11 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		actionWrapper.appendChild(this.voteDownButton);
 		this.setVotesState(this.currentVoteDirection);
 
-		try {
-			this.postBody = new Ph_PostBody(isInFeed ? null : postData);
-		}
-		catch (e) {
-			console.error(`Error making post for ${postData.data["permalink"]}`);
-			console.error(e);
-			new Ph_Toast(Level.error, "Error making post");
-		}
+
+
+		this.postBody = new Ph_PostBody();
+		if (!isInFeed)
+			this.initPostBody(postData);
 
 		// additional actions drop down
 		const dropDownEntries: DropDownEntryParam[] = [
@@ -219,26 +217,21 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			.appendChild(this.postFlair);
 		mainPart.$class("user")[0]
 			.insertAdjacentElement("afterend", Ph_Flair.fromThingData(postData.data, "author"));
-		const makeCoverNFlair = (flairColor: string, flairText: string, makeCover: boolean) => {
+
+		const makeFlair = (flairColor: string, flairText: string) => {
 			const flair = new Ph_Flair({ type: "text", backgroundColor: flairColor, text: flairText });
 			flair.classList.add(flairText.toLowerCase());
 			mainPart.$class("flairWrapper")[0].appendChild(flair);
-			if (makeCover && !this.cover && isInFeed && !this.isEmpty(this.postBody)) {
-				this.postBody.classList.add("covered");
-				this.cover = this.postBody.appendChild(this.makeContentCover());
-			}
-			else
-				this.cover = null;
 		}
 		if (this.isNsfw) {
 			this.classList.add("nsfw");
 			if (globalSettings.nsfwPolicy === NsfwPolicy.never)
 				this.classList.add("hide");
 		}
-		makeCoverNFlair("darkred", "NSFW", this.isNsfw && globalSettings.nsfwPolicy === NsfwPolicy.covered);
+		makeFlair("darkred", "NSFW");
 		if (this.isSpoiler)
 			this.classList.add("spoiler");
-		makeCoverNFlair("orange", "Spoiler", this.isSpoiler);
+		makeFlair("orange", "Spoiler");
 
 		linksToSpa(this)
 
@@ -253,7 +246,28 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		};
 
 		this.addEventListener("ph-intersection-change", this.onIntersectionChange.bind(this));
-		this.addEventListener("ph-almost-visible", () => this.postBody.init(postData), { once: true });
+		if (!this.postBody.isInitialized)
+			this.addEventListener("ph-almost-visible", () => this.initPostBody(postData), { once: true });
+	}
+
+	private initPostBody(postData: RedditApiType) {
+		try {
+			this.postBody.init(postData);
+		}
+		catch (e) {
+			console.error(`Error making post for ${postData.data["permalink"]}`);
+			console.error(e);
+			new Ph_Toast(Level.error, "Error making post");
+		}
+		if (
+			(this.isSpoiler || this.isNsfw && globalSettings.nsfwPolicy === NsfwPolicy.covered) &&
+			!this.cover && this.isInFeed && !this.isEmpty(this.postBody)
+		) {
+			this.postBody.classList.add("covered");
+			this.cover = this.postBody.appendChild(this.makeContentCover());
+		}
+		else
+			this.cover = null;
 	}
 
 	private isEmpty(element: HTMLElement): boolean {

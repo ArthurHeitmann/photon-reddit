@@ -10,7 +10,7 @@ import Ph_PostText from "./postText/postText.js";
  * Determines the post type and generates the type specific content
  */
 export default class Ph_PostBody extends HTMLElement {
-	private isInitialized = false;
+	isInitialized = false;
 
 	constructor(postData?: RedditApiType) {
 		super();
