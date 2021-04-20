@@ -51,8 +51,13 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 	 * @param post parent posplt if available should be supied (needed to load possible child comments)
 	 */
 	constructor(commentData: RedditApiType, isChild: boolean, isInFeed: boolean, post?: Ph_Post) {
-		super(commentData.data["name"], commentData.data["permalink"] + "?context=3" || commentData.data["context"], isInFeed,
-			"first_message" in commentData.data, !commentData.data["new"]);
+		super(
+			commentData.data["name"],
+			commentData.data["permalink"] ? commentData.data["permalink"] + "?context=3" : commentData.data["context"],
+			isInFeed,
+			"first_message" in commentData.data
+			, !commentData.data["new"]
+		);
 
 		this.classList.add("comment");
 		if (!isChild)
