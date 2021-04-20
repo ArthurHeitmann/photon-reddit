@@ -5,6 +5,7 @@ import { $class, $css } from "../../../utils/htmlStatics.js";
 import { linksToSpa } from "../../../utils/htmlStuff.js";
 import { numberToShort } from "../../../utils/utils.js";
 import Ph_Readable from "../../feed/feedItem/readable/readable.js";
+import { globalSettings, PhotonSettings } from "../../global/photonSettings/photonSettings.js";
 import Ph_UserDropDown from "../../global/userDropDown/userDropDown.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 
@@ -99,11 +100,22 @@ export default class Ph_MessageNotification extends HTMLElement {
 	}
 }
 
+let messageCheckInterval = null;
 window.addEventListener("ph-page-ready", () => {
 	if (!isLoggedIn)
 		return;
 	Ph_MessageNotification.checkForNewMessages();
-	setInterval(Ph_MessageNotification.checkForNewMessages, 30 * 1000);
+	if (globalSettings.messageCheckIntervalS > 0)
+		messageCheckInterval = setInterval(Ph_MessageNotification.checkForNewMessages, globalSettings.messageCheckIntervalS * 1000);
 }, { once: true })
+window.addEventListener("ph-settings-changed", (e: CustomEvent) => {
+	const changed = e.detail as PhotonSettings;
+	if (changed.messageCheckIntervalS === undefined)
+		return;
+	if (messageCheckInterval !== null)
+		clearInterval(messageCheckInterval);
+	if (changed.messageCheckIntervalS > 0)
+		messageCheckInterval = setInterval(Ph_MessageNotification.checkForNewMessages, globalSettings.messageCheckIntervalS * 1000);
+})
 
 customElements.define("ph-message-notification", Ph_MessageNotification);

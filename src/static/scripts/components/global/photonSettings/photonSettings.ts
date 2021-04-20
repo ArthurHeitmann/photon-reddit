@@ -34,6 +34,7 @@ export interface PhotonSettings {
 	clearSeenPostAfterMs?: number,
 	isIncognitoEnabled?: boolean,
 	tooltipsVisible?: boolean,
+	messageCheckIntervalS?: number,
 }
 
 // default config
@@ -50,7 +51,8 @@ export let globalSettings: PhotonSettings = {
 	clearFeedCacheAfterMs: 1000 * 60 * 60 * 24 * 2,
 	clearSeenPostAfterMs: 1000 * 60 * 60 * 24 * 31,
 	isIncognitoEnabled: false,
-	tooltipsVisible: true
+	tooltipsVisible: true,
+	messageCheckIntervalS: 30,
 };
 
 /** Stores and manages global settings */
@@ -196,7 +198,7 @@ export default class Ph_PhotonSettings extends HTMLElement {
 		limitedHeightGroup.$tag("input")[0].addEventListener("input", e => {
 			this.stageSettingChange(nameOf<PhotonSettings>("imageLimitedHeight"),
 				(percent) => !isNaN(parseFloat(percent)) && parseFloat(percent) >= 0, "invalid percent")
-				((e.currentTarget as HTMLInputElement).value);
+				(parseInt((e.currentTarget as HTMLInputElement).value));
 		});
 		this.optionsArea.appendChild(limitedHeightGroup);
 		this.optionsArea.appendChild(document.createElement("hr"));
@@ -294,6 +296,19 @@ export default class Ph_PhotonSettings extends HTMLElement {
 				((e.currentTarget as HTMLInputElement).checked);
 		});
 		this.optionsArea.appendChild(tooltipsGroup);
+		// message checking
+		const messageCheckIntervalGroup = this.makeCustomLabeledInput(
+			"number",
+			"Check for new messages every N seconds (0 to disable)",
+			globalSettings.messageCheckIntervalS.toString(),
+			"messageCheckInterval"
+		);
+		messageCheckIntervalGroup.$tag("input")[0].addEventListener("input", e => {
+			this.stageSettingChange(nameOf<PhotonSettings>("messageCheckIntervalS"),
+				(num) => !isNaN(parseInt(num)) && parseInt(num) >= 0, "invalid seconds (must be >= 0)")
+			(parseInt((e.currentTarget as HTMLInputElement).value));
+		});
+		this.optionsArea.appendChild(messageCheckIntervalGroup);
 		this.optionsArea.appendChild(document.createElement("hr"));
 
 		// stored data duration
