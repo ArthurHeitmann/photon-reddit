@@ -3,7 +3,6 @@ import { escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { linksToSpa } from "../../../utils/htmlStuff.js";
 import { RedditApiData, RedditApiType } from "../../../types/misc.js";
 import Ph_MediaViewer from "../../mediaViewer/mediaViewer.js";
-import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Ph_PostText from "./postText/postText.js";
 
 /**
