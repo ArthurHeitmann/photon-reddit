@@ -31,7 +31,10 @@ export default class Ph_FeedItem extends Ph_PhotonBaseElement {
 			entries => {
 				let isVisible = entries[0].intersectionRatio > .4;
 				if (entries[0].intersectionRatio === 0 && isElementInViewport(this))		// when initializing this can be visible but the ration is 0
+				{
 					isVisible = true;
+					console.log("still visible");
+				}
 				this.dispatchEvent(new CustomEvent(
 					"ph-intersection-change",
 					{ detail: isVisible }

@@ -260,7 +260,8 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		return element.innerHTML === "" || Boolean(element.$css(".postText > *:empty").length > 0)
 	}
 
-	private onIntersectionChange(isVisible: boolean) {
+	private onIntersectionChange(e: CustomEvent) {
+		const isVisible: boolean = e.detail;
 		const focusableChild = this.$css("[tabindex]") as HTMLCollectionOf<HTMLHtmlElement>;
 		// post became visable
 		if (isVisible) {
