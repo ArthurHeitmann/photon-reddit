@@ -1,5 +1,5 @@
 import { getChangelog } from "../../../api/photonApi.js";
-import { getLoadingIcon } from "../../../utils/htmlStatics.js";
+import { disableMainScroll, enableMainScroll, getLoadingIcon } from "../../../utils/htmlStatics.js";
 import { photonWebVersion } from "../../../utils/version.js";
 import VersionNumber from "../../../utils/versionNumber.js";
 
@@ -15,6 +15,7 @@ export default class Ph_Changelog extends HTMLElement {
 		if (!Ph_Changelog.currentChangelog)
 			document.body.appendChild(this.currentChangelog = new Ph_Changelog());
 		this.currentChangelog.classList.remove("remove");
+		disableMainScroll();
 	}
 
 	connectedCallback() {
@@ -60,6 +61,7 @@ export default class Ph_Changelog extends HTMLElement {
 
 	close() {
 		this.classList.add("remove");
+		enableMainScroll();
 	}
 }
 

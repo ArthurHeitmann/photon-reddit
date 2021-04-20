@@ -1,6 +1,6 @@
 import { logOut } from "../../../auth/auth.js";
 import { clearSeenPosts, isLoggedIn } from "../../../utils/globals.js";
-import { escADQ } from "../../../utils/htmlStatics.js";
+import { disableMainScroll, enableMainScroll, escADQ } from "../../../utils/htmlStatics.js";
 import "../../../utils/htmlStuff.js";
 import { deepClone, isObjectEmpty } from "../../../utils/utils.js";
 import { photonWebVersion } from "../../../utils/version.js";
@@ -348,8 +348,8 @@ export default class Ph_PhotonSettings extends HTMLElement {
 		showChangelogButton.className = "button";
 		showChangelogButton.innerText = "View Changelog";
 		showChangelogButton.addEventListener("click", () => {
-			Ph_Changelog.show();
 			this.hide();
+			Ph_Changelog.show();
 		})
 		this.optionsArea.appendChild(showChangelogButton);
 		this.optionsArea.insertAdjacentHTML("beforeend", `<span>v${photonWebVersion}</span>`)
@@ -412,10 +412,12 @@ export default class Ph_PhotonSettings extends HTMLElement {
 
 	show() {
 		this.classList.remove("remove");
+		disableMainScroll();
 	}
 
 	hide() {
 		this.classList.add("remove");
+		enableMainScroll();
 	}
 }
 

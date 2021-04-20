@@ -4,6 +4,9 @@
  * These functions don't need any imports
  */
 
+import { isElementIn } from "./htmlStuff.js";
+import { throttle } from "./utils.js";
+
 /** document.getElementById replacement */
 export function $id(id: string) {
 	return document.getElementById(id);
@@ -120,4 +123,16 @@ export function isElementInViewport(elem: HTMLElement) {
 		rect.bottom <= window.innerHeight &&
 		rect.right <= window.innerWidth
 	)
+}
+
+export function disableMainScroll() {
+	const initialWidth = document.body.offsetWidth;
+	document.body.style.overflow = "hidden";
+	const widthDiff = document.body.offsetWidth - initialWidth;
+	document.body.style.marginRight = `${widthDiff}px`;
+}
+
+export function enableMainScroll() {
+	document.body.style.overflow = "inherit";
+	document.body.style.marginRight = ``;
 }
