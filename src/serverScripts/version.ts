@@ -1,6 +1,11 @@
-export const photonVersion = "0.2.8";		/// <change version script>
+export const photonVersion = "0.2.9";		/// <change version script>
 
 export const photonChangelog = {
+	"0.2.9": {
+		"Fixed": [
+			"Fixed problems from previous patch"
+		]
+	},
 	"0.2.8": {
 		"New": [
 			"Image & Video lazy loading (only loaded when they are almost visible)"
