@@ -10,10 +10,18 @@ import Ph_PostText from "./postText/postText.js";
  * Determines the post type and generates the type specific content
  */
 export default class Ph_PostBody extends HTMLElement {
-	constructor(postData: RedditApiType) {
+	constructor(postData?: RedditApiType) {
 		super();
 
 		this.classList.add("content");
+		this.classList.add("aspect-ratio-16-9-wrapper");
+
+		if (postData)
+			this.init(postData);
+	}
+
+	init(postData: RedditApiType) {
+		this.classList.remove("aspect-ratio-16-9-wrapper");
 
 		const postType = this.getPostType(postData.data);
 		switch (postType) {
@@ -44,7 +52,7 @@ export default class Ph_PostBody extends HTMLElement {
 			default:
 				this.makeDefaultBody(postData);
 				break;
-			}
+		}
 
 		linksToSpa(this, postType === PostType.text);
 	}

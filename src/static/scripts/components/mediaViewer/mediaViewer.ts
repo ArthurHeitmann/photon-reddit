@@ -51,14 +51,14 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	static fromPostData_Video(postData: RedditApiType): Ph_MediaViewer {
 		const mediaViewer = new Ph_MediaViewer();
 		const video = Ph_VideoPlayer.fromPostData({ postData })
-		video.then(readyVideo => mediaViewer.init([ readyVideo]));
+		mediaViewer.init([ video]);
 		return mediaViewer;
 	}
 
 	static fromUrl_Video(url: string): Ph_MediaViewer {
 		const mediaViewer = new Ph_MediaViewer();
 		const video = Ph_VideoPlayer.fromPostData({ url })
-		video.then(readyVideo => mediaViewer.init([ readyVideo]));
+		mediaViewer.init([video]);
 		return mediaViewer;
 	}
 

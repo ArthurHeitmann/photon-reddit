@@ -110,7 +110,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		this.setVotesState(this.currentVoteDirection);
 
 		try {
-			this.postBody = new Ph_PostBody(postData);
+			this.postBody = new Ph_PostBody(isInFeed ? null : postData);
 		}
 		catch (e) {
 			console.error(`Error making post for ${postData.data["permalink"]}`);
@@ -252,31 +252,29 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			return false;
 		};
 
-		const intersectionObserver = new IntersectionObserver(
-			entries => {
-				const focusableChild = this.$css("[tabindex]") as HTMLCollectionOf<HTMLHtmlElement>;
-				if (entries[0].intersectionRatio > .4) {
-					if (globalSettings.markSeenPosts && this.isInFeed) {
-						markPostAsSeen(this.fullName);
-					}
-					if (focusableChild.length > 0)
-						focusableChild[0].focus({ preventScroll: true });
-				}
-				else {
-					if (focusableChild.length > 0 && !document.fullscreenElement)
-						focusableChild[0].blur();
-					// this.blur();
-				}
-			},
-			{
-				threshold: .4,
-			}
-		);
-		intersectionObserver.observe(this);
+		this.addEventListener("ph-intersection-change", this.onIntersectionChange.bind(this));
+		this.addEventListener("ph-almost-visible", () => this.postBody.init(postData), { once: true });
 	}
 
 	private isEmpty(element: HTMLElement): boolean {
 		return element.innerHTML === "" || Boolean(element.$css(".postText > *:empty").length > 0)
+	}
+
+	private onIntersectionChange(isVisible: boolean) {
+		const focusableChild = this.$css("[tabindex]") as HTMLCollectionOf<HTMLHtmlElement>;
+		// post became visable
+		if (isVisible) {
+			if (globalSettings.markSeenPosts && this.isInFeed) {
+				markPostAsSeen(this.fullName);
+			}
+			if (focusableChild.length > 0)
+				focusableChild[0].focus({ preventScroll: true });
+		}
+		// post got hidden
+		else {
+			if (focusableChild.length > 0 && !document.fullscreenElement)
+				focusableChild[0].blur();
+		}
 	}
 
 	private onSettingsChanged(e: CustomEvent) {

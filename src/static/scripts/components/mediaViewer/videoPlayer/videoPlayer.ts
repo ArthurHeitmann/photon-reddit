@@ -34,7 +34,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 	static isVideoPlayAllowed = false;
 
 	/** Creates a video player from a reddit post (with a video link) */
-	static async fromPostData({ postData, url }: { postData?: RedditApiType, url?: string }): Promise<Ph_VideoPlayer> {
+	static fromPostData({ postData, url }: { postData?: RedditApiType, url?: string }): Ph_VideoPlayer {
 		if (!(postData || url))
 			throw "either postData or url is needed";
 		if (postData)

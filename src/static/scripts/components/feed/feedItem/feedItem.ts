@@ -1,9 +1,11 @@
+import { isElementInViewport } from "../../../utils/htmlStatics.js";
 import Ph_PhotonBaseElement from "../../photon/photonBaseElement/photonBaseElement.js";
 
 export default class Ph_FeedItem extends Ph_PhotonBaseElement {
 	itemId: string;
 	link: string;
 	isInFeed: boolean;
+	hasBeenOrAlmostVisible = false;
 
 	constructor(id: string, link: string, isInFeed: boolean) {
 		super();
@@ -24,6 +26,47 @@ export default class Ph_FeedItem extends Ph_PhotonBaseElement {
 				this.appendChild(backgroundLink);
 			}
 		}
+
+		const intersectionObserver = new IntersectionObserver(
+			entries => {
+				let isVisible = entries[0].intersectionRatio > .4;
+				if (entries[0].intersectionRatio === 0 && isElementInViewport(this))		// when initializing this can be visible but the ration is 0
+					isVisible = true;
+				this.dispatchEvent(new CustomEvent(
+					"ph-intersection-change",
+					{ detail: isVisible }
+				));
+				if (!isVisible)
+					return;
+
+				if (!this.hasBeenOrAlmostVisible) {
+					this.hasBeenOrAlmostVisible = true;
+					this.dispatchEvent(new Event("ph-almost-visible"));
+				}
+				let next: Element = this;
+				for (let i = 0; i < 5; i++) {
+					next = next.nextElementSibling;
+					if (!next)
+						break;
+					if (!(next instanceof Ph_FeedItem) || next.hasBeenOrAlmostVisible)
+						continue;
+					next.hasBeenOrAlmostVisible = true;
+					next.dispatchEvent(new Event("ph-almost-visible"));
+				}
+				let prev: Element = this;
+				for (let i = 0; i < 5; i++) {
+					prev = prev.previousElementSibling;
+					if (!prev)
+						break;
+					if (!(prev instanceof Ph_FeedItem) || prev.hasBeenOrAlmostVisible)
+						continue;
+					prev.hasBeenOrAlmostVisible = true;
+					prev.dispatchEvent(new Event("ph-almost-visible"));
+				}
+			},
+			{ threshold: .4 }
+		);
+		intersectionObserver.observe(this);
 	}
 }
 
