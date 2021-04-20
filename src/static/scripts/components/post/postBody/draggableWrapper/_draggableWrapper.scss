@@ -13,7 +13,7 @@
 		#{grayscale}(var(--grayscale))
 		hue-rotate(var(--hue-rotate))
 		#{invert}(var(--invert));
-	display: inline-block;
+	display: block;
 	--draggableBg: initial;
 	--saturate: 1;
 	--brightness: 1;
