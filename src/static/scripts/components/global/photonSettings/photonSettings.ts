@@ -49,7 +49,7 @@ export let globalSettings: PhotonSettings = {
 	markSeenPosts: true,
 	hideSeenPosts: true,
 	clearFeedCacheAfterMs: 1000 * 60 * 60 * 24 * 2,
-	clearSeenPostAfterMs: 1000 * 60 * 60 * 24 * 31,
+	clearSeenPostAfterMs: 1000 * 60 * 60 * 24 * 90,
 	isIncognitoEnabled: false,
 	tooltipsVisible: true,
 	messageCheckIntervalS: 30,

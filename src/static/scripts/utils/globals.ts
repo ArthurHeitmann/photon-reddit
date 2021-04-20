@@ -37,7 +37,7 @@ export class User {
 	subreddits: string[] = [];
 	multireddits: MultiReddit[] = [];
 	inboxUnread: number = 0;
-	private static refreshEveryNMs = 2 * 60 * 60 * 1000;		// 2h
+	private static refreshEveryNMs = 2 * 60 * 15;			// 15m
 
 	/** fetch data from reddit and set properties */
 	async fetch() {
@@ -137,7 +137,7 @@ export function saveSeenPosts() {
 
 	localStorage.seenPosts = JSON.stringify(seenPosts);
 }
-setTimeout(saveSeenPosts, 1000 * 60 * 10);
+setTimeout(saveSeenPosts, 1000 * 30);
 window.addEventListener("beforeunload", () => saveSeenPosts());
 
 export function markPostAsSeen(postFullName: string) {
