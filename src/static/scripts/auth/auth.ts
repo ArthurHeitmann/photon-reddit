@@ -95,7 +95,7 @@ async function refreshAccessToken(): Promise<boolean> {
 }
 
 async function verifyTokenWorks(): Promise<boolean> {
-	const r = await redditApiRequest("/api/v1/me", [], true);
+	const r = await redditApiRequest("/api/v1/me", [], false);
 	return !("error" in r) && "features" in r;
 }
 
