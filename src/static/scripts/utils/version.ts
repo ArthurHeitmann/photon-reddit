@@ -1,1 +1,1 @@
-export const photonWebVersion = "0.2.7";		/// <change version script>
+export const photonWebVersion = "0.2.8";		/// <change version script>

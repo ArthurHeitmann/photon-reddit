@@ -1,6 +1,15 @@
-export const photonVersion = "0.2.7";		/// <change version script>
+export const photonVersion = "0.2.8";		/// <change version script>
 
 export const photonChangelog = {
+	"0.2.8": {
+		"New": [
+			"Image & Video lazy loading (only loaded when they are almost visible)"
+		],
+		"Fixed": [
+			"Website not working when not logged in",
+			"Some posts not showing up when scrolling up"
+		]
+	},
 	"0.2.7": {
 		"New": [
 			"Images and Video will only be loaded if they are from trusted sources"
