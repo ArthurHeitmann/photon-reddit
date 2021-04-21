@@ -1,10 +1,10 @@
 import express from "express";
 import RateLimit from "express-rate-limit";
+import fetch from "node-fetch";
+import youtube_dl from "youtube-dl-exec";
 import { basicRateLimitConfig, youtube_dlRateLimitConfig } from "./consts.js";
 import { safeExc, safeExcAsync } from "./utils.js";
-import youtube_dl from "youtube-dl-exec";
 import { photonChangelog, photonVersion } from "./version.js";
-import XMLHttpRequest from "xmlhttprequest"
 
 export const photonApiRouter = express.Router();
 
@@ -30,49 +30,51 @@ photonApiRouter.get("/changelog", safeExc((req, res) => {
 	res.json(photonChangelog);
 }))
 
-photonApiRouter.get("/proxy*", safeExcAsync(async (req, res) => {
-	const url = req.url.split("/proxy")[1];
+async function getRedirectUrl(url: string, auth: string): Promise<string> {
+	const r = await fetch(url, {
+		method: "HEAD",
+		redirect: "manual",
+		headers: {
+			"Authorization": auth,
+			"User-Agent": `web_backend:photon-reddit.com:v${photonVersion} (by /u/RaiderBDev)`
+		}
+	});
+	await r.text();
+	return r.headers.get("location");
+}
+
+photonApiRouter.get("/randomSubreddit", safeExcAsync(async (req, res) => {
 	const auth = req.headers.authorization;
-	try {
-		// node-fetch doesn't seem to work with /r/sub/random --> use different library for this
-		const data = await proxyPromise(url, auth);
-		res.status(data.error !== undefined ? 400 : 200).json(data);
+	if (!auth) {
+		res.status(400).json({ error: "¯\\_(ツ)_/¯" });
+		return;
 	}
-	catch (e) {
-		res.status(400).json({ error: "proxy error" });
+	const isNsfw = req.query["isNsfw"] === "true";
+	const redirectedUrl = await getRedirectUrl(`https://oauth.reddit.com/r/${isNsfw ? "randnsfw" : "random"}`, auth);
+	if (!redirectedUrl) {
+		res.status(400).json({ error: "¯\\_(ツ)_/¯" });
+		return;
 	}
+	const subreddit = redirectedUrl.match(/(?<=reddit\.com\/r\/)[^/#?]+/)[0];
+	res.json({ subreddit });
 }));
 
-function proxyPromise(url: string, auth: string): Promise<any> {
-	const uri = `https://oauth.reddit.com${url}`;
-	return new Promise<any>((resolve, reject) => {
-		const xhr = new XMLHttpRequest.XMLHttpRequest();
-		xhr.withCredentials = true;
-
-		xhr.addEventListener("readystatechange", function() {
-			if(this.readyState === 4) {
-				let data: any;
-				try {
-					data = JSON.parse(this.responseText);
-				}
-				catch (e) {
-					reject(e);
-				}
-
-				if (/^\/r\/[^/#?]+\/random([/#?].*)?$/.test(url) && data && data[0] && data[0]["data"]["children"][0]) {
-					const redirectPath = data[0]["data"]["children"][0]["data"]["permalink"];
-					const params = (new URL(uri)).search;
-					proxyPromise(redirectPath + params, auth).then(resolve).catch(reject);
-				}
-				else
-					resolve(data);
-			}
-		});
-
-		xhr.open("GET", uri);
-		xhr.setRequestHeader("authorization", auth);
-		xhr.setRequestHeader("User-Agent", `web_backend:photon-reddit.com:v${photonVersion} (by /u/RaiderBDev)`);
-
-		xhr.send();
-	})
-}
+photonApiRouter.get("/randomSubredditPostUrl", safeExcAsync(async (req, res) => {
+	const auth = req.headers.authorization;
+	if (!auth) {
+		res.status(400).json({ error: "¯\\_(ツ)_/¯" });
+		return;
+	}
+	const subreddit = req.query["subreddit"]?.toString();
+	if (!subreddit) {
+		res.status(400).json({ error: "¯\\_(ツ)_/¯" });
+		return;
+	}
+	const redirectedUrl = await getRedirectUrl(`https://oauth.reddit.com/r/${subreddit}/random`, auth);
+	if (!redirectedUrl) {
+		res.status(400).json({ error: "¯\\_(ツ)_/¯" });
+		return;
+	}
+	const path = redirectedUrl.match(/(?<=https:\/\/www\.reddit\.com).*(?=\.json)/)[0];
+	res.json({ url: path });
+}));

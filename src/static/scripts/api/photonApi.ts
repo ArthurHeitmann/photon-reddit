@@ -3,31 +3,13 @@
  */
 
 import { Changelog } from "../types/misc.js";
+import { getAuthHeader } from "./redditApi.js";
 
 /** */
 export async function youtubeDlUrl(url): Promise<string> {
 	const res = await fetch(`/api/youtube-dl?url=${encodeURIComponent(url)}`);
 	const clipMp4 = (await res.json())["url"];
 	return clipMp4;
-}
-
-export function urlRequiresProxy(url: string): boolean {
-	return (
-		/^\/r\/(random|randnsfw)([/?#.].*)?$/.test(url) ||
-		/^\/r\/[^/?#]+\/random/.test(url)
-	);
-}
-
-export async function redditProxy(url: string, authorization: string): Promise<any> {
-	try {
-		const r = await fetch(`/api/proxy${url}`, {
-			headers: { Authorization: authorization }
-		});
-		return r.json();
-	}
-	catch (e) {
-		return { error: e }
-	}
 }
 
 export async function getChangelog(): Promise<Changelog> {
@@ -70,4 +52,26 @@ export function trackMediaHost(mediaUrl: string, linkUrl: string, type: string) 
 		body: JSON.stringify(queuedHosts)
 	});
 	localStorage.queuedHosts = "[]";
+}
+
+export async function getRandomSubreddit(isNsfw: boolean = false): Promise<string> {
+	const subReq = await fetch(`/api/randomSubreddit?isNsfw=${isNsfw ? "true" : "false"}`, {
+		headers: { Authorization: getAuthHeader() }
+	});
+	const subRes = await subReq.json() ;
+	if (subRes["error"])
+		return null;
+	else
+		return  subRes["subreddit"];
+}
+
+export async function getRandomSubredditPostUrl(subreddit: string): Promise<string> {
+	const postReq = await fetch(`/api/randomSubredditPostUrl?subreddit=${subreddit}`, {
+		headers: { Authorization: getAuthHeader() }
+	});
+	const postRes = await postReq.json() ;
+	if (postRes["error"])
+		return null;
+	else
+		return  postRes["url"];
 }

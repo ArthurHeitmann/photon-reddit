@@ -9,9 +9,7 @@ import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
 import { RedditApiType } from "../types/misc.js";
 import Votable, { FullName } from "../types/votable.js";
 import { isLoggedIn, thisUser, } from "../utils/globals.js";
-import { elementWithClassInTree } from "../utils/htmlStuff.js";
 import { isObjectEmpty, splitPathQuery, throttle } from "../utils/utils.js";
-import { redditProxy, urlRequiresProxy } from "./photonApi.js";
 
 /**
  * Use this to make requests to reddit
@@ -42,18 +40,13 @@ async function oath2Request(pathAndQuery, params: string[][], options: RequestIn
 	const fetchOptions: RequestInit = {
 		...options,
 		headers: new Headers ({
-			Authorization: `Bearer ${ localStorage["accessToken"] }`,
+			Authorization: getAuthHeader(),
 		}),
 	};
 	let parametersStr = parameters.toString();
 	if (fetchOptions.method && fetchOptions.method.toUpperCase() !== "GET") {
 		fetchOptions.body = parameters;
 		parametersStr = "";
-	}
-
-	if (urlRequiresProxy(path + "?" + parametersStr)) {
-		// @ts-ignore
-		return await redditProxy(path + "?" + parametersStr, fetchOptions.headers.get("Authorization"));
 	}
 
 	try {
@@ -68,6 +61,10 @@ async function oath2Request(pathAndQuery, params: string[][], options: RequestIn
 		else
 			return { error: e }
 	}
+}
+
+export function getAuthHeader(): string {
+	return `Bearer ${ localStorage["accessToken"] }`;
 }
 
 function fixUrl(url: string) {

@@ -1,0 +1,33 @@
+@use '../../../../style/vars';
+
+.randomHub {
+	.randomButton {
+		width: 15rem;
+		height: 15rem;
+		border-radius: 50%;
+		background: vars.$primaryContrast;
+		display: grid;
+		place-items: center;
+		transform: translateY(0);
+		box-shadow: 0 0 0 vars.$primary;
+		transition: all .125s ease;
+
+		> div {
+			width: 15rem;
+			font-size: 1.25rem;
+			line-break: anywhere;
+			padding: 1rem;
+		}
+
+		&:hover {
+			width: 16rem;
+			height: 16rem;
+			transform: translateY(-.5rem);
+			box-shadow: 0 0 2rem vars.$primary;
+		}
+
+		&:active {
+			box-shadow: 0 0 3rem vars.$primary;
+		}
+	}
+}
