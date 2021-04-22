@@ -4,8 +4,8 @@ export const photonChangelog = {
 	"0.3.0": {
 		"New": [
 			"You can now view polls (voting isn't supported by the API)",
-			"Dedicated page for /random + similar",
-			"Configurable new message checking interval"
+			"Dedicated page for /r/random + similar",
+			"Configurable message checking interval"
 		]
 	},
 	"0.2.9": {
