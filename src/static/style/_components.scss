@@ -31,6 +31,7 @@
 @use '../scripts/components/post/postBody/draggableWrapper/draggableWrapper';
 @use '../scripts/components/mediaViewer/imageViewer/imageView';
 @use '../scripts/components/post/postBody/postText/postText';
+@use '../scripts/components/post/postBody/postText/redditPoll';
 @use '../scripts/components/postAndComments/postAndComment';
 @use '../scripts/components/mediaViewer/videoPlayer/gifVideo/gifVideo';
 @use '../scripts/components/mediaViewer/videoPlayer/videoPlayer';

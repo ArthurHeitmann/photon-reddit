@@ -69,15 +69,21 @@ function _timePassedSince(time: number): { n: number, s: string } {
  *	86400 - 2591999	 1 - 29d
  *	2592000-31557599 1 - 12mo
  *	1 - ..y
- * @param time 
+ * @param time in seconds
  */
 export function timePassedSince(time: number): string {
 	const { n: n, s: s } = _timePassedSince(time);
 	return `${n.toString()} ${n !== 1 ? s : s.replace(/s$/, "")}`;
 }
 
+/** @param time in seconds */
 export function timePassedSinceStr(time: string): string {
 	return timePassedSince(parseInt(time));
+}
+
+/** @param time in seconds */
+export function timePeriodReadable(time: number) {
+	return timePassedSince(Date.now() / 1000 - time);
 }
 
 /** replaces all href in <a> like: https://reddit.com/r/all --> /r/all */

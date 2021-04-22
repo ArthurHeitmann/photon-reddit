@@ -1,8 +1,10 @@
 import { editCommentOrPost, redditApiRequest } from "../../../../api/redditApi.js";
+import { RedditApiData } from "../../../../types/misc.js";
 import { escHTML } from "../../../../utils/htmlStatics.js";
 import { elementWithClassInTree } from "../../../../utils/htmlStuff.js";
 import Ph_MarkdownForm from "../../../misc/markdownForm/markdownForm.js";
 import Ph_Toast, { Level } from "../../../misc/toast/toast.js";
+import Ph_RedditPoll from "./redditPoll.js";
 
 /**
  * Text of a post. If in feed, has a max height. If higher than max height, show expand button
@@ -15,8 +17,12 @@ export default class Ph_PostText extends HTMLElement {
 	editForm: Ph_MarkdownForm;
 	postFullName: string;
 
-	constructor(bodyHtml: string, bodyMarkDown: string, postFullName: string) {
+	constructor(postData: RedditApiData) {
 		super();
+
+		const bodyHtml = postData["selftext_html"] || "";
+		const bodyMarkDown = postData["selftext"] || "";
+		const postFullName = postData["name"];
 
 		this.className = "postText";
 		this.markdown = bodyMarkDown;
@@ -45,6 +51,13 @@ export default class Ph_PostText extends HTMLElement {
 		this.editForm.addEventListener("ph-submit", this.edit.bind(this));
 		this.editForm.addEventListener("ph-cancel", this.endEditing.bind(this));
 		this.appendChild(this.editForm);
+
+		if (postData["poll_data"]) {
+			let links = this.$tagAr("a");
+			links = links.filter(link => link.innerText === "View Poll");
+			links[links.length - 1].remove();
+			this.appendChild(new Ph_RedditPoll(postData));
+		}
 	}
 
 	updateMaxHeightStyle() {

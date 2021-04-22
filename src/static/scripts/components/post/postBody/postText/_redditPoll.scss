@@ -1,0 +1,64 @@
+@use "../../../../../style/vars";
+
+.redditPoll {
+	> .bars {
+		> div {
+			display: flex;
+			margin: .5rem 0;
+			height: 2rem;
+			cursor: default;
+			--percentage: 0;
+
+			&::before {
+				content: "";
+				position: absolute;
+				height: 2rem;
+				width: calc(1% * var(--percentage));
+				min-width: 1rem;
+				background: vars.$primaryContrast;
+				border-radius: 1rem;
+			}
+
+			&.myVote > .text {
+				display: flex;
+
+				&::after {
+					content: "";
+					width: 1.3rem;
+					height: 1.3rem;
+					margin-top: .35rem;
+					margin-left: .5rem;
+					background-size: contain;
+					display: block;
+					background: url("/img/check.svg") center;
+					background-size: contain;
+					border: 2px solid vars.$text;
+					border-radius: 1rem;
+					box-sizing: border-box;
+				}
+			}
+
+			> .text, .percentage {
+				position: relative;
+				padding: 0 1rem;
+				line-height: 2rem;
+			}
+
+			> .percentage {
+				margin-left: auto;
+			}
+		}
+	}
+
+	> .infoBar {
+		display: flex;
+
+		:first-child {
+			margin-right: .5rem;
+		}
+	}
+
+	> a {
+		font-size: 1.1rem;
+	}
+}
