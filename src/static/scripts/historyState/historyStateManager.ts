@@ -4,6 +4,7 @@
 
 import { redditApiRequest } from "../api/redditApi.js";
 import Ph_UniversalFeed from "../components/feed/universalFeed/universalFeed.js";
+import Ph_MessageCompose from "../components/message/messageCompose/messageCompose.js";
 import Ph_RandomHub from "../components/misc/randomHub/randomHub.js";
 import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
 import Ph_About from "../components/photon/about/about.js";
@@ -148,6 +149,11 @@ function handleSpecialPaths(path: string, query: string[][], stateLoader: Ph_Vie
 	else if (/^\/r\/((random|randnsfw)|([^/?#]+\/random))([/#?].*)?$/.test(path)) {
 		const url = path + (query.length ? "?" + (new URLSearchParams(query).toString()) : "");
 		stateLoader.finishWith(new Ph_RandomHub(url));
+		return true;
+	}
+	else if (/^\/message\/compose/.test(path)) {
+		const receiver = query.find(param => param[0] === "to")?.[0];
+		stateLoader.finishWith(new Ph_MessageCompose(receiver));
 		return true;
 	}
 	return false;

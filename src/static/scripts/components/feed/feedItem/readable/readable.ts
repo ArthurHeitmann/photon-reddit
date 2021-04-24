@@ -1,4 +1,5 @@
 import { readAllMessages, redditApiRequest, setMessageReadStatus } from "../../../../api/redditApi.js";
+import { pushLinkToHistoryComb } from "../../../../historyState/historyStateManager.js";
 import { FullName } from "../../../../types/votable.js";
 import { thisUser } from "../../../../utils/globals.js";
 import { $class, $css } from "../../../../utils/htmlStatics.js";
@@ -60,9 +61,18 @@ export default abstract class Ph_Readable extends Ph_FeedItem implements FullNam
 		this.classList.toggle("unread", !this.isRead)
 	}
 
-	static markReadAllButton: HTMLButtonElement;
 	static getMessageFeedHeaderElements(setMessageSection: (v: any[]) => void): HTMLElement[] {
 		const elements = [];
+		const composeButton = document.createElement("button");
+		composeButton.className = "composeMsgBtn transparentButtonAlt";
+		composeButton.addEventListener("click", () => pushLinkToHistoryComb("/message/compose"));
+		composeButton.setAttribute("data-tooltip", "Compose Message");
+		elements.push(composeButton);
+		const markReadAllButton = document.createElement("button");
+		markReadAllButton.className = "markRead transparentButtonAlt";
+		markReadAllButton.addEventListener("click", Ph_Readable.readAllMessages);
+		markReadAllButton.setAttribute("data-tooltip", "Read All Messages");
+		elements.push(markReadAllButton);
 		elements.push(new Ph_DropDown(
 			[
 				{ label: "All", value: MessageSection.all, onSelectCallback: setMessageSection },
@@ -78,13 +88,6 @@ export default abstract class Ph_Readable extends Ph_FeedItem implements FullNam
 			DirectionY.bottom,
 			false
 		));
-		if (!Ph_Readable.markReadAllButton) {
-			Ph_Readable.markReadAllButton = document.createElement("button");
-			Ph_Readable.markReadAllButton.className = "markRead transparentButtonAlt";
-			Ph_Readable.markReadAllButton.addEventListener("click", Ph_Readable.readAllMessages);
-			Ph_Readable.markReadAllButton.setAttribute("data-tooltip", "Read All Messages");
-		}
-		elements.push(Ph_Readable.markReadAllButton);
 		return elements;
 	}
 

@@ -58,6 +58,10 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 
 		this.className = "submitPost";
 
+		// title
+		const title = document.createElement("h1");
+		title.innerText = "Submit a post";
+		this.appendChild(title);
 		// community name
 		this.subInput = this.makeTextInput("sub", "Subreddit or User Name");
 		this.subInput.addEventListener("input", this.setCommunityIsNeutral.bind(this));
