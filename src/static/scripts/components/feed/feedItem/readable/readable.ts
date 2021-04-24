@@ -71,6 +71,7 @@ export default abstract class Ph_Readable extends Ph_FeedItem implements FullNam
 				{ label: "Comment Replies", value: MessageSection.commentReplies, onSelectCallback: setMessageSection },
 				{ label: "Post Replies", value: MessageSection.postReplies, onSelectCallback: setMessageSection },
 				{ label: "Username mentions", value: MessageSection.mentions, onSelectCallback: setMessageSection },
+				{ label: "Sent", value: MessageSection.sent, onSelectCallback: setMessageSection },
 			],
 			"Sections",
 			DirectionX.left,

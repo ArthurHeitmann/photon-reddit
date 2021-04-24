@@ -20,7 +20,8 @@ export enum MessageSection {
 	messages = "messages",
 	commentReplies = "comments",
 	postReplies = "selfreply",
-	mentions = "mentions"
+	mentions = "mentions",
+	sent = "sent"
 }
 
 /**

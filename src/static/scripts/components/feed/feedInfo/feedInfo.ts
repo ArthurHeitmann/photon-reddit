@@ -399,7 +399,9 @@ export default class Ph_FeedInfo extends HTMLElement {
 		userActionsWrapper.className = "subActionsWrapper";
 		overviewBar.appendChild(userActionsWrapper);
 		userActionsWrapper.appendChild(new Ph_DropDown(
-			[],
+			[
+				{ label: `<a href="${this.feedUrl}">Visit</a>` }
+			],
 			this.getKebabImg(),
 			DirectionX.left,
 			DirectionY.bottom,
