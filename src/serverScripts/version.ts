@@ -1,6 +1,11 @@
-export const photonVersion = "0.3.0";		/// <change version script>
+export const photonVersion = "0.4.0";		/// <change version script>
 
 export const photonChangelog = {
+	"0.4.0": {
+		"New": [
+			"Added sending of messages",
+		]
+	},
 	"0.3.0": {
 		"New": [
 			"You can now view polls (voting isn't supported by the API)",
