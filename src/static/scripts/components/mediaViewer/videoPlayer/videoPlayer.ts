@@ -205,7 +205,10 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				// if not suitable oembed data use youtube-dl
 				if (!twitchMp4Found) {
 					youtubeDlUrl(url).then(async clipMp4 => {
-						videoOut.init(new Ph_SimpleVideo([{ src: clipMp4, type: "video/mp4" }]), true);
+						videoOut.init(new Ph_SimpleVideo(
+							clipMp4 ? [{ src: clipMp4, type: "video/mp4" }] : []
+							), true
+						);
 					}).catch(err => {
 						new Ph_Toast(Level.error, "Error getting Twitch clip");
 						console.error("Error getting twitch clip url");

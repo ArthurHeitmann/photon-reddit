@@ -30,7 +30,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	currentIndexDisplay: HTMLDivElement;
 
 	static fromPostData_Image(postData: RedditApiType): Ph_MediaViewer {
-		if (postData.data["preview"]) {
+		if (postData.data["preview"] && postData.data["preview"]["images"][0]["resolutions"].length) {
 			const previews: any[] = postData.data["preview"]["images"][0]["resolutions"];
 			return new Ph_MediaViewer([new Ph_ImageViewer({
 				originalUrl: postData.data["url"],
@@ -197,7 +197,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	static isUrlOnWhiteList(url: string): boolean {
 		let urlHost: string;
 		try {
-			urlHost = (new URL(url)).hostname.match(/[^.]+\.[^.]+$/)[0];
+			urlHost = (new URL(url)).hostname.match(/(?:[^.]+\.)?[^.]+$/)[0];
 		}
 		catch {
 			return false;

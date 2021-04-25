@@ -9,7 +9,13 @@ import { photonChangelog, photonVersion } from "./version.js";
 export const photonApiRouter = express.Router();
 
 photonApiRouter.get("/youtube-dl", RateLimit(youtube_dlRateLimitConfig), safeExcAsync(async (req, res) => {
-	const url = await youtube_dl(req.query["url"], {getUrl: true});
+	let url: any;
+	try {
+		url = await youtube_dl(req.query["url"], { getUrl: true });
+	}
+	catch {
+		url = "";
+	}
 	if (!url) {
 		res.json({ error: "¯\\_(ツ)_/¯" });
 		return;

@@ -19,6 +19,8 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 		this.video = document.createElement("video");
 		this.video.setAttribute("loop", "");
 		this.appendChild(this.video);
+		if (sourcesArray.length === 0)
+			this.insertAdjacentHTML("afterbegin", `<p>No video</p>`);
 		for (const source of sourcesArray)
 			this.video.insertAdjacentHTML("beforeend", `<source src="${escADQ(source.src)}" type="${escADQ(source.type)}">`);
 
