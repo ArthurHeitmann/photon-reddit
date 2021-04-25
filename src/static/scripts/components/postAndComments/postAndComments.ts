@@ -62,7 +62,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 
 	initWithData(data: RedditApiType[]) {
 		this.tmpLoadingIcon?.remove();
-		const initialScrollPosition = document.scrollingElement.scrollTop;
+		Ph_ViewState.getViewOf(this)?.saveScroll();
 
 		// write comment form
 		if (!this.post.isLocked) {
@@ -97,8 +97,9 @@ export default class Ph_PostAndComments extends HTMLElement {
 		], curSort ? `Sort - ${curSort[0]}` : "Sorting", DirectionX.right, DirectionY.bottom, false);
 		this.sorter.classList.add("commentsSorter");
 
-		const newScrollPosition = document.scrollingElement.scrollTop;
-		document.scrollingElement.scrollBy(0, initialScrollPosition - newScrollPosition);
+		// const newScrollPosition = document.scrollingElement.scrollTop;
+		// document.scrollingElement.scrollBy(0, initialScrollPosition - newScrollPosition);
+		Ph_ViewState.getViewOf(this)?.loadScroll();
 
 		if (!this.areHeaderElementsSet && this.isConnected)
 			this.setHeaderElements();

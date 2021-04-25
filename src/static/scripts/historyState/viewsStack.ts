@@ -41,13 +41,16 @@ export default class ViewsStack {
 			delete ViewsStack.views[i];
 		}
 
-		ViewsStack.attachmentPoint.appendChild(state);
-		
-		if (ViewsStack.pos !== null)
+		if (ViewsStack.pos !== null) {
+			ViewsStack.views[ViewsStack.pos].saveScroll();
 			ViewsStack.views[ViewsStack.pos].classList.add("hide");
+		}
 		else
 			// if page has been reloaded or similar, retrieve the previous historyState
 			ViewsStack.pos = (history.state && history.state.index ? history.state.index - 1 : -1);
+
+		ViewsStack.attachmentPoint.appendChild(state);
+
 		++ViewsStack.pos;
 		state.state.index = ViewsStack.pos;
 		ViewsStack.views[ViewsStack.pos] = state;
@@ -82,6 +85,7 @@ export default class ViewsStack {
 			throw "inserting before element! An element already exists at that position";
 
 		ViewsStack.views[ViewsStack.pos].insertAdjacentElement("beforebegin", state);
+		ViewsStack.views[ViewsStack.pos].saveScroll();
 		ViewsStack.views[ViewsStack.pos].classList.add("hide");
 		--ViewsStack.pos;
 		ViewsStack.views[ViewsStack.pos] = state;
@@ -113,8 +117,10 @@ export default class ViewsStack {
 			return;
 		}
 
+		ViewsStack.views[ViewsStack.pos].saveScroll();
 		ViewsStack.views[ViewsStack.pos++].classList.add("hide");
 		ViewsStack.views[ViewsStack.pos].classList.remove("hide");
+		ViewsStack.views[ViewsStack.pos].loadScroll();
 
 		window.dispatchEvent(new CustomEvent("ph-view-change", {
 			detail: <ViewChangeData> {
@@ -137,8 +143,10 @@ export default class ViewsStack {
 			return;
 		}
 
+		ViewsStack.views[ViewsStack.pos].saveScroll();
 		ViewsStack.views[ViewsStack.pos--].classList.add("hide");
 		ViewsStack.views[ViewsStack.pos].classList.remove("hide");
+		ViewsStack.views[ViewsStack.pos].loadScroll();
 
 		window.dispatchEvent(new CustomEvent("ph-view-change", {
 			detail: <ViewChangeData> {

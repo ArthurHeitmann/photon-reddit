@@ -243,16 +243,15 @@ export default class Ph_UniversalFeed extends HTMLElement {
 				removeElements.splice(-1);
 
 			// remove old elements and set scroll position approximately back to where it was before removal
-			const viewScrollTop = document.scrollingElement.scrollTop;
-			const elementMarginTop = parseFloat(getComputedStyle(removeElements[0]).marginTop);
-			let removedHeight = 0;
-			for (const removeElement of removeElements) {
-				if (!removeElement.classList.contains("hide"))
-					removedHeight += removeElement.getBoundingClientRect().height + elementMarginTop * 2;
-				removeElement.remove();
+			if (removeElements.length) {
+				let firstVisibleElement = removeElements[removeElements.length - 1].nextElementSibling;
+				while (firstVisibleElement && firstVisibleElement.classList.contains("hide"))
+					firstVisibleElement = firstVisibleElement.nextElementSibling;
+				Ph_ViewState.getViewOf(this).saveScroll(firstVisibleElement as HTMLElement);
+				for (const elem of removeElements)
+					elem.remove();
+				Ph_ViewState.getViewOf(this).loadScroll();
 			}
-			const newTop = viewScrollTop - removedHeight;
-			document.scrollingElement.scrollTo({ top: newTop });
 			this.beforeData = this.firstElementChild.getAttribute("data-id");
 		}
 	}
@@ -283,24 +282,20 @@ export default class Ph_UniversalFeed extends HTMLElement {
 				this.hasReachedEndOfFeed = true;
 		}
 		else {
-			// scroll logic from clearPrevious() loadPosition === LoadPosition.After
-			const viewScrollTop = document.scrollingElement.scrollTop;
-			const elementMarginTop = parseFloat(getComputedStyle(this.children[0]).marginTop);
-			let addedHeight = 0;
+			Ph_ViewState.getViewOf(this).saveScroll(this.lastElementChild as HTMLElement);
 			for (const postData of posts.data.children.reverse()) {
 				try {
 					const newPost = this.makeFeedItem(postData, posts.data.children.length);
 					if (newPost instanceof Ph_Post)
 						newPost.forceShowWhenSeen();
 					this.insertAdjacentElement("afterbegin", newPost);
-					addedHeight += newPost.getBoundingClientRect().height + elementMarginTop * 2;
 				}
 				catch (e) {
 					console.error(e);
 					new Ph_Toast(Level.error, `Error making feed item`);
 				}
 			}
-			document.scrollingElement.scrollTo({ top: viewScrollTop + addedHeight - elementMarginTop });
+			Ph_ViewState.getViewOf(this).loadScroll();
 
 			this.beforeData = posts.data.before;
 		}
