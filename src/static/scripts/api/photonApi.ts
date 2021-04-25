@@ -29,29 +29,29 @@ export async function getChangelog(): Promise<Changelog> {
 }
 
 export function trackMediaHost(mediaUrl: string, linkUrl: string, type: string) {
-	let queuedHosts: {}[];
-	try {
-		queuedHosts = JSON.parse(localStorage.queuedHosts);
-		if (!(queuedHosts instanceof Array))
-			queuedHosts = [];
-	}
-	catch {
-		queuedHosts = [];
-	}
-	queuedHosts.push({ mediaUrl, linkUrl, type });
-	if (queuedHosts.length < 100) {
-		localStorage.queuedHosts = JSON.stringify(queuedHosts);
-		return
-	}
-
-	fetch("/data/mediaHost", {
-		method: "POST",
-		headers: {
-			"content-type": "application/json"
-		},
-		body: JSON.stringify(queuedHosts)
-	});
-	localStorage.queuedHosts = "[]";
+	// let queuedHosts: {}[];
+	// try {
+	// 	queuedHosts = JSON.parse(localStorage.queuedHosts);
+	// 	if (!(queuedHosts instanceof Array))
+	// 		queuedHosts = [];
+	// }
+	// catch {
+	// 	queuedHosts = [];
+	// }
+	// queuedHosts.push({ mediaUrl, linkUrl, type });
+	// if (queuedHosts.length < 100) {
+	// 	localStorage.queuedHosts = JSON.stringify(queuedHosts);
+	// 	return
+	// }
+	//
+	// fetch("/data/mediaHost", {
+	// 	method: "POST",
+	// 	headers: {
+	// 		"content-type": "application/json"
+	// 	},
+	// 	body: JSON.stringify(queuedHosts)
+	// });
+	// localStorage.queuedHosts = "[]";
 }
 
 export async function getRandomSubreddit(isNsfw: boolean = false): Promise<string> {

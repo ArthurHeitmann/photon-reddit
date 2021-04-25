@@ -64,7 +64,6 @@ export abstract class Ph_ViewState extends Ph_PhotonBaseElement {
 			scrollYDiff = this.scrollSave.scrollVal - newScrollTop;
 		}
 		document.scrollingElement.scrollBy({ top: scrollYDiff });
-		console.log("loading scroll of", this.state.url, "with", this.scrollSave.scrollVal);
 	}
 
 	static getViewOf(elem: HTMLElement): Ph_ViewState {

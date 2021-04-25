@@ -267,7 +267,6 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 			this.video.setIsMuted(Ph_VideoPlayer.globalIsMuted);
 			if (isLateInit)
 				this.dispatchEvent(new Event("ph-controls-changed"));
-			setTimeout(() => trackMediaHost(this.video.getUrl(), this.url, "vid"), 1000);
 		}
 		else
 			this.innerText = "No video supplied (maybe video was deleted)";
