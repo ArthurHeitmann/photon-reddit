@@ -1,6 +1,12 @@
-export const photonVersion = "0.4.0";		/// <change version script>
+export const photonVersion = "0.4.1";		/// <change version script>
 
 export const photonChangelog = {
+	"0.4.1": {
+		"Fixed": [
+			"Some twitch clips not working",
+			"The scroll position changing unexpectedly"
+		]
+	},
 	"0.4.0": {
 		"New": [
 			"Added sending of messages",
