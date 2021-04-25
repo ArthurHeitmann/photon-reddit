@@ -1,5 +1,5 @@
-import { $tag } from "../../utils/htmlStatics.js";
 import { HistoryState } from "../../types/misc.js";
+import { $tag } from "../../utils/htmlStatics.js";
 import { elementWithClassInTree } from "../../utils/htmlStuff.js";
 import Ph_Header from "../global/header/header.js";
 import Ph_PhotonBaseElement from "../photon/photonBaseElement/photonBaseElement.js";

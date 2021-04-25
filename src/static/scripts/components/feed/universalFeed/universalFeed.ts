@@ -1,12 +1,12 @@
 import { redditApiRequest } from "../../../api/redditApi.js";
 import ViewsStack from "../../../historyState/viewsStack.js";
+import { RedditApiType } from "../../../types/misc.js";
 import { escHTML, getLoadingIcon } from "../../../utils/htmlStatics.js";
 import { elementWithClassInTree } from "../../../utils/htmlStuff.js";
-import { RedditApiType } from "../../../types/misc.js";
 import { sleep, throttle, waitForFullScreenExit } from "../../../utils/utils.js";
 import Ph_Comment from "../../comment/comment.js";
-import { ButtonLabel} from "../../misc/dropDown/dropDown.js";
 import Ph_Message from "../../message/message.js";
+import { ButtonLabel } from "../../misc/dropDown/dropDown.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Ph_Post from "../../post/post.js";
 import { Ph_ViewState } from "../../viewState/viewState.js";

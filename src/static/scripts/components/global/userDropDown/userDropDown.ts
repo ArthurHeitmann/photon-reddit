@@ -1,4 +1,4 @@
-import { pushLinkToHistoryComb, pushLinkToHistorySep } from "../../../historyState/historyStateManager.js";
+import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager.js";
 import ViewsStack from "../../../historyState/viewsStack.js";
 import { thisUser } from "../../../utils/globals.js";
 import { escADQ, escHTML } from "../../../utils/htmlStatics.js";

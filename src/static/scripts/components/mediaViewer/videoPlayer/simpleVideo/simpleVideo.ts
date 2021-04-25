@@ -1,5 +1,5 @@
 import { escADQ } from "../../../../utils/htmlStatics.js";
-import { allUrlsWithHttps, clamp, urlWithHttps } from "../../../../utils/utils.js";
+import { clamp, urlWithHttps } from "../../../../utils/utils.js";
 import Ph_VideoWrapper from "../videoWrapper.js";
 
 /**

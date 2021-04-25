@@ -1,10 +1,11 @@
 import {
-	addSubToMulti, deleteUserFlair,
+	addSubToMulti,
+	deleteUserFlair,
 	getMultiInfo,
-	getSubFlairs,
 	getSubInfo,
 	getSubModerators,
-	getSubRules, getSubUserFlairs,
+	getSubRules,
+	getSubUserFlairs,
 	getUserMultis,
 	removeSubFromMulti,
 	searchSubredditNames,
@@ -18,7 +19,7 @@ import { classInElementTree, linksToSpa } from "../../../utils/htmlStuff.js";
 import { numberToShort, stringSortComparer, throttle } from "../../../utils/utils.js";
 import Ph_BetterButton from "../../global/betterElements/betterButton.js";
 import Ph_Header from "../../global/header/header.js";
-import Ph_DropDown, { ButtonLabel, DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
+import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import Ph_DropDownEntry, { DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_Flair, { FlairApiData } from "../../misc/flair/flair.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";

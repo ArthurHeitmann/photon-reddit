@@ -1,16 +1,17 @@
 import {
 	deleteThing,
-	edit, loadMoreComments,
-	redditApiRequest,
+	edit,
+	loadMoreComments,
 	save,
 	vote,
 	VoteDirection,
 	voteDirectionFromLikes
 } from "../../api/redditApi.js";
+import { RedditApiType } from "../../types/misc.js";
+import Votable from "../../types/votable.js";
 import { thisUser } from "../../utils/globals.js";
 import { escADQ } from "../../utils/htmlStatics.js";
 import { elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff.js";
-import { RedditApiType } from "../../types/misc.js";
 import { isObjectEmpty, numberToShort, timePassedSinceStr } from "../../utils/utils.js";
 import Ph_CommentsFeed from "../feed/commentsFeed/commentsFeed.js";
 import Ph_Readable from "../feed/feedItem/readable/readable.js";
@@ -21,7 +22,6 @@ import Ph_Flair from "../misc/flair/flair.js";
 import Ph_CommentForm from "../misc/markdownForm/commentForm/commentForm.js";
 import Ph_MarkdownForm from "../misc/markdownForm/markdownForm.js";
 import Ph_Toast, { Level } from "../misc/toast/toast.js";
-import Votable from "../../types/votable.js";
 import Ph_VoteButton from "../misc/voteButton/voteButton.js";
 import Ph_Post from "../post/post.js";
 

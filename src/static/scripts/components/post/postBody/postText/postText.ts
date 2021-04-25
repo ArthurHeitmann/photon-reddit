@@ -1,4 +1,4 @@
-import { editCommentOrPost, redditApiRequest } from "../../../../api/redditApi.js";
+import { editCommentOrPost } from "../../../../api/redditApi.js";
 import { RedditApiData } from "../../../../types/misc.js";
 import { escHTML } from "../../../../utils/htmlStatics.js";
 import { elementWithClassInTree } from "../../../../utils/htmlStuff.js";

@@ -2,7 +2,6 @@ import { nonDraggableImage } from "../../../utils/htmlStatics.js";
 import Ph_DropDown from "../dropDown/dropDown.js";
 import Ph_DropDownArea from "../dropDown/dropDownArea/dropDownArea.js";
 import Ph_DropDownEntry, { DropDownEntryParam } from "../dropDown/dropDownEntry/dropDownEntry.js";
-import Ph_MorphingImage from "../morphingImage/morphingImage.js";
 import Ph_ProgressBar from "../progressBar/progressBar.js";
 import Ph_SwitchingImage from "../switchableImage/switchableImage.js";
 

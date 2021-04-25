@@ -1,14 +1,14 @@
-import { getSubFlairs, redditApiRequest, searchSubreddits, searchUser } from "../../../api/redditApi.js";
+import { getSubFlairs, searchSubreddits, searchUser } from "../../../api/redditApi.js";
 import { pushLinkToHistoryComb, pushLinkToHistorySep } from "../../../historyState/historyStateManager.js";
 import { ViewChangeData } from "../../../historyState/viewsStack.js";
+import { RedditApiType, SortPostsTimeFrame, SortSearchOrder } from "../../../types/misc.js";
 import { isLoggedIn } from "../../../utils/globals.js";
 import { escADQ, getLoadingIcon } from "../../../utils/htmlStatics.js";
 import { elementWithClassInTree, isElementIn, linksToSpa } from "../../../utils/htmlStuff.js";
-import { RedditApiType, SortPostsTimeFrame, SortSearchOrder } from "../../../types/misc.js";
 import { extractPath, extractQuery, throttle } from "../../../utils/utils.js";
 import Ph_DropDown, { ButtonLabel, DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import { DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
-import Ph_Flair, { FlairData } from "../../misc/flair/flair.js";
+import Ph_Flair from "../../misc/flair/flair.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Ph_Header from "../header/header.js";
 

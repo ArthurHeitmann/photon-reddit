@@ -6,8 +6,8 @@
 
 import { globalSettings } from "../components/global/photonSettings/photonSettings.js";
 import { Ph_ViewState } from "../components/viewState/viewState.js";
-import { $tag } from "../utils/htmlStatics.js";
 import { HistoryState } from "../types/misc.js";
+import { $tag } from "../utils/htmlStatics.js";
 import { pushLinkToHistoryComb, PushType } from "./historyStateManager.js";
 
 interface ViewType {

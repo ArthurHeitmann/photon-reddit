@@ -4,9 +4,6 @@
  * These functions don't need any imports
  */
 
-import { isElementIn } from "./htmlStuff.js";
-import { throttle } from "./utils.js";
-
 /** document.getElementById replacement */
 export function $id(id: string) {
 	return document.getElementById(id);

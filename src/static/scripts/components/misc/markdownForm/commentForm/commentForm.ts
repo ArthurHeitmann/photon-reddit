@@ -1,7 +1,7 @@
 import { comment } from "../../../../api/redditApi.js";
+import { FullName } from "../../../../types/votable.js";
 import { escHTML } from "../../../../utils/htmlStatics.js";
 import Ph_Toast, { Level } from "../../toast/toast.js";
-import Votable, { FullName } from "../../../../types/votable.js";
 import Ph_MarkdownForm from "../markdownForm.js";
 
 export default class Ph_CommentForm extends Ph_MarkdownForm {

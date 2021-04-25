@@ -1,5 +1,4 @@
 import express from "express";
-import expressAsyncHandler from "express-async-handler";
 import { env } from "./consts.js";
 
 /** Fallback for when service worker doesn't work */

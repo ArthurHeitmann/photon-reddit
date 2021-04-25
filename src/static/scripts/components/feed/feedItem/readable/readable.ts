@@ -1,4 +1,4 @@
-import { readAllMessages, redditApiRequest, setMessageReadStatus } from "../../../../api/redditApi.js";
+import { readAllMessages, setMessageReadStatus } from "../../../../api/redditApi.js";
 import { pushLinkToHistoryComb } from "../../../../historyState/historyStateManager.js";
 import { FullName } from "../../../../types/votable.js";
 import { thisUser } from "../../../../utils/globals.js";

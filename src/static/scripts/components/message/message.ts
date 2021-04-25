@@ -1,8 +1,8 @@
 import { comment } from "../../api/redditApi.js";
+import { RedditApiType } from "../../types/misc.js";
 import { thisUser } from "../../utils/globals.js";
 import { escADQ, escHTML } from "../../utils/htmlStatics.js";
 import { linksToSpa } from "../../utils/htmlStuff.js";
-import { RedditApiType } from "../../types/misc.js";
 import { timePassedSinceStr } from "../../utils/utils.js";
 import Ph_Readable from "../feed/feedItem/readable/readable.js";
 import Ph_MarkdownForm from "../misc/markdownForm/markdownForm.js";

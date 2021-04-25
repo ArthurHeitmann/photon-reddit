@@ -5,8 +5,8 @@ import "../../../utils/htmlStuff.js";
 import { deepClone, isObjectEmpty } from "../../../utils/utils.js";
 import { photonWebVersion } from "../../../utils/version.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
-import "./styleSettingsListener.js"
 import Ph_Changelog from "../../photon/changelog/changelog.js";
+import "./styleSettingsListener.js";
 
 export enum ImageLoadingPolicy {
 	alwaysPreview = "alwaysPreview",

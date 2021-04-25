@@ -3,7 +3,6 @@
  */
 
 import { checkTokenRefresh, initiateLogin } from "../auth/auth.js";
-import Ph_CommentsFeed from "../components/feed/commentsFeed/commentsFeed.js";
 import Ph_Flair, { FlairApiData } from "../components/misc/flair/flair.js";
 import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
 import { RedditApiType } from "../types/misc.js";

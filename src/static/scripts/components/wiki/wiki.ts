@@ -1,5 +1,5 @@
-import { elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff.js";
 import { RedditApiType } from "../../types/misc.js";
+import { elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff.js";
 import Ph_FeedInfo, { FeedType } from "../feed/feedInfo/feedInfo.js";
 import { Ph_ViewState } from "../viewState/viewState.js";
 

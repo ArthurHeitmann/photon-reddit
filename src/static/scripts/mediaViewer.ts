@@ -1,7 +1,7 @@
 import Ph_Toast, { Level } from "./components/misc/toast/toast.js";
 import Ph_PostBody from "./components/post/postBody/postBody.js";
-import { escHTML } from "./utils/htmlStatics.js";
 import { RedditApiType } from "./types/misc.js";
+import { escHTML } from "./utils/htmlStatics.js";
 import { splitPathQuery } from "./utils/utils.js";
 
 window.addEventListener("load", async () => {

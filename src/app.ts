@@ -2,8 +2,8 @@ import bodyParser from "body-parser";
 import express from "express";
 import RateLimit from "express-rate-limit";
 import helmet from "helmet";
-import { authRouter, initialAccessToken } from "./serverScripts/auth.js";
 import { analyticsRouter } from "./serverScripts/analytics.js";
+import { authRouter, initialAccessToken } from "./serverScripts/auth.js";
 import { appId, redirectURI } from "./serverScripts/config.js";
 import {
 	__dirname,
