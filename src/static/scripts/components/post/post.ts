@@ -142,6 +142,11 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			dropDownEntries.push({ label: "Edit", nestedEntries: editEntries });
 			dropDownEntries.push({ label: "Delete", onSelectCallback: this.deletePostPrompt.bind(this) });
 		}
+		if (postData.data["num_crossposts"] > 0) {
+			dropDownEntries.push({ label:
+				`<a href="${this.permalink.replace("comments", "duplicates")}" class="noStyle">View ${postData.data["num_crossposts"]} Crossposts</a>`
+			});
+		}
 		const moreDropDown = new Ph_DropDown(dropDownEntries, "", DirectionX.left, DirectionY.bottom, true);
 		moreDropDown.toggleButton.classList.add("transparentButtonAlt");
 		actionWrapper.appendChild(moreDropDown);

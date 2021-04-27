@@ -19,12 +19,12 @@ export default class Ph_FeedItem extends Ph_PhotonBaseElement {
 
 		if (isInFeed) {
 			this.classList.add("isInFeed");
-			if (link) {
-				const backgroundLink = document.createElement("a");
-				backgroundLink.className = "backgroundLink";
-				backgroundLink.href = this.link;
-				this.appendChild(backgroundLink);
-			}
+		}
+		if (link) {
+			const backgroundLink = document.createElement("a");
+			backgroundLink.className = "backgroundLink";
+			backgroundLink.href = this.link;
+			this.appendChild(backgroundLink);
 		}
 
 		const intersectionObserver = new IntersectionObserver(

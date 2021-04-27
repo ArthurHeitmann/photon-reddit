@@ -8,6 +8,7 @@ import Ph_MessageCompose from "../components/message/messageCompose/messageCompo
 import Ph_RandomHub from "../components/misc/randomHub/randomHub.js";
 import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
 import Ph_About from "../components/photon/about/about.js";
+import Ph_PostCrossposts from "../components/post/postCrossposts/postCrossPosts.js";
 import PostDoubleLink from "../components/post/postDoubleLink/postDoubleLink.js";
 import Ph_SubmitPostForm from "../components/post/submit/submitPostForm.js";
 import Ph_PostAndComments from "../components/postAndComments/postAndComments.js";
@@ -108,9 +109,12 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 
 	if (postHint)
 		stateLoader.finishWith(requestData);
-	// result is a posts comments
-	else if (requestData instanceof Array) {		// --> [0]: post [1]: comments
-		stateLoader.finishWith(new Ph_PostAndComments(requestData));
+	// result is a posts comments or post crosspost list
+	else if (requestData instanceof Array) {		// --> [0]: post [1]: comments/posts
+		if (requestData[1]["data"]["children"][0]?.["kind"] === "t3")
+			stateLoader.finishWith(new Ph_PostCrossposts(requestData));
+		else
+			stateLoader.finishWith(new Ph_PostAndComments(requestData));
 		ViewsStack.setCurrentStateTitle(`${requestData[0]["data"]["children"][0]["data"]["title"]} - Photon`);
 	}
 	// result is something else
