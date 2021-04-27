@@ -15,6 +15,7 @@
 
 	> .expandedWrapper {
 		position: relative;
+		z-index: 2;
 
 		> .expandedView {
 			@extend %shadow-dreamy;

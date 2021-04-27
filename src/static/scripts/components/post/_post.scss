@@ -206,6 +206,48 @@
 		}
 	}
 
+	.miniPost {
+		position: relative;
+		border-radius: vars.$b-r;
+		border: 2px solid vars.$border-color;
+		margin: .5rem;
+		transition: background-color .25s ease;
+
+		&:hover {
+			background: rgba(255, 255, 255, 0.05);
+		}
+
+		.miniBackgroundLink {
+			position: absolute !important;
+			z-index: 1;
+			width: 100%;
+			height: 100%;
+		}
+
+		.postSummary {
+			position: relative;
+			padding: .5rem;
+
+			.info {
+				display: flex;
+				gap: .3rem;
+
+				* {
+					font-size: .8rem;
+				}
+			}
+
+			.title {
+				word-break: break-word;
+			}
+
+			a {
+				position: relative;
+				z-index: 1;
+			}
+		}
+	}
+
 	.commentsLink {
 		display: flex;
 		justify-content: center;

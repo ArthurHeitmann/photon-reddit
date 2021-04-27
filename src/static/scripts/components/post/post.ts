@@ -12,7 +12,7 @@ import {
 	voteDirectionFromLikes
 } from "../../api/redditApi.js";
 import { pushLinkToHistoryComb, PushType } from "../../historyState/historyStateManager.js";
-import { RedditApiType } from "../../types/misc.js";
+import { RedditApiData, RedditApiType } from "../../types/misc.js";
 import Votable from "../../types/votable.js";
 import { hasPostsBeenSeen, markPostAsSeen, thisUser } from "../../utils/globals.js";
 import { escADQ, escHTML, getLoadingIcon } from "../../utils/htmlStatics.js";
@@ -215,6 +215,37 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		`;
 		if (postData.data["all_awardings"] && postData.data["all_awardings"].length > 0)
 			mainPart.$class("flairWrapper")[0].insertAdjacentElement("beforebegin", new Ph_AwardsInfo(postData.data["all_awardings"]));
+		if (postData.data["crosspost_parent_list"]?.length > 0) {
+			const crosspostData: RedditApiData = postData.data["crosspost_parent_list"][0];
+			const miniPost = document.createElement("div");
+			miniPost.className = "miniPost";
+			miniPost.innerHTML = `
+				<a href="${crosspostData["permalink"]}" class="miniBackgroundLink"></a>
+				<div class="postSummary">
+					<div class="info">
+						<span>Crossposted from</span>
+						<a href="/${escADQ(crosspostData["subreddit_name_prefixed"])}" class="subreddit">
+							<span>${escHTML(crosspostData["subreddit_name_prefixed"])}</span>
+						</a>
+						<span>by</span>
+						<a href="/user/${escADQ(crosspostData["author"])}" class="user">
+							<span>u/${escHTML(crosspostData["author"])}</span>
+							${ crosspostData["author_cakeday"] ? `<img src="/img/cake.svg" class="cakeDay" alt="cake day">` : "" }
+						</a>
+						<span class="time" data-tooltip="${new Date(crosspostData["created_utc"] * 1000).toString()}">${timePassedSinceStr(crosspostData["created_utc"])}</span>
+						<span>ago</span>
+						${ crosspostData["edited"]
+							? `	<span>|</span><span>edited</span> 
+								<span class="time" data-tooltip="${new Date(crosspostData["edited"] * 1000).toString()}">${timePassedSinceStr(crosspostData["edited"])}</span>
+								<span>ago</span>`
+							: ""
+						}
+					</div>
+					<div class="title">${escHTML(crosspostData["title"])}</div>
+				</div>
+			`;
+			mainPart.appendChild(miniPost);
+		}
 		mainPart.appendChild(this.postBody);
 		this.appendChild(mainPart);
 
