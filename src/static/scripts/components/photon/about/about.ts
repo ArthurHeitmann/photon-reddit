@@ -88,17 +88,6 @@ export default class Ph_About extends HTMLElement {
 	connectedCallback() {
 		this.classList.add("about");
 		this.innerHTML = template;
-		this.insertAdjacentElement("afterbegin", new Ph_DropDown([{
-			label: new Ph_Flair({
-				type: "text",
-				text: "$LIBRARY_NAME Maintainer",
-				backgroundColor: "",
-				richText: [],
-				textColor: "dark",
-				isEditable: true,
-			}),
-		}], "Flairs", DirectionX.right, DirectionY.bottom, false));
-
 		linksToSpa(this);
 	}
 }
