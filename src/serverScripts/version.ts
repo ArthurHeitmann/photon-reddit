@@ -1,6 +1,12 @@
-export const photonVersion = "0.4.1";		/// <change version script>
+export const photonVersion = "0.4.2";		/// <change version script>
 
 export const photonChangelog = {
+	"0.4.2": {
+		"New": [
+			"Crossposted posts now have a link to their original posts",
+			"Added button to view all crossposts of a post"
+		]
+	},
 	"0.4.1": {
 		"Fixed": [
 			"Some twitch clips not working",
