@@ -43,6 +43,10 @@ pre {
 	}
 }
 
+td code {
+	line-break: anywhere;
+}
+
 ol, ul {
 	list-style-position: outside;
 
