@@ -21,6 +21,7 @@
 
 import { globalSettings } from "../components/global/photonSettings/photonSettings.js";
 import { ViewChangeData } from "../historyState/viewsStack.js";
+import { extractPath } from "../utils/utils.js";
 
 window.addEventListener("ph-view-change", (e: CustomEvent) => {
 	if (location.hostname === "localhost")
@@ -31,7 +32,9 @@ window.addEventListener("ph-view-change", (e: CustomEvent) => {
 		return;
 	if (viewChangeData.newLoad) {
 		// only track path up to subreddit name
-		const path = viewChangeData.viewState.state.url.replace(/(?<=^\/[^/]+\/[^/]+)\/.*/, "");
+		const path = extractPath(viewChangeData.viewState.state.url)
+			.replace(/(?<=^\/[^/]+\/[^/]+)\/.*/, "")
+			.replace(/\/$/,"");
 		fetch("/data/event", {
 			method: "POST",
 			headers: [
