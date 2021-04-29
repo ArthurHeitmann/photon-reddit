@@ -60,7 +60,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 			case "imgur.com":
 			case "m.imgur.com":
 			case "i.imgur.com":
-				const typelessUrl = url.match(/^https?:\/\/([im])?\.?imgur\.com\/\w+/)[0];
+				const typelessUrl = url.match(/^https?:\/\/([im])?\.?imgur\.com\/\w+/)[0];		// removes file ending usually all .gif or .gifv have an .mp4
 				videoOut.init(new Ph_SimpleVideo([
 					{src: typelessUrl + ".mp4", type: "video/mp4"},
 				]));
@@ -97,7 +97,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				if (postData && postData.data["media"] && postData.data["media"]["reddit_video"]) {
 					const helperUrl = postData.data["media"]["reddit_video"]["fallback_url"];
 					const resolutions = [1080, 720, 480, 360, 240, 96];
-					if (/DASH_\d+\?source=fallback/.test(helperUrl)) {
+					if (/DASH_\d+\?source=fallback/.test(helperUrl)) {		// DASH_<res>?source=fallback
 						const maxRes = helperUrl.match(/(?<=DASH_)\d+/)[0];
 						const resOptions = resolutions.slice(resolutions.indexOf(parseInt(maxRes)));
 						videoOut.init(new Ph_VideoAudio(
@@ -110,7 +110,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 							]
 						));
 					}
-					else if (/DASH_\d+\.mp4\?source=fallback/.test(helperUrl)) {
+					else if (/DASH_\d+\.mp4\?source=fallback/.test(helperUrl)) {		// DASH_<res>.mp4?source=fallback
 						const maxRes = helperUrl.match(/(?<=DASH_)\d+/)[0];
 						const resOptions = resolutions.slice(resolutions.indexOf(parseInt(maxRes)));
 						videoOut.init(new Ph_VideoAudio(
@@ -122,7 +122,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 								{src: url + "/audio", type: "video/mp4"},
 							]));
 					}
-					else if (/DASH_[\d_]+[KM]\.mp4\?source=fallback/.test(helperUrl)) {
+					else if (/DASH_[\d_]+[KM]\.mp4\?source=fallback/.test(helperUrl)) {		// DASH_<bits>.mp4?source=fallback
 						videoOut.init(new Ph_VideoAudio([
 							{src: url + "/DASH_4_8_M.mp4", type: "video/mp4"},
 							{src: url + "/DASH_2_4_M.mp4", type: "video/mp4"},
@@ -135,7 +135,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 							{src: url + "/audio", type: "video/mp4"},
 						]));
 					}
-					else if (/DASH_[\d_]+[KM]\?source=fallback/.test(helperUrl)) {
+					else if (/DASH_[\d_]+[KM]\?source=fallback/.test(helperUrl)) {		// DASH_<bits>?source=fallback
 						videoOut.init(new Ph_VideoAudio([
 							{src: url + "/DASH_4_8_M", type: "video/mp4"},
 							{src: url + "/DASH_2_4_M", type: "video/mp4"},
@@ -196,6 +196,8 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				// try to get mp4 url from oembed data
 				let twitchMp4Found = false;
 				if (postData && postData.data["media"] && postData.data["media"]["oembed"]) {
+					// if present the thumbnail url looks like 	https://clips-media-assets2.twitch.tv/AT-cm|1155435256-social-preview.jpg
+					// the mp4 url is 							https://clips-media-assets2.twitch.tv/AT-cm|1155435256.mp4
 					const twitchUrlMatches = postData.data["media"]["oembed"]["thumbnail_url"].match(/(.*)-social-preview.jpg$/);
 					if (twitchUrlMatches && twitchUrlMatches.length == 2) {
 						videoOut.init(new Ph_SimpleVideo([{src: twitchUrlMatches[1] + ".mp4", type: "video/mp4"}]));
@@ -224,7 +226,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				break;
 			case "media2.giphy.com":
 			case "giphy.com":
-				const giphyId = url.match(/(?<=giphy\.com\/\w+\/)\w+/)[0];
+				const giphyId = url.match(/(?<=giphy\.com\/\w+\/)\w+/)[0];		// gfycat.com/<id> or gfycat.com/something/<id> --> <id>
 				const giphyMp4 = `https://i.giphy.com/media/${giphyId}/giphy.mp4`;
 				videoOut.init(new Ph_SimpleVideo([{ src: giphyMp4, type: "video/mp4" }]));
 				break;

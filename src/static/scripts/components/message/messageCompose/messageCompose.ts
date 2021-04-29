@@ -38,7 +38,7 @@ export default class Ph_MessageCompose extends HTMLElement {
 		this.appendChild(sendButton);
 
 		if (receiver) {
-			const toFromUrl = receiver.replace(/^\//, "");
+			const toFromUrl = receiver.replace(/^\//, "");		// remove leading /
 			toInput.value = toFromUrl;
 			this.to = toFromUrl;
 		}
@@ -61,7 +61,7 @@ export default class Ph_MessageCompose extends HTMLElement {
 			["message", this.message],
 		];
 		if (/^\/?u\//.test(this.to)) {
-			const user = this.to.match(/(?=u\/).*/)[0];
+			const user = this.to.match(/(?=u\/).*/)[0];		// /u/user --> user
 			if (!user) {
 				new Ph_Toast(Level.error, "Missing username", { timeout: 2500 });
 				return;
@@ -69,7 +69,7 @@ export default class Ph_MessageCompose extends HTMLElement {
 			params.push(["to", user]);
 		}
 		else if (/^\/?r\//.test(this.to)) {
-			const sub = this.to.match(/(?<=r\/).*/)[0];
+			const sub = this.to.match(/(?<=r\/).*/)[0];		// r/sub --> sub
 			if (!sub) {
 				new Ph_Toast(Level.error, "Missing Subreddit", { timeout: 2500 });
 				return;

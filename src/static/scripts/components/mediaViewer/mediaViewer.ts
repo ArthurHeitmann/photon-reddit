@@ -116,7 +116,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 
 	static fromImgurUrl(url: string): Ph_MediaViewer {
 		const mediaViewer = new Ph_MediaViewer();
-		if (/imgur\.com\/(a|album|gallery)\/[^/]+\/?$/.test(url)) {
+		if (/imgur\.com\/(a|album|gallery)\/[^/]+\/?$/.test(url)) {		// imgur album is either /a/... or /album/... or /gallery/...
 			getImgurAlbumContents(url).then((contents: ImgurContent[]) => {
 				mediaViewer.init(contents.map(imgurElement => {
 					if (imgurElement.type === ImgurContentType.image)
@@ -172,12 +172,12 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 
 	static isUrlVideo(url: string): boolean {
 		return Ph_MediaViewer.isUrlOnWhiteList(url) && new RegExp(
-			"^((https?://(i|m)?\.?imgur\\.com\/[\\w-]+.(gifv|mp4))|" +
-			"(https?://v.redd.it\\/[\\w-]+)|" +
-			"(https?://w?w?w?\\.?redgifs.com/watch/\\w+))|" +
-			"(https?://gfycat.com/[\\w-]+)|" +
-			"(giphy\\.com/\\w+/\\w+)|" +
-			"(\\.(gif|mp4)(\\?.*)?$)"
+			"^((https?://(i|m)?\.?imgur\\.com\/[\\w-]+.(gifv|mp4))|" +		// imgur
+			"(https?://v.redd.it\\/[\\w-]+)|" +										// v.redd.it
+			"(https?://w?w?w?\\.?redgifs.com/watch/\\w+))|" +						// redgifs
+			"(https?://gfycat.com/[\\w-]+)|" +										// gfycat
+			"(giphy\\.com/\\w+/\\w+)|" +											// giphy
+			"(\\.(gif|mp4)(\\?.*)?$)"												// .gif or .mp4 file
 		).test(url);
 	}
 
@@ -197,7 +197,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	static isUrlOnWhiteList(url: string): boolean {
 		let urlHost: string;
 		try {
-			urlHost = (new URL(url)).hostname.match(/(?:[^.]+\.)?[^.]+$/)[0];
+			urlHost = (new URL(url)).hostname.match(/(?:[^.]+\.)?[^.]+$/)[0];		// sub.en.domain.com --> domain.com
 		}
 		catch {
 			return false;
@@ -353,7 +353,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		this.elementCaption.title = newMedia.caption || "";
 		// link
 		this.elementLink.href = newMedia.url;
-		const shortLinkMatches = newMedia.url.match(/[\w-_]+\.[\w-_]+(?=([/?#].*)?$)/);
+		const shortLinkMatches = newMedia.url.match(/[\w-_]+\.[\w-_]+(?=([/?#].*)?$)/);	// sub.en.domain.com?query --> domain.com
 		this.elementLink.innerText = shortLinkMatches?.[0] || newMedia.url.slice(0, 10);
 		// controls slots
 		this.controls.updateSlotsWith(newMedia.controls);

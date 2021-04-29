@@ -18,6 +18,7 @@ export function cacheControl(req: express.Request, res: express.Response, next: 
 }
 
 export function checkSslAndWww(req: express.Request, res: express.Response, next: express.NextFunction) {
+	// if no https or hostname has www. redirect to https without www.
 	if ((env === "development" || req.headers["x-forwarded-proto"] === "https") && !(/^www\./.test(req.hostname))) {
 		next();
 	} else {

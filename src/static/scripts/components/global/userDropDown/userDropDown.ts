@@ -90,7 +90,7 @@ export default class Ph_UserDropDown extends HTMLElement {
 			"Submit Post",
 			() => {
 				let submitUrl: string;
-				const currentSubMatch = history.state.url.match(/\/r\/\w+/);
+				const currentSubMatch = history.state.url.match(/\/r\/\w+/);		// /r/sub
 				if (currentSubMatch)
 					submitUrl = `${currentSubMatch}/submit`;
 				else

@@ -345,7 +345,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 
 	/** This is a solution with the best UX and least unexpected hidden posts */
 	private shouldPostBeHidden(ignoreSeenSettings: boolean = false, changedSettings?: PhotonSettings): boolean {
-		const isInUserFeed = /^\/(u|user)\/([^/]+\/?){1,2}$/.test(this.feedUrl);	// 1, 2 to exclude multireddits
+		const isInUserFeed = /^\/(u|user)\/([^/]+\/?){1,2}$/.test(this.feedUrl);	// matches /u/user/submitted or /user/x/saved; 1, 2 to exclude multireddits /user/x/m/multi
 		if (changedSettings === undefined) {
 			return (
 				this.isInFeed && (
@@ -481,7 +481,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		this.postBody.innerText = "[deleted]";
 		this.postBody.className = "content padded";
 
-		Array.from(dropDownEntry.parentElement.children)
+		Array.from(dropDownEntry.parentElement.children)		// remove all dropdown entries that have delete or edit in the text
 			.filter((entry: HTMLElement) => /delete|edit/i.test(entry.textContent))
 			.forEach(entry => entry.remove());
 
@@ -524,7 +524,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		if (this.haveFlairsLoaded)
 			return;
 		this.haveFlairsLoaded = true;
-		const sub = this.permalink.match(/(?<=\/\w+\/)[^/]+/)[0];
+		const sub = this.permalink.match(/(?<=\/\w+\/)[^/]+/)[0];		// /r/sub/top? --> sub
 		const flairs: FlairApiData[] = await getSubFlairs("/r/" + sub);
 		const flairSelection: DropDownEntryParam[] = flairs.map(flair => {
 			const flairElem = Ph_Flair.fromFlairApi(flair);

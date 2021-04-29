@@ -77,16 +77,16 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			title.className = "feedTitle";
 			let feedType: FeedType = FeedType.misc;
 			let feedBaseUrl: string;
-			if (/^\/?(\?.*)?$/.test(requestUrl) || /^\/r\/(all|popular|random|friends|mod)/.test(requestUrl)) {	// home
+			if (/^\/?(\?.*)?$/.test(requestUrl) || /^\/r\/(all|popular|random|friends|mod)/i.test(requestUrl)) {	// home page or special subreddit
 				feedType = FeedType.misc;
 			}
 			else if (/^\/r\/[^/]+/.test(requestUrl)) {								// subreddit
-				title.innerText = requestUrl.match(/r\/[^/?]+/)[0];
+				title.innerText = requestUrl.match(/r\/[^/?]+/)[0];			// /r/all/top --> r/all
 				feedType = FeedType.subreddit;
-				feedBaseUrl = requestUrl.match(/\/r\/[^/?]+/)[0];
+				feedBaseUrl = requestUrl.match(/\/r\/[^/?]+/)[0];			// /r/all/top --> r/all
 			}
 			else if (/^\/(u|user)\/[^/]+\/m\/[^/]+/.test(requestUrl)) {				// multi
-				title.innerText = `Multireddit ${requestUrl.match(/\/m\/([^/]+)/)[1]}`;
+				title.innerText = `Multireddit ${requestUrl.match(/\/m\/([^/]+)/)[1]}`;		// /u/user/m/multi --> multi
 				feedType = FeedType.multireddit;
 				const matches = requestUrl.match(/\/(u|user)\/([^/]+)\/m\/([^/]+)/)
 				feedBaseUrl = `/user/${matches[2]}/m/${matches[3]}`;
@@ -127,7 +127,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 
 	async setMessageSection([section]: MessageSection[], setLabel: (newLabel: ButtonLabel) => void, initialLabel: HTMLElement) {
 		setLabel(getLoadingIcon());
-		this.requestUrl = this.requestUrl.replace(/^(\/message)\/[^\/]*/, `$1/${section}`);
+		this.requestUrl = this.requestUrl.replace(/^(\/message)\/[^\/]*/, `$1/${section}`);	// /message/<old> --> /message/<new>
 		try {
 			const sectionItems: RedditApiType = await redditApiRequest(
 				this.requestUrl,

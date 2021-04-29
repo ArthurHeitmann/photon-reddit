@@ -29,13 +29,13 @@ function makeContentData(data): ImgurContent {
 	else {
 		content.type = ImgurContentType.image;
 		content.link = data.link;
-		content.preview = data.link.replace(/(?=\.\w+(\?.*)?$)/, "h");
+		content.preview = data.link.replace(/(?=\.\w+(\?.*)?$)/, "h");		// https://i.imgur.com/<id>>.jpg --> https://i.imgur.com/<id>h.jpg
 	}
 	return content;
 }
 
 export async function getImgurContent(link: string): Promise<ImgurContent> {
-	const id = link.match(/(?<=(https?:\/\/)?imgur\.com\/)\w+/)[0];
+	const id = link.match(/(?<=(https?:\/\/)?imgur\.com\/)\w+/)[0];		// https://imgur.com/<id> --> <id>
 	const options: RequestInit = {
 		headers: [
 			["Authorization", `Client-ID ${imgurClientID}`]
@@ -48,7 +48,7 @@ export async function getImgurContent(link: string): Promise<ImgurContent> {
 }
 
 export async function getImgurAlbumContents(link: string): Promise<ImgurContent[]> {
-	const id = link.match(/(?<=(https?:\/\/)?imgur\.com\/(a|album|gallery)\/)\w+/)[0];
+	const id = link.match(/(?<=(https?:\/\/)?imgur\.com\/(a|album|gallery)\/)\w+/)[0];	// example: https://imgur.com/a/<id> --> <id>
 	const options: RequestInit = {
 		headers: [
 			["Authorization", `Client-ID ${imgurClientID}`]

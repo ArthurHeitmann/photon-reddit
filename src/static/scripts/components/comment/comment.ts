@@ -431,7 +431,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 
 			this.$class("content")[0].innerHTML = "[deleted]";
 
-			Array.from(dropDownEntry.parentElement.children)
+			Array.from(dropDownEntry.parentElement.children)		// remove all dropdown entries that have edit or delete in the text
 				.filter((entry: HTMLElement) => /delete|edit/i.test(entry.textContent))
 				.forEach(entry => entry.remove());
 

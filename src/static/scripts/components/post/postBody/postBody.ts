@@ -108,7 +108,7 @@ export default class Ph_PostBody extends HTMLElement {
 
 	private makeEmbeddedVideoBody(postData: RedditApiType) {
 		this.classList.add("fullScale");
-		const iframeSrc = postData.data["media_embed"]["content"].match(/src="([^"]+)"/)[1];
+		const iframeSrc = postData.data["media_embed"]["content"].match(/src="([^"]+)"/)[1];		// extract src attribute from <iframe>
 		this.innerHTML = `<div class="aspect-ratio-16-9-wrapper"><iframe src="${escADQ(iframeSrc)}" allowfullscreen></iframe></div>`;
 	}
 

@@ -20,7 +20,7 @@ photonApiRouter.get("/youtube-dl", RateLimit(youtube_dlRateLimitConfig), safeExc
 		res.json({ error: "¯\\_(ツ)_/¯" });
 		return;
 	}
-	const urlTrimmed = url.match(/https:\/\/.*$/);
+	const urlTrimmed = url.match(/https:\/\/.*$/);		// youtube_dl might return more text before printing the url
 	if (!urlTrimmed) {
 		res.json({ error: "¯\\_(ツ)_/¯" });
 		return;
@@ -61,7 +61,7 @@ photonApiRouter.get("/randomSubreddit", safeExcAsync(async (req, res) => {
 		res.status(400).json({ error: "¯\\_(ツ)_/¯" });
 		return;
 	}
-	const subreddit = redirectedUrl.match(/(?<=reddit\.com\/r\/)[^/#?]+/)[0];
+	const subreddit = redirectedUrl.match(/(?<=reddit\.com\/r\/)[^/#?]+/)[0];	// https://reddit.com/r/AskReddit --> AskReddit
 	res.json({ subreddit });
 }));
 
@@ -81,6 +81,6 @@ photonApiRouter.get("/randomSubredditPostUrl", safeExcAsync(async (req, res) => 
 		res.status(400).json({ error: "¯\\_(ツ)_/¯" });
 		return;
 	}
-	const path = redirectedUrl.match(/(?<=https:\/\/www\.reddit\.com).*(?=\.json)/)[0];
+	const path = redirectedUrl.match(/(?<=https:\/\/www\.reddit\.com).*(?=\.json)/)[0];		// https://reddit.com/**/.json* --> **
 	res.json({ url: path });
 }));

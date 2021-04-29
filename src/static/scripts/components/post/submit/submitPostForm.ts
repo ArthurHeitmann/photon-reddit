@@ -161,7 +161,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 
 		// if the current url is like /r/AskReddit/submit then fill out the subreddit input field
 		if (/^\/r\/\w+\/submit/.test(history.state.url)) {
-			const subMatches = history.state.url.match(/(?<=^\/r\/)\w+/);
+			const subMatches = history.state.url.match(/(?<=^\/r\/)\w+/);	// /r/sub_reddit --> sub_reddit
 			(this.subInput.$tag("input")[0] as HTMLInputElement).value = `r/${subMatches[0]}`;
 			this.subInput.dispatchEvent(new Event("change"));
 		}
@@ -265,7 +265,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 			new Ph_Toast(Level.error, msg);
 			return;
 		}
-		const path = jqueryArr[redirectIndex + 1][3][0].match(/(?<=reddit\.com).*/)[0];
+		const path = jqueryArr[redirectIndex + 1][3][0].match(/(?<=reddit\.com).*/)[0];		// https://reddit.com/r/sub/... --> /r/sub/...
 		pushLinkToHistoryComb(path);
 	}
 
@@ -277,15 +277,18 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		if (!/^(r|u|user)\//.test(community)) {
 			new Ph_Toast(Level.error, `Community must start with "r/" or "u/" or "user/"`, {timeout: 3500});
 			return;
-		} else if (!/^(r|u|user)\/[a-zA-z0-9_-]{3,21}$/.test(community)) {
+		}
+		// exact pattern for valid subreddits and usernames
+		else if (!/^(r|u|user)\/[a-zA-z0-9_-]{3,21}$/.test(community)) {
 			new Ph_Toast(Level.error, `Invalid community name`, {timeout: 3500});
 			return;
 		}
+		// user posts can only be submitted to self
 		else if (/^(u|user)\//.test(community) && community.match(/(?<=^(u|user)\/)\w+/)[0] !== thisUser.name) {
 			new Ph_Toast(Level.error, `You can only submit posts on your profile`, {timeout: 3500});
 			return;
 		}
-		community = community.replace(/^\/?/, "/");
+		community = community.replace(/^\/?/, "/");	// remove leading / if present
 
 		// make reddit request to verify existence of that sub and get it's data
 		// for subreddit

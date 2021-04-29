@@ -360,7 +360,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 			feedAbout = await getSubInfo(this.feedUrl);
 			if (feedAbout["error"] || !(feedAbout["kind"] && feedAbout["data"]))
 				throw `Invalid about response ${JSON.stringify(feedAbout)}`;
-			multis = await getUserMultis(this.feedUrl.match(/(?<=(u|user)\/)[^/]*/)[0]);
+			multis = await getUserMultis(this.feedUrl.match(/(?<=(u|user)\/)[^/]*/)[0]);	// /u/username --> username
 			if (multis["error"])
 				throw `Invalid user multis response ${JSON.stringify(feedAbout)}`;
 		} catch (e) {
@@ -617,7 +617,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 				(e.currentTarget as HTMLElement).parentElement.parentElement)
 			);
 			addSubInput.addEventListener("input", throttle(async () => {
-				addSubInput.value = addSubInput.value.replace(/^\/?r\//, "");
+				addSubInput.value = addSubInput.value.replace(/^\/?r\//, "");	// remove r/ prefix
 				if (addSubInput.value) {
 					subsSearchResults.classList.remove("remove");
 					const subs: { names: string[] } = await searchSubredditNames(addSubInput.value);
@@ -690,7 +690,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 	}
 
 	private async addSubToMulti(subName: string, multiPath: string, sourceIsMulti: boolean, subsList?: HTMLElement) {
-		subName = subName.replace(/^\/?r\//, "");
+		subName = subName.replace(/^\/?r\//, "");		// remove r/ prefix
 		if (subName === "")
 			return;
 		if (sourceIsMulti && this.loadedInfo.data.subreddits.includes(subName)) {
@@ -730,7 +730,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 	}
 
 	private async removeSubFromMulti(subName: string, multiPath: string, editSubBar: HTMLElement) {
-		subName = subName.replace(/^\/?r\//, "");
+		subName = subName.replace(/^\/?r\//, "");		// remove r/ prefix
 		if (!this.loadedInfo.data.subreddits.includes(subName)) {
 			new Ph_Toast(Level.warning, `r/${escHTML(subName)} does not exist in ${escHTML(multiPath)}`, { timeout: 6000 });
 			return;

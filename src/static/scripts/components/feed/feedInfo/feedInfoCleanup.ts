@@ -9,7 +9,7 @@ export function clearAllOldData() {
 	const now = Date.now();
 	let removedCachedInfos = 0;
 	for (const localStorageKey in localStorage) {
-		if (!/^\/(r|u|user)\/[^/]+/.test(localStorageKey))		// skip if not feed info
+		if (!/^\/(r|u|user)\/[^/]+/.test(localStorageKey))		// skip if not feed info, must be /r/..., /u/..., /user/...
 			continue;
 		let feedInfo: StoredData;
 		try {

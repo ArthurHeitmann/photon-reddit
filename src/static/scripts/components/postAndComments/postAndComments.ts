@@ -85,7 +85,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 		}
 
 		// sorting
-		const curSort = extractQuery(history.state.url).match(/(?<=sort=)\w+/);
+		const curSort = extractQuery(history.state.url).match(/(?<=sort=)\w+/);		// ?sort=top&limit=1 --> top
 		this.sorter = new Ph_DropDown([
 			{ label: "Best", value: SortCommentsOrder.best, onSelectCallback: this.handleSort.bind(this) },
 			{ label: "Top", value: SortCommentsOrder.top, onSelectCallback: this.handleSort.bind(this) },

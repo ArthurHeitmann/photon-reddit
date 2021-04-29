@@ -33,7 +33,7 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 		this.className = "feedSorter";
 
 		if (feedType === FeedType.user) {
-			const tmpCurSection = feed.requestUrl.match(/(?<=^\/(u|user)\/[^/]+\/)\w+/);
+			const tmpCurSection = feed.requestUrl.match(/(?<=^\/(u|user)\/[^/]+\/)\w+/);		// /user/username/top --> top
 			const curSection = tmpCurSection && tmpCurSection[0] || "Overview";
 			const userSections = <DropDownEntryParam[]> [
 				{ label: "Overview", value: UserSection.overview, onSelectCallback: this.setUserSection.bind(this) },
@@ -54,7 +54,7 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 		}
 
 		const query = new URLSearchParams(extractQuery(history.state?.url || ""));
-		let tmpCurSort = extractPath(history.state?.url || "").match(/(?<=\/)\w+$/);
+		let tmpCurSort = extractPath(history.state?.url || "").match(/(?<=\/)\w+$/);	// /r/all/top --> top
 		let curSort = query.get("sort") || tmpCurSort && tmpCurSort[0] || "";
 		if (!(Object.values(SortPostsOrder) as string[]).includes(curSort.toLowerCase()))
 			curSort = "default";
@@ -131,9 +131,9 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 		if (this.feedType !== FeedType.user) {
 			const pathEnding = path.match(/\w*\/?$/)[0];
 			if (SortPostsOrder[pathEnding]) {
-				path = path.replace(/\w*\/?$/, sortingMode.order);
+				path = path.replace(/\w*\/?$/, sortingMode.order);		// /r/all/top --> /r/all/<newOrder>
 			} else {
-				path = path.replace(/\/?$/, "/");
+				path = path.replace(/\/?$/, "/");				// /r/all/ --> /r/all/<newOrder>
 				path += sortingMode.order;
 			}
 		}
@@ -161,7 +161,7 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 
 	async setUserSection([section]: UserSection[], setLabel: (newLabel: ButtonLabel) => void, initialLabel: HTMLElement) {
 		setLabel(getLoadingIcon());
-		const userName = this.feed.requestUrl.match(/(?<=^\/(u|user)\/)[^\/?#]+/)[0];
+		const userName = this.feed.requestUrl.match(/(?<=^\/(u|user)\/)[^\/?#]+/)[0];		// /u/user --> iser
 		const query = extractQuery(this.feed.requestUrl);
 		const isSortable = !NonSortableUserSections.includes(section);
 		this.feed.requestUrl = `/user/${userName}/${section}${isSortable ? query : ""}`;

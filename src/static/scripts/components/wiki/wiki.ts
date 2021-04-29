@@ -18,7 +18,9 @@ export default class Ph_Wiki extends HTMLElement {
 
 	connectedCallback() {
 		// subreddit info button
-		const subredditPath = history.state.url.match(/\/r\/[^/]+/)[0];
+		const subredditPath = history.state.url.match(/\/r\/[^/]+/)?.[0];
+		if (!subredditPath)
+			return;
 		const headerElements: HTMLElement[] = [];
 		const title = document.createElement("div");
 		title.className = "feedTitle";

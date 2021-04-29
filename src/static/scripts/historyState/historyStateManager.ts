@@ -142,19 +142,23 @@ function goToHash() {
 }
 
 function handleSpecialPaths(path: string, query: string[][], stateLoader: Ph_ViewState): boolean {
+	// /about
 	if (/^\/about(#.*)?$/.test(path)) {
 		stateLoader.finishWith(new Ph_About());
 		return true;
 	}
+	// /submit or /r/sub/submit
 	else if (/^(\/r\/[^/]+)?\/submit/.test(path)) {
 		stateLoader.finishWith(new Ph_SubmitPostForm());
 		return true;
 	}
+	// /r/random or /r/randnsfw or /r/sub/random
 	else if (/^\/r\/((random|randnsfw)|([^/?#]+\/random))([/#?].*)?$/.test(path)) {
 		const url = path + (query.length ? "?" + (new URLSearchParams(query).toString()) : "");
 		stateLoader.finishWith(new Ph_RandomHub(url));
 		return true;
 	}
+	// /message/compose
 	else if (/^\/message\/compose/.test(path)) {
 		const receiver = query.find(param => param[0] === "to")?.[0];
 		stateLoader.finishWith(new Ph_MessageCompose(receiver));
