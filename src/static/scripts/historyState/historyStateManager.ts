@@ -74,10 +74,8 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 
 	const historyState = ViewsStack.makeHistoryState(path, path + query);
 	let stateLoader: Ph_ViewState;
-	if (postHint) {
+	if (postHint)
 		stateLoader = new Ph_CommentsViewStateLoader(historyState, postHint);
-		ViewsStack.setCurrentStateTitle(`${postHint.post.postTitle} - Photon`);
-	}
 	else
 		stateLoader = new Ph_ViewStateLoader(historyState);
 
@@ -107,8 +105,10 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 		throw `Error making request to reddit (${path}, ${JSON.stringify(params)})`;
 	}
 
-	if (postHint)
+	if (postHint) {
 		stateLoader.finishWith(requestData);
+		ViewsStack.setCurrentStateTitle(`${postHint.post.postTitle} - Photon`);
+	}
 	// result is a posts comments or post crosspost list
 	else if (requestData instanceof Array) {		// --> [0]: post [1]: comments/posts
 		if (requestData[1]["data"]["children"][0]?.["kind"] === "t3")
