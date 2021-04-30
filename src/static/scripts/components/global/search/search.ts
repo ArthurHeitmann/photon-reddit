@@ -110,7 +110,7 @@ export default class Ph_Search extends HTMLElement {
 
 		const curSort = new URLSearchParams(extractQuery(history.state?.url || ""));
 		let curSortStr: string;
-		if (history.state && /search$/.test(extractPath(history.state.url)))
+		if (history.state && /search$/i.test(extractPath(history.state.url)))
 			curSortStr = `Sort - ${curSort.get("sort") || "relevance"}${curSort.get("t") ? `/${curSort.get("t")}` : ""}`;
 		else
 			curSortStr = `Sort - relevance/all`;
@@ -189,7 +189,7 @@ export default class Ph_Search extends HTMLElement {
 		const { checkbox: limitToCheckbox, label: limitToLabel } = makeLabelCheckboxPair("Limit to", "limitToSubreddit", true, expandedOptions);
 		this.limitToSubreddit = limitToCheckbox;
 
-		if (/\/search\/?$/.test(extractPath(history.state && history.state.url || location.pathname))) {
+		if (/\/search\/?$/i.test(extractPath(history.state && history.state.url || location.pathname))) {
 			const currParams = new URLSearchParams(location.search || extractQuery(history.state.url));
 			this.searchBar.value = currParams.get("q");
 			this.searchOrder = SortSearchOrder[currParams.get("sort")];
@@ -202,7 +202,7 @@ export default class Ph_Search extends HTMLElement {
 				this.minimize();
 		});
 		window.addEventListener("ph-view-change", (e: CustomEvent) => {
-			const subMatches = (e.detail as ViewChangeData).viewState.state.url.match(/^\/r\/[^\/]+/);		// /r/all/top --> /r/all
+			const subMatches = (e.detail as ViewChangeData).viewState.state.url.match(/^\/r\/[^\/]+/i);		// /r/all/top --> /r/all
 			this.currentSubreddit = subMatches && subMatches[0] || null;
 			this.areFlairsLoaded = false;
 			if (this.currentSubreddit) {
@@ -221,13 +221,13 @@ export default class Ph_Search extends HTMLElement {
 
 	onTextEnter() {
 		if (this.searchBar.value) {
-			if (/^\/?r\//.test(this.searchBar.value)) {				// starts with r/ or /r/
-				this.searchBar.value = this.searchBar.value.replace(/^\/?r\//, "");	// remove r/ prefix
+			if (/^\/?r\//i.test(this.searchBar.value)) {				// starts with r/ or /r/
+				this.searchBar.value = this.searchBar.value.replace(/^\/?r\//i, "");	// remove r/ prefix
 				if (!this.subModeBtn.classList.contains("checked"))
 					this.subModeBtn.click();
 			}
-			if (/^\/?(u|user)\//.test(this.searchBar.value)) {		// starts with u/ or /u/ or user/ or ...
-				this.searchBar.value = this.searchBar.value.replace(/^\/?(u|user)\//, "");	// remove u/ prefix
+			if (/^\/?(u|user)\//i.test(this.searchBar.value)) {		// starts with u/ or /u/ or user/ or ...
+				this.searchBar.value = this.searchBar.value.replace(/^\/?(u|user)\//i, "");	// remove u/ prefix
 				if (!this.userModeBtn.classList.contains("checked"))
 					this.userModeBtn.click();
 			}
@@ -261,7 +261,7 @@ export default class Ph_Search extends HTMLElement {
 
 	async quickSearch() {
 		this.resultsWrapper.innerText = "";
-		if (!this.searchBar.value || /^\/?(r|u|user)\/$/.test(this.searchBar.value)) {		// prefix r/ or u/ or user/
+		if (!this.searchBar.value || /^\/?(r|u|user)\/$/i.test(this.searchBar.value)) {		// prefix r/ or u/ or user/
 			return;
 		}
 
@@ -363,7 +363,7 @@ export default class Ph_Search extends HTMLElement {
 		}
 
 		let url = "/search";
-		const currentSubMatches = history.state.url.match(/\/r\/([^/]+)/);		// /r/pics/top --> /r/pics
+		const currentSubMatches = history.state.url.match(/\/r\/([^/]+)/i);		// /r/pics/top --> /r/pics
 		if (currentSubMatches && currentSubMatches[1])
 			url = currentSubMatches[1].replace(/\/?$/, "/search");		// /r/pics --> /r/pics/search
 

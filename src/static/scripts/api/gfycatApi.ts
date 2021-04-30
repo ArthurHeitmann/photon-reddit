@@ -9,7 +9,7 @@ export enum GfycatDomain {
 
 /** */
 export async function getGfycatMp4SrcFromUrl(url: string, domain: GfycatDomain): Promise<string> {
-	const idMatches = url.match(/(?:\.com\/(?:\w+\/)?)(\w+)/);	// id might be like x.com/<id> or x.com/<something>/<id>
+	const idMatches = url.match(/(?:\.com\/(?:\w+\/)?)(\w+)/i);	// id might be like x.com/<id> or x.com/<something>/<id>
 	if (!idMatches)
 		throw "invalid url";
 	const req = await fetch(`https://api.${domain}.com/v1/gfycats/${idMatches[1]}`);

@@ -24,21 +24,21 @@ export default class Ph_RandomHub extends HTMLElement {
 		actionButton.appendChild(buttonText);
 		this.appendChild(actionButton);
 
-		if (/^\/r\/random([/#?].*)?$/.test(url)) {
+		if (/^\/r\/random([/#?].*)?$/i.test(url)) {
 			this.randomTarget = RandomTarget.Random;
 			buttonText.innerText = "Random Subreddit";
-			this.otherParams = url.match(/\/r\/[^\/]+([/?#].*)?/)[1] || "";		// /r/random/top?t=all --> /top?t=all
+			this.otherParams = url.match(/\/r\/[^\/]+([/?#].*)?/i)[1] || "";		// /r/random/top?t=all --> /top?t=all
 		}
-		else if (/^\/r\/randnsfw([/#?].*)?$/.test(url)) {
+		else if (/^\/r\/randnsfw([/#?].*)?$/i.test(url)) {
 			this.randomTarget = RandomTarget.RandNsfw;
 			buttonText.innerText = "Random NSFW Subreddit";
-			this.otherParams = url.match(/\/r\/[^\/]+([/?#].*)?/)[1] || "";		// as ^
+			this.otherParams = url.match(/\/r\/[^\/]+([/?#].*)?/i)[1] || "";		// as ^
 		}
-		else if (/^\/r\/[^/?#]+\/random([/#?].*)?$/.test(url)) {
+		else if (/^\/r\/[^/?#]+\/random([/#?].*)?$/i.test(url)) {
 			this.randomTarget = RandomTarget.RandomPost;
-			this.subreddit = url.match(/(?<=\/r\/)[^/?#]+/)[0];		// /r/pics/top?q --> pics
+			this.subreddit = url.match(/(?<=\/r\/)[^/?#]+/i)[0];		// /r/pics/top?q --> pics
 			buttonText.innerText = `Random Post on r/${this.subreddit}`;
-			this.otherParams = url.match(/\/r\/[^\/]+\/random([/?#].*)?/)[1] || "";	// as ^^
+			this.otherParams = url.match(/\/r\/[^\/]+\/random([/?#].*)?/i)[1] || "";	// as ^^
 		}
 		else
 			throw "invalid url scheme";

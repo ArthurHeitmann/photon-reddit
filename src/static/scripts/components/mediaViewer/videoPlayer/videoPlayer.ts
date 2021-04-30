@@ -43,11 +43,11 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 		const videoOut = new Ph_VideoPlayer(url);
 
 		function defaultCase() {
-			if (/\.gif(\?.*)?$/.test(url)) {
+			if (/\.gif(\?.*)?$/i.test(url)) {
 				videoOut.init(new Ph_GifVideo(url));
 				return;
 			}
-			else if (/\.mp4(\?.*)?$/.test(url)) {
+			else if (/\.mp4(\?.*)?$/i.test(url)) {
 				videoOut.init(new Ph_SimpleVideo([{src: url, type: "video/mp4"}]));
 				return;
 			}

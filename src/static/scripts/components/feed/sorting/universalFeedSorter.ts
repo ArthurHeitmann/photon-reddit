@@ -33,7 +33,7 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 		this.className = "feedSorter";
 
 		if (feedType === FeedType.user) {
-			const tmpCurSection = feed.requestUrl.match(/(?<=^\/(u|user)\/[^/]+\/)\w+/);		// /user/username/top --> top
+			const tmpCurSection = feed.requestUrl.match(/(?<=^\/(u|user)\/[^/?#]+\/)\w+/i);		// /user/username/top --> top
 			const curSection = tmpCurSection && tmpCurSection[0] || "Overview";
 			const userSections = <DropDownEntryParam[]> [
 				{ label: "Overview", value: UserSection.overview, onSelectCallback: this.setUserSection.bind(this) },
@@ -161,7 +161,7 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 
 	async setUserSection([section]: UserSection[], setLabel: (newLabel: ButtonLabel) => void, initialLabel: HTMLElement) {
 		setLabel(getLoadingIcon());
-		const userName = this.feed.requestUrl.match(/(?<=^\/(u|user)\/)[^\/?#]+/)[0];		// /u/user --> iser
+		const userName = this.feed.requestUrl.match(/(?<=^\/(u|user)\/)[^/?#]+/i)[0];		// /u/user --> user
 		const query = extractQuery(this.feed.requestUrl);
 		const isSortable = !NonSortableUserSections.includes(section);
 		this.feed.requestUrl = `/user/${userName}/${section}${isSortable ? query : ""}`;

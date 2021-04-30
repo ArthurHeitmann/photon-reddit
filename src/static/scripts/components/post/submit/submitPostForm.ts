@@ -160,13 +160,13 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		this.submitButton.addEventListener("click", this.onSubmitPost.bind(this));
 
 		// if the current url is like /r/AskReddit/submit then fill out the subreddit input field
-		if (/^\/r\/\w+\/submit/.test(history.state.url)) {
-			const subMatches = history.state.url.match(/(?<=^\/r\/)\w+/);	// /r/sub_reddit --> sub_reddit
+		if (/^\/r\/\w+\/submit/i.test(history.state.url)) {
+			const subMatches = history.state.url.match(/(?<=^\/r\/)\w+/i);	// /r/sub_reddit --> sub_reddit
 			(this.subInput.$tag("input")[0] as HTMLInputElement).value = `r/${subMatches[0]}`;
 			this.subInput.dispatchEvent(new Event("change"));
 		}
-		else if (/^\/(u|user)\/\w+\/submit/.test(history.state.url)) {
-			const userMatches = history.state.url.match(/(?<=^\/(u|user)\/)\w+/);
+		else if (/^\/(u|user)\/\w+\/submit/i.test(history.state.url)) {
+			const userMatches = history.state.url.match(/(?<=^\/(u|user)\/)\w+/i);
 			(this.subInput.$tag("input")[0] as HTMLInputElement).value = `user/${userMatches[0]}`;
 			this.subInput.dispatchEvent(new Event("change"));
 		}
@@ -274,17 +274,17 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		this.submitButton.disabled = true;
 		let community = (this.subInput.$tag("input")[0] as HTMLInputElement).value;
 		// basic schema
-		if (!/^(r|u|user)\//.test(community)) {
+		if (!/^(r|u|user)\//i.test(community)) {
 			new Ph_Toast(Level.error, `Community must start with "r/" or "u/" or "user/"`, {timeout: 3500});
 			return;
 		}
 		// exact pattern for valid subreddits and usernames
-		else if (!/^(r|u|user)\/[a-zA-z0-9_-]{3,21}$/.test(community)) {
+		else if (!/^(r|u|user)\/[a-zA-z0-9_-]{3,21}$/i.test(community)) {
 			new Ph_Toast(Level.error, `Invalid community name`, {timeout: 3500});
 			return;
 		}
 		// user posts can only be submitted to self
-		else if (/^(u|user)\//.test(community) && community.match(/(?<=^(u|user)\/)\w+/)[0] !== thisUser.name) {
+		else if (/^(u|user)\//i.test(community) && community.match(/(?<=^(u|user)\/)\w+/i)[0] !== thisUser.name) {
 			new Ph_Toast(Level.error, `You can only submit posts on your profile`, {timeout: 3500});
 			return;
 		}

@@ -127,7 +127,7 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 		// result is a wiki page
 		else if (requestData["kind"] === "wikipage") {
 			stateLoader.finishWith(new Ph_Wiki(requestData));
-			ViewsStack.setCurrentStateTitle(`${path.match(/r\/[^/]+/)[0]} Wiki - Photon`);
+			ViewsStack.setCurrentStateTitle(`${path.match(/r\/[^/]+/i)[0]} Wiki - Photon`);
 		}
 	}
 
@@ -143,23 +143,23 @@ function goToHash() {
 
 function handleSpecialPaths(path: string, query: string[][], stateLoader: Ph_ViewState): boolean {
 	// /about
-	if (/^\/about(#.*)?$/.test(path)) {
+	if (/^\/about(#.*)?$/i.test(path)) {
 		stateLoader.finishWith(new Ph_About());
 		return true;
 	}
 	// /submit or /r/sub/submit
-	else if (/^(\/r\/[^/]+)?\/submit/.test(path)) {
+	else if (/^(\/r\/[^/]+)?\/submit/i.test(path)) {
 		stateLoader.finishWith(new Ph_SubmitPostForm());
 		return true;
 	}
 	// /r/random or /r/randnsfw or /r/sub/random
-	else if (/^\/r\/((random|randnsfw)|([^/?#]+\/random))([/#?].*)?$/.test(path)) {
+	else if (/^\/r\/((random|randnsfw)|([^/?#]+\/random))([/#?].*)?$/i.test(path)) {
 		const url = path + (query.length ? "?" + (new URLSearchParams(query).toString()) : "");
 		stateLoader.finishWith(new Ph_RandomHub(url));
 		return true;
 	}
 	// /message/compose
-	else if (/^\/message\/compose/.test(path)) {
+	else if (/^\/message\/compose/i.test(path)) {
 		const receiver = query.find(param => param[0] === "to")?.[0];
 		stateLoader.finishWith(new Ph_MessageCompose(receiver));
 		return true;

@@ -67,7 +67,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 		observer.observe(this, { childList: true });
 
 		this.classList.add("universalFeed");
-		if (/\/search\/?(\?.*)?$/.test(requestUrl))
+		if (/\/search\/?(\?.*)?$/i.test(requestUrl))
 			this.isSearchFeed = true;
 
 		// make feed specific header elements
@@ -80,23 +80,23 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			if (/^\/?(\?.*)?$/.test(requestUrl) || /^\/r\/(all|popular|random|friends|mod)/i.test(requestUrl)) {	// home page or special subreddit
 				feedType = FeedType.misc;
 			}
-			else if (/^\/r\/[^/]+/.test(requestUrl)) {								// subreddit
-				title.innerText = requestUrl.match(/r\/[^/?]+/)[0];			// /r/all/top --> r/all
+			else if (/^\/r\/[^/]+/i.test(requestUrl)) {								// subreddit
+				title.innerText = requestUrl.match(/r\/[^/?#]+/i)[0];		// /r/all/top --> r/all
 				feedType = FeedType.subreddit;
-				feedBaseUrl = requestUrl.match(/\/r\/[^/?]+/)[0];			// /r/all/top --> r/all
+				feedBaseUrl = requestUrl.match(/\/r\/[^/?#]+/i)[0];			// /r/all/top --> r/all
 			}
-			else if (/^\/(u|user)\/[^/]+\/m\/[^/]+/.test(requestUrl)) {				// multi
-				title.innerText = `Multireddit ${requestUrl.match(/\/m\/([^/]+)/)[1]}`;		// /u/user/m/multi --> multi
+			else if (/^\/(u|user)\/[^/]+\/m\/[^/]+/i.test(requestUrl)) {			// multi
+				title.innerText = `Multireddit ${requestUrl.match(/\/m\/([^/?#]+)/i)[1]}`;		// /u/user/m/multi --> multi
 				feedType = FeedType.multireddit;
-				const matches = requestUrl.match(/\/(u|user)\/([^/]+)\/m\/([^/]+)/)
+				const matches = requestUrl.match(/\/(u|user)\/([^/]+)\/m\/([^/?#]+)/i)
 				feedBaseUrl = `/user/${matches[2]}/m/${matches[3]}`;
 			}
-			else if (/^\/(u|user)\/[^/]+/.test(requestUrl)) {						// user
-				title.innerText = `u/${requestUrl.match(/\/(u|user)\/([^/?]+)/)[2]}`;
+			else if (/^\/(u|user)\/[^/]+/i.test(requestUrl)) {						// user
+				title.innerText = `u/${requestUrl.match(/\/(u|user)\/([^/?#]+)/i)[2]}`;
 				feedType = FeedType.user;
-				feedBaseUrl = `/user/${requestUrl.match(/\/(u|user)\/([^/?]+)/)[2]}`;
+				feedBaseUrl = `/user/${requestUrl.match(/\/(u|user)\/([^/?#]+)/i)[2]}`;
 			}
-			else if (/^\/message\//.test(requestUrl))
+			else if (/^\/message\//i.test(requestUrl))
 				feedType = FeedType.messages;
 			headerElements.push(title);
 			if (Ph_FeedInfo.supportedFeedTypes.includes(feedType) && !feedBaseUrl.includes("+"))
@@ -127,7 +127,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 
 	async setMessageSection([section]: MessageSection[], setLabel: (newLabel: ButtonLabel) => void, initialLabel: HTMLElement) {
 		setLabel(getLoadingIcon());
-		this.requestUrl = this.requestUrl.replace(/^(\/message)\/[^\/]*/, `$1/${section}`);	// /message/<old> --> /message/<new>
+		this.requestUrl = this.requestUrl.replace(/^(\/message)\/[^/#?]*/i, `$1/${section}`);	// /message/<old> --> /message/<new>
 		try {
 			const sectionItems: RedditApiType = await redditApiRequest(
 				this.requestUrl,

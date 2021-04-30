@@ -345,7 +345,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 
 	/** This is a solution with the best UX and least unexpected hidden posts */
 	private shouldPostBeHidden(ignoreSeenSettings: boolean = false, changedSettings?: PhotonSettings): boolean {
-		const isInUserFeed = /^\/(u|user)\/([^/]+\/?){1,2}$/.test(this.feedUrl);	// matches /u/user/submitted or /user/x/saved; 1, 2 to exclude multireddits /user/x/m/multi
+		const isInUserFeed = /^\/(u|user)\/([^/]+\/?){1,2}$/i.test(this.feedUrl);	// matches /u/user/submitted or /user/x/saved; 1, 2 to exclude multireddits /user/x/m/multi
 		if (changedSettings === undefined) {
 			return (
 				this.isInFeed && (

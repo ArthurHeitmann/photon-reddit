@@ -67,6 +67,7 @@ export function getAuthHeader(): string {
 }
 
 function fixUrl(url: string) {
+	url = url.toLowerCase();
 	url = url.replace(/^\/u\//, "/user/");													// /u/... --> /user/...
 	url = url.replace(/(\/(u|user)\/[^/]+\/)posts\/?/, "$1submitted/")						// /user/.../posts --> /user/.../submitted
 	url = url.replace(/(?<=^\/r\/[^/]+\/wiki)\/?(?=(\?.*)?$)/, "/index");					// /r/.../wiki --> /r/.../wiki/index
