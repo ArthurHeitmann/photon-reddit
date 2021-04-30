@@ -11,7 +11,7 @@ export const photonApiRouter = express.Router();
 photonApiRouter.get("/youtube-dl", RateLimit(youtube_dlRateLimitConfig), safeExcAsync(async (req, res) => {
 	let url: any;
 	try {
-		url = await youtube_dl(req.query["url"], { getUrl: true });
+		url = await youtube_dl(req.query["url"].toString(), { getUrl: true });
 	}
 	catch {
 		url = "";
