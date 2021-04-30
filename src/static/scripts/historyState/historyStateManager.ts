@@ -127,7 +127,7 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 		// result is a wiki page
 		else if (requestData["kind"] === "wikipage") {
 			stateLoader.finishWith(new Ph_Wiki(requestData));
-			ViewsStack.setCurrentStateTitle(`${path.match(/r\/[^/]+/i)[0]} Wiki - Photon`);
+			ViewsStack.setCurrentStateTitle(`${path.match(/r\/[^/?#]+/i)[0]} Wiki - Photon`);
 		}
 	}
 

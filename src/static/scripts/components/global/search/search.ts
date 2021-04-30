@@ -202,7 +202,7 @@ export default class Ph_Search extends HTMLElement {
 				this.minimize();
 		});
 		window.addEventListener("ph-view-change", (e: CustomEvent) => {
-			const subMatches = (e.detail as ViewChangeData).viewState.state.url.match(/^\/r\/[^\/]+/i);		// /r/all/top --> /r/all
+			const subMatches = (e.detail as ViewChangeData).viewState.state.url.match(/^\/r\/[^/?#]+/i);		// /r/all/top --> /r/all
 			this.currentSubreddit = subMatches && subMatches[0] || null;
 			this.areFlairsLoaded = false;
 			if (this.currentSubreddit) {
@@ -363,7 +363,7 @@ export default class Ph_Search extends HTMLElement {
 		}
 
 		let url = "/search";
-		const currentSubMatches = history.state.url.match(/\/r\/([^/]+)/i);		// /r/pics/top --> /r/pics
+		const currentSubMatches = history.state.url.match(/\/r\/([^/?#]+)/i);		// /r/pics/top --> /r/pics
 		if (currentSubMatches && currentSubMatches[1])
 			url = currentSubMatches[1].replace(/\/?$/, "/search");		// /r/pics --> /r/pics/search
 
