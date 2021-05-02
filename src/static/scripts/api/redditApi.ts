@@ -24,11 +24,11 @@ export async function redditApiRequest(pathAndQuery, params: string[][], require
 		throw "This feature requires to be logged in";
 	}
 
-	return await oath2Request(pathAndQuery, params, options);
+	return await oauth2Request(pathAndQuery, params, options);
 }
 
 /** Makes a request to reddit with an an access token */
-async function oath2Request(pathAndQuery, params: string[][], options: RequestInit, attempt = 0) {
+async function oauth2Request(pathAndQuery, params: string[][], options: RequestInit, attempt = 0) {
 	pathAndQuery = fixUrl(pathAndQuery);
 	const [path, query] = splitPathQuery(pathAndQuery);
 
@@ -56,7 +56,7 @@ async function oath2Request(pathAndQuery, params: string[][], options: RequestIn
 	} catch (e) {
 		// maybe the token has expired, try to refresh it
 		if (attempt < 1 && await checkTokenRefresh())
-			return await oath2Request(path, params, options, attempt + 1);
+			return await oauth2Request(path, params, options, attempt + 1);
 		else
 			return { error: e }
 	}

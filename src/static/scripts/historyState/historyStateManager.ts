@@ -3,6 +3,7 @@
  */
 
 import { redditApiRequest } from "../api/redditApi.js";
+import Ph_FeedInfoPage from "../components/feed/feedInfo/feedInfoPage.js";
 import Ph_UniversalFeed from "../components/feed/universalFeed/universalFeed.js";
 import Ph_MessageCompose from "../components/message/messageCompose/messageCompose.js";
 import Ph_RandomHub from "../components/misc/randomHub/randomHub.js";
@@ -162,6 +163,13 @@ function handleSpecialPaths(path: string, query: string[][], stateLoader: Ph_Vie
 	else if (/^\/message\/compose/i.test(path)) {
 		const receiver = query.find(param => param[0] === "to")?.[0];
 		stateLoader.finishWith(new Ph_MessageCompose(receiver));
+		return true;
+	}
+	// subreddit about page
+	else if (/^\/[^/]+\/[^/?#]+\/about/.test(path)) {
+		stateLoader.finishWith(new Ph_FeedInfoPage(path));
+		const community = path.match(/(?<=^\/[^/]+\/)[^/?#]+/)[0];
+		ViewsStack.setCurrentStateTitle(`${community} - About`);
 		return true;
 	}
 	return false;
