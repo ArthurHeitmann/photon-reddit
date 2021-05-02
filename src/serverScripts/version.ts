@@ -1,6 +1,16 @@
-export const photonVersion = "0.4.2";		/// <change version script>
+export const photonVersion = "0.4.3";		/// <change version script>
 
 export const photonChangelog = {
+	"0.4.3": {
+		"New": [
+			"Added a quick guide for new visitors",
+			"Added support for /r/sub/about urls"
+		],
+		"Fixed": [
+			"Fixed tab title not changing when going back",
+			"Fixed potential problems"
+		]
+	},
 	"0.4.2": {
 		"New": [
 			"Crossposted posts now have a link to their original posts",
