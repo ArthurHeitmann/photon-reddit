@@ -1,0 +1,103 @@
+@use "../../../../style/vars";
+
+.tutorial {
+	position: fixed;
+	z-index: 100;
+	top: 0;
+	--top-space: 0;
+	--right-space: 0;
+	--left-space: 0;
+	--bottom-space: 0;
+
+	.blocker {
+		position: fixed;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		background-color: vars.$background;
+		opacity: .85;
+		transition: all .25s ease;
+
+		&.top {
+			bottom: calc(100% - var(--top-space));
+		}
+
+		&.right {
+			top: var(--top-space);
+			left: calc(100% - var(--right-space));
+			bottom: var(--bottom-space);
+		}
+
+		&.bottom {
+			top: calc(100% - var(--bottom-space));
+		}
+
+		&.left {
+			top: var(--top-space);
+			right: calc(100% - var(--left-space));
+			bottom: var(--bottom-space);
+		}
+	}
+
+	.highlightWindow {
+		position: fixed;
+		top: var(--top-space);
+		right: var(--right-space);
+		bottom: var(--bottom-space);
+		left: var(--left-space);
+		border: 3px solid vars.$primary;
+		border-radius: vars.$b-r;
+		pointer-events: none;
+		transition: all .25s ease;
+	}
+
+	.buttonBar {
+		position: fixed;
+		bottom: 1rem;
+		left: 1rem;
+		right: 1rem;
+		height: 3rem;
+		display: flex;
+		gap: 1rem;
+
+		.navButton {
+			background: vars.$background-el1;
+			font-size: 1.5rem;
+			padding: 0 1rem;
+			border-radius: vars.$b-r;
+			transition: filter .25s ease;
+			border: 1px solid vars.$border-color;
+
+			&.nextButton {
+				background: vars.$primaryContrast;
+				border: none;
+			}
+
+			&:hover {
+				filter: brightness(1.5);
+			}
+
+			&.remove {
+				visibility: hidden;
+			}
+		}
+
+		.prevButton {
+			margin-left: auto;
+		}
+	}
+
+	.stepText {
+		position: fixed;
+		bottom: 5rem;
+		left: 1rem;
+		right: 1rem;
+
+		* {
+			font-size: 2rem;
+			text-shadow:  0 0 30px black, 0 0 20px black, 0 0 15px black, 0 0 10px black, 0 0 5px black;
+			line-break: anywhere;
+		}
+	}
+}

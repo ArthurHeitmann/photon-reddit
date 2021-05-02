@@ -59,9 +59,9 @@ export enum PushType {
 }
 
 /** Use this function to redirect to a SPA link and the url could contain a query part */
-export function pushLinkToHistoryComb(pathAndQuery: string, pushType: PushType = PushType.pushAfter, postHint?: PostDoubleLink): void {
+export async function pushLinkToHistoryComb(pathAndQuery: string, pushType: PushType = PushType.pushAfter, postHint?: PostDoubleLink): Promise<void> {
 	const [path, query] = splitPathQuery(pathAndQuery);
-	pushLinkToHistorySep(path, query, pushType, postHint);
+	await pushLinkToHistorySep(path, query, pushType, postHint);
 }
 
 /** Use this function to redirect to a SPA link and the url doesn't contain a query part */

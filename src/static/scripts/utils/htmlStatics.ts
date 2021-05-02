@@ -135,3 +135,13 @@ export function enableMainScroll() {
 	document.body.style.overflow = "inherit";
 	document.body.style.marginRight = ``;
 }
+
+export function disableMainPointerEvents() {
+	const main = $tag("main")[0];
+	main.style.pointerEvents = "none";
+}
+
+export function enableMainPointerEvents() {
+	const main = $tag("main")[0];
+	main.style.pointerEvents = "";
+}

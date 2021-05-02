@@ -9,6 +9,7 @@ import { AuthState, checkAuthOnPageLoad, checkTokenRefresh, initiateLogin } from
 import Ph_Header from "./components/global/header/header.js";
 import Ph_Toast, { Level } from "./components/misc/toast/toast.js";
 import Ph_Changelog from "./components/photon/changelog/changelog.js";
+import Ph_Tutorial from "./components/photon/tutorial/tutorial.js";
 import { pushLinkToHistorySep } from "./historyState/historyStateManager.js";
 import ViewsStack from "./historyState/viewsStack.js";
 import { hasAnalyticsFileLoaded } from "./unsuspiciousFolder/unsuspiciousFile.js";
@@ -61,6 +62,8 @@ async function init(): Promise<void> {
 	window.dispatchEvent(new Event("ph-page-ready"));
 	if (localStorage["firstTimeFlag"] !== "set")
 		localStorage["firstTimeFlag"] = "set";
+
+	Ph_Tutorial.checkForTutorial();
 
 	console.log("Photon is ready");
 }

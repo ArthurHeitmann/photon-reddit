@@ -8,8 +8,9 @@ export default class Ph_Toast extends HTMLElement {
 	 * @param options {}
 	 * @param options.timeout if > 0 --> remove toast after n ms
 	 * @param options.onConfirm if given will display accept or cancel buttons. When accept is pressed execute onConfirm
+	 * @param options.onCancel executed when closing toast
 	 */
-	constructor(level: Level, displayHtml: string, options: { timeout?: number, onConfirm?: () => void } = {}) {
+	constructor(level: Level, displayHtml: string, options: { timeout?: number, onConfirm?: () => void, onCancel?: () => void } = {}) {
 		super();
 
 		this.className = "toast";
@@ -37,7 +38,11 @@ export default class Ph_Toast extends HTMLElement {
 			this.$class("closeButton")[0].insertAdjacentElement("beforebegin", confirmBtn);
 		}
 
-		this.$class("closeButton")[0].addEventListener("click", this.removeSelf.bind(this));
+		this.$class("closeButton")[0].addEventListener("click", () => {
+			if (options.onCancel)
+				options.onCancel();
+			this.removeSelf();
+		});
 		if (options.timeout > 0)
 			setTimeout(this.removeSelf.bind(this), options.timeout);
 
