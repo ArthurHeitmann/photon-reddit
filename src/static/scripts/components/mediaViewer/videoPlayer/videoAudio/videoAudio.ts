@@ -11,6 +11,7 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 	lastNon0Volume: number;
 	audioCheckCompleted: boolean = false;
 	hasAudio: boolean = true;
+	lastSyncMs: number = 0;
 
 	constructor(videoSources: { src: string, type: string }[], audioSources: { src: string, type: string }[]) {
 		super();
@@ -47,7 +48,7 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 
 		this.video.addEventListener("timeupdate", () => {
 			// this mess is needed in order to know if the video has audio
-			if (!this.audioCheckCompleted && this.video.currentTime > 0) {
+			if (!this.audioCheckCompleted && this.video.currentTime > 0.1) {
 				this.audioCheckCompleted = true;
 				if (
 					this.audio["webkitAudioDecodedByteCount"] === 0
@@ -62,8 +63,11 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 				return;
 			// making sure that audio & video is in sync
 			const videoAudioDeSync = Math.abs(this.video.currentTime - this.audio.currentTime);
-			if (this.video.playbackRate <= 1 && videoAudioDeSync > 0.25)
+			const now = Date.now();
+			if (this.video.playbackRate <= 1 && videoAudioDeSync > 1 && now - this.lastSyncMs > 5000) {
 				this.audio.currentTime = this.video.currentTime;
+				this.lastSyncMs = now;
+			}
 		});
 		
 		this.lastNon0Volume = this.audio.volume;
