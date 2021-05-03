@@ -305,7 +305,10 @@ export default class Ph_PhotonSettings extends HTMLElement {
 		);
 		messageCheckIntervalGroup.$tag("input")[0].addEventListener("input", e => {
 			this.stageSettingChange(nameOf<PhotonSettings>("messageCheckIntervalS"),
-				(num) => !isNaN(parseInt(num)) && parseInt(num) >= 0, "invalid seconds (must be >= 0)")
+				(num) => {
+					const parsed = parseInt(num);
+					return !isNaN(parsed) && (parsed === 0 || parsed >= 20);
+				}, "invalid seconds (must be >= 20 or 0)")
 			(parseInt((e.currentTarget as HTMLInputElement).value));
 		});
 		this.optionsArea.appendChild(messageCheckIntervalGroup);
