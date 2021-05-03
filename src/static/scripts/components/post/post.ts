@@ -392,8 +392,8 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 	linkToCommentsClick(e) {
 		if (e.ctrlKey)
 			return true;
-		this.doubleLink?.disable();
-		this.doubleLink = new PostDoubleLink(this);
+		if (!this.doubleLink)
+			this.doubleLink = new PostDoubleLink(this);
 		pushLinkToHistoryComb(e.currentTarget.getAttribute("href"), PushType.pushAfter, this.doubleLink);
 		return false;
 	}
