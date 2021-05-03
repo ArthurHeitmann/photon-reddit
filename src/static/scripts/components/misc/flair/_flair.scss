@@ -59,6 +59,6 @@
 	}
 
 	&:hover .flair * {
-		color: vars.$text !important;
+		color: var(--flair-tc) !important;
 	}
 }
