@@ -5,6 +5,10 @@
 	> .expandButton {
 		display: none;
 	}
+
+	.md :first-child {
+		margin-block-start: 0;
+	}
 }
 
 .isInFeed {

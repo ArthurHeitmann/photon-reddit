@@ -104,6 +104,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 	}
 
 	connectedCallback() {
+		setTimeout(() => document.scrollingElement.scrollTo({ top: 0 }), 0);
 		if (this.comments)
 			this.setHeaderElements();
 	}
