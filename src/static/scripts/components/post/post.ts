@@ -240,6 +240,12 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 								<span>ago</span>`
 							: ""
 						}
+						<div class="rightItems">
+							<img src="/img/downArrow.svg" class="votesImg" alt="votes">
+							<span>${numberToShort(crosspostData["ups"])}</span>
+							<img src="/img/comments.svg" class="commentsImg" alt="comments">
+							<span>${numberToShort(crosspostData["num_comments"])}</span>
+						</div>
 					</div>
 					<div class="title">${escHTML(crosspostData["title"])}</div>
 				</div>

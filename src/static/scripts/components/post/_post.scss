@@ -115,7 +115,7 @@
 	}
 
 	.actions {
-		z-index: 1;
+		z-index: 2;
 		min-height: 100%;
 
 		> .wrapper {
@@ -239,10 +239,28 @@
 
 			.info {
 				display: flex;
+				align-items: center;
+				flex-wrap: wrap;
 				gap: .3rem;
 
 				* {
 					font-size: .8rem;
+				}
+
+				.rightItems {
+					display: flex;
+					align-items: center;
+					margin-left: auto;
+
+					.votesImg {
+						height: 1.1rem;
+						transform: rotate(180deg);
+					}
+
+					.commentsImg {
+						height: .8rem;
+						margin: 0 0.2rem;
+					}
 				}
 			}
 
