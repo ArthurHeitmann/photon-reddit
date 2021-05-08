@@ -1,7 +1,7 @@
 import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager.js";
 import {
 	$class,
-	$css,
+	$css, $id,
 	disableMainPointerEvents,
 	disableMainScroll,
 	enableMainPointerEvents,
@@ -13,7 +13,8 @@ import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 interface TutorialStep {
 	highlightElementSelector: string | null,
 	updateHighlightForMs?: number,
-	displayText: string[]
+	displayText: string[],
+	showIf?: () => boolean,
 	beginAction?: () => void,
 	endAction?: () => void,
 }
@@ -67,6 +68,14 @@ const tutorialDescription: TutorialDescription = {
 				"3. These buttons change when viewing a subreddit, user, multireddit, etc.",
 				"You can use these buttons for sorting, viewing subreddit info and more"
 			],
+		},
+		{
+			highlightElementSelector: "#loginButton",
+			updateHighlightForMs: 300,
+			displayText: [
+				"Login through reddit.com",
+			],
+			showIf: () => !$id("loginButton").hidden
 		},
 		{
 			highlightElementSelector: ".header .search",
@@ -197,7 +206,10 @@ export default class Ph_Tutorial extends HTMLElement {
 
 	nextStep(e: Event) {
 		e.stopImmediatePropagation();
-		const newIndex = Math.min(this.currentStepIndex + 1, tutorialDescription.steps.length - 1);
+		let newIndex: number = Math.min(this.currentStepIndex + 1, tutorialDescription.steps.length - 1);
+		while (tutorialDescription.steps[newIndex].showIf && !tutorialDescription.steps[newIndex].showIf()) {
+			newIndex = Math.min(newIndex + 1, tutorialDescription.steps.length - 1);
+		}
 		if (newIndex === this.currentStepIndex)
 			return;
 		this.tryEndAction();
@@ -207,7 +219,10 @@ export default class Ph_Tutorial extends HTMLElement {
 
 	previousStep(e: Event) {
 		e.stopImmediatePropagation();
-		const newIndex = Math.max(this.currentStepIndex - 1, 0);
+		let newIndex: number = Math.max(this.currentStepIndex - 1, 0);
+		while (tutorialDescription.steps[newIndex].showIf && !tutorialDescription.steps[newIndex].showIf()) {
+			newIndex = Math.max(newIndex - 1, 0);
+		}
 		if (newIndex === this.currentStepIndex)
 			return;
 		this.tryEndAction();
