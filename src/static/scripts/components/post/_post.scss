@@ -111,7 +111,6 @@
 			max-width: 25%;
 			max-height: 7rem;
 			border-radius: 1rem;
-			border: 1px solid #5f5f5f;
 		}
 	}
 
@@ -140,6 +139,16 @@
 				left: calc(100% + .5rem);
 				top: 0;
 				margin-top: 0;
+			}
+
+			.upvotes {
+				&.medium {
+					font-size: .9em;
+				}
+
+				&.small {
+					font-size: .7em;
+				}
 			}
 		}
 	}

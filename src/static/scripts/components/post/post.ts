@@ -411,6 +411,18 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 
 	setVotesState(voteDirection: VoteDirection) {
 		this.currentUpvotes.innerText = numberToShort(this.totalVotes + parseInt(voteDirection));
+		if (this.currentUpvotes.innerText.length > 3) {
+			this.currentUpvotes.classList.add("small");
+			this.currentUpvotes.classList.remove("medium");
+		}
+		else if (this.currentUpvotes.innerText.length === 3) {
+			this.currentUpvotes.classList.add("medium");
+			this.currentUpvotes.classList.remove("small");
+		}
+		else {
+			this.currentUpvotes.classList.remove("medium");
+			this.currentUpvotes.classList.remove("small");
+		}
 		this.currentUpvotes.setAttribute("data-tooltip", (this.totalVotes + parseInt(voteDirection)).toString());
 
 		const isAnimated = voteDirection !== this.currentVoteDirection;
