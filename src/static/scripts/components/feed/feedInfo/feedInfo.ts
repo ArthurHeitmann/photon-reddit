@@ -237,10 +237,9 @@ export default class Ph_FeedInfo extends HTMLElement {
 
 		this.appendChild(this.makeRefreshButton(() => this.loadSubredditInfo().then(this.displaySubredditInfo.bind(this))));
 
-		const bannerUrl = this.loadedInfo.data["banner_img"] || this.loadedInfo.data["header_img"] || this.loadedInfo.data["banner_background_image"];
-		if (bannerUrl) {
-			this.makeBannerImage(bannerUrl, this, this.loadedInfo.data["banner_background_color"]);
-		}
+		const bannerUrl = this.loadedInfo.data["banner_img"] || this.loadedInfo.data["banner_background_image"];
+		const bannerBgColor = this.loadedInfo.data["banner_background_color"] || this.loadedInfo.data["key_color"] || this.loadedInfo.data["primary_color"] || "#35b5e7";
+		this.makeBannerImage(bannerUrl, this, bannerBgColor);
 		const headerBar = document.createElement("div");
 		headerBar.className = "headerBar";
 		this.appendChild(headerBar);
@@ -335,8 +334,9 @@ export default class Ph_FeedInfo extends HTMLElement {
 		rules.append(...this.makeRules());
 		linksToSpa(rules);
 		const miscText = document.createElement("div");
+		const createdDate = new Date(this.loadedInfo.data["created_utc"] * 1000);
 		miscText.innerHTML = `
-			<div>Created: ${new Date(this.loadedInfo.data["created_utc"] * 1000).toDateString()}</div>
+			<div data-tooltip="${createdDate.toString()}">Created: ${createdDate.toDateString()}</div>
 			<div>Moderators:</div>
 			${(this.loadedInfo.data.mods as SubredditModerator[])
 			.map(mod => `<div><a href="/user/${escADQ(mod.name)}">${escHTML(mod.name)}</a></div>`)
@@ -429,8 +429,9 @@ export default class Ph_FeedInfo extends HTMLElement {
 		const publicDescription = document.createElement("div");
 		publicDescription.innerText = this.loadedInfo.data["subreddit"]["public_description"];
 		const miscText = document.createElement("div");
+		const createdDate = new Date(this.loadedInfo.data["created_utc"] * 1000);
 		miscText.innerHTML = `
-			<div>Created: ${new Date(this.loadedInfo.data["created_utc"] * 1000).toDateString()}</div>
+			<div data-tooltip="${createdDate.toString()}">Created: ${createdDate.toDateString()}</div>
 		`;
 		if (this.loadedInfo.data.multis.length > 0) {
 			miscText.insertAdjacentHTML("beforeend", `
@@ -494,12 +495,14 @@ export default class Ph_FeedInfo extends HTMLElement {
 			false
 		))
 			.$class("dropDownButton")[0].classList.add("transparentButtonAlt");
+
+		const createdDate = new Date(this.loadedInfo.data["created_utc"] * 1000);
 		overviewBar.insertAdjacentHTML("beforeend", `
 			<div data-tooltip="${this.loadedInfo.data["num_subscribers"]}">
 				Subscribers: ${numberToShort(this.loadedInfo.data["num_subscribers"])}
 			</div>
-			<div>
-				Created: ${new Date(this.loadedInfo.data["created_utc"] * 1000).toDateString()}
+			<div data-tooltip="${createdDate.toString()}">
+				Created: ${createdDate.toDateString()}
 			</div>
 			<div>
 				By: <a href="/user/${escADQ(this.loadedInfo.data["owner"])}">u/${escHTML(this.loadedInfo.data["owner"])}</a>
@@ -557,14 +560,22 @@ export default class Ph_FeedInfo extends HTMLElement {
 		return refreshButton;
 	}
 
-	private makeBannerImage(bannerUrl: string, appendTo: HTMLElement, bgColo: string): void {
-		const bannerImg = document.createElement("img");
-		bannerImg.src = bannerUrl;
-		bannerImg.alt = "banner";
-		bannerImg.className = "bannerImg";
-		if (this.loadedInfo.data["banner_background_color"])
-			bannerImg.style.setProperty("--banner-bg", this.loadedInfo.data["banner_background_color"]);
-		appendTo.appendChild(bannerImg);
+	private makeBannerImage(bannerUrl: string, appendTo: HTMLElement, bgColor: string): void {
+		let bannerImg;
+		if (bannerUrl) {
+			bannerImg = document.createElement("img");
+			bannerImg.src = bannerUrl;
+			bannerImg.alt = "banner"
+		}
+		else if (bgColor) {
+			bannerImg = document.createElement("div");
+			bannerImg.style.setProperty("--banner-bg", bgColor);
+		}
+
+		if (bannerImg) {
+			bannerImg.className = "bannerImg";
+			appendTo.appendChild(bannerImg);
+		}
 	}
 
 	private makeRules(): HTMLElement[] {
