@@ -94,6 +94,7 @@
 			max-height: min(60vh, 30rem);
 			overflow-y: auto;
 			filter: drop-shadow(0px 4px 5px var(--shadow-color));
+			padding-bottom: 1px;		// for firefox to avoid useless scroll bars
 		}
 	}
 
@@ -160,13 +161,10 @@
 		}
 
 		.nextMenuWrapper {
-			height: 2.2rem;
-		}
-
-		img.nextMenu {
 			height: 2rem;
-			margin-top: .2rem;
-			margin-right: -.6rem;
+			width: 2rem;
+			background-image: url("/img/rightArrow.svg");
+			background-size: cover;
 		}
 	}
 }

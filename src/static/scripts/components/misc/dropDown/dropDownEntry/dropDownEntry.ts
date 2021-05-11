@@ -44,7 +44,6 @@ export default class Ph_DropDownEntry extends HTMLButtonElement {
 		if (param.nestedEntries && param.nestedEntries.length > 0) {
 			const expandList = document.createElement("div");
 			expandList.className = "nextMenuWrapper";
-			expandList.innerHTML = `<img src="/img/rightArrow.svg" class="nextMenu" alt="next">`;
 			this.appendChild(expandList);
 
 			this.nextDropDown = new Ph_DropDownArea(param.nestedEntries, this.dropDown, this);
