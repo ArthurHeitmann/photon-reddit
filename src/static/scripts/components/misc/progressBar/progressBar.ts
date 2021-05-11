@@ -1,4 +1,4 @@
-import { throttle } from "../../../utils/utils.js";
+import { deepClone, throttle } from "../../../utils/utils.js";
 
 /**
  * A progress bar that can optionally be changed/dragged by the user
@@ -44,7 +44,8 @@ export default class Ph_ProgressBar extends HTMLElement {
 	}
 
 	private sendEvent(e: MouseEvent) {
-		const progress = e.offsetX / this.offsetWidth;
+		const bounds = this.getBoundingClientRect();
+		const progress = (e.clientX - bounds.left) / this.offsetWidth;
 		this.dispatchEvent(new CustomEvent("ph-drag", {detail: progress}));
 		this.setProgress(progress);
 	}
