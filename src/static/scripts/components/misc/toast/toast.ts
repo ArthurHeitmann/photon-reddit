@@ -30,7 +30,7 @@ export default class Ph_Toast extends HTMLElement {
 		if (options.onConfirm !== undefined) {
 			const confirmBtn = document.createElement("button");
 			confirmBtn.className = "confirmButton transparentButtonAlt";
-			confirmBtn.innerHTML = `<img src="/img/check.svg" draggable="false" class="confirm">`;
+			confirmBtn.innerHTML = `<img src="/img/check.svg" alt="confirm" draggable="false" class="confirm">`;
 			confirmBtn.addEventListener("click", () => {
 				this.removeSelf();
 				options.onConfirm();

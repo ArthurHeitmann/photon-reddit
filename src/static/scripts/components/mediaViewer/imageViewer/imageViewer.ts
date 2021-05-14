@@ -1,4 +1,3 @@
-import { trackMediaHost } from "../../../api/photonApi.js";
 import { getLoadingIcon, nonDraggableImage } from "../../../utils/htmlStatics.js";
 import { globalSettings, ImageLoadingPolicy, PhotonSettings } from "../../global/photonSettings/photonSettings.js";
 import { ControlsLayoutSlots } from "../../misc/controlsBar/controlsBar.js";

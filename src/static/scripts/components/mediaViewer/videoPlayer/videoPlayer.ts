@@ -1,5 +1,5 @@
 import { getGfycatMp4SrcFromUrl, GfycatDomain } from "../../../api/gfycatApi.js";
-import { trackMediaHost, youtubeDlUrl } from "../../../api/photonApi.js";
+import { youtubeDlUrl } from "../../../api/photonApi.js";
 import { RedditApiType } from "../../../types/misc.js";
 import { $tagAr, escHTML } from "../../../utils/htmlStatics.js";
 import { classInElementTree } from "../../../utils/htmlStuff.js";

@@ -1,7 +1,8 @@
 import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager.js";
 import {
 	$class,
-	$css, $id,
+	$css,
+	$id,
 	disableMainPointerEvents,
 	disableMainScroll,
 	enableMainPointerEvents,

@@ -1,4 +1,4 @@
-import { deepClone, throttle } from "../../../utils/utils.js";
+import { throttle } from "../../../utils/utils.js";
 
 /**
  * A progress bar that can optionally be changed/dragged by the user

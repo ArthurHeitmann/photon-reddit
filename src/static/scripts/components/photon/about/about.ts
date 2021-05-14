@@ -1,6 +1,4 @@
 import { linksToSpa } from "../../../utils/htmlStuff.js";
-import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
-import Ph_Flair from "../../misc/flair/flair.js";
 
 const template = `
 <h1>Photon</h1>
