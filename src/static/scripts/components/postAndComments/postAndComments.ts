@@ -24,6 +24,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 	userPrefixed: string;
 	tmpLoadingIcon: HTMLElement;
 	areHeaderElementsSet = false;
+	firstTimeConnected = false;
 
 	constructor(data?: RedditApiType[], postHint?: { post: Ph_Post, subredditPrefixed: string, userPrefixed: string }) {
 		super();
@@ -104,9 +105,12 @@ export default class Ph_PostAndComments extends HTMLElement {
 	}
 
 	connectedCallback() {
+		if (this.firstTimeConnected)
+			return;
 		setTimeout(() => document.scrollingElement.scrollTo({ top: 0 }), 0);
 		if (this.comments)
 			this.setHeaderElements();
+		this.firstTimeConnected = true;
 	}
 
 	setHeaderElements() {

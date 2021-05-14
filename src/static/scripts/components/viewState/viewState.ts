@@ -23,11 +23,7 @@ export abstract class Ph_ViewState extends Ph_PhotonBaseElement {
 		this.state = state;
 		this.header = $tag("ph-header")[0] as Ph_Header;
 
-		this.addEventListener("ph-removed", () => {
-			const cleanupElements = this.$css("[requiresCleanup]") as HTMLCollectionOf<Ph_PhotonBaseElement>;
-			for (const elem of cleanupElements)
-				elem.cleanup();
-		});
+		this.addEventListener("ph-removed", this.onRemoved.bind(this));
 	}
 
 	setHeaderElements(elements: HTMLElement[]) {
@@ -37,6 +33,12 @@ export abstract class Ph_ViewState extends Ph_PhotonBaseElement {
 
 	abstract finishWith(result: any);
 	abstract error();
+
+	onRemoved() {
+		const cleanupElements = this.$css("[requiresCleanup]") as HTMLCollectionOf<Ph_PhotonBaseElement>;
+		for (const elem of cleanupElements)
+			elem.cleanup();
+	}
 
 	saveScroll(elem?: HTMLElement) {
 		let scrollVal: number;
@@ -50,7 +52,7 @@ export abstract class Ph_ViewState extends Ph_PhotonBaseElement {
 		}
 	}
 
-	loadScroll() {
+	loadScroll(_secondCall = false) {
 		if (!this.scrollSave)
 			return;
 		let newScrollTop: number;
@@ -58,12 +60,14 @@ export abstract class Ph_ViewState extends Ph_PhotonBaseElement {
 		if (this.scrollSave.referenceElement) {
 			newScrollTop = this.scrollSave.referenceElement.getBoundingClientRect().top;
 			scrollYDiff = newScrollTop - this.scrollSave.scrollVal;
-		}
-		else {
+			console.log(`loading ref scroll`);
+		} else {
 			newScrollTop = document.scrollingElement.scrollTop;
 			scrollYDiff = this.scrollSave.scrollVal - newScrollTop;
 		}
 		document.scrollingElement.scrollBy({ top: scrollYDiff });
+		if (!_secondCall)
+			setTimeout(() => this.loadScroll(true), 0);		// sometimes the browser goes back to scroll Y 0 immediately
 	}
 
 	static getViewOf(elem: HTMLElement): Ph_ViewState {

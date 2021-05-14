@@ -11,6 +11,7 @@ import { Ph_ViewState } from "../viewState.js";
 export default class Ph_CommentsViewStateLoader extends Ph_ViewState {
 	post: Ph_Post
 	postAndComments: Ph_PostAndComments;
+	isReadyForCleanup = false;
 
 	constructor(state: HistoryState, postHint: PostDoubleLink) {
 		super(state);
@@ -22,7 +23,7 @@ export default class Ph_CommentsViewStateLoader extends Ph_ViewState {
 			subredditPrefixed: postHint.postSubredditPrefixed,
 			userPrefixed: postHint.postUserPrefixed
 		});
-		this.appendChild(this.postAndComments)
+		this.appendChild(this.postAndComments);
 	}
 
 	finishWith(postAndCommentsData: RedditApiType[]) {
@@ -50,6 +51,30 @@ export default class Ph_CommentsViewStateLoader extends Ph_ViewState {
 			return;
 
 		history.back();
+	}
+
+	/** Ownership by PostDoubleLink; only if post and viewState are removed, start cleanup */
+	onRemoved() {
+		if (!this.isReadyForCleanup)
+			return;
+		super.onRemoved();
+	}
+
+	connectedCallback() {
+		super.connectedCallback();
+
+		this.setIsNotReadyForCleanup()
+	}
+
+	setIsReadyForCleanup() {
+		if (this.isConnected)
+			this.isReadyForCleanup = true;
+		else
+			super.onRemoved();
+	}
+
+	setIsNotReadyForCleanup() {
+		this.isReadyForCleanup = false;
 	}
 }
 

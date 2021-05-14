@@ -58,6 +58,10 @@ export enum PushType {
 	pushAfter, pushBefore
 }
 
+enum PostHintState {
+	noHint, postNoComments, postAndComments
+}
+
 /** Use this function to redirect to a SPA link and the url could contain a query part */
 export async function pushLinkToHistoryComb(pathAndQuery: string, pushType: PushType = PushType.pushAfter, postHint?: PostDoubleLink): Promise<void> {
 	const [path, query] = splitPathQuery(pathAndQuery);
@@ -74,17 +78,30 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 	}
 
 	const historyState = ViewsStack.makeHistoryState(path, path + query);
+	let postHintState: PostHintState;
 	let stateLoader: Ph_ViewState;
-	if (postHint)
+	if (postHint && postHint.commentsViewStateLoader) {
+		stateLoader = postHint.commentsViewStateLoader;
+		postHintState = PostHintState.postAndComments;
+	}
+	else if (postHint) {
 		stateLoader = new Ph_CommentsViewStateLoader(historyState, postHint);
-	else
+		postHintState = PostHintState.postNoComments;
+	}
+	else {
 		stateLoader = new Ph_ViewStateLoader(historyState);
+		postHintState = PostHintState.noHint;
+	}
 
 	if (pushType === PushType.pushAfter)
 		ViewsStack.pushAfter(stateLoader);
 	else if (pushType === PushType.pushBefore)
 		ViewsStack.pushBefore(stateLoader);
 
+	if (postHintState === PostHintState.postAndComments) {
+		ViewsStack.setCurrentStateTitle(`${postHint.post.postTitle} - Photon`);
+		return;
+	}
 
 	// convert query string to key value string[][]
 	const urlParams = new URLSearchParams(query);
@@ -106,7 +123,7 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 		throw `Error making request to reddit (${path}, ${JSON.stringify(params)})`;
 	}
 
-	if (postHint) {
+	if (postHintState === PostHintState.postNoComments) {
 		stateLoader.finishWith(requestData);
 		ViewsStack.setCurrentStateTitle(`${postHint.post.postTitle} - Photon`);
 	}

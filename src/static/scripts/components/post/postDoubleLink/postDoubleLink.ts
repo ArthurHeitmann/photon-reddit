@@ -9,6 +9,7 @@ export default class PostDoubleLink {
 	post: Ph_Post;
 	previousElementInFeed: HTMLElement;
 	postAndComments: Ph_PostAndComments;
+	commentsViewStateLoader: Ph_CommentsViewStateLoader;
 	universalFeed: Ph_UniversalFeed;
 	postSubredditPrefixed: string;
 	postUserPrefixed: string;
@@ -40,7 +41,7 @@ export default class PostDoubleLink {
 		const postView = elementWithClassInTree(this.post, "viewState") as Ph_ViewState;
 
 		// is this view change related to the post or triggered by something entirely different?
-		if (activeView !== this.universalFeed.parentElement && activeView !== this.postAndComments.parentElement)
+		if (activeView !== this.universalFeed.parentElement && activeView !== this.commentsViewStateLoader)
 			return;
 
 		let isInFeed = !(activeView instanceof Ph_CommentsViewStateLoader);
@@ -76,13 +77,17 @@ export default class PostDoubleLink {
 	}
 
 	onPostAdded() {
-		if (!this.postAndComments && this.post.parentElement instanceof Ph_PostAndComments)
+		if (!this.postAndComments && this.post.parentElement instanceof Ph_PostAndComments) {
 			this.postAndComments = this.post.parentElement;
+			this.commentsViewStateLoader = this.postAndComments.parentElement as Ph_CommentsViewStateLoader;
+		}
 		window.addEventListener("ph-view-change", this.viewChangeRef);
+		this.commentsViewStateLoader?.setIsNotReadyForCleanup();
 	}
 
 	onPostRemoved() {
 		window.removeEventListener("ph-view-change", this.viewChangeRef);
+		this.commentsViewStateLoader?.setIsReadyForCleanup();
 	}
 
 	disable() {

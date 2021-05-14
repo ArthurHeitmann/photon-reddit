@@ -50,6 +50,8 @@ export default class ViewsStack {
 			ViewsStack.pos = (history.state && history.state.index ? history.state.index - 1 : -1);
 
 		ViewsStack.attachmentPoint.appendChild(state);
+		state.classList.remove("hide");
+		state.loadScroll();
 
 		++ViewsStack.pos;
 		state.state.index = ViewsStack.pos;
