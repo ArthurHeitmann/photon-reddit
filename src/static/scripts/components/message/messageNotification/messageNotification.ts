@@ -1,6 +1,6 @@
 import { redditApiRequest, setMessageReadStatus } from "../../../api/redditApi.js";
 import { RedditApiType } from "../../../types/misc.js";
-import { isLoggedIn, thisUser } from "../../../utils/globals.js";
+import { ensurePageLoaded, isLoggedIn, thisUser } from "../../../utils/globals.js";
 import { $class, $css } from "../../../utils/htmlStatics.js";
 import { linksToSpa } from "../../../utils/htmlStuff.js";
 import { numberToShort } from "../../../utils/utils.js";
@@ -101,13 +101,13 @@ export default class Ph_MessageNotification extends HTMLElement {
 }
 
 let messageCheckInterval = null;
-window.addEventListener("ph-page-ready", () => {
+ensurePageLoaded().then( () => {
 	if (!isLoggedIn)
 		return;
 	Ph_MessageNotification.checkForNewMessages();
 	if (globalSettings.messageCheckIntervalS > 0)
 		messageCheckInterval = setInterval(Ph_MessageNotification.checkForNewMessages, globalSettings.messageCheckIntervalS * 1000);
-}, { once: true })
+});
 window.addEventListener("ph-settings-changed", (e: CustomEvent) => {
 	const changed = e.detail as PhotonSettings;
 	if (changed.messageCheckIntervalS === undefined)

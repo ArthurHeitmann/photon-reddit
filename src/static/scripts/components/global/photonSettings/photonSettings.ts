@@ -1,5 +1,5 @@
 import { logOut } from "../../../auth/auth.js";
-import { clearSeenPosts, isLoggedIn } from "../../../utils/globals.js";
+import { clearSeenPosts, ensurePageLoaded, isLoggedIn } from "../../../utils/globals.js";
 import { disableMainScroll, enableMainScroll, escADQ } from "../../../utils/htmlStatics.js";
 import "../../../utils/htmlStuff.js";
 import { deepClone, isObjectEmpty } from "../../../utils/utils.js";
@@ -83,7 +83,7 @@ export default class Ph_PhotonSettings extends HTMLElement {
 	}
 
 	connectedCallback() {
-		window.addEventListener("ph-page-ready", this.init.bind(this));
+		ensurePageLoaded().then(() => this.init());
 	}
 
 	init() {

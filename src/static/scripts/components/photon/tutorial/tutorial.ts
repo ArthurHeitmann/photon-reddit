@@ -315,7 +315,7 @@ export default class Ph_Tutorial extends HTMLElement {
 	static checkForTutorial() {
 		if (localStorage["hasCompletedTutorial"] === "true")
 			return;
-		new Ph_Toast(Level.info, "Hello new visitor. Would you like to take a quick tour?", {
+		new Ph_Toast(Level.info, "Hello! Would you like to take a quick tour?", {
 			onConfirm: () => new Ph_Tutorial(),
 			onCancel: () => localStorage["hasCompletedTutorial"] = "true"
 		})

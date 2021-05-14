@@ -37,19 +37,20 @@ async function init(): Promise<void> {
 
 	checkIfAnalyticsFileLoaded()
 
+	let thisUserFetch: Promise<void>;
 	if (await checkAuthOnPageLoad() === AuthState.loggedIn) {
-		try {
-			await thisUser.fetch();
-		}
-		catch {
-			showInitErrorPage();
-		}
-		if (localStorage["loginRecommendationFlag"] !== "set" && !thisUser.subreddits.includes(`r/${loginSubredditName}`)) {
-			localStorage["loginRecommendationFlag"] = "set";
-			new Ph_Toast(Level.info, `Do you want to subscribe to r/${loginSubredditName}?`, {
-				onConfirm: () => subscribe(loginSubredditFullName, true)
+		thisUserFetch = thisUser.fetch()
+			.then(() => {
+				if (localStorage["loginRecommendationFlag"] !== "set" && !thisUser.subreddits.includes(`r/${loginSubredditName}`)) {
+					localStorage["loginRecommendationFlag"] = "set";
+					new Ph_Toast(Level.info, `Do you want to subscribe to r/${loginSubredditName}?`, {
+						onConfirm: () => subscribe(loginSubredditFullName, true)
+					});
+				}
+			})
+			.catch(() => {
+				showInitErrorPage();
 			});
-		}
 	}
 	else
 		loginBtn.hidden = false;
@@ -59,6 +60,8 @@ async function init(): Promise<void> {
 	checkForNewVersion();
 	disableSpaceBarScroll();
 
+	if (thisUserFetch)
+		await thisUserFetch;
 	window.dispatchEvent(new Event("ph-page-ready"));
 	if (localStorage["firstTimeFlag"] !== "set")
 		localStorage["firstTimeFlag"] = "set";
@@ -143,7 +146,6 @@ async function registerServiceWorker() {
 }
 
 function disableSpaceBarScroll() {
-
 	window.addEventListener("keydown", (e: KeyboardEvent) => {
 		if (e.code === "Space" && !["INPUT", "TEXTAREA"].includes((e.target as HTMLElement).tagName))
 			e.preventDefault();

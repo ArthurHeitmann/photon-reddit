@@ -1,3 +1,4 @@
+import { ensurePageLoaded } from "../../../utils/globals.js";
 import { globalSettings, PhotonSettings } from "./photonSettings.js";
 
 window.addEventListener("ph-settings-changed", (e: CustomEvent) => handleSettings(e.detail));
@@ -19,4 +20,4 @@ function setClassOnBody(className: string, state: boolean, invert: boolean = fal
 	}
 }
 
-window.addEventListener("ph-page-ready", () => handleSettings(globalSettings));
+ensurePageLoaded().then(() => handleSettings(globalSettings));

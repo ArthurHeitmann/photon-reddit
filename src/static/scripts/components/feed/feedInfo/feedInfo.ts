@@ -13,7 +13,7 @@ import {
 	subscribe
 } from "../../../api/redditApi.js";
 import { RedditApiType } from "../../../types/misc.js";
-import { StoredData, thisUser } from "../../../utils/globals.js";
+import { ensurePageLoaded, StoredData, thisUser } from "../../../utils/globals.js";
 import { $class, escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { classInElementTree, linksToSpa } from "../../../utils/htmlStuff.js";
 import { numberToShort, stringSortComparer, throttle } from "../../../utils/utils.js";
@@ -274,8 +274,8 @@ export default class Ph_FeedInfo extends HTMLElement {
 		});
 		subActionsWrapper.appendChild(subscribeButton);
 		const dropDownEntries: DropDownEntryParam[] = [];
-		dropDownEntries.push({label: `<a href="${this.feedUrl}">Visit</a>`})
-		dropDownEntries.push({label: `<a href="${this.feedUrl}/submit">Submit Post</a>`})
+		dropDownEntries.push({label: `<a href="${this.feedUrl}">Visit</a>`});
+		dropDownEntries.push({label: `<a href="${this.feedUrl}/submit">Submit Post</a>`});
 		if (thisUser.multireddits.length > 0) {
 			dropDownEntries.push({
 				label: "Add to Multireddit",

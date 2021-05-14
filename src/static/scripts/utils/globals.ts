@@ -41,39 +41,44 @@ export class User {
 
 	/** fetch data from reddit and set properties */
 	async fetch() {
-		const userData = await redditApiRequest("/api/v1/me", [], true);
-		thisUser.name = userData["name"];
-		thisUser.inboxUnread = userData["inbox_count"];
-
-		if (localStorage.subreddits) {
-			try {
-				const storedSubs: StoredData = JSON.parse(localStorage.subreddits);
-				if (Date.now() - storedSubs.lastUpdatedMsUTC > User.refreshEveryNMs) {
+		// get user data, subscribed subreddits, multireddits
+		await Promise.all([
+			(async () => {
+				const userData = await redditApiRequest("/api/v1/me", [], true);
+				thisUser.name = userData["name"];
+				thisUser.inboxUnread = userData["inbox_count"];
+			})(),
+			(async () => {
+				if (localStorage.subreddits) {
+					try {
+						const storedSubs: StoredData = JSON.parse(localStorage.subreddits);
+						this.subreddits = storedSubs.data;
+						if (Date.now() - storedSubs.lastUpdatedMsUTC > User.refreshEveryNMs) {
+							await this.fetchSubs();
+						}
+					} catch (e) {
+						await this.fetchSubs();
+					}
+				}
+				else
 					await this.fetchSubs();
-				} else {
-					this.subreddits = storedSubs.data;
+			})(),
+			(async () => {
+				if (localStorage.multis) {
+					try {
+						const storedMultis: StoredData = JSON.parse(localStorage.multis);
+							this.multireddits = storedMultis.data;
+						if (Date.now() - storedMultis.lastUpdatedMsUTC > User.refreshEveryNMs) {
+							await this.fetchMultis();
+						}
+					} catch (e) {
+						await this.fetchMultis();
+					}
 				}
-			} catch (e) {
-				await this.fetchSubs();
-			}
-		}
-		else
-			await this.fetchSubs();
-
-		if (localStorage.multis) {
-			try {
-				const storedMultis: StoredData = JSON.parse(localStorage.multis);
-				if (Date.now() - storedMultis.lastUpdatedMsUTC > User.refreshEveryNMs) {
+				else
 					await this.fetchMultis();
-				} else {
-					this.multireddits = storedMultis.data;
-				}
-			} catch (e) {
-				await this.fetchMultis();
-			}
-		}
-		else
-			await this.fetchMultis();
+			})()
+		]);
 	}
 
 	private async fetchSubs() {
@@ -155,4 +160,23 @@ export function clearSeenPosts() {
 
 export function hasPostsBeenSeen(postFullName: string): boolean {
 	return Boolean(seenPosts[postFullName]);
+}
+
+// page ready
+
+let isPageReady = false;
+
+export function ensurePageLoaded(): Promise<void> {
+	return new Promise(resolve => {
+		if (isPageReady) {
+			resolve();
+		}
+		else {
+			window.addEventListener(
+				"ph-page-ready",
+				() => resolve(),
+				{ once: true }
+			);
+		}
+	})
 }

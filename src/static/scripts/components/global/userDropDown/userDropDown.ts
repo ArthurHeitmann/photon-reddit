@@ -1,6 +1,6 @@
 import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager.js";
 import ViewsStack from "../../../historyState/viewsStack.js";
-import { thisUser } from "../../../utils/globals.js";
+import { thisUser, ensurePageLoaded } from "../../../utils/globals.js";
 import { escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { elementWithClassInTree, isElementIn, linksToSpa } from "../../../utils/htmlStuff.js";
 import { numberToShort } from "../../../utils/utils.js";
@@ -33,7 +33,7 @@ export default class Ph_UserDropDown extends HTMLElement {
 			if (!isElementIn(this, e.target as HTMLElement))
 				this.minimize();
 		});
-		window.addEventListener("ph-page-ready", () => {
+		ensurePageLoaded().then(() => {
 			dropDownArea.appendChild(this.makeSubredditGroup(
 				thisUser.multireddits.map(multi => ({name: multi.display_name, path: multi.path})),
 				"Custom Feeds"
