@@ -1,6 +1,8 @@
 /**
  * The children of this wrapper can be dragged around and zoomed in on with the mouse & scroll wheel
  */
+import TouchGestureListener from "../../../../utils/touchGestureListener.js";
+
 export default class Ph_DraggableWrapper extends HTMLElement {
 	prevX = 0;
 	prevY = 0;
@@ -12,17 +14,34 @@ export default class Ph_DraggableWrapper extends HTMLElement {
 	mouseDownRef;
 	mouseLeaveRef;
 	wheelRef;
+	pinchRef;
+	touchDragBeginRef;
+	touchDragRef;
+	pinchListener: TouchGestureListener;
 
 	constructor() {
 		super();
+
 		this.className = "draggableWrapper";
+		this.mouseDownRef = this.beginDrag.bind(this);
+		this.mouseUpRef = this.endDrag.bind(this);
+		this.mouseLeaveRef = this.endDrag.bind(this);
+		this.wheelRef = this.onWheelZoom.bind(this);
+		this.pinchRef = this.onTouchZoom.bind(this);
+		this.touchDragBeginRef = this.beginTouchDrag.bind(this);
+		this.touchDragRef = this.onTouchDrag.bind(this);
+		this.pinchListener = new TouchGestureListener(this);
 	}
 
 	activate() {
-		this.addEventListener("mousedown", this.mouseDownRef = this.beginDrag.bind(this));
-		this.addEventListener("mouseup", this.mouseUpRef = this.endDrag.bind(this));
-		this.addEventListener("mouseleave", this.mouseLeaveRef = this.endDrag.bind(this));
-		this.addEventListener("wheel", this.wheelRef = this.onZoom.bind(this), { passive: false });
+		this.addEventListener("mousedown", this.mouseDownRef);
+		this.addEventListener("mouseup", this.mouseUpRef);
+		this.addEventListener("mouseleave", this.mouseLeaveRef);
+		this.addEventListener("wheel", this.wheelRef, { passive: false });
+		this.addEventListener("ph-touch-pinch", this.pinchRef, { passive: false });
+		this.addEventListener("ph-begin-touch-pinch", this.touchDragBeginRef, { passive: false });
+		this.addEventListener("ph-touch-drag", this.touchDragRef, { passive: false });
+		this.pinchListener.enable();
 	}
 
 	deactivate() {
@@ -30,6 +49,10 @@ export default class Ph_DraggableWrapper extends HTMLElement {
 		this.removeEventListener("mouseup", this.mouseUpRef);
 		this.removeEventListener("mouseleave", this.mouseLeaveRef);
 		this.removeEventListener("wheel", this.wheelRef);
+		this.removeEventListener("ph-touch-pinch", this.pinchRef);
+		this.removeEventListener("ph-begin-touch-pinch", this.touchDragBeginRef);
+		this.removeEventListener("ph-touch-drag", this.touchDragRef);
+		this.pinchListener.disable();
 		this.endDrag();
 	}
 
@@ -37,6 +60,11 @@ export default class Ph_DraggableWrapper extends HTMLElement {
 		this.onmousemove = e => this.moveImage(e);
 		this.prevX = e.screenX;
 		this.prevY = e.screenY;
+	}
+
+	beginTouchDrag(e: CustomEvent) {
+		this.prevX = e.detail.x;
+		this.prevY = e.detail.y;
 	}
 
 	endDrag() {
@@ -49,9 +77,20 @@ export default class Ph_DraggableWrapper extends HTMLElement {
 		this.prevY = e.screenY;
 	}
 
-	onZoom(e: WheelEvent) {
+	onTouchDrag(e: CustomEvent) {
+		this.addMoveXY(e.detail.x - this.prevX, e.detail.y - this.prevY);
+		this.prevX = e.detail.x;
+		this.prevY = e.detail.y;
+	}
+
+	onWheelZoom(e: WheelEvent) {
 		this.addZoom(e.deltaY > 0 ? -.15 : .15);
 		e.preventDefault();
+	}
+
+	onTouchZoom(e: CustomEvent) {
+		const distanceChange = e.detail as number;
+		this.addZoom(distanceChange);
 	}
 
 	setZoom(val: number) {
