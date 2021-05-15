@@ -1,6 +1,16 @@
-export const photonVersion = "0.4.5";		/// <change version script>
+export const photonVersion = "0.4.6";		/// <change version script>
 
 export const photonChangelog = {
+	"0.4.6": {
+		"New": [
+			"Improved loading time on page load",
+			"Touch support for media zooming & dragging",
+		],
+		"Fixed": [
+			"Some problems with infinite scrolling and hidden posts",
+			"Many small fixes and changes",
+		]
+	},
 	"0.4.5": {
 		"Fixed": [
 			"lots of styling fixes",
