@@ -29,7 +29,7 @@ export default class Ph_CommentForm extends Ph_MarkdownForm {
 				return;
 			}
 
-			this.textField.value = "";
+			this.clear();
 			this.dispatchEvent(new CustomEvent("ph-comment-submitted", { detail: response.json.data.things[0] }))
 		})
 	}

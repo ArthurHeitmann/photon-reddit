@@ -19,7 +19,7 @@ export default class Ph_MarkdownForm extends HTMLElement {
 		this.textField.className = "rawTextEditor";
 		this.shadowTextField = this.textField.cloneNode(true) as HTMLTextAreaElement;
 		this.textField.contentEditable = "true";
-		this.textField.addEventListener("input", this.onTextInput.bind(this));
+		this.textField.addEventListener("input", this.updateHeight.bind(this));
 		this.appendChild(this.textField);
 		this.shadowTextField.classList.add("shadow");
 		this.appendChild(this.shadowTextField);
@@ -45,9 +45,16 @@ export default class Ph_MarkdownForm extends HTMLElement {
 
 			this.submitCommentBtn.addEventListener("click", () => this.dispatchEvent(new Event("ph-submit")));
 		}
+
+		setTimeout(this.updateHeight.bind(this), 0);
 	}
 
-	onTextInput() {
+	clear() {
+		this.textField.value = "";
+		this.updateHeight();
+	}
+
+	updateHeight() {
 		this.shadowTextField.value = this.textField.value;
 		this.textField.style.setProperty("--textarea-height", `calc(${this.shadowTextField.scrollHeight}px + 1.5rem)`)
 	}
