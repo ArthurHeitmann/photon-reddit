@@ -92,67 +92,27 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				}
 				break;
 			case "v.redd.it":
-				// wtf is this inconsistency v.redd.it ??????!
-				// trying to minimize sources list and failed requests
 				if (postData && postData.data["media"] && postData.data["media"]["reddit_video"]) {
-					const helperUrl = postData.data["media"]["reddit_video"]["fallback_url"];
-					const resolutions = [1080, 720, 480, 360, 240, 96];
-					if (/DASH_\d+\?source=fallback/.test(helperUrl)) {		// DASH_<res>?source=fallback
-						const maxRes = helperUrl.match(/(?<=DASH_)\d+/)[0];
-						const resOptions = resolutions.slice(resolutions.indexOf(parseInt(maxRes)));
-						videoOut.init(new Ph_VideoAudio(
-							resOptions.map(res => ({src: `${url}/DASH_${res}`, type: "video/mp4"})),
-							[
-								{src: url + "/DASH_audio.mp4", type: "video/mp4"},
-								{src: url + "/DASH_audio", type: "video/mp4"},
-								{src: url + "/audio.mp4", type: "video/mp4"},
-								{src: url + "/audio", type: "video/mp4"},
-							]
-						));
-					}
-					else if (/DASH_\d+\.mp4\?source=fallback/.test(helperUrl)) {		// DASH_<res>.mp4?source=fallback
-						const maxRes = helperUrl.match(/(?<=DASH_)\d+/)[0];
-						const resOptions = resolutions.slice(resolutions.indexOf(parseInt(maxRes)));
-						videoOut.init(new Ph_VideoAudio(
-							resOptions.map(res => <any> {src: `${url}/DASH_${res}.mp4`, type: "video/mp4"}),
-							[
-								{src: url + "/DASH_audio.mp4", type: "video/mp4"},
-								{src: url + "/DASH_audio", type: "video/mp4"},
-								{src: url + "/audio.mp4", type: "video/mp4"},
-								{src: url + "/audio", type: "video/mp4"},
-							]));
-					}
-					else if (/DASH_[\d_]+[KM]\.mp4\?source=fallback/.test(helperUrl)) {		// DASH_<bits>.mp4?source=fallback
-						videoOut.init(new Ph_VideoAudio([
-							{src: url + "/DASH_4_8_M.mp4", type: "video/mp4"},
-							{src: url + "/DASH_2_4_M.mp4", type: "video/mp4"},
-							{src: url + "/DASH_1_2_M.mp4", type: "video/mp4"},
-							{src: url + "/DASH_600_K.mp4", type: "video/mp4"},
-						], [
-							{src: url + "/DASH_audio.mp4", type: "video/mp4"},
-							{src: url + "/DASH_audio", type: "video/mp4"},
-							{src: url + "/audio.mp4", type: "video/mp4"},
-							{src: url + "/audio", type: "video/mp4"},
-						]));
-					}
-					else if (/DASH_[\d_]+[KM]\?source=fallback/.test(helperUrl)) {		// DASH_<bits>?source=fallback
-						videoOut.init(new Ph_VideoAudio([
-							{src: url + "/DASH_4_8_M", type: "video/mp4"},
-							{src: url + "/DASH_2_4_M", type: "video/mp4"},
-							{src: url + "/DASH_1_2_M", type: "video/mp4"},
-							{src: url + "/DASH_600_K", type: "video/mp4"},
-						], [
-							{src: url + "/DASH_audio.mp4", type: "video/mp4"},
-							{src: url + "/DASH_audio", type: "video/mp4"},
-							{src: url + "/audio.mp4", type: "video/mp4"},
-							{src: url + "/audio", type: "video/mp4"},
-						]));
-					}
-					else {
-						new Ph_Toast(Level.error, "A wild new v.redd.it standard has appeared!");
-						console.error(`A wild new v.redd.it standard has appeared! ${helperUrl}`);
-						throw "A wild new v.redd.it standard has appeared!";
-					}
+					fetch(postData.data["media"]["reddit_video"]["dash_url"]).then(async r => {
+						const hlsXml = (new DOMParser()).parseFromString(await r.text(), "application/xml");
+
+						let videoUrlElements = hlsXml.querySelectorAll(`Representation[id^=video i]`);
+						const videoSources = Array.from(videoUrlElements)
+							.sort((a, b) => {
+								const bandwidthA = parseInt(a.getAttribute("bandwidth"));
+								const bandwidthB = parseInt(b.getAttribute("bandwidth"));
+								return bandwidthB - bandwidthA;
+							})
+							.map(rep => rep.querySelector("BaseURL").textContent)
+							.map(baseUrl => ({ src: `${url}/${baseUrl}`, type: "video/mp4" }));
+
+						const audioUrlElement = hlsXml.querySelector(`Representation[id^=audio i] BaseURL`);
+						const audioSrc = audioUrlElement
+							? [{ src: `${url}/${audioUrlElement.textContent}`, type: "audio/mp4" }]
+							: []
+
+						videoOut.init(new Ph_VideoAudio(videoSources, audioSrc), true);
+					});
 				}
 				else {
 					// when everything fails: bruteforce
@@ -174,10 +134,10 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 						{src: url + "/DASH_1_2_M", type: "video/mp4"},
 						{src: url + "/DASH_600_K", type: "video/mp4"},
 					], [
-						{src: url + "/DASH_audio.mp4", type: "video/mp4"},
-						{src: url + "/DASH_audio", type: "video/mp4"},
-						{src: url + "/audio.mp4", type: "video/mp4"},
-						{src: url + "/audio", type: "video/mp4"},
+						{src: url + "/DASH_audio.mp4", type: "audio/mp4"},
+						{src: url + "/DASH_audio", type: "audio/mp4"},
+						{src: url + "/audio.mp4", type: "audio/mp4"},
+						{src: url + "/audio", type: "audio/mp4"},
 					]));
 				}
 				break;
