@@ -358,7 +358,8 @@ export default class Ph_PhotonSettings extends HTMLElement {
 			const logOutButton = document.createElement("button");
 			logOutButton.className = "button";
 			logOutButton.innerText = "Log out";
-			logOutButton.addEventListener("click", logOut);
+			logOutButton.addEventListener("click",
+				() => new Ph_Toast(Level.warning, "Are you sure you want to log out?", { onConfirm: logOut }));
 			this.optionsArea.appendChild(logOutButton);
 		}
 

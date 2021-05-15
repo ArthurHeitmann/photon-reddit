@@ -167,8 +167,14 @@ export default class Ph_Flair extends HTMLElement {
 			case "light":
 				return [this.shortColorToCss("light"), this.shortColorToCss(secondaryColor) || this.shortColorToCss("dark")];
 			default:
-				if (color)
-					return [this.shortColorToCss(color), this.shortColorToCss(secondaryColor) || this.contrastColor(color)];
+				if (color) {
+					return [
+						this.shortColorToCss(color),
+						color === "transparent" && secondaryColor === "dark"
+							? this.shortColorToCss("light")
+							: this.shortColorToCss(secondaryColor) || this.contrastColor(color)
+					];
+				}
 				else
 					return [this.shortColorToCss("dark"), this.shortColorToCss("light")];
 		}

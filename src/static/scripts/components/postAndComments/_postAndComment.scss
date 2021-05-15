@@ -11,7 +11,7 @@
 	@extend %shadow-diffuse;
 
 	> .markdownForm {
-		margin: 1.5rem 4rem;
+		margin: 1.5rem vars.$post-padding 1.5rem 4rem;
 		@media (orientation: portrait) and (min-width: 320px) and (max-width: 480px) {
 			margin: 1.5rem 1rem;
 		}

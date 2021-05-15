@@ -132,6 +132,10 @@
 			border-bottom-right-radius: 1.2rem;
 		}
 
+		&:not(:last-child) {
+			border-bottom-width: 0;
+		}
+
 		> :first-child {
 			transition: transform .25s ease;
 			width: 100%;
