@@ -116,7 +116,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 
 	static fromImgurUrl(url: string): Ph_MediaViewer {
 		const mediaViewer = new Ph_MediaViewer();
-		if (/imgur\.com\/(a|album|gallery)\/[^/]+\/?$/.test(url)) {		// imgur album is either /a/... or /album/... or /gallery/...
+		if (/imgur\.com\/(a|album|gallery|t\/[^/?#]+)\/[^/]+\/?$/.test(url)) {		// imgur album is either /a/... or /album/... or /gallery/...
 			getImgurAlbumContents(url).then((contents: ImgurContent[]) => {
 				mediaViewer.init(contents.map(imgurElement => {
 					if (imgurElement.type === ImgurContentType.image)
