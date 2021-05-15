@@ -1,20 +1,48 @@
+export interface ToastOptions {
+	/** if > 0 --> remove toast after n ms */
+	timeout?: number,
+	/** if given will display accept or cancel buttons. When accept is pressed execute onConfirm */
+	onConfirm?: () => void,
+	/** executed when closing toast */
+	onCancel?: () => void,
+	/** if a toast with this Id already exists, a new one will not be created */
+	groupId?: string
+}
+
+interface ActiveToastIds {
+	[toastId: string]: Ph_Toast
+}
+
 /**
  * A toast notification that appears on the screen. Can have different severities and some other customization options.
  */
 export default class Ph_Toast extends HTMLElement {
+	private static activeToasts: ActiveToastIds = {};
+	private removeTimout = null;
+	private options: ToastOptions;
+
 	/**
 	 * @param level severity
 	 * @param displayHtml message innerHTML
-	 * @param options {}
-	 * @param options.timeout if > 0 --> remove toast after n ms
-	 * @param options.onConfirm if given will display accept or cancel buttons. When accept is pressed execute onConfirm
-	 * @param options.onCancel executed when closing toast
+	 * @param options optional configuration
 	 */
-	constructor(level: Level, displayHtml: string, options: { timeout?: number, onConfirm?: () => void, onCancel?: () => void } = {}) {
+	constructor(level: Level, displayHtml: string, options: ToastOptions = {}) {
 		super();
+
+		if ("groupId" in options) {
+			if (options.groupId in Ph_Toast.activeToasts) {
+				const existingToast = Ph_Toast.activeToasts[options.groupId];
+				existingToast.options = options;
+				existingToast.cancelRemove();
+				existingToast.setRemoveAfter();
+				return;
+			}
+			Ph_Toast.activeToasts[options.groupId] = this;
+		}
 
 		this.className = "toast";
 		this.style.setProperty("--theme", levelConfig[level].color);
+		this.options = options;
 
 		this.innerHTML = `
 			<img src="${levelConfig[level].img}" alt="${levelConfig[level].text}" class="levelImg" draggable="false">
@@ -31,27 +59,46 @@ export default class Ph_Toast extends HTMLElement {
 			const confirmBtn = document.createElement("button");
 			confirmBtn.className = "confirmButton transparentButtonAlt";
 			confirmBtn.innerHTML = `<img src="/img/check.svg" alt="confirm" draggable="false" class="confirm">`;
-			confirmBtn.addEventListener("click", () => {
-				this.removeSelf();
-				options.onConfirm();
-			});
+			confirmBtn.addEventListener("click", this.onConfirm.bind(this));
 			this.$class("closeButton")[0].insertAdjacentElement("beforebegin", confirmBtn);
 		}
 
-		this.$class("closeButton")[0].addEventListener("click", () => {
-			if (options.onCancel)
-				options.onCancel();
-			this.removeSelf();
-		});
-		if (options.timeout > 0)
-			setTimeout(this.removeSelf.bind(this), options.timeout);
+		this.addEventListener("mouseenter", this.cancelRemove.bind(this));
+		this.addEventListener("mouseleave", this.setRemoveAfter.bind(this));
+
+		this.$class("closeButton")[0].addEventListener("click", this.onCancel.bind(this));
+
+		this.setRemoveAfter();
 
 		document.body.appendChild(this);
 	}
 
+	onConfirm() {
+		this.removeSelf();
+		this.options.onConfirm();
+	}
+
+	onCancel() {
+		if (this.options.onCancel)
+			this.options.onCancel();
+		this.removeSelf();
+	}
+
+	cancelRemove() {
+		this.classList.remove("remove")
+		clearTimeout(this.removeTimout);
+		this.removeTimout = null;
+	}
+
+	setRemoveAfter() {
+		if (this.options.timeout > 0)
+			this.removeTimout = setTimeout(this.removeSelf.bind(this), this.options.timeout);
+	}
+
 	removeSelf() {
 		this.classList.add("remove")
-		setTimeout(() => {
+		this.removeTimout = setTimeout(() => {
+			delete Ph_Toast.activeToasts[this.options.groupId];
 			this.remove();
 		}, 300);
 	}
