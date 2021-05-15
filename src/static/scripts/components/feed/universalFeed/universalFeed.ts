@@ -123,6 +123,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 				new Ph_Toast(Level.error, `Error making feed item`);
 			}
 		}
+		this.checkIfFeedEmpty();
 	}
 
 	async setMessageSection([section]: MessageSection[], setLabel: (newLabel: ButtonLabel) => void, initialLabel: HTMLElement) {
@@ -229,25 +230,36 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			this.afterData = this.lastElementChild.getAttribute("data-id");
 		}
 		else if (loadPosition === LoadPosition.after) {
-			// firefox messes up the scroll position if you just remove all old elements, so we have to do this instead
 			// first collect all elements that are too far away and should be removed
-			const removeElements: HTMLElement[] = [];
-			let next = this.children[0] as HTMLElement;
-			while (next && (next.classList.contains("hide") || next.getBoundingClientRect().y < window.innerHeight * -5) && this.childElementCount > 1) {
+			const removeElements: Element[] = [];
+			let firstVisibleElement = this.children[0];
+			while (firstVisibleElement && firstVisibleElement.classList.contains("hide"))
+				firstVisibleElement = firstVisibleElement.nextElementSibling;
+			let next = this.children[0];
+			if (this.childElementCount <= 1)
+				next = null;
+			let possibleRemoveHidden: Element[] = [];
+			while (next && next.classList.contains("hide")) {
+				possibleRemoveHidden.push(next);
+				next = next.nextElementSibling as Element;
+			}
+			while (next && (next.classList.contains("hide") || next.getBoundingClientRect().y < window.innerHeight * -5)) {
 				removeElements.push(next);
-				next = next.nextElementSibling as HTMLElement;
+				next = next.nextElementSibling as Element;
 			}
 			if (removeElements.length === 0)
 				return;
+			if (removeElements.includes(firstVisibleElement))
+				removeElements.splice(0, 0, ...possibleRemoveHidden);
 			if (removeElements.length === this.childElementCount)
 				removeElements.splice(-1);
 
 			// remove old elements and set scroll position approximately back to where it was before removal
 			if (removeElements.length) {
-				let firstVisibleElement = removeElements[removeElements.length - 1].nextElementSibling;
-				while (firstVisibleElement && firstVisibleElement.classList.contains("hide"))
-					firstVisibleElement = firstVisibleElement.nextElementSibling;
-				Ph_ViewState.getViewOf(this).saveScroll(firstVisibleElement as HTMLElement);
+				let firstSafeElement = removeElements[removeElements.length - 1].nextElementSibling;
+				while (firstSafeElement && firstSafeElement.classList.contains("hide"))
+					firstSafeElement = firstSafeElement.nextElementSibling;
+				Ph_ViewState.getViewOf(this).saveScroll(firstSafeElement as HTMLElement);
 				for (const elem of removeElements)
 					elem.remove();
 				Ph_ViewState.getViewOf(this).loadScroll();
@@ -257,10 +269,12 @@ export default class Ph_UniversalFeed extends HTMLElement {
 	}
 
 	async loadMore(loadPosition) {
-		const posts: RedditApiType = await redditApiRequest(this.requestUrl, [
-			["before", loadPosition === LoadPosition.before ? this.beforeData : "null"],
-			["after",  loadPosition === LoadPosition.after  ? this.afterData : "null"],
-		], false);
+		let param: string[];
+		if (loadPosition === LoadPosition.after)
+			param = ["after",  this.afterData];
+		else
+			param = ["before", this.beforeData];
+		const posts: RedditApiType = await redditApiRequest(this.requestUrl, [param], false);
 
 		if (await waitForFullScreenExit())
 			await sleep(100);
@@ -281,7 +295,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			if (this.afterData === null)
 				this.hasReachedEndOfFeed = true;
 		}
-		else {
+		else /* loadPosition === LoadPosition.after */ {
 			Ph_ViewState.getViewOf(this).saveScroll(this.lastElementChild as HTMLElement);
 			for (const postData of posts.data.children.reverse()) {
 				try {
@@ -299,6 +313,8 @@ export default class Ph_UniversalFeed extends HTMLElement {
 
 			this.beforeData = posts.data.before;
 		}
+
+		this.checkIfFeedEmpty();
 	}
 
 	replaceChildren(posts: RedditApiType[], beforeData: string, afterData: string) {
@@ -317,6 +333,24 @@ export default class Ph_UniversalFeed extends HTMLElement {
 				new Ph_Toast(Level.error, `Error making feed item`);
 			}
 		}
+
+		this.checkIfFeedEmpty();
+	}
+
+	checkIfFeedEmpty() {
+		setTimeout(() => {
+			if (this.hasReachedEndOfFeed)
+				return;
+			if (this.childElementCount === 0)
+				return;
+			if (this.offsetHeight > window.innerHeight)
+				return;
+			new Ph_Toast(
+				Level.warning,
+				"Empty feed. Try to load more?",
+				{ onConfirm: () => this.onScroll(undefined, true) }
+			);
+		}, 1000);
 	}
 }
 

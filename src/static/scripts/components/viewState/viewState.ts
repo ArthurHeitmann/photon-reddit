@@ -58,9 +58,10 @@ export abstract class Ph_ViewState extends Ph_PhotonBaseElement {
 		let newScrollTop: number;
 		let scrollYDiff: number;
 		if (this.scrollSave.referenceElement) {
+			if (!this.scrollSave.referenceElement.isConnected)
+				return;
 			newScrollTop = this.scrollSave.referenceElement.getBoundingClientRect().top;
 			scrollYDiff = newScrollTop - this.scrollSave.scrollVal;
-			console.log(`loading ref scroll`);
 		} else {
 			newScrollTop = document.scrollingElement.scrollTop;
 			scrollYDiff = this.scrollSave.scrollVal - newScrollTop;
