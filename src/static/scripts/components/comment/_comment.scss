@@ -31,7 +31,13 @@
 			display: none;
 		}
 
-		.markdownForm {
+		.editForm {
+			display: inherit;
+		}
+	}
+
+	&.isReplying {
+		.replyForm {
 			display: inherit;
 		}
 	}

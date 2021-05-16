@@ -230,13 +230,13 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 		// reply form
 		if (!isLocked) {
 			this.replyForm = new Ph_CommentForm(this, true);
-			this.replyForm.classList.add("hide");
+			this.replyForm.classList.add("replyForm")
 			this.replyForm.addEventListener("ph-comment-submitted", (e: CustomEvent) => {
 				this.replyForm.insertAdjacentElement("afterend",
 					new Ph_Comment(e.detail, true, false, post));
-				this.replyForm.classList.add("hide");
+				this.classList.remove("isReplying");
 			});
-			this.replyForm.addEventListener("ph-cancel", () => this.replyForm.classList.add("hide"));
+			this.replyForm.addEventListener("ph-cancel", () => this.classList.remove("isReplying"));
 
 			this.childComments.appendChild(this.replyForm);
 		}
@@ -261,7 +261,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 	}
 
 	showReplyForm() {
-		this.replyForm.classList.remove("hide");
+		this.classList.add("isReplying");
 	}
 
 	async loadMoreComments(children: string[], id: string): Promise<RedditApiType[]> {
@@ -378,6 +378,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 
 	setupEditForm() {
 		this.editForm = new Ph_MarkdownForm("Edit", true);
+		this.editForm.classList.add("editForm")
 		this.editForm.textField.value = this.bodyMarkdown;
 		this.editForm.addEventListener("ph-submit", async () => {
 			try {
