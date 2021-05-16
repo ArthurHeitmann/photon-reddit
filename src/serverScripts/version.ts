@@ -1,6 +1,11 @@
-export const photonVersion = "0.4.6";		/// <change version script>
+export const photonVersion = "0.4.7";		/// <change version script>
 
 export const photonChangelog = {
+	"0.4.7": {
+		"Fixed": [
+			"Many small fixes and changes",
+		]
+	},
 	"0.4.6": {
 		"New": [
 			"Improved loading time on page load",
