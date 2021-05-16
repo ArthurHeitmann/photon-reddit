@@ -172,6 +172,10 @@ export function deepClone<T>(object: T): T {
 	return JSON.parse(JSON.stringify(object));
 }
 
+export function isJsonEqual(obj1: object, obj2: object) {
+	return JSON.stringify(obj1) === JSON.stringify(obj2);
+}
+
 export function roundTo(number: number, precision: number): number {
 	return Math.round(number * Math.pow(10, precision)) / Math.pow(10, precision);
 }

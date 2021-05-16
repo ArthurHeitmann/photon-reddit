@@ -1,4 +1,5 @@
 import { nonDraggableImage } from "../../../utils/htmlStatics.js";
+import { deepClone, isJsonEqual } from "../../../utils/utils.js";
 import Ph_DropDown from "../dropDown/dropDown.js";
 import Ph_DropDownArea from "../dropDown/dropDownArea/dropDownArea.js";
 import Ph_DropDownEntry, { DropDownEntryParam } from "../dropDown/dropDownEntry/dropDownEntry.js";
@@ -10,7 +11,8 @@ export interface ControlsLayoutSlots {
 	leftItems?: HTMLElement[],
 	rightItems?: HTMLElement[],
 	settingsEntries?: DropDownEntryParam[],
-	settingsEntriesCached?: Ph_DropDownEntry[],
+	settingsEntriesElements?: Ph_DropDownEntry[],
+	settingsEntriesCurrent?: DropDownEntryParam[],
 	progressBar?: Ph_ProgressBar,
 }
 
@@ -70,15 +72,19 @@ export default class Ph_ControlsBar extends HTMLElement {
 		if (this.progressBar)
 			this.appendChild(this.progressBar);
 		const dropDown = this.$class("dropDown")[0] as Ph_DropDown;
-		if (!newElements.settingsEntriesCached) {
+		if (newElements.settingsEntries === undefined)
+			newElements.settingsEntries = [];
+		if (!newElements.settingsEntriesElements || !isJsonEqual(newElements.settingsEntries, newElements.settingsEntriesCurrent)) {
 			const dropDownArea = dropDown.$class("dropDownArea ")[0] as Ph_DropDownArea;
-			newElements.settingsEntriesCached = (newElements.settingsEntries || []).map(param => new Ph_DropDownEntry(param, dropDown, dropDownArea));
+			newElements.settingsEntriesCurrent = deepClone(newElements.settingsEntries);
+			newElements.settingsEntriesElements = (newElements.settingsEntries)
+				.map(param => new Ph_DropDownEntry(param, dropDown, dropDownArea));
 		}
 		const entriesRoot = dropDown.$class("dropDownArea")[0];
 		Array.from(entriesRoot.children)
 			.filter((entry: Ph_DropDownEntry) => !this.initialDropdownEntries.includes(entry))
 			.forEach(entry => entry.remove());
-		entriesRoot.append(...newElements.settingsEntriesCached);
+		entriesRoot.append(...newElements.settingsEntriesElements);
 	}
 
 	private replaceSlotElements(slot: HTMLElement, newElements: HTMLElement[]) {
