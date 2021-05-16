@@ -345,6 +345,8 @@ export default class Ph_UniversalFeed extends HTMLElement {
 				return;
 			if (this.offsetHeight > window.innerHeight)
 				return;
+			if (Ph_ViewState.getViewOf(this).classList.contains("hide"))
+				return;
 			new Ph_Toast(
 				Level.warning,
 				"Empty feed. Try to load more?",
