@@ -2,7 +2,7 @@ import { getGfycatMp4SrcFromUrl, GfycatDomain } from "../../../api/gfycatApi.js"
 import { youtubeDlUrl } from "../../../api/photonApi.js";
 import { RedditApiType } from "../../../types/misc.js";
 import { $tagAr, escHTML } from "../../../utils/htmlStatics.js";
-import { classInElementTree } from "../../../utils/htmlStuff.js";
+import { classInElementTree, isElementIn } from "../../../utils/htmlStuff.js";
 import { secondsToVideoTime } from "../../../utils/utils.js";
 import { globalSettings } from "../../global/photonSettings/photonSettings.js";
 import Ph_ControlsBar, { ControlsLayoutSlots } from "../../misc/controlsBar/controlsBar.js";
@@ -232,7 +232,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				) {
 					this.video.play();
 				}
-				else {
+				else if (!(document.fullscreenElement && isElementIn(document.fullscreenElement, this))) {
 					this.video.pause();
 				}
 			},

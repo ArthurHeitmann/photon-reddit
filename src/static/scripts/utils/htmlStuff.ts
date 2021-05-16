@@ -56,7 +56,7 @@ export function elementWithClassInTree(elem: HTMLElement, className: string): HT
 }
 
 /** checks whether checkElement is (or is a child of) container */
-export function isElementIn(container: HTMLElement, checkElement: HTMLElement): boolean {
+export function isElementIn(container: Element, checkElement: HTMLElement): boolean {
 	if (container === checkElement)
 		return true;
 
