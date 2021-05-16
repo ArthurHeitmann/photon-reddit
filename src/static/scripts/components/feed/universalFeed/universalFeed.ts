@@ -278,6 +278,8 @@ export default class Ph_UniversalFeed extends HTMLElement {
 
 		if (await waitForFullScreenExit())
 			await sleep(100);
+		if (await this.ensureIsVisible())
+			await sleep(100);
 
 		if (loadPosition === LoadPosition.after) {
 			for (const postData of posts.data.children) {
@@ -353,6 +355,30 @@ export default class Ph_UniversalFeed extends HTMLElement {
 				{ onConfirm: () => this.onScroll(undefined, true), groupId: "emptyFeed" }
 			);
 		}, 1000);
+	}
+
+	ensureIsVisible(timeoutMs: number = 1000 * 60): Promise<boolean> {
+		return new Promise((resolve, reject) => {
+			const view = Ph_ViewState.getViewOf(this)
+			if (!view.classList.contains("hide")) {
+				resolve(false);
+				return;
+			}
+
+			const obs = new MutationObserver(mutations => {
+				if (view.classList.contains("hide"))
+					return;
+				obs.disconnect();
+				clearTimeout(timeout);
+				resolve(true);
+			});
+			obs.observe(view, { attributes: true })
+
+			const timeout = setTimeout(() => {
+				obs.disconnect();
+				reject("timeout");
+			}, timeoutMs);
+		});
 	}
 }
 
