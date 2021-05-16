@@ -23,6 +23,7 @@ import Ph_VideoWrapper from "./videoWrapper.js";
 export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements MediaElement {
 	caption: string;
 	controls: ControlsLayoutSlots;
+	usesArrowKeys = true;
 	element: HTMLElement;
 	url: string;
 	/** Video playing element */

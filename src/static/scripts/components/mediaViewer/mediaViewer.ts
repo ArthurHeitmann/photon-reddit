@@ -314,7 +314,8 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		this.addEventListener("keyup", (e: KeyboardEvent) => {
 			if ((e.target as HTMLElement).tagName === "INPUT")
 				return;
-			this.mediaElements[this.currentIndex].onKeyDownEvent?.(e);
+			const activeElement = this.mediaElements[this.currentIndex];
+			activeElement.onKeyDownEvent?.(e);
 			switch (e.code) {
 				case "KeyF":
 					this.toggleFullscreen();
@@ -324,11 +325,11 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 					this.draggableWrapper.setZoom(1);
 					break;
 				case "ArrowRight":
-					if ((e.ctrlKey || e.shiftKey) && this.mediaElements.length > 1)
+					if (this.mediaElements.length > 1 && (!activeElement.usesArrowKeys || e.ctrlKey || e.shiftKey))
 						this.nextGalleryElement();
 					break;
 				case "ArrowLeft":
-					if ((e.ctrlKey || e.shiftKey) && this.mediaElements.length > 1)
+					if (this.mediaElements.length > 1 && (!activeElement.usesArrowKeys || e.ctrlKey || e.shiftKey))
 						this.previousGalleryElement();
 					break;
 			}

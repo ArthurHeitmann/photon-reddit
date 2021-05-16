@@ -5,5 +5,6 @@ export interface MediaElement {
 	caption?: string,
 	element: HTMLElement,
 	controls: ControlsLayoutSlots,
-	onKeyDownEvent?: (e: KeyboardEvent) => void;
+	onKeyDownEvent?: (e: KeyboardEvent) => void,
+	usesArrowKeys?: boolean,
 }
