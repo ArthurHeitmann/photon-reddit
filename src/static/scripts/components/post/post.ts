@@ -59,6 +59,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 	isNsfw: boolean;
 	isSpoiler: boolean;
 	wasInitiallySeen: boolean;
+	becameVisibleAt: number;
 	doubleLink: PostDoubleLink = null;
 	haveFlairsLoaded = false;
 	postFlair: Ph_Flair;
@@ -319,18 +320,23 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 	private onIntersectionChange(e: CustomEvent) {
 		const isVisible: boolean = e.detail;
 		const focusableChild = this.$css("[tabindex]") as HTMLCollectionOf<HTMLHtmlElement>;
-		// post became visable
+		// post became visible
 		if (isVisible) {
-			if (globalSettings.markSeenPosts && this.isInFeed) {
-				markPostAsSeen(this.fullName);
-			}
 			if (focusableChild.length > 0)
 				focusableChild[0].focus({ preventScroll: true });
+			this.becameVisibleAt = Date.now();
 		}
 		// post got hidden
 		else {
 			if (focusableChild.length > 0 && !document.fullscreenElement)
 				focusableChild[0].blur();
+			if (this.becameVisibleAt) {
+				const visibilityDuration = Date.now() - this.becameVisibleAt;
+				this.becameVisibleAt = null;
+				if (visibilityDuration > 750 && globalSettings.markSeenPosts && this.isInFeed) {
+					markPostAsSeen(this.fullName);
+				}
+			}
 		}
 	}
 
