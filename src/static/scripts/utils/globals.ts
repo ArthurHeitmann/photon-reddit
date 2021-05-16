@@ -37,7 +37,7 @@ export class User {
 	subreddits: string[] = [];
 	multireddits: MultiReddit[] = [];
 	inboxUnread: number = 0;
-	private static refreshEveryNMs = 2 * 60 * 15;			// 15m
+	private static refreshEveryNMs = 1000 * 60 * 5;			// 5m
 
 	/** fetch data from reddit and set properties */
 	async fetch() {
