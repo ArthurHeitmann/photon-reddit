@@ -13,7 +13,7 @@ import {
 	subscribe
 } from "../../../api/redditApi.js";
 import { RedditApiType } from "../../../types/misc.js";
-import { ensurePageLoaded, StoredData, thisUser } from "../../../utils/globals.js";
+import { StoredData, thisUser } from "../../../utils/globals.js";
 import { $class, escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { classInElementTree, linksToSpa } from "../../../utils/htmlStuff.js";
 import { numberToShort, stringSortComparer, throttle } from "../../../utils/utils.js";

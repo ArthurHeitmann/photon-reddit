@@ -2,7 +2,6 @@
  *
  * https://developer.mozilla.org/en-US/docs/Web/API/Touch_events
  */
-import { throttle } from "./utils.js";
 
 export default class TouchGestureListener {
 	// private activeEvents: PointerEvent[] = [];

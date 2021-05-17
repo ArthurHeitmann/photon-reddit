@@ -1,6 +1,6 @@
 import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager.js";
 import ViewsStack from "../../../historyState/viewsStack.js";
-import { thisUser, ensurePageLoaded } from "../../../utils/globals.js";
+import { ensurePageLoaded, thisUser } from "../../../utils/globals.js";
 import { escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { elementWithClassInTree, isElementIn, linksToSpa } from "../../../utils/htmlStuff.js";
 import { numberToShort } from "../../../utils/utils.js";
