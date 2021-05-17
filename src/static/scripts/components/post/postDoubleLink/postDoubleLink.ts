@@ -1,3 +1,4 @@
+import ViewsStack from "../../../historyState/viewsStack.js";
 import { elementWithClassInTree } from "../../../utils/htmlStuff.js";
 import Ph_UniversalFeed from "../../feed/universalFeed/universalFeed.js";
 import Ph_PostAndComments from "../../postAndComments/postAndComments.js";
@@ -88,6 +89,14 @@ export default class PostDoubleLink {
 	onPostRemoved() {
 		window.removeEventListener("ph-view-change", this.viewChangeRef);
 		this.commentsViewStateLoader?.setIsReadyForCleanup();
+		// another edge case:
+		// commentsViewStateLoader is loaded in the next history state
+		// the post has been permanently removed from it's parent feed
+		setTimeout(() => {
+			if (this.post.isConnected)
+				return;
+			ViewsStack.removeViewState(this.commentsViewStateLoader);
+		}, 0)
 	}
 
 	disable() {

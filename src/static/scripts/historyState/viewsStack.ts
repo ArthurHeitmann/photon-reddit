@@ -11,6 +11,7 @@ import { $tag } from "../utils/htmlStatics.js";
 import { pushLinkToHistoryComb, PushType } from "./historyStateManager.js";
 
 interface ViewType {
+	/** index will technically be stored as a string, but that shouldn't affect anything */
 	[index: number]: Ph_ViewState,
 }
 
@@ -181,6 +182,16 @@ export default class ViewsStack {
 			ViewsStack.views[i].remove();
 			delete ViewsStack.views[i];
 		}
+	}
+
+	static removeViewState(view: Ph_ViewState) {
+		const foundView = Object.entries(ViewsStack.views)
+			.find(([_, v]) => v === view);
+		if (!foundView[1])
+			throw "View is not loaded";
+		const i = foundView[0];
+		ViewsStack.views[i].remove();
+		delete ViewsStack.views[i];
 	}
 
 	static getPosition(): number {
