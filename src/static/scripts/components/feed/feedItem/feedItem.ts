@@ -48,8 +48,10 @@ export default class Ph_FeedItem extends Ph_PhotonBaseElement {
 					next = next.nextElementSibling;
 					if (!next)
 						break;
-					if (!(next instanceof Ph_FeedItem) || next.hasBeenOrAlmostVisible || next.offsetHeight === 0)
+					if (!(next instanceof Ph_FeedItem) || next.hasBeenOrAlmostVisible)
 						continue;
+					else if (next.offsetHeight === 0)
+						i--;
 					next.hasBeenOrAlmostVisible = true;
 					next.dispatchEvent(new Event("ph-almost-visible"));
 				}
@@ -60,6 +62,8 @@ export default class Ph_FeedItem extends Ph_PhotonBaseElement {
 						break;
 					if (!(prev instanceof Ph_FeedItem) || prev.hasBeenOrAlmostVisible || prev.offsetHeight === 0)
 						continue;
+					else if (prev.offsetHeight === 0)
+						i--;
 					prev.hasBeenOrAlmostVisible = true;
 					prev.dispatchEvent(new Event("ph-almost-visible"));
 				}
