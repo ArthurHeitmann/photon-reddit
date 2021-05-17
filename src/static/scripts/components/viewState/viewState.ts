@@ -40,15 +40,16 @@ export abstract class Ph_ViewState extends Ph_PhotonBaseElement {
 			elem.cleanup();
 	}
 
-	saveScroll(elem?: HTMLElement) {
+	saveScroll(elem?: HTMLElement, edge: ElementEdge = "top") {
 		let scrollVal: number;
 		if (elem)
-			scrollVal = elem.getBoundingClientRect().top;
+			scrollVal = elem.getBoundingClientRect()[edge];
 		else
 			scrollVal = document.scrollingElement.scrollTop;
 		this.scrollSave = {
 			scrollVal: scrollVal,
 			referenceElement: elem,
+			edge: edge
 		}
 	}
 
@@ -60,7 +61,8 @@ export abstract class Ph_ViewState extends Ph_PhotonBaseElement {
 		if (this.scrollSave.referenceElement) {
 			if (!this.scrollSave.referenceElement.isConnected)
 				return;
-			newScrollTop = this.scrollSave.referenceElement.getBoundingClientRect().top;
+			newScrollTop = this.scrollSave.referenceElement
+				.getBoundingClientRect()[this.scrollSave.edge];
 			scrollYDiff = newScrollTop - this.scrollSave.scrollVal;
 		} else {
 			newScrollTop = document.scrollingElement.scrollTop;
@@ -79,4 +81,7 @@ export abstract class Ph_ViewState extends Ph_PhotonBaseElement {
 interface ScrollSave {
 	scrollVal: number,
 	referenceElement?: HTMLElement
+	edge?: ElementEdge;
 }
+
+type ElementEdge = "top" | "right" | "bottom" | "left";

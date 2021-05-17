@@ -11,6 +11,7 @@ import Ph_SwitchingImage from "../misc/switchableImage/switchableImage.js";
 import Ph_Toast, { Level } from "../misc/toast/toast.js";
 import Ph_PhotonBaseElement from "../photon/photonBaseElement/photonBaseElement.js";
 import Ph_DraggableWrapper from "../post/postBody/draggableWrapper/draggableWrapper.js";
+import { Ph_ViewState } from "../viewState/viewState.js";
 import Ph_ImageViewer from "./imageViewer/imageViewer.js";
 import { MediaElement } from "./mediaElement.js";
 import Ph_GifVideo from "./videoPlayer/gifVideo/gifVideo.js";
@@ -326,11 +327,11 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 					break;
 				case "ArrowRight":
 					if (this.mediaElements.length > 1 && (!activeElement.usesArrowKeys || e.ctrlKey || e.shiftKey))
-						this.nextGalleryElement();
+						this.nextGalleryElement(false);
 					break;
 				case "ArrowLeft":
 					if (this.mediaElements.length > 1 && (!activeElement.usesArrowKeys || e.ctrlKey || e.shiftKey))
-						this.previousGalleryElement();
+						this.previousGalleryElement(false);
 					break;
 			}
 		});
@@ -363,14 +364,18 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 			newMedia.element.dispatchEvent(new Event("ph-entered-fullscreen"));
 	}
 
-	nextGalleryElement() {
+	nextGalleryElement(fixScrollToBottom = true) {
+		fixScrollToBottom && Ph_ViewState.getViewOf(this).saveScroll(this, "bottom");
 		this.currentIndex = (this.currentIndex + 1) % this.mediaElements.length;
 		this.displayCurrentElement();
+		fixScrollToBottom && Ph_ViewState.getViewOf(this).loadScroll();
 	}
 
-	previousGalleryElement() {
+	previousGalleryElement(fixScrollToBottom = true) {
+		fixScrollToBottom && Ph_ViewState.getViewOf(this).saveScroll(this, "bottom");
 		this.currentIndex = this.currentIndex > 0 ? this.currentIndex - 1 : this.mediaElements.length - 1;
 		this.displayCurrentElement();
+		fixScrollToBottom && Ph_ViewState.getViewOf(this).loadScroll();
 	}
 
 	toggleFullscreen() {
