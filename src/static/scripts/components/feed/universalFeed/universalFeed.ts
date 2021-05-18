@@ -1,6 +1,7 @@
 import { redditApiRequest } from "../../../api/redditApi.js";
 import ViewsStack from "../../../historyState/viewsStack.js";
 import { RedditApiType } from "../../../types/misc.js";
+import { fakeSubreddits } from "../../../utils/consts.js";
 import { escHTML, getLoadingIcon } from "../../../utils/htmlStatics.js";
 import { elementWithClassInTree } from "../../../utils/htmlStuff.js";
 import { sleep, throttle, waitForFullScreenExit } from "../../../utils/utils.js";
@@ -77,7 +78,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			title.className = "feedTitle";
 			let feedType: FeedType = FeedType.misc;
 			let feedBaseUrl: string;
-			if (/^\/?(\?.*)?$/.test(requestUrl) || /^\/r\/(all|popular|random|friends|mod)/i.test(requestUrl)) {	// home page or special subreddit
+			if (/^\/?(\?.*)?$/.test(requestUrl) || new RegExp(`^/r/(${fakeSubreddits.join("|")})`, "i").test(requestUrl)) {	// home page or special subreddit
 				feedType = FeedType.misc;
 			}
 			else if (/^\/r\/[^/]+/i.test(requestUrl)) {								// subreddit

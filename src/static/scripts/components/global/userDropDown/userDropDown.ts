@@ -1,5 +1,6 @@
 import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager.js";
 import ViewsStack from "../../../historyState/viewsStack.js";
+import { fakeSubreddits } from "../../../utils/consts.js";
 import { ensurePageLoaded, thisUser } from "../../../utils/globals.js";
 import { escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { elementWithClassInTree, isElementIn, linksToSpa } from "../../../utils/htmlStuff.js";
@@ -80,24 +81,26 @@ export default class Ph_UserDropDown extends HTMLElement {
 		// current user page
 		const userPage = makeAction(
 			"/img/user.svg",
-			"u/me",
-			() => pushLinkToHistoryComb(`/user/${thisUser.name}`)
-		);
+			"My Profile",
+			"/"
+		) as HTMLAnchorElement;
+		ensurePageLoaded().then(() => userPage.href = `/user/${thisUser.name}`);
 		actions.appendChild(userPage);
 		// create post
 		const postAction = makeAction(
 			"/img/edit.svg",
 			"Submit Post",
-			() => {
+			"/submit"
+		) as HTMLAnchorElement;
+		window.addEventListener("ph-view-change", (e: CustomEvent) => {
 				let submitUrl: string;
-				const currentSubMatch = history.state.url.match(/\/r\/\w+/i);		// /r/sub
-				if (currentSubMatch)
+				const currentSubMatch: RegExpMatchArray = history.state.url.match(/\/r\/\w+/i);		// /r/sub
+				if (currentSubMatch && !fakeSubreddits.includes(currentSubMatch[0].substr(3)))
 					submitUrl = `${currentSubMatch}/submit`;
 				else
 					submitUrl = "/submit";
-				pushLinkToHistoryComb(submitUrl);
-			}
-		);
+				postAction.href = submitUrl;
+		});
 		actions.appendChild(postAction);
 		// messages
 		const inboxAction = makeAction(
