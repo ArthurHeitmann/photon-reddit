@@ -19,6 +19,8 @@
 		border: 1px solid #404040;
 		transition: all .125s ease, height .05s linear;
 		resize: none;
+		font-family: 'Roboto Mono', monospace;
+		font-weight: 400;
 
 		&.shadow {
 			visibility: hidden;
