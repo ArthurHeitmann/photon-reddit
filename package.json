@@ -1,6 +1,6 @@
 {
   "name": "photon-reddit",
-  "version": "0.4.7",
+  "version": "0.4.8",
   "description": "A fast and modern Reddit web client",
   "type": "module",
   "scripts": {
