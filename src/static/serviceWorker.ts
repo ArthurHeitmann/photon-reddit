@@ -11,6 +11,7 @@ interface CacheDescription {
 const typesToCache: CacheDescription[] = [
 	{ hostname: "/", path: "/", fileEnding: "css|js|png|jpg|svg" },
 	{ hostname: "/", path: "/api/youtube-dl" },
+	{ hostname: "v.redd.it", path: "/", fileEnding: "mpd" },
 	{ hostname: "api.imgur.com", path: "/" },
 	{ hostname: "api.gfycat.com", path: "/" },
 	{ hostname: "api.redgifs.com", path: "/" },

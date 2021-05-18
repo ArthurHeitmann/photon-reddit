@@ -12,6 +12,7 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 	audioCheckCompleted: boolean = false;
 	hasAudio: boolean = true;
 	lastSyncMs: number = 0;
+	pendingPlay: boolean = false;
 
 	constructor(videoSources: { src: string, type: string }[], audioSources: { src: string, type: string }[]) {
 		super();
@@ -36,6 +37,15 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 		this.video.addEventListener("waiting", () => {
 			this.dispatchEvent(new Event("ph-buffering"));
 			this.audio.pause();
+			if (!this.video.paused)
+				this.pendingPlay = true;
+		});
+		this.video.addEventListener("canplay", () => {
+			if (!this.pendingPlay)
+				return;
+			// if video started to buffer during playing continue now
+			this.pendingPlay = false;
+			this.play();
 		});
 		this.video.addEventListener("playing", () => {
 			this.dispatchEvent(new Event("ph-playing"));
@@ -78,8 +88,8 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 		this.lastNon0Volume = this.audio.volume;
 		this.audio.muted = true;
 
-		this.video.addEventListener("play", () => this.dispatchEvent( new Event("ph-play")));
-		this.video.addEventListener("pause", () => this.dispatchEvent( new Event("ph-pause")));
+		this.video.addEventListener("play", () => this.dispatchEvent(new Event("ph-play")));
+		this.video.addEventListener("pause", () => this.dispatchEvent(new Event("ph-pause")));
 		this.audio.addEventListener("volumechange", () => this.dispatchEvent(
 			new CustomEvent("ph-volume-change", { detail: this.audio.muted ? 0 : this.audio.volume })));
 		this.video.addEventListener("seeked", () => this.dispatchEvent(new Event("ph-seek")));
@@ -96,6 +106,7 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 		this.video.pause();
 		if (!this.audioCheckCompleted || this.hasAudio)
 			this.audio.pause();
+		this.pendingPlay = false;
 	}
 
 	togglePlay(): void {
