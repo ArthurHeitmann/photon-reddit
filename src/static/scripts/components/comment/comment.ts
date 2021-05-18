@@ -409,6 +409,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 
 	async editStart() {
 		this.classList.add("isEditing");
+		this.editForm.updateHeight();
 	}
 
 	deletePrompt(_, __, ___, source: Ph_DropDownEntry) {

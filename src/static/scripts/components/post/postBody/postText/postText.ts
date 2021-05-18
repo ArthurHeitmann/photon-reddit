@@ -82,6 +82,7 @@ export default class Ph_PostText extends HTMLElement {
 	startEditing() {
 		this.editForm.textField.value = this.markdown;
 		this.editForm.classList.remove("hide");
+		this.editForm.updateHeight();
 		Array.from(this.children)
 			.filter(el => el !== this.editForm)
 			.forEach(el => el.classList.add("hide"));
