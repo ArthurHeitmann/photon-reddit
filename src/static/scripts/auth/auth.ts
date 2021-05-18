@@ -1,7 +1,7 @@
 import { redditApiRequest } from "../api/redditApi.js";
 import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
 import { clientId } from "../unsuspiciousFolder/unsuspiciousFile.js";
-import { isLoggedIn, setIsLoggedIn } from "../utils/globals.js";
+import { isLoggedIn, setIsLoggedIn, thisUser } from "../utils/globals.js";
 
 export function initiateLogin() {
 	localStorage.pageBeforeLogin = history.state.url || "/";
@@ -28,9 +28,11 @@ export async function checkAuthOnPageLoad(): Promise<AuthState> {
 	// has localstorage potentially usable auth data
 	if (!isLoggedInLS()	|| isLoggedInLS() && localStorage.refreshToken) {
 		if (isLoggedInLS()) {
+			// before returning AuthState.loggedIn verifyTokenWorks() must somewhere be called
 			setIsLoggedIn(true);
 			if (hasTokenExpired() && !await refreshAccessToken()) {
-				authError("Failed to refresh authentication! If this is breaking the website, log out & reload?");
+				if (!verifyTokenWorks)
+					authError("Failed to refresh authentication! If this is breaking the website, log out & reload?");
 			}
 			else if (!await verifyTokenWorks() && !await refreshAccessToken()) {
 				authError("Invalid authentication! If this is breaking the website, log out & reload?");
@@ -95,8 +97,7 @@ async function refreshAccessToken(): Promise<boolean> {
 }
 
 async function verifyTokenWorks(): Promise<boolean> {
-	const r = await redditApiRequest("/api/v1/me", [], false);
-	return !("error" in r) && "features" in r;
+	return await thisUser.fetchUser();
 }
 
 function hasTokenExpired(): boolean {

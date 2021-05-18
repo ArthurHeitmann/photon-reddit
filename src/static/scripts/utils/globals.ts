@@ -44,11 +44,6 @@ export class User {
 		// get user data, subscribed subreddits, multireddits
 		await Promise.all([
 			(async () => {
-				const userData = await redditApiRequest("/api/v1/me", [], true);
-				thisUser.name = userData["name"];
-				thisUser.inboxUnread = userData["inbox_count"];
-			})(),
-			(async () => {
 				if (localStorage.subreddits) {
 					try {
 						const storedSubs: StoredData = JSON.parse(localStorage.subreddits);
@@ -79,6 +74,16 @@ export class User {
 					await this.fetchMultis();
 			})()
 		]);
+	}
+
+	/** fetched by auth.ts to verify that the access token is valid */
+	async fetchUser(): Promise<boolean> {
+		const userData = await redditApiRequest("/api/v1/me", [], false);
+		if ("error" in userData)
+			return false;
+		thisUser.name = userData["name"] || "";
+		thisUser.inboxUnread = userData["inbox_count"] || 0;
+		return true;
 	}
 
 	private async fetchSubs() {
