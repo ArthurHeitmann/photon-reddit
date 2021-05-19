@@ -187,8 +187,8 @@ export default class ViewsStack {
 	static removeViewState(view: Ph_ViewState) {
 		const foundView = Object.entries(ViewsStack.views)
 			.find(([_, v]) => v === view);
-		if (!foundView[1])
-			throw "View is not loaded";
+		if (!foundView || !foundView[1])
+			return;
 		const i = foundView[0];
 		ViewsStack.views[i].remove();
 		delete ViewsStack.views[i];
