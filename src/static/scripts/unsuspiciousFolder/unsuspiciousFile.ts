@@ -30,12 +30,12 @@ window.addEventListener("ph-view-change", (e: CustomEvent) => {
 	const viewChangeData: ViewChangeData = e.detail;
 	if (/analytics\/analytics\.html$/.test(viewChangeData.viewState.state.url))
 		return;
+	// only track path up to subreddit name
+	const path = extractPath(viewChangeData.viewState.state.url)
+		.replace(/(?<=^\/[^/]+\/[^/]+)\/.*/, "")		// keep up to 2 directories (/r/pics/comments/.... --> /r/pics)
+		.replace(/\/$/,"")								// remove trailing /
+		.replace(/^$/, "/");							// add / when empty
 	if (viewChangeData.newLoad) {
-		// only track path up to subreddit name
-		const path = extractPath(viewChangeData.viewState.state.url)
-			.replace(/(?<=^\/[^/]+\/[^/]+)\/.*/, "")		// keep up to 2 directories (/r/pics/comments/.... --> /r/pics)
-			.replace(/\/$/,"")								// remove trailing /
-			.replace(/^$/, "/");							// add / when empty
 		fetch("/data/event", {
 			method: "POST",
 			headers: [
@@ -49,7 +49,7 @@ window.addEventListener("ph-view-change", (e: CustomEvent) => {
 			})
 		});
 	}
-	referer = location.origin + viewChangeData.viewState.state.url;
+	referer = location.origin + path;
 })
 
 interface ClientIdData {
