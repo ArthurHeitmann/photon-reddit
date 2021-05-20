@@ -392,9 +392,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 		// );
 	}
 
-	togglePlay(e?: Event) {
-		e?.stopImmediatePropagation();
-		e?.stopPropagation();
+	togglePlay() {
 		this.video.togglePlay();
 		Ph_VideoPlayer.isVideoPlayAllowed = true;
 	}
