@@ -10,7 +10,7 @@ import Ph_RedditPoll from "./redditPoll.js";
  * Text of a post. If in feed, has a max height. If higher than max height, show expand button
  */
 export default class Ph_PostText extends HTMLElement {
-	maxHeightInVh: number;
+	maxHeightInRem: number;
 	expandButton: HTMLButtonElement;
 	textWrapper: HTMLDivElement;
 	markdown: string;
@@ -35,7 +35,7 @@ export default class Ph_PostText extends HTMLElement {
 		setTimeout(() => {
 			if (this.isOverflowing() && elementWithClassInTree(this.parentElement, "isInFeed")) {
 				this.classList.add("expandableText");
-				this.maxHeightInVh = .3;
+				this.maxHeightInRem = 10;
 				this.updateMaxHeightStyle();
 
 				this.expandButton = document.createElement("button");
@@ -43,6 +43,9 @@ export default class Ph_PostText extends HTMLElement {
 				this.expandButton.innerHTML = `<img src="/img/downArrow.svg" draggable="false" alt="more">`;
 				this.expandButton.addEventListener("click", this.expand.bind(this));
 				this.appendChild(this.expandButton);
+			}
+			else {
+				this.style.setProperty("--max-height", `max-content`);
 			}
 		}, 0);
 
@@ -61,18 +64,21 @@ export default class Ph_PostText extends HTMLElement {
 	}
 
 	updateMaxHeightStyle() {
-		this.style.setProperty("--max-height", `${this.maxHeightInVh * 100}vh`);
+		this.style.setProperty("--max-height", `${this.maxHeightInRem}rem`);
 	}
 
 	expand() {
-		this.maxHeightInVh += .25;
+		// first expand linearly then exponentially
+		this.maxHeightInRem = Math.max(this.maxHeightInRem + 10, this.maxHeightInRem * 1.75);
 		this.updateMaxHeightStyle();
 
-		if (!this.isOverflowing()) {
-			this.expandButton.remove();
-			this.style.setProperty("--max-height", `max-content`);
-			this.classList.remove("expandableText");
-		}
+		setTimeout(() => {
+			if (!this.isOverflowing()) {
+				this.expandButton.remove();
+				this.style.setProperty("--max-height", `max-content`);
+				this.classList.remove("expandableText");
+			}
+		}, 265)
 	}
 
 	isOverflowing(): boolean {

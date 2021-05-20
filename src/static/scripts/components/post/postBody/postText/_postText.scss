@@ -14,7 +14,7 @@
 .isInFeed {
 	.postText {
 		transition: padding-bottom .25s ease;
-		--max-height: 30vh;
+		--max-height: 10rem;
 
 		> div {
 			max-height: var(--max-height);
