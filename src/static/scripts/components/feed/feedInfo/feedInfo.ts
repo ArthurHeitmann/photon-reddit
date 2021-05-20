@@ -13,7 +13,7 @@ import {
 	subscribe
 } from "../../../api/redditApi.js";
 import { RedditApiType } from "../../../types/misc.js";
-import { StoredData, thisUser } from "../../../utils/globals.js";
+import { isLoggedIn, StoredData, thisUser } from "../../../utils/globals.js";
 import { $class, escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { classInElementTree, linksToSpa } from "../../../utils/htmlStuff.js";
 import { numberToShort, stringSortComparer, throttle } from "../../../utils/utils.js";
@@ -205,7 +205,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		let feedAbout: RedditApiType;
 		let rules: SubredditRule[];
 		let mods: SubredditModerator[];
-		let flairs: FlairApiData[];
+		let flairs: FlairApiData[] = [];
 		try {
 			feedAbout = await getSubInfo(this.feedUrl);
 			if (feedAbout["error"] || !(feedAbout["kind"] && feedAbout["data"]))
@@ -218,7 +218,8 @@ export default class Ph_FeedInfo extends HTMLElement {
 			if (tmpMods["error"] || !(tmpMods["kind"] === "UserList" && tmpMods["data"]))
 				throw `Invalid mods response ${JSON.stringify(tmpRules)}`;
 			mods = tmpMods["data"]["children"];
-			flairs = await getSubUserFlairs(this.feedUrl);
+			if (isLoggedIn)
+				flairs = await getSubUserFlairs(this.feedUrl);
 		} catch (e) {
 			new Ph_Toast(Level.error, "Error getting subreddit info");
 			console.error(`Error getting subreddit info for ${this.feedUrl}`);
