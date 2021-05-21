@@ -50,7 +50,6 @@ app.get("/redirect", RateLimit(redditTokenRateLimitConfig), safeExcAsync(async (
 			res.redirect(
 				`/setAccessToken.html?accessToken=${encodeURIComponent(data["access_token"])}&refreshToken=${encodeURIComponent(data["refresh_token"])}`);
 		} catch (e) {
-			console.error(`Error getting access token ${JSON.stringify(e, null, 4)}`);
 			res.json({ error: `error getting access token` });
 		}
 	}

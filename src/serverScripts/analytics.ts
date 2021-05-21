@@ -194,7 +194,6 @@ analyticsRouter.post("/event", RateLimit(analyticsRateLimitConfig), safeExcAsync
 		res.send("yep");
 	}
 	catch (e) {
-		console.error(e);
 		res.send("nope").status(400);
 		return;
 	}

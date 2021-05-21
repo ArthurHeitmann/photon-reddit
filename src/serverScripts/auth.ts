@@ -63,7 +63,6 @@ authRouter.get("/refreshToken", RateLimit(redditTokenRateLimitConfig), safeExcAs
 			const data = await refreshAccessToken(req.query["refreshToken"].toString());
 			res.json({ accessToken: data["access_token"], refreshToken: data["refresh_token"] });
 		} catch (e) {
-			console.error(`Error getting access token ${JSON.stringify(e, null, 4)}`);
 			res.json({ error: `error getting access token` });
 		}
 	}
