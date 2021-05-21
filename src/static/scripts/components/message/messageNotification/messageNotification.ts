@@ -1,7 +1,7 @@
 import { redditApiRequest, setMessageReadStatus } from "../../../api/redditApi.js";
 import { RedditApiType } from "../../../types/misc.js";
 import { ensurePageLoaded, isLoggedIn, thisUser } from "../../../utils/globals.js";
-import { $class, $css } from "../../../utils/htmlStatics.js";
+import { $class, $css, escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { linksToSpa } from "../../../utils/htmlStuff.js";
 import { numberToShort } from "../../../utils/utils.js";
 import Ph_Readable from "../../feed/feedItem/readable/readable.js";
@@ -26,7 +26,7 @@ export default class Ph_MessageNotification extends HTMLElement {
 				? newMessages[0].data["context"]
 				: `/message/messages/${newMessages[0].data["id"]}`;
 			this.innerHTML = `
-				<a href="${messageLink}">New message from u/${newMessages[0].data["author"]}</a>
+				<a href="${escADQ(messageLink)}">New message from u/${escHTML(newMessages[0].data["author"])}</a>
 			`;
 		}
 		else {

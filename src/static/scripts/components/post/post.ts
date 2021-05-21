@@ -221,7 +221,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			const miniPost = document.createElement("div");
 			miniPost.className = "miniPost";
 			miniPost.innerHTML = `
-				<a href="${crosspostData["permalink"]}" class="miniBackgroundLink"></a>
+				<a href="${escADQ(crosspostData["permalink"])}" class="miniBackgroundLink"></a>
 				<div class="postSummary">
 					<div class="info">
 						<span>Crossposted from</span>

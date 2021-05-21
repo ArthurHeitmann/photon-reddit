@@ -43,27 +43,27 @@ export default class Ph_Message extends Ph_Readable {
 			<div class="header flex">
 				${
 				messageData.data["author"]
-				? `<span>from</span>
-							<a href="/user/${escADQ(messageData.data["author"])}" class="user${userAdditionClasses}">
-								<span>u/${messageData.data["author"]}</span>
-							</a>`
-				: ""
+					? `	<span>from</span>
+						<a href="/user/${escADQ(messageData.data["author"])}" class="user${userAdditionClasses}">
+							<span>u/${messageData.data["author"]}</span>
+						</a>`
+					: ""
 				}
 				${
 				messageData.data["subreddit"]
-				? `<span>in</span>
-							<a href="/r/${escADQ(messageData.data["subreddit"])}" class="user${userAdditionClasses}">
-								<span>r/${messageData.data["subreddit"]}</span>
-							</a>`
-				: ""
+					? `	<span>in</span>
+						<a href="/r/${escADQ(messageData.data["subreddit"])}" class="user${userAdditionClasses}">
+							<span>r/${messageData.data["subreddit"]}</span>
+						</a>`
+					: ""
 				}
 				${
 				messageData.data["dest"]
-				? `<span>to</span>
-							<a href="/user/${escADQ(messageData.data["dest"])}" class="user${userAdditionClasses}">
-								<span>u/${messageData.data["dest"]}</span>
-							</a>`
-				: ""
+					? `	<span>to</span>
+						<a href="/user/${escADQ(messageData.data["dest"])}" class="user${userAdditionClasses}">
+							<span>u/${messageData.data["dest"]}</span>
+						</a>`
+					: ""
 				}
 				<span class="time" data-tooltip="${new Date(messageData.data["created_utc"] * 1000).toString()}">
 					${timePassedSinceStr(messageData.data["created_utc"])}
