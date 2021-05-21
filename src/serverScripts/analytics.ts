@@ -270,23 +270,24 @@ analyticsRouter.get("/popularPaths", RateLimit(basicRateLimitConfig), analyticsQ
 }));
 
 analyticsRouter.post("/mediaHost", safeExcAsync(async (req, res) => {
-	const rawHosts = req.body;
-	if (!(rawHosts instanceof Array)) {
-		res.status(400).json({ error: "invalid parameters" });
-		return;
-	}
-	const hosts = rawHosts.map(data => (<MediaHost> {
-		mediaHost: (new URL(data["mediaUrl"])).hostname,
-		linkHost: (new URL(data["linkUrl"])).hostname,
-		type: data.type
-	}));
-
-	try {
-		await trackMediaHost(hosts);
-		res.send("yep");
-	}
-	catch (e) {
-		console.error(e);
-		res.status(400).send("nope")
-	}
+	res.send("yep");
+	// const rawHosts = req.body;
+	// if (!(rawHosts instanceof Array)) {
+	// 	res.status(400).json({ error: "invalid parameters" });
+	// 	return;
+	// }
+	// const hosts = rawHosts.map(data => (<MediaHost> {
+	// 	mediaHost: (new URL(data["mediaUrl"])).hostname,
+	// 	linkHost: (new URL(data["linkUrl"])).hostname,
+	// 	type: data.type
+	// }));
+	//
+	// try {
+	// 	await trackMediaHost(hosts);
+	// 	res.send("yep");
+	// }
+	// catch (e) {
+	// 	console.error(e);
+	// 	res.status(400).send("nope")
+	// }
 }));
