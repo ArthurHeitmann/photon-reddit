@@ -93,7 +93,9 @@ export function escHTML(unsafeHTML: string): string {
 export function escADQ(unsafeAttribute: string): string {
 	const dummy = document.createElement("div");
 	dummy.setAttribute("data-escape", unsafeAttribute);
-	return dummy.outerHTML.match(/(?<=").*(?=")/s)[0];	// any text between the first " and last "
+	let out = dummy.outerHTML.match(/(?<=").*(?=")/s)[0];	// any text between the first " and last "
+	out = out.replace(/'/g, "&apos;");			// ' --> &apos;
+	return out;
 }
 
 export function getLoadingIcon(): HTMLImageElement {
