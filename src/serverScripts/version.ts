@@ -1,6 +1,11 @@
-export const photonVersion = "0.4.9";		/// <change version script>
+export const photonVersion = "0.5.0";		/// <change version script>
 
 export const photonChangelog = {
+	"0.5.0": {
+		"New": [
+			"Reddit login and authentication is now done completely in the browser",
+		]
+	},
 	"0.4.9": {
 		"Fixed": [
 			"Many small fixes and changes",
