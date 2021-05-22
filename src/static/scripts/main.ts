@@ -27,6 +27,8 @@ import { setWaitingServiceWorker } from "./utils/vesionManagement.js";
 async function init(): Promise<void> {
 	console.log("Photon Init");
 
+	if (await checkFirefoxPrivateMode())
+		return;
 	registerServiceWorker();
 	$id("mainWrapper").insertAdjacentElement("afterbegin", new Ph_Header());
 	linksToSpa(document.body);
@@ -149,6 +151,60 @@ function disableSpaceBarScroll() {
 		if (e.code === "Space" && !["INPUT", "TEXTAREA"].includes((e.target as HTMLElement).tagName))
 			e.preventDefault();
 	})
+}
+
+/**
+ * Firefox in private mode can cause all sorts of problems --> check for it
+ *
+ * @return true --> stop execution, false: continue normally
+ */
+async function checkFirefoxPrivateMode(): Promise<boolean> {
+	const hasCheckCompleted = localStorage.firefoxPrivateModeCheck === "true";
+	if (hasCheckCompleted)
+		return false;
+	localStorage.firefoxPrivateModeCheck = "true";
+	const isFirefoxPrivate = await isFirefoxPrivateMode();
+	if (!isFirefoxPrivate)
+		return false;
+	const errorPage = document.createElement("div");
+	errorPage.innerHTML = `
+		<h1>Are you using Firefox in Private Mode?</h1>
+		<h2>Yes</h2>
+		<p>
+			In order to work at all you have to disable "Enhanced Tracking Protection". 
+			<a href="https://support.mozilla.org/en-US/kb/enhanced-tracking-protection-firefox-desktop#w_what-to-do-if-a-site-seems-broken" target="_blank">
+			https://support.mozilla.org/en-US/kb/enhanced-tracking-protection-firefox-desktop#w_what-to-do-if-a-site-seems-broken
+			</a>
+		</p>
+		<p>Firefox private mode is not fully supported.</p>
+		<h2>No</h2>
+		<p>Reload the page and hope that everything works :)</p>
+	`;
+	ViewsStack.attachmentPoint.appendChild(errorPage);
+	return true;
+}
+
+function isFirefoxPrivateMode(): Promise<boolean> {
+	return new Promise(resolve => {
+		// as of now firefox does not support indexed db in private mode
+		const db = indexedDB.open("firefoxPrivateModeTest");
+		db.onsuccess = () => {
+			indexedDB.deleteDatabase("firefoxPrivateModeTest");
+			resolve(false);
+		};
+		db.onerror = async () => {
+			// firefox has an aggressive "Enhanced Tracking protection" in private mode, which blocks request to reddit
+			// check if basic request fails
+			try {
+				const r = await fetch("https://www.reddit.com/r/all.json?limit=1");
+				await r.json();
+				resolve(false);
+			}
+			catch (e) {
+				resolve(true);
+			}
+		};
+	});
 }
 
 window.addEventListener("load", init);
