@@ -2,7 +2,8 @@
  * For communication with reddit
  */
 
-import { checkTokenRefresh, initiateLogin } from "../auth/auth.js";
+import { checkTokenRefresh } from "../auth/auth.js";
+import { initiateLogin } from "../auth/loginHandler.js";
 import Ph_Flair, { FlairApiData } from "../components/misc/flair/flair.js";
 import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
 import { RedditApiType } from "../types/misc.js";
@@ -20,7 +21,7 @@ import { isObjectEmpty, splitPathQuery, throttle } from "../utils/utils.js";
  */
 export async function redditApiRequest(pathAndQuery, params: string[][], requiresLogin: boolean, options: RequestInit = {}) {
 	if (requiresLogin && !isLoggedIn) {
-		new Ph_Toast(Level.error, "Not logged in! Do you want to log in with Reddit?", { onConfirm: initiateLogin });
+		new Ph_Toast(Level.error, "Not logged in! Do you want to log in with Reddit?", { onConfirm: () => initiateLogin() });
 		throw "This feature requires to be logged in";
 	}
 

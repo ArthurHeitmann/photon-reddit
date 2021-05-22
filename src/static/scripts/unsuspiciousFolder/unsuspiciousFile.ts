@@ -21,7 +21,7 @@
 
 import { globalSettings } from "../components/global/photonSettings/photonSettings.js";
 import { ViewChangeData } from "../historyState/viewsStack.js";
-import { extractPath } from "../utils/utils.js";
+import { extractPath, randomString } from "../utils/utils.js";
 
 window.addEventListener("ph-view-change", (e: CustomEvent) => {
 	if (location.hostname === "localhost")
@@ -59,7 +59,6 @@ interface ClientIdData {
 /** 128 character long random string */
 export let clientId: string;
 let referer = document.referrer || "";
-const clientIdAlphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
 function init() {
 	// client data has never before been set
@@ -90,9 +89,7 @@ function init() {
 }
 
 function generateClientIdData() {
-	clientId = "";
-	for (let i = 0; i < 128; ++i)
-		clientId += clientIdAlphabet[Math.floor(Math.random() * clientIdAlphabet.length)];
+	clientId = randomString(128);
 	localStorage["clientIdData"] = JSON.stringify(<ClientIdData> {
 		id: clientId,
 		lastSetMillisUtc: Date.now()

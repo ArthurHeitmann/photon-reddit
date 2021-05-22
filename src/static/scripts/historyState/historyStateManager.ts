@@ -156,7 +156,7 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 function goToHash() {
 	const hash = extractHash(history.state.url);
 	if (hash)
-		$id(hash.slice(1)).scrollIntoView();
+		$id(hash.slice(1))?.scrollIntoView();
 }
 
 function handleSpecialPaths(path: string, query: string[][], stateLoader: Ph_ViewState): boolean {

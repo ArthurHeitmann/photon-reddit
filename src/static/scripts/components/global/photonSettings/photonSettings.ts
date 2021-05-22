@@ -1,4 +1,4 @@
-import { logOut } from "../../../auth/auth.js";
+import { logOut } from "../../../auth/loginHandler.js";
 import { clearSeenPosts, ensurePageLoaded, isLoggedIn } from "../../../utils/globals.js";
 import { disableMainScroll, enableMainScroll, escADQ } from "../../../utils/htmlStatics.js";
 import "../../../utils/htmlStuff.js";

@@ -5,7 +5,8 @@
  */
 
 import { subscribe } from "./api/redditApi.js";
-import { AuthState, checkAuthOnPageLoad, checkTokenRefresh, initiateLogin } from "./auth/auth.js";
+import { AuthState, checkAuthOnPageLoad, checkTokenRefresh } from "./auth/auth.js";
+import { checkOrCompleteLoginRedirect, initiateLogin } from "./auth/loginHandler.js";
 import Ph_Header from "./components/global/header/header.js";
 import Ph_Toast, { Level } from "./components/misc/toast/toast.js";
 import Ph_Changelog from "./components/photon/changelog/changelog.js";
@@ -27,16 +28,13 @@ async function init(): Promise<void> {
 	console.log("Photon Init");
 
 	registerServiceWorker();
-
 	$id("mainWrapper").insertAdjacentElement("afterbegin", new Ph_Header());
-
 	linksToSpa(document.body);
-
-	const loginBtn = $id("loginButton");
-	loginBtn.addEventListener("click", initiateLogin);
-
 	checkIfAnalyticsFileLoaded()
+	const loginBtn = $id("loginButton");
+	loginBtn.addEventListener("click", () => initiateLogin());
 
+	await checkOrCompleteLoginRedirect();
 	let thisUserFetch: Promise<void>;
 	if (await checkAuthOnPageLoad() === AuthState.loggedIn) {
 		thisUserFetch = thisUser.fetch()
@@ -54,7 +52,7 @@ async function init(): Promise<void> {
 	}
 	else
 		loginBtn.hidden = false;
-		setInterval(checkTokenRefresh, 1000 * 30);
+	setInterval(checkTokenRefresh, 1000 * 30);
 	loadPosts();
 
 	checkForNewVersion();
@@ -62,6 +60,7 @@ async function init(): Promise<void> {
 
 	if (thisUserFetch)
 		await thisUserFetch;
+
 	window.dispatchEvent(new Event("ph-page-ready"));
 	if (localStorage["firstTimeFlag"] !== "set")
 		localStorage["firstTimeFlag"] = "set";

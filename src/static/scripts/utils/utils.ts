@@ -226,3 +226,11 @@ export function waitForFullScreenExit(): Promise<boolean> {
 		window.addEventListener("fullscreenchange", () => resolve(true), { once: true });
 	});
 }
+
+const randomStringAlphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+export function randomString(length: number): string {
+	let randStr = "";
+	for (let i = 0; i < length; ++i)
+		randStr += randomStringAlphabet[Math.floor(Math.random() * randomStringAlphabet.length)];
+	return randStr;
+}

@@ -1,24 +1,21 @@
-import { redditApiRequest } from "../api/redditApi.js";
+import { getImplicitGrant, getRefreshAccessToken, revokeToken } from "../api/redditAuthApi.js";
 import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
 import { clientId } from "../unsuspiciousFolder/unsuspiciousFile.js";
 import { isLoggedIn, setIsLoggedIn, thisUser } from "../utils/globals.js";
-
-export function initiateLogin() {
-	localStorage.pageBeforeLogin = history.state.url || "/";
-	location.href = "/login";
-}
+import { logOut } from "./loginHandler.js";
 
 export enum AuthState {
 	loggedIn, implicitGrant
 }
 
-export async function logOut() {
-	await fetch(`/auth/revoke?refreshToken=${location["refreshToken"]}`);
-	localStorage.removeItem("accessToken");
-	localStorage.removeItem("refreshToken");
-	localStorage.removeItem("isLoggedIn");
-	localStorage.removeItem("expiration");
-	location.reload();
+export async function checkTokenRefresh(): Promise<boolean> {
+	if (!hasTokenExpired())
+		return;
+
+	if (isLoggedInLS())
+		return await refreshAccessToken();
+	else
+		return await implicitGrant();
 }
 
 export async function checkAuthOnPageLoad(): Promise<AuthState> {
@@ -41,7 +38,7 @@ export async function checkAuthOnPageLoad(): Promise<AuthState> {
 		}
 		else {
 			setIsLoggedIn(false);
-			if (hasTokenExpired() && !await getImplicitGrant() || !await verifyTokenWorks() && !await getImplicitGrant())
+			if (hasTokenExpired() && !await implicitGrant() || !await verifyTokenWorks() && !await implicitGrant())
 				authError("Failed to get authentication! Do you want to clear data & reload?");
 			return AuthState.implicitGrant;
 		}
@@ -49,7 +46,7 @@ export async function checkAuthOnPageLoad(): Promise<AuthState> {
 	// no usable auth data
 	else {
 		setIsLoggedIn(false);
-		if (!await getImplicitGrant())
+		if (!await implicitGrant())
 			authError("Failed to get authentication! Do you want to clear data & reload?");
 		return AuthState.implicitGrant;
 	}
@@ -59,39 +56,26 @@ function authError(msg: string) {
 	new Ph_Toast(Level.warning, msg, { onConfirm: logOut });
 }
 
-export async function checkTokenRefresh(): Promise<boolean> {
-	if (!hasTokenExpired())
-		return;
-
-	if (isLoggedInLS())
-		return await refreshAccessToken();
-	else
-		return await getImplicitGrant();
-}
-
-async function getImplicitGrant(): Promise<boolean> {
-	const r = await fetch(`/auth/applicationOnlyAccessToken?clientId=${encodeURIComponent(clientId.slice(0, 25))}`);
-	const data = await r.json();
-	if (data["error"]) {
-		console.error("error getting implicit grant", data);
+async function implicitGrant(): Promise<boolean> {
+	const newToken = await getImplicitGrant(clientId.slice(0, 25));
+	if (newToken["error"]) {
+		console.error("error getting implicit grant", newToken);
 		return false;
 	}
 	localStorage.isLoggedIn = "false";
-	localStorage.accessToken = data.access_token;
+	localStorage.accessToken = newToken.access_token;
 	localStorage.expiration = (Date.now() + (59 * 60 * 1000)).toString();
 	return true;
 }
 
 async function refreshAccessToken(): Promise<boolean> {
-	const r = await fetch(`/auth/refreshToken?refreshToken=${ encodeURIComponent(localStorage.refreshToken) }`);
-	const newTokens = await r.json();
+	const newTokens = await getRefreshAccessToken(localStorage.refreshToken);
 	if (newTokens["error"]) {
 		console.error("Error refreshing access token", newTokens);
 		return false;
 	}
-	localStorage.accessToken = newTokens.accessToken;
-	if (newTokens.refreshToken)
-		localStorage.refreshToken = newTokens.refreshToken;
+	localStorage.accessToken = newTokens.access_token;
+	localStorage.refreshToken = newTokens.refresh_token;
 	localStorage.expiration = (Date.now() + (59 * 60 * 1000)).toString();
 	return true;
 }
@@ -102,8 +86,8 @@ async function verifyTokenWorks(): Promise<boolean> {
 
 function hasTokenExpired(): boolean {
 	const expiration = parseInt(localStorage.expiration);
-	// invalidate 5 minutes ahead of expiration (otherwise a server restart at the expiration time might cause issues)
-	return !expiration || expiration - Date.now() < 1000 * 60 * 5;
+	// invalidate 1 minutes ahead of expiration
+	return !expiration || expiration - Date.now() < 1000 * 60;
 }
 
 function isLoggedInLS(): boolean {
