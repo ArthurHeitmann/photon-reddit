@@ -1,3 +1,5 @@
+@use 'sass:math';
+
 // scss & css variables
 
 :root {
@@ -20,7 +22,7 @@ $headerHeight: 5rem;
 $postActionsWidth: 2.2rem;
 $post-padding: 2rem;
 /** default border radius */
-$b-r: $post-padding / 2;
+$b-r: math.div($post-padding, 2);
 $controls-height: 3rem;
 $controls-bg: #121212ad;
 /** primary accent */

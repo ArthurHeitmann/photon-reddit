@@ -1,3 +1,4 @@
+@use 'sass:math';
 @use '../../../style/vars';
 
 .post {
@@ -157,7 +158,7 @@
 		margin: vars.$post-padding 0;
 
 		> .top {
-			margin-bottom: vars.$post-padding / 4;
+			margin-bottom: math.div(vars.$post-padding, 4);
 			flex-wrap: wrap;
 			align-items: center;
 

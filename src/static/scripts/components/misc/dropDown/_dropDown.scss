@@ -1,3 +1,4 @@
+@use 'sass:math';
 @use '../../../../style/vars';
 @use '../../../../style/shadow';
 
@@ -117,7 +118,7 @@
 
 		@for $i from 1 through 30 {
 			&:nth-child(#{$i}n) {
-				transition-delay: #{-1 / ($i * 0.03 + 1) + 1}s;
+				transition-delay: #{math.div(-1, ($i * 0.03 + 1)) + 1}s;
 			}
 		}
 
