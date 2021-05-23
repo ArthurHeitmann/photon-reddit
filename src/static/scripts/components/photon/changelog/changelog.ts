@@ -5,15 +5,17 @@ import VersionNumber from "../../../utils/versionNumber.js";
 
 export default class Ph_Changelog extends HTMLElement {
 	changelogContent: HTMLElement;
+	previousVersion: VersionNumber;
 	static currentChangelog: Ph_Changelog;
 
-	constructor() {
+	constructor(prevVersion?: VersionNumber) {
 		super();
+		this.previousVersion = prevVersion;
 	}
 
-	static show() {
+	static show(prevVersion?: VersionNumber) {
 		if (!Ph_Changelog.currentChangelog)
-			document.body.appendChild(this.currentChangelog = new Ph_Changelog());
+			document.body.appendChild(this.currentChangelog = new Ph_Changelog(prevVersion));
 		this.currentChangelog.classList.remove("remove");
 		disableMainScroll();
 	}
@@ -46,15 +48,22 @@ export default class Ph_Changelog extends HTMLElement {
 	async populate() {
 		const currentVersion = new VersionNumber(photonWebVersion);
 		const changelogData = await getChangelog();
-		const newHtml = Object.entries(changelogData).map(version => `
-			<h2>v${version[0]} ${new VersionNumber(version[0]).greaterThan(currentVersion) ? "(not installed)" : ""}</h2>
-			${Object.entries(version[1]).map(versionChanges => `
-				<h3>${versionChanges[0]}</h3>
-				<ul>
-				${versionChanges[1].map(change => `<li>${change}</li>`).join("\n")}
-				</ul>
-			`).join("\n")}
-		`).join("\n");
+		const newHtml = Object.entries(changelogData).map(version => {
+			const ver = new VersionNumber(version[0]);
+			const isInstalled = !ver.greaterThan(currentVersion);
+			let isNew = false;
+			if (this.previousVersion && ver.greaterThan(this.previousVersion))
+				isNew = true;
+			return `
+				<h2>v${version[0]} ${isInstalled ? "" : "(not installed)"} ${isNew ? "(new)" : ""}</h2>
+				${Object.entries(version[1]).map(versionChanges => `
+					<h3>${versionChanges[0]}</h3>
+					<ul>
+					${versionChanges[1].map(change => `<li>${change}</li>`).join("\n")}
+					</ul>
+				`).join("\n")}
+			`;
+		}).join("\n");
 		this.$class("loadingIcon")[0].remove();
 		this.changelogContent.insertAdjacentHTML("beforeend", newHtml);
 	}
