@@ -10,6 +10,11 @@
 
 	&.rootComment {
 		padding: 1rem 0 1rem 1rem;
+
+		> div > .replies {
+			position: relative;
+			z-index: 1;
+		}
 	}
 
 	&.isCollapsed {
