@@ -172,7 +172,7 @@ async function trackMediaHost(hosts: MediaHost[]): Promise<void> {
 analyticsRouter.post("/event", RateLimit(analyticsRateLimitConfig), safeExcAsync(async (req, res) => {
 	let { clientId, path, referer, timeMillisUtc } = req.body;
 	if (!path)
-		path = "/"
+		path = "/";
 	if (!clientId || typeof clientId !== "string" || clientId.length > 128) {
 		res.status(400).json({ error: "invalid parameters" });
 		return;
