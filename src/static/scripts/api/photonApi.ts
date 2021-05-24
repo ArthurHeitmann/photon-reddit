@@ -2,12 +2,19 @@
  *
  */
 
+import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
 import { Changelog } from "../types/misc.js";
 import { getAuthHeader } from "./redditApi.js";
 
 /** */
 export async function youtubeDlUrl(url): Promise<string> {
-	const res = await fetch(`/api/youtube-dl?url=${encodeURIComponent(url)}`);
+	let res: Response;
+	try {
+		res = await fetch(`/api/youtube-dl?url=${encodeURIComponent(url)}`);
+	} catch (e) {
+		new Ph_Toast(Level.warning, "Couldn't reach Photon server", { timeout: 3500, groupId: "photon server unreachable" });
+		throw e;
+	}
 	const clipMp4 = (await res.json())["url"];
 	return clipMp4;
 }
@@ -55,23 +62,35 @@ export function trackMediaHost(mediaUrl: string, linkUrl: string, type: string) 
 }
 
 export async function getRandomSubreddit(isNsfw: boolean = false): Promise<string> {
-	const subReq = await fetch(`/api/randomSubreddit?isNsfw=${isNsfw ? "true" : "false"}`, {
-		headers: { Authorization: getAuthHeader() }
-	});
+	let subReq: Response;
+	try {
+		subReq = await fetch(`/api/randomSubreddit?isNsfw=${isNsfw ? "true" : "false"}`, {
+			headers: { Authorization: getAuthHeader() }
+		});
+	} catch (e) {
+		new Ph_Toast(Level.warning, "Couldn't reach Photon server", { timeout: 3500, groupId: "photon server unreachable" });
+		throw e;
+	}
 	const subRes = await subReq.json() ;
 	if (subRes["error"])
 		return null;
 	else
-		return  subRes["subreddit"];
+		return subRes["subreddit"];
 }
 
 export async function getRandomSubredditPostUrl(subreddit: string): Promise<string> {
-	const postReq = await fetch(`/api/randomSubredditPostUrl?subreddit=${subreddit}`, {
-		headers: { Authorization: getAuthHeader() }
-	});
+	let postReq: Response;
+	try {
+		postReq = await fetch(`/api/randomSubredditPostUrl?subreddit=${subreddit}`, {
+			headers: { Authorization: getAuthHeader() }
+		});
+	} catch (e) {
+		new Ph_Toast(Level.warning, "Couldn't reach Photon server", { timeout: 3500, groupId: "photon server unreachable" });
+		throw e;
+	}
 	const postRes = await postReq.json() ;
 	if (postRes["error"])
 		return null;
 	else
-		return  postRes["url"];
+		return postRes["url"];
 }

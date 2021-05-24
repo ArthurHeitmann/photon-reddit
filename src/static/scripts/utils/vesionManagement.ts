@@ -11,7 +11,14 @@ export function setWaitingServiceWorker(worker) {
 }
 
 async function compareLatestVersion() {
-	const r = await fetch("/api/latestVersion");
+	let r: Response;
+	try {
+		r = await fetch("/api/latestVersion");
+	}
+	catch (e) {
+		new Ph_Toast(Level.warning, "Couldn't reach Photon server", { timeout: 3500, groupId: "photon server unreachable" });
+		return;
+	}
 	const { version: serverVersion } = await r.json();
 	const latestVersion = new VersionNumber(serverVersion);
 	const webVersion = new VersionNumber(photonWebVersion);
