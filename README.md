@@ -14,8 +14,6 @@ Photon is a website to browse reddit without any distractions (no ads, no crowde
 
 ![preview image](readmeImg/photon_collection.jpg)
 
-Discover all the features yourself on [photon-reddit.com/](https://photon-reddit.com)
-
 # Prerequisites
 
 - node: >= 14.x
@@ -74,11 +72,12 @@ Go [here](https://www.reddit.com/prefs/apps) and create your own reddit app.
 4. redirect uri: [yourDomain]/redirect
 
 Examples:
-- localhost:8080/redirect
-- some-photon-reddit-fork.com/redirect
+- http://localhost:8080/redirect
+- https://some-photon-reddit-fork.com/redirect
 
-5. Under `/src/serverScripts/config.ts` change `redirectURI` to
+5. Under `/src/static/scripts/utils/consts.ts` change `AppId` and `redirectURI` to
 ```Javascript
+export const appId = "[generated app id]";
 export const rediretURI = "[what you entered in step 4.]";
 ```
 
@@ -96,7 +95,7 @@ analyticsPw=
 ```
 
 `DB_x` is for configuring the mariaDB database. `analyticsPw` is for a cookie to access the analytics dashboard. 
-More infos in `analyticsQueryMiddleware` in `src/serverScripts/analytics.ts`.   
+More infos in `analyticsQueryMiddleware()` in `src/serverScripts/analytics.ts`.   
 
 # Technical
 
@@ -116,11 +115,11 @@ customElements.define("ph-component-name", Ph_ComponentName);
 const element = new Ph_ComponentName(args);
 ```
 ```Typescript
-// 2. When a specific component needs to be stored
+// 2. When a specific element needs to be stored
 const element = document.createElement("div");
 ```
 ```Typescript
-// 3. For writing a lot of elements at once
+// 3. For writing a lot of elements at once (escape untrusted string inputs with escHTML() or escADQ())
 element.innerHTML = `
 	<div class="${classNameVariable}">
 		<span>...</span>
@@ -143,7 +142,7 @@ If a component has a custom style its _componentName.scss file lies in the compo
 
 ## Backend
 
-An express server. Mostly only needed for making cross origin request for a client that otherwise get CORS blocked (mostly reddit api calls).
+An express server. Mostly only needed for making cross-origin request for a client that otherwise get CORS blocked (mostly some reddit api calls).
 
 node 12.x is not supported because ES6 `import {} from "lib"` are used instead of `require("lib")`.
 
