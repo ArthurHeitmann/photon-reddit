@@ -179,7 +179,9 @@ function handleSpecialPaths(path: string, query: string[][], stateLoader: Ph_Vie
 	// /message/compose
 	else if (/^\/message\/compose/i.test(path)) {
 		const receiver = query.find(param => param[0] === "to")?.[1];
-		stateLoader.finishWith(new Ph_MessageCompose(receiver));
+		const subject = query.find(param => param[0] === "subject")?.[1];
+		const message = query.find(param => param[0] === "message")?.[1];
+		stateLoader.finishWith(new Ph_MessageCompose({ receiver, subject, message }));
 		return true;
 	}
 	// subreddit about page

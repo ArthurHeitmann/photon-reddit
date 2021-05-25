@@ -7,7 +7,7 @@ export default class Ph_MessageCompose extends HTMLElement {
 	subject: string = "";
 	message: string = "";
 
-	constructor(receiver?: string) {
+	constructor(params: { receiver?: string, subject?: string, message?: string }) {
 		super();
 
 		this.classList.add("messageCompose");
@@ -21,7 +21,7 @@ export default class Ph_MessageCompose extends HTMLElement {
 				new Ph_Toast(Level.warning, "Name cannot be longer than 21 characters", { timeout: 2000 });
 			this.to = newText;
 		});
-		this.makeTextInput("Subject", newText => {
+		const subjectInput = this.makeTextInput("Subject", newText => {
 			if (newText.length > 100)
 				new Ph_Toast(Level.warning, "Subject cannot be longer than 21 characters", { timeout: 2000 });
 			this.subject = newText;
@@ -37,10 +37,18 @@ export default class Ph_MessageCompose extends HTMLElement {
 		sendButton.addEventListener("click", this.sendMessage.bind(this));
 		this.appendChild(sendButton);
 
-		if (receiver) {
-			const toFromUrl = receiver.replace(/^\//, "");		// remove leading /
+		if (params.receiver) {
+			const toFromUrl = params.receiver.replace(/^\//, "");		// remove leading /
 			toInput.value = toFromUrl;
 			this.to = toFromUrl;
+		}
+		if (params.subject) {
+			subjectInput.value = params.subject;
+			this.subject = params.subject;
+		}
+		if (params.message) {
+			message.textField.value = params.message;
+			this.message = params.message;
 		}
 	}
 
