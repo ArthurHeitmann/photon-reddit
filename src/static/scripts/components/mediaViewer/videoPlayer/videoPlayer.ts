@@ -97,12 +97,39 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 					defaultCase();
 				}
 				else {
+					const vReddItFallBack = () => {
+						videoOut.init(new Ph_VideoAudio([
+							{src: url + "/DASH_1080.mp4", type: "video/mp4"},
+							{src: url + "/DASH_1080", type: "video/mp4"},
+							{src: url + "/DASH_720.mp4", type: "video/mp4"},
+							{src: url + "/DASH_720", type: "video/mp4"},
+							{src: url + "/DASH_480.mp4", type: "video/mp4"},
+							{src: url + "/DASH_480", type: "video/mp4"},
+							{src: url + "/DASH_360.mp4", type: "video/mp4"},
+							{src: url + "/DASH_360", type: "video/mp4"},
+							{src: url + "/DASH_240.mp4", type: "video/mp4"},
+							{src: url + "/DASH_240", type: "video/mp4"},
+							{src: url + "/DASH_96.mp4", type: "video/mp4"},
+							{src: url + "/DASH_96", type: "video/mp4"},
+							{src: url + "/DASH_4_8_M", type: "video/mp4"},
+							{src: url + "/DASH_2_4_M", type: "video/mp4"},
+							{src: url + "/DASH_1_2_M", type: "video/mp4"},
+							{src: url + "/DASH_600_K", type: "video/mp4"},
+						], [
+							{src: url + "/DASH_audio.mp4", type: "audio/mp4"},
+							{src: url + "/DASH_audio", type: "audio/mp4"},
+							{src: url + "/audio.mp4", type: "audio/mp4"},
+							{src: url + "/audio", type: "audio/mp4"},
+						]), true);
+					};
+
 					let dashUrl: string;
 					url = url.match(/https:\/\/v\.redd\.it\/[^/?#]+/)[0];
 					if (postData && postData.data["media"] && postData.data["media"]["reddit_video"])
 						dashUrl = postData.data["media"]["reddit_video"]["dash_url"];
 					else
 						dashUrl = `${url}/DASHPlaylist.mpd`;
+
 					fetch(dashUrl).then(async r => {
 						const hlsXml = (new DOMParser()).parseFromString(await r.text(), "application/xml");
 
@@ -115,6 +142,10 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 							})
 							.map(rep => rep.querySelector("BaseURL").textContent)
 							.map(baseUrl => ({ src: `${url}/${baseUrl}`, type: "video/mp4" }));
+						if (videoSources.length === 0) {
+							vReddItFallBack();
+							return;
+						}
 
 						const audioUrlElement = hlsXml.querySelector(`Representation[id^=audio i] BaseURL`);
 						const audioSrc = audioUrlElement
@@ -122,7 +153,8 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 							: []
 
 						videoOut.init(new Ph_VideoAudio(videoSources, audioSrc), true);
-					});
+					})
+						.catch(() => vReddItFallBack());
 				}
 				break;
 			case "i.redd.it":
