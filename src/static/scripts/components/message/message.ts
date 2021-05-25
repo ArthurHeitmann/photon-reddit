@@ -1,7 +1,7 @@
 import { comment } from "../../api/redditApi.js";
 import { RedditApiType } from "../../types/misc.js";
 import { thisUser } from "../../utils/globals.js";
-import { escADQ, escHTML } from "../../utils/htmlStatics.js";
+import { emojiFlagsToImages, escADQ, escHTML } from "../../utils/htmlStatics.js";
 import { linksToSpa } from "../../utils/htmlStuff.js";
 import { timePassedSinceStr } from "../../utils/utils.js";
 import Ph_Readable from "../feed/feedItem/readable/readable.js";
@@ -79,6 +79,7 @@ export default class Ph_Message extends Ph_Readable {
 				${messageData.data["body_html"]}
 			</div>
 		`;
+		emojiFlagsToImages(mainPart);
 
 		this.lastMessageFromOther = this;
 		if (!isInFeed) {

@@ -15,7 +15,7 @@ import { pushLinkToHistoryComb, PushType } from "../../historyState/historyState
 import { RedditApiData, RedditApiType } from "../../types/misc.js";
 import Votable from "../../types/votable.js";
 import { hasPostsBeenSeen, markPostAsSeen, thisUser } from "../../utils/globals.js";
-import { escADQ, escHTML, getLoadingIcon } from "../../utils/htmlStatics.js";
+import { emojiFlagsToImages, escADQ, escHTML, getLoadingIcon } from "../../utils/htmlStatics.js";
 import { linksToSpa } from "../../utils/htmlStuff.js";
 import {
 	isObjectEmpty,
@@ -214,6 +214,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 				</div>
 			</div>
 		`;
+		emojiFlagsToImages(mainPart);
 		if (postData.data["all_awardings"] && postData.data["all_awardings"].length > 0)
 			mainPart.$class("flairWrapper")[0].insertAdjacentElement("beforebegin", new Ph_AwardsInfo(postData.data["all_awardings"]));
 		if (postData.data["crosspost_parent_list"]?.length > 0) {

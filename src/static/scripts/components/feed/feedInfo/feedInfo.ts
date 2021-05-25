@@ -14,7 +14,7 @@ import {
 } from "../../../api/redditApi.js";
 import { RedditApiType } from "../../../types/misc.js";
 import { isLoggedIn, StoredData, thisUser } from "../../../utils/globals.js";
-import { $class, escADQ, escHTML } from "../../../utils/htmlStatics.js";
+import { $class, emojiFlagsToImages, escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { classInElementTree, linksToSpa } from "../../../utils/htmlStuff.js";
 import { numberToShort, stringSortComparer, throttle } from "../../../utils/utils.js";
 import Ph_BetterButton from "../../global/betterElements/betterButton.js";
@@ -328,8 +328,10 @@ export default class Ph_FeedInfo extends HTMLElement {
 
 		const description = document.createElement("div");
 		description.innerHTML = this.loadedInfo.data["description_html"];
+		emojiFlagsToImages(description);
 		const publicDescription = document.createElement("div");
 		publicDescription.innerHTML = this.loadedInfo.data["public_description_html"];
+		emojiFlagsToImages(publicDescription);
 		linksToSpa(publicDescription);
 		const rules = document.createElement("div");
 		rules.append(...this.makeRules());
@@ -517,6 +519,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 
 		const description = document.createElement("div");
 		description.innerHTML = this.loadedInfo.data["description_html"];
+		emojiFlagsToImages(description);
 		this.multiSubManager = document.createElement("div");
 		this.multiSubManager.append(...this.makeMultiSubManager());
 		linksToSpa(this.multiSubManager);
@@ -591,6 +594,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 				title.addEventListener("click", () => title.classList.toggle("expanded"));
 				const description = document.createElement("div");
 				description.innerHTML = rule.description_html;
+				emojiFlagsToImages(description);
 				ruleWrapper.appendChild(description);
 			}
 			return ruleWrapper;

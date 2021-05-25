@@ -10,7 +10,7 @@ import {
 import { RedditApiType } from "../../types/misc.js";
 import Votable from "../../types/votable.js";
 import { thisUser } from "../../utils/globals.js";
-import { escADQ } from "../../utils/htmlStatics.js";
+import { emojiFlagsToImages, escADQ } from "../../utils/htmlStatics.js";
 import { elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff.js";
 import { isObjectEmpty, numberToShort, timePassedSinceStr } from "../../utils/utils.js";
 import Ph_CommentsFeed from "../feed/commentsFeed/commentsFeed.js";
@@ -212,6 +212,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 				${commentData.data["body_html"]}
 			</div>
 		`;
+		emojiFlagsToImages(mainPart);
 		if (commentData.data["all_awardings"] && commentData.data["all_awardings"].length > 0) {
 			const nonLocked = mainPart.$css(".header > :not(.locked)");
 			nonLocked[nonLocked.length - 1].insertAdjacentElement("afterend", new Ph_AwardsInfo(commentData.data["all_awardings"]));

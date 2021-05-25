@@ -1,4 +1,5 @@
 import { RedditApiType } from "../../types/misc.js";
+import { emojiFlagsToImages } from "../../utils/htmlStatics.js";
 import { elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff.js";
 import Ph_FeedInfo, { FeedType } from "../feed/feedInfo/feedInfo.js";
 import { Ph_ViewState } from "../viewState/viewState.js";
@@ -13,6 +14,7 @@ export default class Ph_Wiki extends HTMLElement {
 		this.className = "wiki";
 
 		this.innerHTML = wikiData.data["content_html"];
+		emojiFlagsToImages(this);
 		linksToSpa(this, true);
 	}
 

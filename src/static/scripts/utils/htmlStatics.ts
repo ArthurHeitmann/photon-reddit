@@ -147,3 +147,28 @@ export function enableMainPointerEvents() {
 	const main = $tag("main")[0];
 	main.style.pointerEvents = "";
 }
+
+/**
+ * Replaces all emoji flags with images from flagcdn.com.
+ *
+ * Windows (for political reasons) doesn't support flag emojis, so we have to fix it ourselves
+ *
+ * @param element
+ */
+export function emojiFlagsToImages(element: Element): void {
+	// black magic from https://stackoverflow.com/a/67633661/9819447
+	const flagEmojiToPNG = (flag) => {
+		let countryCode = Array.from(flag, (codeUnit: string) => {
+			return codeUnit.codePointAt(0);
+		})
+			.map(char => {
+				return String.fromCharCode(char - 127397).toLowerCase();
+			})
+			.join("");
+		countryCode = escADQ(countryCode);
+		return `<img src="https://flagcdn.com/40x30/${countryCode}.webp" alt="${countryCode}" class="emojiFlag">`;
+	};
+
+	const reg = new RegExp("(?:\ud83c[\udde6-\uddff]){2}", "g");
+	element.innerHTML = element.innerHTML.replaceAll(reg, flagEmojiToPNG);
+}
