@@ -34,8 +34,10 @@ export default class Ph_SwitchingImage extends HTMLElement {
 
 	showImage(key: any) {
 		this.lastActive.classList.add("hide");
-		this.dict[key].classList.remove("hide");
-		this.lastActive = this.dict[key];
+		const img = this.dict[key] as HTMLImageElement;
+		img.classList.remove("hide");
+		this.lastActive = img;
+		this.classList.toggle("none", img.getAttribute("src") === "");
 	}
 }
 

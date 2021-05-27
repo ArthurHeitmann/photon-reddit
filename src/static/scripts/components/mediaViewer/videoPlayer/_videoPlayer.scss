@@ -13,6 +13,12 @@
 		width: 7rem;
 		filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
 		pointer-events: none;
+		opacity: 1;
+		transition: opacity .125s ease .075s;
+
+		&.none {
+			opacity: 0;
+		}
 	}
 
 	video {
