@@ -237,6 +237,32 @@
 		.postSummary {
 			position: relative;
 			padding: .5rem;
+			display: flex;
+
+			.leftItems {
+				display: flex;
+				flex-flow: column;
+				margin-right: 1rem;
+
+				> div {
+					display: flex;
+					align-items: center;
+				}
+
+				.votesImg {
+					height: 1.1rem;
+					transform: rotate(180deg);
+				}
+
+				.commentsImg {
+					height: .8rem;
+					margin: 0 0.2rem;
+				}
+
+				* {
+					font-size: .8rem;
+				}
+			}
 
 			.info {
 				display: flex;
@@ -248,21 +274,6 @@
 					font-size: .8rem;
 				}
 
-				.rightItems {
-					display: flex;
-					align-items: center;
-					margin-left: auto;
-
-					.votesImg {
-						height: 1.1rem;
-						transform: rotate(180deg);
-					}
-
-					.commentsImg {
-						height: .8rem;
-						margin: 0 0.2rem;
-					}
-				}
 			}
 
 			.title {

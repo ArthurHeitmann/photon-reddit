@@ -224,32 +224,39 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			miniPost.innerHTML = `
 				<a href="${escADQ(crosspostData["permalink"])}" class="miniBackgroundLink"></a>
 				<div class="postSummary">
-					<div class="info">
-						<span>Crossposted from</span>
-						<a href="/${escADQ(crosspostData["subreddit_name_prefixed"])}" class="subreddit">
-							<span>${escHTML(crosspostData["subreddit_name_prefixed"])}</span>
-						</a>
-						<span>by</span>
-						<a href="/user/${escADQ(crosspostData["author"])}" class="user">
-							<span>u/${escHTML(crosspostData["author"])}</span>
-							${ crosspostData["author_cakeday"] ? `<img src="/img/cake.svg" class="cakeDay" alt="cake day">` : "" }
-						</a>
-						<span class="time" data-tooltip="${new Date(crosspostData["created_utc"] * 1000).toString()}">${timePassedSinceStr(crosspostData["created_utc"])}</span>
-						<span>ago</span>
-						${ crosspostData["edited"]
-							? `	<span>|</span><span>edited</span> 
-								<span class="time" data-tooltip="${new Date(crosspostData["edited"] * 1000).toString()}">${timePassedSinceStr(crosspostData["edited"])}</span>
-								<span>ago</span>`
-							: ""
-						}
-						<div class="rightItems">
+					<div class="leftItems">
+						<div>
 							<img src="/img/downArrow.svg" class="votesImg" alt="votes">
 							<span>${numberToShort(crosspostData["ups"])}</span>
+						</div>
+						<div>
 							<img src="/img/comments.svg" class="commentsImg" alt="comments">
 							<span>${numberToShort(crosspostData["num_comments"])}</span>
 						</div>
+						
 					</div>
-					<div class="title">${escHTML(crosspostData["title"])}</div>
+					<div>
+						<div class="info">
+							<span>Crossposted from</span>
+							<a href="/${escADQ(crosspostData["subreddit_name_prefixed"])}" class="subreddit">
+								<span>${escHTML(crosspostData["subreddit_name_prefixed"])}</span>
+							</a>
+							<span>by</span>
+							<a href="/user/${escADQ(crosspostData["author"])}" class="user">
+								<span>u/${escHTML(crosspostData["author"])}</span>
+								${ crosspostData["author_cakeday"] ? `<img src="/img/cake.svg" class="cakeDay" alt="cake day">` : "" }
+							</a>
+							<span class="time" data-tooltip="${new Date(crosspostData["created_utc"] * 1000).toString()}">${timePassedSinceStr(crosspostData["created_utc"])}</span>
+							<span>ago</span>
+							${ crosspostData["edited"]
+								? `	<span>|</span><span>edited</span> 
+									<span class="time" data-tooltip="${new Date(crosspostData["edited"] * 1000).toString()}">${timePassedSinceStr(crosspostData["edited"])}</span>
+									<span>ago</span>`
+								: ""
+							}
+						</div>
+						<div class="title">${escHTML(crosspostData["title"])}</div>
+					</div>
 				</div>
 			`;
 			mainPart.appendChild(miniPost);
@@ -334,7 +341,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			if (this.becameVisibleAt) {
 				const visibilityDuration = Date.now() - this.becameVisibleAt;
 				this.becameVisibleAt = null;
-				if (visibilityDuration > 1000 && globalSettings.markSeenPosts && this.isInFeed) {
+				if (visibilityDuration > 750 && globalSettings.markSeenPosts && this.isInFeed) {
 					markPostAsSeen(this.fullName);
 				}
 			}
