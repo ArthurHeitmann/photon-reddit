@@ -8,7 +8,6 @@ import { globalSettings, PhotonSettings } from "../components/global/photonSetti
 import Ph_MediaViewer from "../components/mediaViewer/mediaViewer.js";
 import { pushLinkToHistoryComb } from "../historyState/historyStateManager.js";
 import { $classAr } from "./htmlStatics.js";
-import { _replaceRedditLinks } from "./utils.js";
 
 export function linksToSpa(elem: HTMLElement, inlineMedia: boolean = false) {
 	if (inlineMedia)
@@ -24,6 +23,22 @@ function _linksToSpa(elem: HTMLElement): void {
 	}
 	for (const a of elem.getElementsByTagName("a")) {
 		setLinkOnClick(a);
+	}
+}
+
+/** replaces all href in <a> like: https://reddit.com/r/all --> /r/all */
+export function _replaceRedditLinks(el: HTMLElement) {
+	for (const a of el.$tag("a") as HTMLCollectionOf<HTMLAnchorElement>) {
+		if (a.hasAttribute("excludeLinkFromSpa")) {
+			continue;
+		}
+		a.href = a.getAttribute("href")
+			.replaceAll(/redd.it\/(\w+)/g, "reddit.com/comments/$1");
+		a.href = a.getAttribute("href")        // map all reddit or same origin links to current origin (reddit.com/r/all --> /r/all)
+			.replaceAll(new RegExp(`(https?://)((\\w)*\.?reddit\\.com|${location.hostname})`, "g"), "");
+		if (!a.getAttribute("href")) {
+			a.href = "/";
+		}
 	}
 }
 
@@ -66,7 +81,7 @@ export function isElementIn(container: Element, checkElement: HTMLElement): bool
 	return isElementIn(container, parent);
 }
 
-/** converts all <a> where href ends with an image file extension to an <img>  */
+/** converts all <a> where href ends with an image file extension to a MediaViewer */
 export function _linksToInlineMedia(elem: HTMLElement) {
 	const links = elem.$tag("a") as HTMLCollectionOf<HTMLAnchorElement>;
 	for (const link of links) {

@@ -116,7 +116,7 @@ export let thisUser = new User();
 // all the follow try/catches are necessary in case the user messes around with the localstorage
 if (!localStorage.seenPosts)
 	localStorage.seenPosts = "{}";
-/** Map all seen posts; key: thing full name, value: time when thing was seen im ms */
+/** Map all seen posts; key: thing full name, value: time when thing was seen in s */
 export let seenPosts: { [fullName: string]: number };
 try {
 	seenPosts = JSON.parse(localStorage.seenPosts) || {};
@@ -166,12 +166,16 @@ let isPageReady = false;
 export function ensurePageLoaded(): Promise<void> {
 	return new Promise(resolve => {
 		if (isPageReady) {
+			isPageReady = true;
 			resolve();
 		}
 		else {
 			window.addEventListener(
 				"ph-page-ready",
-				() => resolve(),
+				() => {
+					isPageReady = true;
+					resolve();
+				},
 				{ once: true }
 			);
 		}

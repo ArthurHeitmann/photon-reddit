@@ -4,7 +4,6 @@
  */
 
 export default class TouchGestureListener {
-	// private activeEvents: PointerEvent[] = [];
 	private activeTouches: Touch[] = [];
 	private previousDistance: number = null;
 	private hasDragStarted = false;

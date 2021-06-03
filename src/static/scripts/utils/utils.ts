@@ -86,20 +86,6 @@ export function timePeriodReadable(time: number) {
 	return timePassedSince(Date.now() / 1000 - time);
 }
 
-/** replaces all href in <a> like: https://reddit.com/r/all --> /r/all */
-export function _replaceRedditLinks(el: HTMLElement) {
-	for (const a of el.$tag("a") as HTMLCollectionOf<HTMLAnchorElement>) {
-		if (a.hasAttribute("excludeLinkFromSpa"))
-			continue;
-		a.href = a.getAttribute("href")
-			.replaceAll(/redd.it\/(\w+)/g, "reddit.com/comments/$1");
-		a.href = a.getAttribute("href")		// map all reddit or same origin links to current origin (reddit.com/r/all --> /r/all)
-			.replaceAll(new RegExp(`(https?://)((\\w)*\.?reddit\\.com|${location.hostname})`, "g"), "");
-		if (!a.getAttribute("href"))
-			a.href = "/";
-	}
-}
-
 /** splits "/r/all/top?t=day" to ["/r/all/top", "?t=day"] */
 export function splitPathQuery(pathAndQuery: string): string[] {
 	const querySeparation = pathAndQuery.match(/([^?]+)(\?.*)?/);
