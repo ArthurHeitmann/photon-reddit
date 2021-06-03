@@ -88,10 +88,10 @@ async function loadPopularPaths() {
 }
 
 window.addEventListener("load", () => {
-	$id("optionsRow").appendChild(timeFrameIndicator = document.createElement("div"));
+	$id("optionsRow").append(timeFrameIndicator = document.createElement("div"));
 	timeFrameIndicator.className = "timeFrameIndicator";
 	timeFrameIndicator.innerText = "day";
-	$id("optionsRow").appendChild(new Ph_DropDown(
+	$id("optionsRow").append(new Ph_DropDown(
 		timeFrameLabels.map(label => ( <DropDownEntryParam> {
 			label: label[0],
 			value: label[1],

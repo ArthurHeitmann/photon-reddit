@@ -30,11 +30,11 @@ export default class Ph_RedditPoll extends HTMLElement {
 				 ? `Voting ends in ${timePeriodReadable(timeDiff / 1000)}`
 				 : `Voting ended ${timePassedSince(pollData.voting_end_timestamp / 1000)} ago`
 		 }</div>`);
-		 this.appendChild(infoBar);
+		 this.append(infoBar);
 
 		 const bars = document.createElement("div");
 		 bars.className = "bars";
-		 this.appendChild(bars);
+		 this.append(bars);
 
 		 for (const option of pollData.options) {
 			 const bar = document.createElement("div");
@@ -53,7 +53,7 @@ export default class Ph_RedditPoll extends HTMLElement {
 						: ""
 			 	}</div>
 			 `;
-			 bars.appendChild(bar);
+			 bars.append(bar);
 		 }
 
 		 if (timeDiff > 0 && !pollData.user_selection) {
@@ -61,7 +61,7 @@ export default class Ph_RedditPoll extends HTMLElement {
 			 voteLink.setAttribute("excludeLinkFromSpa", "");
 			 voteLink.innerText = "Vote on reddit.com";
 			 voteLink.href = `https://www.reddit.com/poll/${postData["id"]}`;
-			 this.appendChild(voteLink);
+			 this.append(voteLink);
 		 }
 	 }
 }

@@ -15,7 +15,7 @@ export default class Ph_Changelog extends HTMLElement {
 
 	static show(prevVersion?: VersionNumber) {
 		if (!Ph_Changelog.currentChangelog)
-			document.body.appendChild(this.currentChangelog = new Ph_Changelog(prevVersion));
+			document.body.append(this.currentChangelog = new Ph_Changelog(prevVersion));
 		this.currentChangelog.classList.remove("remove");
 		disableMainScroll();
 	}
@@ -26,7 +26,7 @@ export default class Ph_Changelog extends HTMLElement {
 
 		this.changelogContent = document.createElement("div");
 		this.changelogContent.className = "content";
-		this.changelogContent.appendChild(getLoadingIcon());
+		this.changelogContent.append(getLoadingIcon());
 		this.appendChild(this.changelogContent);
 
 

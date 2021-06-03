@@ -13,11 +13,11 @@ export default class Ph_ProgressBar extends HTMLElement {
 		this.className = "progressBar";
 		const progressBar = document.createElement("div");
 		progressBar.className = "progress";
-		this.appendChild(progressBar);
+		this.append(progressBar);
 
 		const accessibilitySpacer = document.createElement("div");
 		accessibilitySpacer.className = "accessibilitySpacer";
-		this.appendChild(accessibilitySpacer);
+		this.append(accessibilitySpacer);
 
 		if (draggable) {
 			this.addEventListener("mousedown", this.dragStart.bind(this));

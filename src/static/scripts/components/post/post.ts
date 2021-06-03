@@ -93,22 +93,22 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		// actions bar
 		this.actionBar = document.createElement("div");
 		this.actionBar.className = "actions";
-		this.appendChild(this.actionBar);
+		this.append(this.actionBar);
 		const actionWrapper = document.createElement("div");
-		this.actionBar.appendChild(actionWrapper);
+		this.actionBar.append(actionWrapper);
 		actionWrapper.className = "wrapper";
 		// vote up button
 		this.voteUpButton = new Ph_VoteButton(true);
 		this.voteUpButton.addEventListener("click", this.vote.bind(this, VoteDirection.up));
-		actionWrapper.appendChild(this.voteUpButton);
+		actionWrapper.append(this.voteUpButton);
 		// current votes
 		this.currentUpvotes = document.createElement("div");
 		this.currentUpvotes.className = "upvotes ";
-		actionWrapper.appendChild(this.currentUpvotes);
+		actionWrapper.append(this.currentUpvotes);
 		// vote down button
 		this.voteDownButton = new Ph_VoteButton(false);
 		this.voteDownButton.addEventListener("click", this.vote.bind(this, VoteDirection.down));
-		actionWrapper.appendChild(this.voteDownButton);
+		actionWrapper.append(this.voteDownButton);
 		this.setVotesState(this.currentVoteDirection);
 
 
@@ -150,7 +150,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		}
 		const moreDropDown = new Ph_DropDown(dropDownEntries, "", DirectionX.left, DirectionY.bottom, true);
 		moreDropDown.toggleButton.classList.add("transparentButtonAlt");
-		actionWrapper.appendChild(moreDropDown);
+		actionWrapper.append(moreDropDown);
 		// go to comments link
 		const commentsLink = document.createElement("a");
 		commentsLink.className = "commentsLink transparentButtonAlt";
@@ -168,7 +168,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			<img alt="comments" src="/img/comments.svg">
 			<div class="${commentsSizeClass}">${numbOfComments}</div>
 		`;
-		actionWrapper.appendChild(commentsLink);
+		actionWrapper.append(commentsLink);
 
 		this.isLocked = postData.data["locked"] || postData.data["archived"];
 		const lockedReason = postData.data["locked"] ? "locked" : "archived";
@@ -259,13 +259,13 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 					</div>
 				</div>
 			`;
-			mainPart.appendChild(miniPost);
+			mainPart.append(miniPost);
 		}
-		mainPart.appendChild(this.postBody);
-		this.appendChild(mainPart);
+		mainPart.append(this.postBody);
+		this.append(mainPart);
 
 		mainPart.$class("flairWrapper")[0]
-			.appendChild(this.postFlair);
+			.append(this.postFlair);
 		mainPart.$class("user")[0]
 			.insertAdjacentElement("afterend", Ph_Flair.fromThingData(postData.data, "author"));
 

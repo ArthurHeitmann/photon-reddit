@@ -44,12 +44,12 @@ export default class Ph_Search extends HTMLElement {
 		this.subModeBtn.className = "modeButton transparentButtonAlt";
 		this.subModeBtn.setAttribute("for", "quickSearch")
 		this.subModeBtn.innerText = "r/";
-		this.appendChild(this.subModeBtn);
+		this.append(this.subModeBtn);
 		this.userModeBtn = document.createElement("label");
 		this.userModeBtn.setAttribute("for", "quickSearch")
 		this.userModeBtn.className = "modeButton transparentButtonAlt";
 		this.userModeBtn.innerText = "u/";
-		this.appendChild(this.userModeBtn);
+		this.append(this.userModeBtn);
 		this.subModeBtn.addEventListener("click", () => {
 			this.subModeBtn.classList.toggle("checked");
 			this.userModeBtn.classList.remove("checked");
@@ -69,7 +69,7 @@ export default class Ph_Search extends HTMLElement {
 		this.searchBar.type = "text";
 		this.searchBar.autocomplete = "off";
 		this.searchBar.id = "quickSearch";
-		this.appendChild(this.searchBar);
+		this.append(this.searchBar);
 		this.searchBar.addEventListener("keypress", e => ["Enter", "NumpadEnter"].includes(e.code) && this.search(e));
 		this.searchBar.addEventListener("input", this.onTextEnter.bind(this));
 		this.searchBar.addEventListener("focus", this.onFocus.bind(this));
@@ -78,35 +78,35 @@ export default class Ph_Search extends HTMLElement {
 		searchCollapser.className = "searchCollapser transparentButton";
 		searchCollapser.innerHTML = `<img src="/img/rightArrow.svg" draggable="false" alt="expand">`;
 		searchCollapser.addEventListener("click", () => this.classList.toggle("collapsed"))
-		this.appendChild(searchCollapser);
+		this.append(searchCollapser);
 
 		const toggleDropdownBtn = document.createElement("button")
 		toggleDropdownBtn.className = "toggleDropdownButton transparentButton";
 		toggleDropdownBtn.innerHTML = `<img src="/img/downArrow.svg" draggable="false" alt="expand">`;
-		this.appendChild(toggleDropdownBtn);
+		this.append(toggleDropdownBtn);
 
 		const searchButton = document.createElement("button");
 		searchButton.className = "searchButton transparentButton";
 		searchButton.innerHTML = `<img src="/img/search.svg" draggable="false" alt="search">`;
-		this.appendChild(searchButton);
+		this.append(searchButton);
 		searchButton.addEventListener("click", this.search.bind(this));
 
 		this.searchDropdown = document.createElement("div");
 		this.searchDropdown.className = "searchDropdown";
-		this.appendChild(this.searchDropdown);
+		this.append(this.searchDropdown);
 
 		const accessibilitySpacer = document.createElement("div");
 		accessibilitySpacer.className = "accessibilitySpacer";
-		this.searchDropdown.appendChild(accessibilitySpacer);
+		this.searchDropdown.append(accessibilitySpacer);
 
 		this.resultsWrapper = document.createElement("div");
 		this.resultsWrapper.className = "resultsWrapper";
-		this.searchDropdown.appendChild(this.resultsWrapper);
+		this.searchDropdown.append(this.resultsWrapper);
 
 		const expandedOptions = document.createElement("div");
 		expandedOptions.className = "expandedOptions";
 		toggleDropdownBtn.addEventListener("click", this.toggleSearchDropdown.bind(this));
-		this.searchDropdown.appendChild(expandedOptions);
+		this.searchDropdown.append(expandedOptions);
 
 		const curSort = new URLSearchParams(extractQuery(history.state?.url || ""));
 		let curSortStr: string;
@@ -149,7 +149,7 @@ export default class Ph_Search extends HTMLElement {
 				{ label: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.setSortOrder.bind(this) },
 			] },
 		], curSortStr, DirectionX.right, DirectionY.bottom, false);
-		expandedOptions.appendChild(this.sortBy);
+		expandedOptions.append(this.sortBy);
 
 		function makeLabelCheckboxPair(labelText: string, checkboxId: string, defaultChecked: boolean, appendTo: HTMLElement): { checkbox: HTMLInputElement, label: HTMLLabelElement } {
 			const wrapper = document.createElement("div");
@@ -161,14 +161,14 @@ export default class Ph_Search extends HTMLElement {
 			checkbox.checked = defaultChecked;
 			const checkboxVis = document.createElement("label");
 			checkboxVis.setAttribute("for", checkboxId);
-			wrapper.appendChild(checkbox);
-			wrapper.appendChild(checkboxVis);
-			appendTo.appendChild(wrapper);
+			wrapper.append(checkbox);
+			wrapper.append(checkboxVis);
+			appendTo.append(wrapper);
 			return { checkbox: checkbox, label: wrapper.children[0] as HTMLLabelElement };
 		}
 
 		this.flairSearch = new Ph_DropDown([], "Search by flair", DirectionX.right, DirectionY.bottom, false);
-		expandedOptions.appendChild(this.flairSearch);
+		expandedOptions.append(this.flairSearch);
 		this.flairSearch.toggleButton.addEventListener("click", async  () => {
 			if (this.areFlairsLoaded || !this.currentSubreddit)
 				return;

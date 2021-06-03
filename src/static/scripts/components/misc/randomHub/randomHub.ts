@@ -21,8 +21,8 @@ export default class Ph_RandomHub extends HTMLElement {
 		actionButton.className = "randomButton";
 		actionButton.addEventListener("click", this.onButtonClick.bind(this));
 		const buttonText = document.createElement("div");
-		actionButton.appendChild(buttonText);
-		this.appendChild(actionButton);
+		actionButton.append(buttonText);
+		this.append(actionButton);
 
 		if (/^\/r\/random([/#?].*)?$/i.test(url)) {
 			this.randomTarget = RandomTarget.Random;

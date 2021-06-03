@@ -70,7 +70,7 @@ export default class Ph_ControlsBar extends HTMLElement {
 		this.progressBar?.remove();
 		this.progressBar = newElements.progressBar;
 		if (this.progressBar)
-			this.appendChild(this.progressBar);
+			this.append(this.progressBar);
 		const dropDown = this.$class("dropDown")[0] as Ph_DropDown;
 		if (newElements.settingsEntries === undefined)
 			newElements.settingsEntries = [];
@@ -100,14 +100,14 @@ export default class Ph_ControlsBar extends HTMLElement {
 			img.className = "padded";
 		img.alt = imgSrc;
 		img.src = imgSrc;
-		btn.appendChild(img);
+		btn.append(img);
 		return btn;
 	}
 
 	static makeSwitchingImageBtn(img: Ph_SwitchingImage): { b: HTMLButtonElement, img: Ph_SwitchingImage } {
 		const button = document.createElement("button");
 		button.className = "imgBtn";
-		button.appendChild(img);
+		button.append(img);
 		return { b: button, img: img };
 	}
 

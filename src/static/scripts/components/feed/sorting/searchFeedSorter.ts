@@ -20,7 +20,7 @@ export default class Ph_SearchFeedSorter extends HTMLElement {
 
 		const curSort = new URLSearchParams(extractQuery(history.state?.url || ""));
 		const curSortStr = `Sort - ${curSort.get("sort") || "relevance"}${curSort.get("t") ? `/${curSort.get("t")}` : ""}`;
-		this.appendChild(this.dropdown = new Ph_DropDown([
+		this.append(this.dropdown = new Ph_DropDown([
 			{ label: "Relevance", value: SortSearchOrder.relevance, nestedEntries: [
 					{ label: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.handleSortSelect.bind(this) },
 					{ label: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.handleSortSelect.bind(this) },

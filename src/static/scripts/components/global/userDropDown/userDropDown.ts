@@ -24,22 +24,22 @@ export default class Ph_UserDropDown extends HTMLElement {
 		const dropDownButton = document.createElement("button");
 		dropDownButton.innerText = "Actions";
 		dropDownButton.addEventListener("click", this.toggle.bind(this));
-		this.appendChild(dropDownButton);
+		this.append(dropDownButton);
 		const dropDownArea = document.createElement("div");
-		dropDownArea.appendChild(this.makeActionBar());
-		dropDownArea.appendChild(this.makeSubredditGroup([{ path: "/r/popular", name: "r/popular" }, { path: "/r/all", name: "r/all" }], "Reddit Feeds"));
-		this.appendChild(dropDownArea);
+		dropDownArea.append(this.makeActionBar());
+		dropDownArea.append(this.makeSubredditGroup([{ path: "/r/popular", name: "r/popular" }, { path: "/r/all", name: "r/all" }], "Reddit Feeds"));
+		this.append(dropDownArea);
 
 		window.addEventListener("click", e => {
 			if (!isElementIn(this, e.target as HTMLElement))
 				this.minimize();
 		});
 		ensurePageLoaded().then(() => {
-			dropDownArea.appendChild(this.makeSubredditGroup(
+			dropDownArea.append(this.makeSubredditGroup(
 				thisUser.multireddits.map(multi => ({name: multi.display_name, path: multi.path})),
 				"Custom Feeds"
 			));
-			dropDownArea.appendChild(this.makeSubredditGroup(
+			dropDownArea.append(this.makeSubredditGroup(
 				thisUser.subreddits.map(sub => <SubGroupData> {name: sub, path: `/${sub}`}),
 				"Subscribed"
 			));
@@ -85,7 +85,7 @@ export default class Ph_UserDropDown extends HTMLElement {
 			"/"
 		) as HTMLAnchorElement;
 		ensurePageLoaded().then(() => userPage.href = `/user/${thisUser.name}`);
-		actions.appendChild(userPage);
+		actions.append(userPage);
 		// create post
 		const postAction = makeAction(
 			"/img/edit.svg",
@@ -101,7 +101,7 @@ export default class Ph_UserDropDown extends HTMLElement {
 					submitUrl = "/submit";
 				postAction.href = submitUrl;
 		});
-		actions.appendChild(postAction);
+		actions.append(postAction);
 		// messages
 		const inboxAction = makeAction(
 			"/img/chat.svg",
@@ -110,22 +110,22 @@ export default class Ph_UserDropDown extends HTMLElement {
 		);
 		this.unreadBadge = document.createElement("div");
 		this.unreadBadge.className = "unreadBadge hide";
-		inboxAction.appendChild(this.unreadBadge);
-		actions.appendChild(inboxAction);
+		inboxAction.append(this.unreadBadge);
+		actions.append(inboxAction);
 		// clear previous states
 		const clearAction = makeAction(
 			"/img/close.svg",
 			"Unload Pages",
 			() => ViewsStack.clear()
 		);
-		actions.appendChild(clearAction);
+		actions.append(clearAction);
 		// about
 		const aboutAction = makeAction(
 			"/img/info.svg",
 			"About",
 			"/about"
 		);
-		actions.appendChild(aboutAction);
+		actions.append(aboutAction);
 
 		return actions
 	}

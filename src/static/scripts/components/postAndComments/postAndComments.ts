@@ -52,13 +52,13 @@ export default class Ph_PostAndComments extends HTMLElement {
 				new Ph_Toast(Level.error, "Error making post");
 			}
 		}
-		this.appendChild(this.post);
+		this.append(this.post);
 
 		// comments & more
 		if (data)
 			this.initWithData(data);
 		else
-			this.appendChild(this.tmpLoadingIcon = getLoadingIcon())
+			this.append(this.tmpLoadingIcon = getLoadingIcon())
 	}
 
 	initWithData(data: RedditApiType[]) {
@@ -68,7 +68,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 		// write comment form
 		if (!this.post.isLocked) {
 			const commentForm = new Ph_CommentForm(this.post, false);
-			this.appendChild(commentForm);
+			this.append(commentForm);
 			commentForm.addEventListener("ph-comment-submitted",
 				(e: CustomEvent) => this.comments.insertAdjacentElement("afterbegin",
 					new Ph_Comment(e.detail, false, false, this.post)));
@@ -76,7 +76,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 
 		// comments
 		this.comments = new Ph_CommentsFeed(data[1], this.post);
-		this.appendChild(this.comments);
+		this.append(this.comments);
 
 		// highlighted comment
 		// /r/sub/comments/<postId>/<postTitle>/<commentId> --> <commentId>
@@ -161,7 +161,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 			this.comments.innerText = "";
 
 			for (const comment of newComments[1].data.children) {
-				this.comments.appendChild(new Ph_Comment(comment, false, false, this.post));
+				this.comments.append(new Ph_Comment(comment, false, false, this.post));
 			}
 
 			ViewsStack.changeCurrentUrl(newUrl);

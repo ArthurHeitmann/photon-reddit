@@ -50,7 +50,7 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 				]);
 			}
 			this.sectionDropDown = new Ph_DropDown(userSections, curSection, DirectionX.left, DirectionY.bottom, false);
-			this.appendChild(this.sectionDropDown);
+			this.append(this.sectionDropDown);
 		}
 
 		const query = new URLSearchParams(extractQuery(history.state?.url || ""));
@@ -110,7 +110,7 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 			];
 		}
 		this.sortDropDown = new Ph_DropDown(dropDownParams, curSortStr, DirectionX.right, DirectionY.bottom, false)
-		this.appendChild(this.sortDropDown);
+		this.append(this.sortDropDown);
 	}
 
 	handleSortSelect(valueChain: any[], setLabel: (newLabel: ButtonLabel) => void) {

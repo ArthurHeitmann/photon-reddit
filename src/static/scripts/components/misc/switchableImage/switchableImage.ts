@@ -14,7 +14,7 @@ export default class Ph_SwitchingImage extends HTMLElement {
 		let root: HTMLElement;
 		if (isButton) {
 			const wrapperBtn = document.createElement("button");
-			this.appendChild(wrapperBtn);
+			this.append(wrapperBtn);
 			root = wrapperBtn
 		}
 		else
@@ -25,7 +25,7 @@ export default class Ph_SwitchingImage extends HTMLElement {
 			this.dict[src.key].alt = src.src;
 			this.dict[src.key].src = src.src;
 			this.dict[src.key].className = "hide";
-			root.appendChild(this.dict[src.key]);
+			root.append(this.dict[src.key]);
 		}
 
 		this.lastActive = this.dict[imgDictionary[0].key];

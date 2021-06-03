@@ -23,14 +23,14 @@ export default class Ph_AwardsInfo extends HTMLElement {
 		preview.innerHTML = `
 			<span class="number coins">${numberToShort(coinPriceSum)}</span>
 		`;
-		this.appendChild(preview);
+		this.append(preview);
 
 		const expandedWrapper = document.createElement("div");
 		expandedWrapper.className = "expandedWrapper";
-		this.appendChild(expandedWrapper);
+		this.append(expandedWrapper);
 		this.expandedView = document.createElement("div");
 		this.expandedView.className = "expandedView";
-		expandedWrapper.appendChild(this.expandedView);
+		expandedWrapper.append(this.expandedView);
 
 		this.awardInfo = document.createElement("div");
 		this.awardInfo.className = "awardInfo hide";
@@ -41,11 +41,11 @@ export default class Ph_AwardsInfo extends HTMLElement {
 			</div>
 			<div class="description"></div>
 		`;
-		this.expandedView.appendChild(this.awardInfo);
+		this.expandedView.append(this.awardInfo);
 
 		this.awardsList = document.createElement("div");
 		this.awardsList.className = "awardsList";
-		this.expandedView.appendChild(this.awardsList);
+		this.expandedView.append(this.awardsList);
 
 		this.addEventListener("mouseenter", () => {
 			if (this.classList.contains("show")) {

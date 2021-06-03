@@ -216,11 +216,11 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		this.classList.add("mediaViewer");
 
 		this.draggableWrapper = new Ph_DraggableWrapper();
-		this.appendChild(this.draggableWrapper);
+		this.append(this.draggableWrapper);
 
 		this.controls = new Ph_ControlsBar(globalSettings.firstShowControlBar);
 		this.controls.addShowHideListeners(this.draggableWrapper);
-		this.appendChild(this.controls);
+		this.append(this.controls);
 
 		if (initElements)
 			this.init(initElements);
@@ -346,7 +346,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		const newMedia = this.mediaElements[this.currentIndex];
 		// replace element
 		this.draggableWrapper.children[0]?.remove();
-		this.draggableWrapper.appendChild(newMedia.element);
+		this.draggableWrapper.append(newMedia.element);
 		// gallery index
 		if (this.mediaElements.length > 1)
 			this.currentIndexDisplay.innerText = `${this.currentIndex + 1}/${this.mediaElements.length}`;
@@ -426,8 +426,8 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 			rotateBtn.addEventListener("click", this.onRotate.bind(this));
 			return rotateBtn;
 		}
-		wrapper.appendChild(makeRotateButton("ccw"));
-		wrapper.appendChild(makeRotateButton("cw"));
+		wrapper.append(makeRotateButton("ccw"));
+		wrapper.append(makeRotateButton("cw"));
 		return <DropDownEntryParam> { label: wrapper, nonSelectable: true };
 	}
 
@@ -440,12 +440,12 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		wrapper.className = "filterWrapper bgFilter";
 		const label = document.createElement("span");
 		label.innerText = "Background:";
-		wrapper.appendChild(label);
+		wrapper.append(label);
 		const colorInput = document.createElement("input");
 		colorInput.type = "text";
 		colorInput.value = "initial";
 		colorInput.addEventListener("input", this.onBgColorChange.bind(this));
-		wrapper.appendChild(colorInput);
+		wrapper.append(colorInput);
 		return <DropDownEntryParam> { label: wrapper, nonSelectable: true };
 	}
 
@@ -464,7 +464,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 			manualInput.type = "text";
 			manualInput.value = init.toString();
 			manualInput.oninput = e => this.draggableWrapper.style.setProperty(`--${filterName}`, manualInput.value + append);
-			sliderWrapper.appendChild(manualInput);
+			sliderWrapper.append(manualInput);
 			return sliderWrapper;
 
 		};

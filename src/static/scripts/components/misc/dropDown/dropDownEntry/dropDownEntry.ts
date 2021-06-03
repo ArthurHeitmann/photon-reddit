@@ -36,15 +36,15 @@ export default class Ph_DropDownEntry extends HTMLButtonElement {
 
 		this.label = document.createElement("div");
 		if (param.label instanceof  HTMLElement)
-			this.label.appendChild(param.label);
+			this.label.append(param.label);
 		else
 			this.label.innerHTML = param.label;
-		this.appendChild(this.label);
+		this.append(this.label);
 
 		if (param.nestedEntries && param.nestedEntries.length > 0) {
 			const expandList = document.createElement("div");
 			expandList.className = "nextMenuWrapper";
-			this.appendChild(expandList);
+			this.append(expandList);
 
 			this.nextDropDown = new Ph_DropDownArea(param.nestedEntries, this.dropDown, this);
 			if (this.isConnected)

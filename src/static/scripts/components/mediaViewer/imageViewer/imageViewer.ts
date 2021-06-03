@@ -45,7 +45,7 @@ export default class Ph_ImageViewer extends Ph_PhotonBaseElement implements Medi
 			this.previewImage.src = initData.previewUrl
 			this.previewImage.alt = initData.caption || this.url;
 			nonDraggableImage(this.previewImage);
-			this.appendChild(this.previewImage);
+			this.append(this.previewImage);
 			this.addEventListener("ph-entered-fullscreen", this.onFullscreenEnter.bind(this));
 			this.originalSrc = initData.originalUrl;
 			this.originalImage.classList.add("hide");
@@ -53,7 +53,7 @@ export default class Ph_ImageViewer extends Ph_PhotonBaseElement implements Medi
 		else {
 			this.originalImage.src = initData.originalUrl;
 		}
-		this.appendChild(this.originalImage);
+		this.append(this.originalImage);
 
 		this.addWindowEventListener("ph-settings-changed", this.onSettingsChange.bind(this));
 	}

@@ -36,7 +36,7 @@ export default class Ph_Message extends Ph_Readable {
 			userAdditionClasses += " admin";
 		}
 		const mainPart = document.createElement("div");
-		this.appendChild(mainPart);
+		this.append(mainPart);
 		mainPart.classList.add("w100");
 		mainPart.innerHTML = `
 			<h3 class="subjectLine">${escHTML(messageData.data["subject"])}</h3>
@@ -85,9 +85,9 @@ export default class Ph_Message extends Ph_Readable {
 		if (!isInFeed) {
 			if (messageData.data["replies"]) {
 				for (const reply of messageData.data["replies"]["data"]["children"]) {
-					mainPart.appendChild(document.createElement("hr"));
+					mainPart.append(document.createElement("hr"));
 					const message = new Ph_Message(reply, false, true);
-					mainPart.appendChild(message);
+					mainPart.append(message);
 					if (reply.data["author"] !== thisUser.name)
 						this.lastMessageFromOther = message;
 				}
@@ -95,7 +95,7 @@ export default class Ph_Message extends Ph_Readable {
 
 			if (!isReply) {
 				const replyForm = new Ph_MarkdownForm("Send", false);
-				mainPart.appendChild(replyForm);
+				mainPart.append(replyForm);
 				replyForm.addEventListener("ph-submit", async () => {
 					const response = await comment(this.lastMessageFromOther, replyForm.textField.value);
 					if (response.json.errors.length) {

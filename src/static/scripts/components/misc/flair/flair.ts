@@ -49,7 +49,7 @@ export default class Ph_Flair extends HTMLElement {
 		this.style.setProperty("--flair-tc", textColor);
 
 		this.flairContent = document.createElement("div");
-		this.appendChild(this.flairContent);
+		this.append(this.flairContent);
 
 		if (data.type === "richtext") {
 			for (const flairPart of data.richText) {
@@ -96,7 +96,7 @@ export default class Ph_Flair extends HTMLElement {
 				this.initialText = this.data.text;
 				this.editInput.value = this.data.text;
 			});
-			this.appendChild(this.editButton);
+			this.append(this.editButton);
 
 			this.editInput = document.createElement("input");
 			this.editInput.classList.add("hide");
@@ -105,7 +105,7 @@ export default class Ph_Flair extends HTMLElement {
 				if (e.code === "Enter")
 					this.confirmButton.click();
 			})
-			this.appendChild(this.editInput);
+			this.append(this.editInput);
 			this.confirmButton = document.createElement("button");
 			this.confirmButton.className = "transparentButton hide";
 			this.confirmButton.innerHTML = `<img src="/img/check.svg" alt="confirm edits">`;
@@ -116,7 +116,7 @@ export default class Ph_Flair extends HTMLElement {
 				this.flairContent.innerText = this.editInput.value;
 				this.hasTextChanged = true;
 			});
-			this.appendChild(this.confirmButton);
+			this.append(this.confirmButton);
 			this.cancelButton = document.createElement("button");
 			this.cancelButton.className = "transparentButton hide";
 			this.cancelButton.innerHTML = `<img src="/img/close.svg" alt="discard edits">`;
@@ -124,7 +124,7 @@ export default class Ph_Flair extends HTMLElement {
 				stopPropagation(e);
 				this.hideEdit();
 			});
-			this.appendChild(this.cancelButton);
+			this.append(this.cancelButton);
 		}
 
 		if ((!this.innerText || /^\s*$/.test(this.innerText)) && this.$tag("img").length === 0)

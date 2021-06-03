@@ -32,7 +32,7 @@ export default abstract class Ph_Readable extends Ph_FeedItem implements FullNam
 		markReadButton.className = "markRead transparentButtonAlt";
 		markReadButton.setAttribute("data-tooltip", "Toggle Mark Read");
 		markReadButton.addEventListener("click", this.onToggleRead.bind(this));
-		this.appendChild(markReadButton);
+		this.append(markReadButton);
 	}
 
 	async onToggleRead() {

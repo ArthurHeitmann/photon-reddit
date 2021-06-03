@@ -24,7 +24,7 @@ export default class Ph_GifVideo extends Ph_VideoWrapper {
 		this.gifImg.alt = src;
 		this.gifImg.src = src;
 		this.gifImg.draggable = false;
-		this.appendChild(this.gifImg);
+		this.append(this.gifImg);
 		this.gifImg.addEventListener("load", () => {
 			this.gifCanvas.width = this.gifImg.naturalWidth;
 			this.gifCanvas.height = this.gifImg.naturalHeight;
@@ -38,9 +38,9 @@ export default class Ph_GifVideo extends Ph_VideoWrapper {
 		});
 
 		this.canvasWrapper = document.createElement("div");
-		this.appendChild(this.canvasWrapper);
+		this.append(this.canvasWrapper);
 		this.gifCanvas = document.createElement("canvas");
-		this.canvasWrapper.appendChild(this.gifCanvas);
+		this.canvasWrapper.append(this.gifCanvas);
 
 		setTimeout(() => this.dispatchEvent(new Event("ph-no-audio")), 0);
 	}
