@@ -44,34 +44,26 @@ export class User {
 		// get user data, subscribed subreddits, multireddits
 		await Promise.all([
 			(async () => {
-				if (localStorage.subreddits) {
-					try {
-						const storedSubs: StoredData = JSON.parse(localStorage.subreddits);
-						this.subreddits = storedSubs.data;
-						if (Date.now() - storedSubs.lastUpdatedMsUTC > User.refreshEveryNMs) {
-							await this.fetchSubs();
-						}
-					} catch (e) {
+				try {
+					const storedSubs: StoredData = JSON.parse(localStorage.subreddits);
+					this.subreddits = storedSubs.data;
+					if (Date.now() - storedSubs.lastUpdatedMsUTC > User.refreshEveryNMs) {
 						await this.fetchSubs();
 					}
-				}
-				else
+				} catch (e) {
 					await this.fetchSubs();
+				}
 			})(),
 			(async () => {
-				if (localStorage.multis) {
-					try {
-						const storedMultis: StoredData = JSON.parse(localStorage.multis);
-							this.multireddits = storedMultis.data;
-						if (Date.now() - storedMultis.lastUpdatedMsUTC > User.refreshEveryNMs) {
-							await this.fetchMultis();
-						}
-					} catch (e) {
+				try {
+					const storedMultis: StoredData = JSON.parse(localStorage.multis);
+						this.multireddits = storedMultis.data;
+					if (Date.now() - storedMultis.lastUpdatedMsUTC > User.refreshEveryNMs) {
 						await this.fetchMultis();
 					}
-				}
-				else
+				} catch (e) {
 					await this.fetchMultis();
+				}
 			})()
 		]);
 	}
