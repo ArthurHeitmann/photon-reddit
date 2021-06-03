@@ -24,16 +24,21 @@
 		display: flex;
 		align-items: center;
 
-		> img {
+		// these margins are needed because: <img> <text> needs space but <img> <img> doesn't
+		> .flairImg {
 			height: .8rem;
 
-			+ span {
+			> img {
+				height: .8rem;
+			}
+
+			+ .flairText {
 				margin-left: .25rem;
 			}
 		}
 
-		> span {
-			+ img {
+		> .flairText {
+			+ .flairImg {
 				margin-right: .25rem;
 			}
 		}

@@ -56,15 +56,19 @@ export default class Ph_Flair extends HTMLElement {
 				switch (flairPart["e"]) {
 					case "text":
 						const text = document.createElement("span");
+						text.className = "flairText";
 						text.innerText = flairPart["t"];
 						this.flairContent.append(text);
 						break;
 					case "emoji":
+						const flairImgWrapper = document.createElement("span");
+						flairImgWrapper.setAttribute("data-tooltip", flairPart["a"]);
+						flairImgWrapper.className = "flairImg";
 						const flairImg = document.createElement("img");
+						flairImgWrapper.append(flairImg);
 						flairImg.src = flairPart["u"];
 						flairImg.alt = "flairImg";
-						flairImg.setAttribute("data-tooltip", flairPart["a"]);
-						this.flairContent.append(flairImg);
+						this.flairContent.append(flairImgWrapper);
 						break;
 					default:
 						this.flairContent.append(`Unknown Flair ${flairPart["e"]}`);
