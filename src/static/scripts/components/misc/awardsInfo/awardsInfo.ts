@@ -32,17 +32,6 @@ export default class Ph_AwardsInfo extends HTMLElement {
 		this.expandedView.className = "expandedView";
 		expandedWrapper.append(this.expandedView);
 
-		this.awardInfo = document.createElement("div");
-		this.awardInfo.className = "awardInfo hide";
-		this.awardInfo.innerHTML = `
-			<div class="top">
-				<div class="name"></div>
-				<div class="coins"></div>
-			</div>
-			<div class="description"></div>
-		`;
-		this.expandedView.append(this.awardInfo);
-
 		this.awardsList = document.createElement("div");
 		this.awardsList.className = "awardsList";
 		this.expandedView.append(this.awardsList);
@@ -89,6 +78,17 @@ export default class Ph_AwardsInfo extends HTMLElement {
 				(this.awardInfo.$class("description")[0] as HTMLElement).innerText = currAward.description.replace("%{coin_symbol}", "c ");
 			});
 		}
+
+		this.awardInfo = document.createElement("div");
+		this.awardInfo.className = "awardInfo hide";
+		this.awardInfo.innerHTML = `
+			<div class="top">
+				<div class="name"></div>
+				<div class="coins"></div>
+			</div>
+			<div class="description"></div>
+		`;
+		this.expandedView.append(this.awardInfo);
 	}
 
 	show() {
