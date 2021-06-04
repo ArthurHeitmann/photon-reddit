@@ -14,8 +14,8 @@ import {
 } from "../../../api/redditApi.js";
 import { RedditApiType } from "../../../types/misc.js";
 import { isLoggedIn, StoredData, thisUser } from "../../../utils/globals.js";
-import { $class, emojiFlagsToImages, escADQ, escHTML } from "../../../utils/htmlStatics.js";
-import { classInElementTree, linksToSpa } from "../../../utils/htmlStuff.js";
+import { $class, $cssAr, emojiFlagsToImages, escADQ, escHTML } from "../../../utils/htmlStatics.js";
+import { classInElementTree, linksToSpa, tagInElementTree } from "../../../utils/htmlStuff.js";
 import { numberToShort, stringSortComparer, throttle } from "../../../utils/utils.js";
 import Ph_BetterButton from "../../global/betterElements/betterButton.js";
 import Ph_Header from "../../global/header/header.js";
@@ -126,7 +126,12 @@ export default class Ph_FeedInfo extends HTMLElement {
 		super();
 
 		this.feedUrl = feedUrl;
-		this.focusLossHideRef = e => classInElementTree(e.target as HTMLElement, "feedInfo") || this.hide();
+		this.focusLossHideRef = e => {
+			if (!tagInElementTree(e.target as Element, "main"))
+				return;
+
+			this.hide();
+		};
 		this.hideRef = this.hide.bind(this);
 		this.className = "feedInfo remove";
 
@@ -811,6 +816,8 @@ export default class Ph_FeedInfo extends HTMLElement {
 		if (this.parentElement === null)
 			this.addToDOM();
 
+		$cssAr(".feedInfo:not(.remove)")
+			.forEach((e: Ph_FeedInfo) => e !== this && e.hide())
 		this.classList.remove("remove");
 		($class("header")[0] as Ph_Header).hide();
 		setTimeout(() => window.addEventListener("click", this.focusLossHideRef), 0);

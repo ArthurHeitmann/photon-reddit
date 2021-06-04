@@ -61,8 +61,17 @@ function linkOnClick(e) {
 }
 
 /** checks whether className is in elem or any of it's parents class list */
-export function classInElementTree(elem: HTMLElement, className: string): boolean {
+export function classInElementTree(elem: Element, className: string): boolean {
 	return Boolean(elem) && (elem.classList.contains(className) || classInElementTree(elem.parentElement, className));
+}
+
+/** checks whether tagName is elem or any of it's parents */
+export function tagInElementTree(elem: Element, tagName: string): boolean {
+	return Boolean(elem) &&
+		(
+			elem.tagName.toLowerCase() === tagName.toLowerCase()
+			|| tagInElementTree(elem.parentElement, tagName)
+		);
 }
 
 /** finds the first element that has className and is (or a parent of) elem */
