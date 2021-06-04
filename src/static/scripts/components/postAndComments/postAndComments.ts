@@ -82,8 +82,10 @@ export default class Ph_PostAndComments extends HTMLElement {
 		// /r/sub/comments/<postId>/<postTitle>/<commentId> --> <commentId>
 		const commentLinkMatches = history.state.url.match(/(?<=\/comments\/[^/]+\/[^/]+\/)[^/?#]+/);
 		if (commentLinkMatches) {
-			this.comments.$css(`[data-id=t1_${commentLinkMatches[0]}]`)[0].classList.add("highlight");
+			const highlightedComment = this.comments.$css(`[data-id=t1_${commentLinkMatches[0]}]`)[0];
+			highlightedComment.classList.add("highlight");
 			this.comments.insertParentLink(this.post.permalink, "Load all comments");
+			setTimeout(() => highlightedComment.scrollIntoView({ behavior: "smooth" }), 500);
 		}
 
 		// sorting
