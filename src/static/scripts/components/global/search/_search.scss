@@ -5,8 +5,8 @@
 	align-items: center;
 	position: relative;
 	z-index: 1;
-	background: #1f1f1f;
-	border: 1px solid #505050;
+	background: vars.$background-el1;
+	border: 1px solid vars.$border-color;
 	border-radius: 1.3rem;
 	width: 20rem;
 	@media (orientation: portrait) {
@@ -51,8 +51,6 @@
 		opacity: .5;
 		transition: all .25s ease;
 		--dim: 1.5rem;
-		--hover-bg: #ffffff3d;
-		--active-bg: #ffffff78;
 
 		&.checked {
 			color: vars.$primary;
@@ -71,9 +69,9 @@
 		width: 100%;
 		transform: translateY(calc(100% + .5rem)) scale(.75);
 		transform-origin: top center;
-		background: #1f1f1f;
+		background: vars.$background-el1;
 		padding: 1rem;
-		border: 1px solid #505050;
+		border: 1px solid vars.$border-color;
 		border-radius: 1.3rem;
 		display: flex;
 		opacity: 0;
@@ -113,7 +111,7 @@
 				right: 0;
 				width: 1px;
 				height: 100%;
-				background: #616161;
+				background: vars.$divider-color;
 			}
 
 			> * {
@@ -132,7 +130,7 @@
 					left: 1rem;
 					width: calc(100% - 2rem);
 					height: 1px;
-					background: #616161;
+					background: vars.$divider-color;
 				}
 			}
 		}

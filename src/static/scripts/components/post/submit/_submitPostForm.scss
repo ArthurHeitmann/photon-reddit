@@ -63,7 +63,7 @@
 		.flairSelectorWrapper {
 			.dropDownButton, .dropDownEntry {
 				border-color: vars.$border-color !important;
-				background-color: #292929 !important;
+				background-color: vars.$background-el2 !important;
 			}
 		}
 
@@ -141,7 +141,7 @@
 	}
 
 	.el2 {
-		background: #292929;
+		background: vars.$background-el2;
 		border: 1px solid vars.$border-color;
 		margin: .5rem 0;
 		padding: 0 .75rem;
@@ -182,11 +182,15 @@
 			transition: background-color .25s ease;
 
 			&:hover {
-				background: #333333;
+				background: vars.$switcher-bg-hover;
 			}
 
-			&.selected, &:active {
-				background: #404040;
+			&:active {
+				background: vars.$switcher-bg-active;
+			}
+
+			&.selected {
+				background: vars.$switcher-bg-selected;
 			}
 		}
 	}

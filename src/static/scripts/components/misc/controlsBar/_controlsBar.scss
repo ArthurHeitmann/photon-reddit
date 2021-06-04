@@ -49,9 +49,8 @@
 		height: .25rem;
 		cursor: pointer;
 
-
 		&:hover {
-			background: #f07f7f80;
+			background: vars.$primary-transparent;
 			transform: scaleY(3);
 
 			.accessibilitySpacer {
@@ -69,7 +68,7 @@
 
 		> .progress {
 			transition: width .1s linear;
-			border-right: .25rem solid white;
+			border-right: .25rem solid vars.$text-color;
 		}
 	}
 

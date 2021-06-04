@@ -2,7 +2,7 @@
 
 #mainWrapper > .header {
 	width: 100%;
-	height: vars.$headerHeight;
+	height: vars.$header-height;
 	position: fixed;
 	z-index: 50;
 	transform: translateY(-100%);
@@ -151,7 +151,7 @@
 		}
 
 		#loginButton {
-			background: vars.$primaryContrast;
+			background: vars.$primary-contrast;
 			height: 2.5rem;
 			padding: 0 .75rem;
 			border-radius: 1.25rem;
@@ -171,7 +171,7 @@
 
 		svg {
 			width: 100%;
-			height: calc(#{vars.$headerHeight} * 2);
+			height: calc(#{vars.$header-height} * 2);
 
 			.filled {
 				fill: var(--bg-color);
@@ -181,7 +181,7 @@
 			.stroked {
 				transition: stroke .5s ease;
 				fill: none;
-				stroke: #eeeeee;
+				stroke: vars.$text-color;
 			}
 		}
 	}
@@ -201,7 +201,7 @@
 		> .accessibilitySpacer {
 			height: 150%;
 			width: 100%;
-			top: vars.$headerHeight;
+			top: vars.$header-height;
 		}
 	}
 

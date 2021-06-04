@@ -47,7 +47,7 @@
 		bottom: var(--bottom-space);
 		left: var(--left-space);
 		border: 3px solid vars.$primary;
-		border-radius: vars.$b-r;
+		border-radius: vars.$border-radius;
 		pointer-events: none;
 		transition: all .25s ease;
 	}
@@ -65,12 +65,12 @@
 			background: vars.$background-el1;
 			font-size: 1.5rem;
 			padding: 0 1rem;
-			border-radius: vars.$b-r;
+			border-radius: vars.$border-radius;
 			transition: filter .25s ease;
 			border: 1px solid vars.$border-color;
 
 			&.nextButton {
-				background: vars.$primaryContrast;
+				background: vars.$primary-contrast;
 				border: none;
 			}
 

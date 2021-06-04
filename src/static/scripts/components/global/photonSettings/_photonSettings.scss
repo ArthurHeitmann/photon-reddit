@@ -10,7 +10,7 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	background: #00000080;
+	background: vars.$modal-transparent-bg;
 	opacity: 1;
 	transform: scale(1);
 	transform-origin: center 25%;
@@ -28,7 +28,7 @@
 		height: 80vh;
 		background: vars.$background-el1;
 		border: 1px solid vars.$border-color;
-		border-radius: vars.$b-r;
+		border-radius: vars.$border-radius;
 		padding: 1.75rem;
 		display: flex;
 		flex-direction: column;
@@ -68,7 +68,7 @@
 					right: 0;
 					width: 1px;
 					height: 100%;
-					background: #616161;
+					background: vars.$divider-color;
 				}
 			}
 
@@ -99,7 +99,7 @@
 					> input[type=text], input[type=number] {
 						width: 6rem;
 						text-align: right;
-						border-bottom: 1px solid #616161;
+						border-bottom: 1px solid vars.$text-color;
 						transition: border-bottom-color .25s ease;
 
 						&:focus {
@@ -110,7 +110,7 @@
 			}
 
 			hr {
-				background: #616161;
+				background: vars.$divider-color;
 			}
 		}
 

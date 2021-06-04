@@ -2,7 +2,7 @@
 
 .flair {
 	--flair-bg: #{vars.$background};
-	--flair-tc: #{vars.$text};
+	--flair-tc: #{vars.$text-color};
 
 	background-color: var(--flair-bg);
 	color: var(--flair-tc);

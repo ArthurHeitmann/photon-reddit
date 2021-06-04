@@ -10,7 +10,7 @@
 	margin: 0;
 	border: none;
 	background: none;
-	color: vars.$text;
+	color: vars.$text-color;
 	box-sizing: border-box;
 	font-family: "Nunito", sans-serif;
 	-webkit-tap-highlight-color: transparent;
@@ -25,7 +25,7 @@ code {
 	font-family: 'Roboto Mono', monospace;
 	font-weight: 500;
 	display: inline-block;
-	background: #ffffff1a;
+	background: vars.$code-bg;
 	padding: .1rem .2rem;
 	border-radius: .25rem;
 	margin: 0 .25rem;
@@ -85,11 +85,11 @@ td, th {
 
 thead {
 	> tr {
-		background: #4e4e4e;
+		background: vars.$table-header-bg;
 	}
 
 	th {
-		border: 1px solid #2d2d2d;
+		border: 1px solid vars.$table-header-divider;
 		border-top-width: 0;
 		border-bottom-width: 0;
 		padding: .6rem .4rem;
@@ -111,7 +111,7 @@ tbody {
 		transition: background-color .1s ease;
 
 		&:nth-child(even) {
-			background: #313131;
+			background: vars.$table-row-alt-bg;
 		}
 
 		&:last-child {
@@ -125,7 +125,7 @@ tbody {
 		}
 
 		&:hover {
-			background: #3e3e3e;
+			background: vars.$table-row-hover-bg;
 		}
 	}
 }
@@ -151,7 +151,7 @@ a {
 
 hr {
 	height: 1px;
-	background-color: vars.$text;
+	background-color: vars.$text-color;
 	margin: 1rem auto;
 }
 
@@ -160,18 +160,18 @@ button {
 }
 
 blockquote {
-	border-left: 0.3rem solid cornflowerblue;
+	border-left: 0.3rem solid vars.$quote-color;
 	padding-left: .5rem;
 	margin: .5rem 0 .5rem 0.5rem;
 }
 
 .md-spoiler-text {
-	background: vars.$text;
+	background: vars.$text-color;
 	transition: background-color .5s ease;
 	transition-delay: 9999999s;
 
 	a {
-		color: vars.$text;
+		color: vars.$text-color;
 		transition-delay: 9999999s;
 		transition: color .5s ease;
 	}
@@ -188,7 +188,8 @@ blockquote {
 }
 
 * {
-	scrollbar-color: #e4e4e4a6 transparent;
+	scrollbar-width: thin;
+	scrollbar-color: vars.$scrollbar-color transparent;
 }
 
 ::-webkit-scrollbar {
@@ -200,14 +201,14 @@ blockquote {
 }
 
 ::-webkit-scrollbar-thumb {
-	background: #e4e4e4a6;
+	background: vars.$scrollbar-color;
 
 	&:hover {
-		background: #e4e4e4;
+		background: vars.$scrollbar-color-hover;
 	}
 }
 
 ::selection {
-	background: vars.$primaryContrast;
-	color: vars.$text;
+	background: vars.$primary-contrast;
+	color: vars.$text-color;
 }

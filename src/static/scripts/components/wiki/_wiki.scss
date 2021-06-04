@@ -3,7 +3,7 @@
 
 .wiki:not(.md) {
 	background: vars.$background-el1;
-	border-radius: vars.$b-r;
+	border-radius: vars.$border-radius;
 	border: 1px solid vars.$border-color;
 	width: vars.$widthP;
 	@media (orientation: landscape) {

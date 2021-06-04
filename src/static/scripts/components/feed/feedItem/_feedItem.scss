@@ -13,14 +13,14 @@
 			display: inline-block;
 			width: 0;
 			height: 0;
-			border-top: 0.6em solid lightgreen;
+			border-top: 0.6em solid vars.$user-mod-color;
 			border-left: 0.3em solid transparent;
 			border-right: 0.3em solid transparent;
 			border-radius: 50%;
 		}
 
 		* {
-			color: lightgreen;
+			color: vars.$user-mod-color;
 		}
 	}
 
@@ -31,11 +31,11 @@
 			width: .6em;
 			height: .6em;
 			border-radius: 50%;
-			background: #ff3939;
+			background: vars.$user-admin-color;
 		}
 
 		* {
-			color: #ff3939;
+			color: vars.$user-admin-color;
 		}
 	}
 
@@ -49,7 +49,7 @@
 			z-index: -1;
 			width: 100%;
 			height: 100%;
-			background: vars.$primaryContrast;
+			background: vars.$primary-contrast;
 			padding: .125rem 0.6rem;
 			margin-top: -.125rem;
 			margin-left: -.6rem;
@@ -57,15 +57,15 @@
 		}
 
 		&.mod::before {
-			background: green;
+			background: vars.$user-mod-bg;
 		}
 
 		&.admin::before {
-			background: darkred;
+			background: vars.$user-admin-bg;
 		}
 
 		* {
-			color: vars.$text;
+			color: vars.$text-color;
 		}
 	}
 
@@ -82,7 +82,7 @@
 	&.isInFeed {
 		background: vars.$background-el1;
 		border: 1px solid vars.$border-color;
-		border-radius: vars.$b-r;
+		border-radius: vars.$border-radius;
 		@extend %shadow-diffuse;
 
 		.backgroundLink {

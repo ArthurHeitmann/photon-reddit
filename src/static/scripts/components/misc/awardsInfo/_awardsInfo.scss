@@ -84,9 +84,21 @@
 	}
 
 	.coins {
+		position: relative;
+
 		&::after {
 			content: "c";
 			margin-left: .125rem;
+		}
+
+		&::before {
+			content: "";
+			position: absolute;
+			right: .15em;
+			top: .4em;
+			width: 1px;
+			height: .8em;
+			background: vars.$text-color;
 		}
 	}
 

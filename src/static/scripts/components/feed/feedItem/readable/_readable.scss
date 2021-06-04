@@ -3,7 +3,7 @@
 .readable {
 	transition: border-color .25s ease;
 	&.unread {
-		border: 1px solid vars.$text !important;
+		border: 1px solid vars.$text-color !important;
 	}
 
 	.markRead {

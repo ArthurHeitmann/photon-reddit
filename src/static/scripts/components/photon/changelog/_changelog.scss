@@ -7,7 +7,7 @@
 	height: 100%;
 	top: 0;
 	left: 0;
-	background: #00000080;
+	background: vars.$modal-transparent-bg;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -19,7 +19,7 @@
 		height: min(80vh, 40rem);
 		background: vars.$background-el1;
 		border: 1px solid vars.$border-color;
-		border-radius: vars.$b-r;
+		border-radius: vars.$border-radius;
 		padding: vars.$post-padding;
 		overflow-y: auto;
 		transition: all .25s ease;

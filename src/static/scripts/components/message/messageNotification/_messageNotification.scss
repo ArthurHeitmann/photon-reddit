@@ -4,7 +4,7 @@
 	position: fixed;
 	bottom: 1rem;
 	right: 1rem;
-	background: vars.$primaryContrast;
+	background: vars.$primary-contrast;
 	min-width: 2rem;
 	min-height: 2rem;
 	border-radius: 1.125rem;
@@ -15,7 +15,7 @@
 	animation: hideMessageNotification .5s ease  forwards;
 
 	a {
-		color: vars.$text;
+		color: vars.$text-color;
 		display: block;
 		line-height: 2rem;
 		white-space: nowrap;

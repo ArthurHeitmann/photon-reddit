@@ -4,7 +4,7 @@
 	padding: .5rem 0;
 
 	&.highlight {
-		border: 1px solid #f080807d;
+		border: 1px solid rgba(vars.$primary-var, 0.49);
 		border-radius: 1rem;
 	}
 
@@ -42,7 +42,7 @@
 	}
 
 	&.isReplying {
-		.replyForm {
+		 > * > .replies > .replyForm {
 			display: inherit;
 		}
 	}
@@ -111,14 +111,14 @@
 
 		> div {
 			width: .2rem;
-			background-color: rgba(4, 4, 4, 0.6);
+			background-color: vars.$comment-collapser-bg;
 			height: 100%;
 			transition: all .25s ease;
 		}
 
 		&:hover > div {
 			width: .3rem;
-			background-color: rgba(0, 0, 0, 0.8);
+			background-color: vars.$comment-collapser-hover-bg;
 
 		}
 	}

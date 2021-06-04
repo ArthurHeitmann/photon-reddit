@@ -24,8 +24,8 @@ body {
 	margin-left: 50%;
 	border-radius: .5rem;
 	padding: .3rem .5rem;
-	background: #000000db;
-	color: #e4e4e4;
+	background: vars.$tooltip-bg;
+	color: vars.$text-color;
 	opacity: 0;
 	visibility: hidden;
 	transition: all .25s ease;
@@ -53,7 +53,7 @@ body {
 }
 
 .button {
-	border: 1px solid #383838;
+	border: 1px solid vars.$border-color;
 	background: vars.$background;
 	height: 2rem;
 	border-radius: 1rem;
@@ -97,19 +97,17 @@ a {
 	transition: background-color .25s ease;
 
 	&:hover, &:focus-visible {
-		background-color: #ffffff1a;
+		background-color: vars.$transparent-btn-hover;
 	}
 
 	&:active {
-		background-color: #ffffff40;
+		background-color: vars.$transparent-btn-active;
 	}
 }
 
 .transparentButtonAlt {
 	position: relative;
 	--dim: 100%;
-	--hover-bg: #ffffff1a;
-	--active-bg: #ffffff40;
 
 	&::before {
 		content: "";
@@ -128,13 +126,13 @@ a {
 
 	&:hover, &:focus-visible {
 		&::before {
-			background-color: var(--hover-bg);
+			background-color: vars.$transparent-btn-hover;
 		}
 	}
 
 	&:active {
 		&::before {
-			background-color: var(--active-bg);
+			background-color: vars.$transparent-btn-active;
 		}
 	}
 }
@@ -169,7 +167,7 @@ input.checkbox {
 		min-width: 1em;
 		height: 1em;
 		box-sizing: border-box;
-		background: #4a4a4a;
+		background: vars.$input-element-bg;
 		position: relative;
 		cursor: pointer;
 		transition: background-color .25s ease;
@@ -217,15 +215,14 @@ input.radio {
 		min-width: 1em;
 		height: 1em;
 		box-sizing: border-box;
-		background: #4a4a4a;
+		background: vars.$input-element-bg;
 		border-radius: 50%;
-		border: 2px solid #696969;
 		position: relative;
 		cursor: pointer;
 		transition: background-color .25s ease;
 
 		&:hover, &:focus {
-			background: #865E5E;
+			background: vars.$primary-faint;
 		}
 	}
 }

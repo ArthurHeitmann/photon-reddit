@@ -1,3 +1,5 @@
+@use "../../../../style/vars";
+
 @keyframes vote {
 	0% {
 		opacity: 1;
@@ -24,13 +26,13 @@
 	&:hover {
 		&.up {
 			> svg {
-				fill: #F0C77C;
+				fill: vars.$upvote-hover;
 			}
 		}
 
 		&.down {
 			> svg {
-				fill: #9AACE3;
+				fill: vars.$downvote-hover;
 			}
 		}
 	}
@@ -54,13 +56,13 @@
 
 		&.up {
 			> svg {
-				fill: orange;
+				fill: vars.$upvote-filled;
 			}
 		}
 
 		&.down {
 			> svg {
-				fill: royalblue;
+				fill: vars.$downvote-filled;
 			}
 		}
 	}

@@ -190,8 +190,8 @@
 
 		.actions {
 			margin: 1.5rem 1rem;
-			width: vars.$postActionsWidth;
-			max-width: vars.$postActionsWidth;
+			width: vars.$post-actions-width;
+			max-width: vars.$post-actions-width;
 		}
 
 		.backgroundLink {
@@ -219,13 +219,13 @@
 
 	.miniPost {
 		position: relative;
-		border-radius: vars.$b-r;
+		border-radius: vars.$border-radius;
 		border: 2px solid vars.$border-color;
 		margin: .5rem;
 		transition: background-color .25s ease;
 
 		&:hover {
-			background: rgba(255, 255, 255, 0.05);
+			background: vars.$background-el2;
 		}
 
 		.miniBackgroundLink {

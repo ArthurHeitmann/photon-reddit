@@ -15,7 +15,7 @@
 				height: 2rem;
 				width: calc(1% * var(--percentage));
 				min-width: 1rem;
-				background: vars.$primaryContrast;
+				background: vars.$primary-contrast;
 				border-radius: 1rem;
 			}
 
@@ -32,7 +32,7 @@
 					display: block;
 					background: url("/img/check.svg") center;
 					background-size: contain;
-					border: 2px solid vars.$text;
+					border: 2px solid vars.$text-color;
 					border-radius: 1rem;
 					box-sizing: border-box;
 				}

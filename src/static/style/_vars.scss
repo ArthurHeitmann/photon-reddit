@@ -8,6 +8,7 @@
 	--scale: 1.0;
 	--shadow-color: #0000009c;
 	--primary: lightcoral;
+	--primary-var: 240, 128, 128;
 	--primary-contrast: #e65d5d;
 	--image-height-limited: 95vh;
 }
@@ -16,19 +17,25 @@
 $background: var(--bg-color);
 /** bg color for more important/elevated elements */
 $background-el1: #1f1f1f;
+$background-el2: #292929;
 /** text color */
-$text: var(--text-color);
-$headerHeight: 5rem;
-$postActionsWidth: 2.2rem;
+$text-color: var(--text-color);
+$modal-transparent-bg: #00000080;
+$header-height: 5rem;
+$post-actions-width: 2.2rem;
 $post-padding: 2rem;
 /** default border radius */
-$b-r: math.div($post-padding, 2);
+$border-radius: math.div($post-padding, 2);
 $controls-height: 3rem;
 $controls-bg: #121212ad;
 /** primary accent */
 $primary: var(--primary);
+/** equal to $primary; should be used like rgba($primary-var, 0.5) */
+$primary-var: var(--primary-var);
 /** accent color as background with white text */
-$primaryContrast: var(--primary-contrast);
+$primary-contrast: var(--primary-contrast);
+$primary-faint: #875e5e;
+$primary-transparent: #f07f7f80;
 /** view state width in portrait */
 $widthP: calc(100vw - 3.4rem);
 /** view state width in landscape */
@@ -38,3 +45,31 @@ $widthL: min(60rem, calc(100vw - 6rem));
 $link-color: #7da3f9;
 $border-color: #383838;
 $image-height-limited: var(--image-height-limited);
+$switcher-bg: $background-el2;
+$switcher-bg-hover: #333333;
+$switcher-bg-active: #404040;
+$switcher-bg-selected: #616161;
+$divider-color: #6f6f6f;
+$user-admin-bg: darkred;
+$user-admin-color: #ff3939;
+$user-mod-bg: green;
+$user-mod-color: lightgreen;
+$cancel-btn-bg: #5b5b5b;
+$upvote-hover: #efc77b;
+$upvote-filled: orange;
+$downvote-hover: #99abe3;
+$downvote-filled: royalblue;
+$transparent-btn-hover: #ffffff1a;
+$transparent-btn-active: #ffffff40;
+$input-element-bg: #4a4a4a;
+$scrollbar-color: #e4e4e4a6;
+$scrollbar-color-hover: #e4e4e4;
+$code-bg: #363636;
+$table-header-bg: #4e4e4e;
+$table-header-divider: #2d2d2d;
+$table-row-alt-bg: #313131;
+$table-row-hover-bg: #3e3e3e;
+$tooltip-bg: #000000db;
+$comment-collapser-bg: rgba(4, 4, 4, 0.6);
+$comment-collapser-hover-bg: rgba(0, 0, 0, 0.8);
+$quote-color: cornflowerblue;
