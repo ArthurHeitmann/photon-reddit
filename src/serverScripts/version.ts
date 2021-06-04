@@ -1,6 +1,12 @@
-export const photonVersion = "0.5.1";		/// <change version script>
+export const photonVersion = "0.5.2";		/// <change version script>
 
 export const photonChangelog = {
+	"0.5.2": {
+		"Fixed": [
+			"Unified color scheme",
+			"Many small style adjustments",
+		]
+	},
 	"0.5.1": {
 		"Fixed": [
 			"Many small fixes and changes",
