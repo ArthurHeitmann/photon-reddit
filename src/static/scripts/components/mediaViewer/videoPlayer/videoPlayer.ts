@@ -88,7 +88,9 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				// if no oembed data, use gfycat api
 				else {
 					getGfycatMp4SrcFromUrl(url, GfycatDomain.gfycat)
-						.then(mp4Url => videoOut.init(new Ph_SimpleVideo([{ src: mp4Url, type: "video/mp4" }]), true))
+						.then(mp4Urls => videoOut.init(new Ph_SimpleVideo(
+							mp4Urls.map(mp4Url => ({ src: mp4Url, type: "video/mp4" } ))
+						), true))
 						.catch(() => videoOut.init(null));
 				}
 				break;
@@ -197,7 +199,9 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 			case "redgifs.com":
 				// like gfycat but there is no usable info in the oembed data
 				getGfycatMp4SrcFromUrl(url, GfycatDomain.redgifs)
-					.then(mp4Url => videoOut.init(new Ph_SimpleVideo([ { src: mp4Url, type: "video/mp4" } ]), true))
+					.then(mp4Urls => videoOut.init(new Ph_SimpleVideo(
+						 mp4Urls.map(mp4Url => ({ src: mp4Url, type: "video/mp4" }) )
+					), true))
 					.catch(() => videoOut.init(null));
 				break;
 			case "media2.giphy.com":
