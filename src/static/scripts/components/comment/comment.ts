@@ -66,7 +66,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 		// this is not a comment, this is a load more comments button
 		if (commentData.kind === "more") {
 			const loadMoreButton = document.createElement("button");
-			loadMoreButton.className = "loadMoreButton";
+			loadMoreButton.className = "loadMoreButton button light";
 			this.appendChild(loadMoreButton);
 
 			// continue thread button/link

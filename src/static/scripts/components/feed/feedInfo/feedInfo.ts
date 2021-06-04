@@ -263,7 +263,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		subActionsWrapper.className = "subActionsWrapper";
 		overviewBar.appendChild(subActionsWrapper);
 		const subscribeButton = document.createElement("button");
-		subscribeButton.className = "subscribeButton";
+		subscribeButton.className = "subscribeButton button";
 		subscribeButton.innerText = this.loadedInfo.data["user_is_subscriber"] ? "Unsubscribe" : "Subscribe";
 		subscribeButton.addEventListener("click", async () => {
 			this.loadedInfo.data["user_is_subscriber"] = !this.loadedInfo.data["user_is_subscriber"];

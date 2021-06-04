@@ -142,10 +142,7 @@
 	}
 
 	.loadMoreButton {
-		border: 1px solid #e4e4e4;
-		border-radius: 1rem;
 		padding: .3rem .75rem;
-		transition: all .125s ease;
 		display: flex;
 		align-items: center;
 
@@ -153,20 +150,6 @@
 			height: calc(1em + 0.3rem);
 			transform: scale(1.7);
 			margin: 0 1.5rem;
-		}
-
-		&:disabled {
-			border-color: grey;
-			color: grey;
-		}
-
-		&:hover:not(:disabled) {
-			border-color: vars.$primary;
-			color: vars.$primary;
-		}
-
-		&:active {
-			background: #3e3e3e;
 		}
 	}
 }

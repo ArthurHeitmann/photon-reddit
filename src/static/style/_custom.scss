@@ -53,16 +53,28 @@ body {
 }
 
 .button {
-	border: 1px solid vars.$border-color;
-	background: vars.$background-el1;
+	border: 1px solid #383838;
+	background: vars.$background;
 	height: 2rem;
 	border-radius: 1rem;
 	padding: 0 .75rem;
 	transition: all .25s ease;
 
+	&.light {
+		background: vars.$background-el1;
+	}
+
 	&:hover {
 		color: vars.$primary;
+	}
+
+	&:active {
 		border-color: vars.$primary;
+	}
+
+	&:disabled {
+		color: grey;
+		cursor: default;
 	}
 }
 

@@ -27,6 +27,7 @@
 		// these margins are needed because: <img> <text> needs space but <img> <img> doesn't
 		> .flairImg {
 			height: .8rem;
+			display: inline-flex;
 
 			> img {
 				height: .8rem;
