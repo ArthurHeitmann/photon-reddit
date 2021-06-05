@@ -356,10 +356,10 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 					{label: "16.00x", value: 16.00, onSelectCallback: this.setVideoSpeed.bind(this)},
 				]
 			},
-			// {
-			// 	label: `<span>Popout</span>`,
-			// 	onSelectCallback: this.popoutVideo.bind(this)
-			// },
+			{
+				label: `<span>Popout</span>`,
+				onSelectCallback: this.popoutVideo.bind(this)
+			},
 		];
 
 		// progress bar
@@ -410,9 +410,9 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 			case "KeyM":
 				this.toggleMuted();
 				break;
-			// case "KeyI":
-			// 	this.popoutVideo();
-			// 	break;
+			case "KeyI":
+				this.popoutVideo();
+				break;
 		}
 	}
 
@@ -421,11 +421,12 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 	}
 
 	popoutVideo() {
-		// window.open(
-		// 	`/mediaViewer.html?url=${encodeURIComponent(this.postData.data["permalink"])}`,
-		// 	"_blank",
-		// 	`location=no,status=no,menubar=no,width=${this.video.getDimensions()[0]},height=${this.video.getDimensions()[1]}`
-		// );
+		window.open(
+			`/scripts/components/mediaViewer/videoPlayer/popoutVideoPlayer/popoutVideoPlayer.html?data=${encodeURIComponent(JSON.stringify(this.video.exportData()))}`,
+			"_blank",
+			`location=no,status=no,menubar=no,width=${this.video.getDimensions()[0]},height=${this.video.getDimensions()[1]}`
+		);
+		this.video.pause();
 	}
 
 	togglePlay() {

@@ -1,6 +1,6 @@
 import { escADQ } from "../../../../utils/htmlStatics.js";
 import { clamp, urlWithHttps } from "../../../../utils/utils.js";
-import Ph_VideoWrapper from "../videoWrapper.js";
+import Ph_VideoWrapper, { BasicVideoData } from "../videoWrapper.js";
 
 /**
  * A video with a list of fallback sources
@@ -105,6 +105,13 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 	}
 	getUrl(): string {
 		return this.video.currentSrc;
+	}
+
+	exportData(): BasicVideoData {
+		return {
+			className: "Ph_SimpleVideo",
+			data: this.video.currentSrc
+		};
 	}
 }
 

@@ -1,5 +1,5 @@
 import { urlWithHttps } from "../../../../utils/utils.js";
-import Ph_VideoWrapper from "../videoWrapper.js";
+import Ph_VideoWrapper, { BasicVideoData } from "../videoWrapper.js";
 
 /**
  * A video wrapper for gifs. Very limited compared to videos (not time information, no seeking, no pause only stop).
@@ -102,6 +102,13 @@ export default class Ph_GifVideo extends Ph_VideoWrapper {
 
 	getUrl(): string {
 		return this.gifSrc;
+	}
+
+	exportData(): BasicVideoData {
+		return {
+			className: "Ph_GifVideo",
+			data: this.gifSrc
+		};
 	}
 }
 
