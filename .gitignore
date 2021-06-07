@@ -119,8 +119,14 @@ src/**/*.js
 src/**/*.js.map
 src/**/*.css
 src/**/*.css.map
+cypress/**/*.js
+cypress/**/*.js.map
 
 .vscode
 .idea
 
 src/static/img/not_neded/**/*
+
+cypress/integration/examples
+cypress/screenshots
+cypress/videos

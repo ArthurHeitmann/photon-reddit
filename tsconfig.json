@@ -5,6 +5,14 @@
     "target": "esnext",
     "moduleResolution": "node",
     "sourceMap": true,
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
+    "types": [
+      "cypress"
+    ]
   },
-  "include": ["./src"]
+  "include": ["./src", "./cypress"],
 }
