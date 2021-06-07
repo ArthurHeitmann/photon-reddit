@@ -1,4 +1,5 @@
 import { isElementIn } from "../../../../utils/htmlStuff.js";
+import { hasParams } from "../../../../utils/utils.js";
 import Ph_DropDown, { ButtonLabel } from "../dropDown.js";
 import Ph_DropDownArea from "../dropDownArea/dropDownArea.js";
 
@@ -20,6 +21,7 @@ export default class Ph_DropDownEntry extends HTMLButtonElement {
 	 */
 	constructor(param: DropDownEntryParam, dropDown: Ph_DropDown, dropDownArea: Ph_DropDownArea, parentEntry?: Ph_DropDownEntry) {
 		super();
+		if (!hasParams(arguments)) return;
 
 		this.dropDown = dropDown;
 		this.dropDownArea = dropDownArea;

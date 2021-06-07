@@ -1,3 +1,5 @@
+import { hasParams } from "../../../utils/utils.js";
+
 /**
  * An svg with a path element. The path can be changed, so that it morphs between different paths
  */
@@ -8,6 +10,7 @@ export default class Ph_MorphingImage extends HTMLElement {
 
 	constructor(initPath: string, viewBox: string, isButton = false) {
 		super();
+		if (!hasParams(arguments)) return;
 
 		this.className = "morphingImage  imgWrapper";
 

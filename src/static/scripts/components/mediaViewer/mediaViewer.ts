@@ -3,6 +3,7 @@ import { RedditApiData, RedditApiType } from "../../types/misc.js";
 import { mediaHostsWhiteList } from "../../utils/consts.js";
 import { nonDraggableImage } from "../../utils/htmlStatics.js";
 import { linksToSpa } from "../../utils/htmlStuff.js";
+import { hasParams } from "../../utils/utils.js";
 import { globalSettings } from "../global/photonSettings/photonSettings.js";
 import Ph_ControlsBar from "../misc/controlsBar/controlsBar.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
@@ -227,6 +228,8 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	}
 
 	init(initElements: MediaElement[]) {
+		if (!hasParams(arguments)) return;
+
 		this.mediaElements = initElements;
 
 		const controlSlots: HTMLElement[] = [];
@@ -411,7 +414,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	cleanup() {
 		super.cleanup();
 		this.mediaElements
-			.filter(elem => elem.element instanceof Ph_PhotonBaseElement)
+			?.filter(elem => elem.element instanceof Ph_PhotonBaseElement)
 			.forEach(elem => (elem.element as Ph_PhotonBaseElement).cleanup());
 	}
 

@@ -1,4 +1,5 @@
 import { RedditApiData } from "../../../types/misc.js";
+import { hasParams } from "../../../utils/utils.js";
 import Ph_Toast, { Level } from "../toast/toast.js";
 
 export interface FlairData {
@@ -37,6 +38,7 @@ export default class Ph_Flair extends HTMLElement {
 
 	constructor(data: FlairData, allowEdits: boolean = true) {
 		super();
+		if (!hasParams(arguments)) return;
 
 		if (!data || !data.type)
 			return;

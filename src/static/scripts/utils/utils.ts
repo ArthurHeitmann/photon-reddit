@@ -220,3 +220,7 @@ export function randomString(length: number): string {
 		randStr += randomStringAlphabet[Math.floor(Math.random() * randomStringAlphabet.length)];
 	return randStr;
 }
+
+export function hasParams(params: any[] | IArguments): boolean {
+	return params.length > 0;
+}

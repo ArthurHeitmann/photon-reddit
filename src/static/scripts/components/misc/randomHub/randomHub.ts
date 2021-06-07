@@ -1,5 +1,6 @@
 import { getRandomSubreddit, getRandomSubredditPostUrl } from "../../../api/photonApi.js";
 import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager.js";
+import { hasParams } from "../../../utils/utils.js";
 import Ph_Toast, { Level } from "../toast/toast.js";
 
 enum RandomTarget {
@@ -14,6 +15,7 @@ export default class Ph_RandomHub extends HTMLElement {
 	/** one of: r/random, r/randnsfw, r/{sub}/random */
 	constructor(url: string) {
 		super();
+		if (!hasParams(arguments)) return;
 
 		this.classList.add("randomHub");
 

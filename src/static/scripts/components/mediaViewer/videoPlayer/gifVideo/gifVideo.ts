@@ -1,4 +1,4 @@
-import { urlWithHttps } from "../../../../utils/utils.js";
+import { hasParams, urlWithHttps } from "../../../../utils/utils.js";
 import Ph_VideoWrapper, { BasicVideoData } from "../videoWrapper.js";
 
 /**
@@ -14,6 +14,7 @@ export default class Ph_GifVideo extends Ph_VideoWrapper {
 
 	constructor(src: string) {
 		super();
+		if (!hasParams(arguments)) return;
 
 		src = urlWithHttps(src);
 

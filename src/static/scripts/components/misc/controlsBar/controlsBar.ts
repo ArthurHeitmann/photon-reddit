@@ -1,5 +1,5 @@
 import { nonDraggableImage } from "../../../utils/htmlStatics.js";
-import { deepClone, isJsonEqual } from "../../../utils/utils.js";
+import { deepClone, hasParams, isJsonEqual } from "../../../utils/utils.js";
 import Ph_DropDown from "../dropDown/dropDown.js";
 import Ph_DropDownArea from "../dropDown/dropDownArea/dropDownArea.js";
 import Ph_DropDownEntry, { DropDownEntryParam } from "../dropDown/dropDownEntry/dropDownEntry.js";
@@ -31,6 +31,7 @@ export default class Ph_ControlsBar extends HTMLElement {
 
 	constructor(isInitiallyVisible: boolean) {
 		super();
+		if (!hasParams(arguments)) return;
 
 		this.className = "controls";
 

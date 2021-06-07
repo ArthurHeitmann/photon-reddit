@@ -1,4 +1,5 @@
 import { getLoadingIcon, nonDraggableImage } from "../../../utils/htmlStatics.js";
+import { hasParams } from "../../../utils/utils.js";
 import { globalSettings, ImageLoadingPolicy, PhotonSettings } from "../../global/photonSettings/photonSettings.js";
 import { ControlsLayoutSlots } from "../../misc/controlsBar/controlsBar.js";
 import Ph_PhotonBaseElement from "../../photon/photonBaseElement/photonBaseElement.js";
@@ -26,6 +27,7 @@ export default class Ph_ImageViewer extends Ph_PhotonBaseElement implements Medi
 
 	constructor(initData: ImageInitData) {
 		super();
+		if (!hasParams(arguments)) return;
 
 		this.classList.add("imageViewer")
 

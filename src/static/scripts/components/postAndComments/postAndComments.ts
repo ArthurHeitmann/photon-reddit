@@ -3,7 +3,7 @@ import ViewsStack from "../../historyState/viewsStack.js";
 import { RedditApiType, SortCommentsOrder } from "../../types/misc.js";
 import { getLoadingIcon } from "../../utils/htmlStatics.js";
 import { elementWithClassInTree } from "../../utils/htmlStuff.js";
-import { extractPath, extractQuery } from "../../utils/utils.js";
+import { extractPath, extractQuery, hasParams } from "../../utils/utils.js";
 import Ph_Comment from "../comment/comment.js";
 import Ph_CommentsFeed from "../feed/commentsFeed/commentsFeed.js";
 import Ph_FeedInfo, { FeedType } from "../feed/feedInfo/feedInfo.js";
@@ -62,6 +62,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 	}
 
 	initWithData(data: RedditApiType[]) {
+		if (!hasParams(arguments)) return;
 		this.tmpLoadingIcon?.remove();
 		Ph_ViewState.getViewOf(this)?.saveScroll();
 

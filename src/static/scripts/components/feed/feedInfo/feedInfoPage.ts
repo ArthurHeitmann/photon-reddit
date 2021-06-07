@@ -1,8 +1,10 @@
+import { hasParams } from "../../../utils/utils.js";
 import Ph_FeedInfo, { FeedType } from "./feedInfo.js";
 
 export default class Ph_FeedInfoPage extends HTMLElement {
 	constructor(path: string) {
 		super();
+		if (!hasParams(arguments)) return;
 
 		this.className = "feedInfoPage";
 

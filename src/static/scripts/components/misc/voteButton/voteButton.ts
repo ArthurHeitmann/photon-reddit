@@ -1,3 +1,5 @@
+import { hasParams } from "../../../utils/utils.js";
+
 /**
  * An up- or down-vote button with a cool animation
  */
@@ -6,6 +8,7 @@ export default class Ph_VoteButton extends HTMLButtonElement {
 
 	constructor(isUpVote: boolean) {
 		super();
+		if (!hasParams(arguments)) return;
 
 		this.className = `voteButton transparentButtonAlt ${isUpVote ? "up" : "down"}`;
 

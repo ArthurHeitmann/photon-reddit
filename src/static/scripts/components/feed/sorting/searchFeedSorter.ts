@@ -2,7 +2,7 @@ import { redditApiRequest } from "../../../api/redditApi.js";
 import ViewsStack from "../../../historyState/viewsStack.js";
 import { RedditApiType, SortPostsTimeFrame, SortSearchOrder } from "../../../types/misc.js";
 import { getLoadingIcon } from "../../../utils/htmlStatics.js";
-import { extractQuery, splitPathQuery } from "../../../utils/utils.js";
+import { hasParams, extractQuery, splitPathQuery } from "../../../utils/utils.js";
 import Ph_DropDown, { ButtonLabel, DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Ph_UniversalFeed from "../universalFeed/universalFeed.js";
@@ -14,6 +14,7 @@ export default class Ph_SearchFeedSorter extends HTMLElement {
 
 	constructor(feed: Ph_UniversalFeed) {
 		super();
+		if (!hasParams(arguments)) return;
 
 		this.className = "feedSorter";
 		this.feed = feed;

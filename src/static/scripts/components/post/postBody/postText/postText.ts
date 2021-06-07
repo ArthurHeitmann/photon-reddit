@@ -2,6 +2,7 @@ import { editCommentOrPost } from "../../../../api/redditApi.js";
 import { RedditApiData } from "../../../../types/misc.js";
 import { emojiFlagsToImages, escHTML } from "../../../../utils/htmlStatics.js";
 import { elementWithClassInTree } from "../../../../utils/htmlStuff.js";
+import { hasParams } from "../../../../utils/utils.js";
 import Ph_MarkdownForm from "../../../misc/markdownForm/markdownForm.js";
 import Ph_Toast, { Level } from "../../../misc/toast/toast.js";
 import Ph_RedditPoll from "./redditPoll.js";
@@ -19,6 +20,7 @@ export default class Ph_PostText extends HTMLElement {
 
 	constructor(postData: RedditApiData) {
 		super();
+		if (!hasParams(arguments)) return;
 
 		const bodyHtml = postData["selftext_html"] || "";
 		const bodyMarkDown = postData["selftext"] || "";

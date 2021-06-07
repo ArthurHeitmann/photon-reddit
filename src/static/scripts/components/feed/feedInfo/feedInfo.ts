@@ -16,7 +16,7 @@ import { RedditApiType } from "../../../types/misc.js";
 import { isLoggedIn, StoredData, thisUser } from "../../../utils/globals.js";
 import { $class, $cssAr, emojiFlagsToImages, escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { classInElementTree, linksToSpa, tagInElementTree } from "../../../utils/htmlStuff.js";
-import { numberToShort, stringSortComparer, throttle } from "../../../utils/utils.js";
+import { hasParams, numberToShort, stringSortComparer, throttle } from "../../../utils/utils.js";
 import Ph_BetterButton from "../../global/betterElements/betterButton.js";
 import Ph_Header from "../../global/header/header.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
@@ -124,6 +124,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 	/** should not be called from outside this file */
 	constructor(feedType: FeedType, feedUrl: string) {
 		super();
+		if (!hasParams(arguments)) return;
 
 		this.feedUrl = feedUrl;
 		this.focusLossHideRef = e => {

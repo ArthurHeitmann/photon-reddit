@@ -3,7 +3,7 @@ import { RedditApiType } from "../../../types/misc.js";
 import { ensurePageLoaded, isLoggedIn, thisUser } from "../../../utils/globals.js";
 import { $class, $css, escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { linksToSpa } from "../../../utils/htmlStuff.js";
-import { numberToShort } from "../../../utils/utils.js";
+import { hasParams, numberToShort } from "../../../utils/utils.js";
 import Ph_Readable from "../../feed/feedItem/readable/readable.js";
 import { globalSettings, PhotonSettings } from "../../global/photonSettings/photonSettings.js";
 import Ph_UserDropDown from "../../global/userDropDown/userDropDown.js";
@@ -17,6 +17,7 @@ export default class Ph_MessageNotification extends HTMLElement {
 
 	constructor(newMessages: RedditApiType[]) {
 		super();
+		if (!hasParams(arguments)) return;
 
 		this.classList.add("messageNotification");
 		this.classList.add("shadow-4");

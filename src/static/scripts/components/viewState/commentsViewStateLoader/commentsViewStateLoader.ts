@@ -1,5 +1,6 @@
 import ViewsStack from "../../../historyState/viewsStack.js";
 import { HistoryState, RedditApiType } from "../../../types/misc.js";
+import { hasParams } from "../../../utils/utils.js";
 import Ph_Post from "../../post/post.js";
 import PostDoubleLink from "../../post/postDoubleLink/postDoubleLink.js";
 import Ph_PostAndComments from "../../postAndComments/postAndComments.js";
@@ -15,6 +16,7 @@ export default class Ph_CommentsViewStateLoader extends Ph_ViewState {
 
 	constructor(state: HistoryState, postHint: PostDoubleLink) {
 		super(state);
+		if (!hasParams(arguments)) return;
 
 		this.addEventListener("click", this.onBackAreaClick);
 		this.post = postHint.post;

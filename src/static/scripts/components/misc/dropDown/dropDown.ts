@@ -1,3 +1,4 @@
+import { hasParams } from "../../../utils/utils.js";
 import Ph_DropDownArea from "./dropDownArea/dropDownArea.js";
 import { DropDownEntryParam } from "./dropDownEntry/dropDownEntry.js";
 
@@ -16,6 +17,7 @@ export default class Ph_DropDown extends HTMLElement {
 	 */
 	constructor(entryParams: DropDownEntryParam[], buttonLabel: ButtonLabel, dirX: DirectionX, dirY: DirectionY, sameLineY: boolean) {
 		super();
+		if (!hasParams(arguments)) return;
 
 		this.classList.add("dropDown");
 

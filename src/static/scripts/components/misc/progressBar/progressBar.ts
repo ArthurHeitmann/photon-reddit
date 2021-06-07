@@ -1,4 +1,4 @@
-import { throttle } from "../../../utils/utils.js";
+import { hasParams, throttle } from "../../../utils/utils.js";
 
 /**
  * A progress bar that can optionally be changed/dragged by the user
@@ -9,6 +9,7 @@ export default class Ph_ProgressBar extends HTMLElement {
 
 	constructor(draggable = false, throttleMs = 100) {
 		super();
+		if (!hasParams(arguments)) return;
 
 		this.className = "progressBar";
 		const progressBar = document.createElement("div");

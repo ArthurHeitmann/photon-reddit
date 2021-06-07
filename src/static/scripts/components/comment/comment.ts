@@ -12,7 +12,7 @@ import Votable from "../../types/votable.js";
 import { thisUser } from "../../utils/globals.js";
 import { emojiFlagsToImages, escADQ } from "../../utils/htmlStatics.js";
 import { elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff.js";
-import { isObjectEmpty, numberToShort, timePassedSinceStr } from "../../utils/utils.js";
+import { hasParams, isObjectEmpty, numberToShort, timePassedSinceStr } from "../../utils/utils.js";
 import Ph_CommentsFeed from "../feed/commentsFeed/commentsFeed.js";
 import Ph_Readable from "../feed/feedItem/readable/readable.js";
 import Ph_AwardsInfo from "../misc/awardsInfo/awardsInfo.js";
@@ -52,12 +52,13 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 	 */
 	constructor(commentData: RedditApiType, isChild: boolean, isInFeed: boolean, post?: Ph_Post) {
 		super(
-			commentData.data["name"],
-			commentData.data["permalink"] ? commentData.data["permalink"] + "?context=3" : commentData.data["context"],
+			commentData?.data["name"],
+			commentData?.data["permalink"] ? commentData?.data["permalink"] + "?context=3" : commentData?.data["context"],
 			isInFeed,
-			"first_message" in commentData.data
-			, !commentData.data["new"]
+			commentData ? "first_message" in commentData.data : false,
+			!commentData?.data["new"]
 		);
+		if (!hasParams(arguments)) return;
 
 		this.classList.add("comment");
 		if (!isChild)

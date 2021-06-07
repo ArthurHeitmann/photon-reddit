@@ -1,6 +1,6 @@
 import { RedditApiData } from "../../../../types/misc.js";
 import { escHTML } from "../../../../utils/htmlStatics.js";
-import { numberToShort, timePassedSince, timePeriodReadable } from "../../../../utils/utils.js";
+import { hasParams, numberToShort, timePassedSince, timePeriodReadable } from "../../../../utils/utils.js";
 
 interface PollData {
 	user_selection: string,
@@ -16,6 +16,7 @@ interface PollData {
 export default class Ph_RedditPoll extends HTMLElement {
 	 constructor(postData: RedditApiData) {
 		 super();
+		 if (!hasParams(arguments)) return;
 
 		 const pollData = postData["poll_data"] as PollData;
 

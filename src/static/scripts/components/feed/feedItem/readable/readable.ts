@@ -3,6 +3,7 @@ import { pushLinkToHistoryComb } from "../../../../historyState/historyStateMana
 import { FullName } from "../../../../types/votable.js";
 import { thisUser } from "../../../../utils/globals.js";
 import { $class, $css } from "../../../../utils/htmlStatics.js";
+import { hasParams } from "../../../../utils/utils.js";
 import Ph_UserDropDown from "../../../global/userDropDown/userDropDown.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../../misc/dropDown/dropDown.js";
 import Ph_Toast, { Level } from "../../../misc/toast/toast.js";
@@ -16,6 +17,7 @@ export default abstract class Ph_Readable extends Ph_FeedItem implements FullNam
 	
 	protected constructor(id: string, link: string, isInFeed: boolean, canBeRead: boolean, isRead: boolean) {
 		super(id, link, isInFeed);
+		if (!hasParams(arguments)) return;
 
 		this.canBeRead = canBeRead;
 		this.isRead = isRead;

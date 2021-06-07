@@ -1,5 +1,5 @@
 import { escADQ } from "../../../../utils/htmlStatics.js";
-import { clamp, urlWithHttps } from "../../../../utils/utils.js";
+import { clamp, hasParams, urlWithHttps } from "../../../../utils/utils.js";
 import Ph_VideoWrapper, { BasicVideoData } from "../videoWrapper.js";
 
 /**
@@ -13,6 +13,7 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 	/** @param sourcesArray browser first tries to load src 0, when fails try src 1, ... */
 	constructor(sourcesArray: { src: string, type: string }[]) {
 		super();
+		if (!hasParams(arguments)) return;
 
 		sourcesArray.forEach(src => src.src = urlWithHttps(src.src));
 

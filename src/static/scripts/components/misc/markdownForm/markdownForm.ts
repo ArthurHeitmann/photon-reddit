@@ -1,3 +1,5 @@
+import { hasParams } from "../../../utils/utils.js";
+
 /**
  * Not actually markdown yet, just plain text (but hopefully in the future)
  */
@@ -12,6 +14,7 @@ export default class Ph_MarkdownForm extends HTMLElement {
 	 */
 	constructor(submitBtnText: string, hasCancelBtn: boolean) {
 		super();
+		if (!hasParams(arguments)) return;
 
 		this.classList.add("markdownForm")
 

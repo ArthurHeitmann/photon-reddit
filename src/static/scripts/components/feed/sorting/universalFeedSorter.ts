@@ -11,7 +11,7 @@ import {
 } from "../../../types/misc.js";
 import { thisUser } from "../../../utils/globals.js";
 import { getLoadingIcon } from "../../../utils/htmlStatics.js";
-import { extractPath, extractQuery, splitPathQuery } from "../../../utils/utils.js";
+import { hasParams, extractPath, extractQuery, splitPathQuery } from "../../../utils/utils.js";
 import Ph_DropDown, { ButtonLabel, DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import { DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
@@ -27,6 +27,7 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 
 	constructor(feed: Ph_UniversalFeed, feedType: FeedType, baseUrl: string) {
 		super();
+		if (!hasParams(arguments)) return;
 
 		this.feedType = feedType;
 		this.feed = feed;

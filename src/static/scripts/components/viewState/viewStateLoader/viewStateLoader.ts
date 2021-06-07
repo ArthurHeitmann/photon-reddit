@@ -1,5 +1,6 @@
 import ViewsStack from "../../../historyState/viewsStack.js";
 import { HistoryState } from "../../../types/misc.js";
+import { hasParams } from "../../../utils/utils.js";
 import { Ph_ViewState } from "../viewState.js";
 
 /**
@@ -8,6 +9,7 @@ import { Ph_ViewState } from "../viewState.js";
 export default class Ph_ViewStateLoader extends Ph_ViewState {
 	constructor(state: HistoryState) {
 		super(state);
+		if (!hasParams(arguments)) return;
 		this.innerHTML = `<img src="/img/loading.svg" alt="loading" class="loadingIcon">`;
 	}
 

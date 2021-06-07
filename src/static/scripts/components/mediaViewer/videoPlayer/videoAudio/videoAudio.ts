@@ -1,5 +1,5 @@
 import { escADQ } from "../../../../utils/htmlStatics.js";
-import { clamp, urlWithHttps } from "../../../../utils/utils.js";
+import { clamp, hasParams, urlWithHttps } from "../../../../utils/utils.js";
 import Ph_VideoWrapper, { BasicVideoData } from "../videoWrapper.js";
 
 /**
@@ -16,6 +16,7 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 
 	constructor(videoSources: { src: string, type: string }[], audioSources: { src: string, type: string }[]) {
 		super();
+		if (!hasParams(arguments)) return;
 
 		videoSources.forEach(src => src.src = urlWithHttps(src.src));
 		audioSources.forEach(src => src.src = urlWithHttps(src.src));

@@ -3,7 +3,7 @@ import { youtubeDlUrl } from "../../../api/photonApi.js";
 import { RedditApiType } from "../../../types/misc.js";
 import { $tagAr, escHTML } from "../../../utils/htmlStatics.js";
 import { classInElementTree, isElementIn } from "../../../utils/htmlStuff.js";
-import { secondsToVideoTime } from "../../../utils/utils.js";
+import { hasParams, secondsToVideoTime } from "../../../utils/utils.js";
 import { globalSettings } from "../../global/photonSettings/photonSettings.js";
 import Ph_ControlsBar, { ControlsLayoutSlots } from "../../misc/controlsBar/controlsBar.js";
 import Ph_ProgressBar from "../../misc/progressBar/progressBar.js";
@@ -220,6 +220,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 
 	constructor(url: string) {
 		super();
+		if (!hasParams(arguments)) return;
 
 		this.classList.add("videoPlayer");
 		this.url = url;

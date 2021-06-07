@@ -18,6 +18,7 @@ import { hasPostsBeenSeen, markPostAsSeen, thisUser } from "../../utils/globals.
 import { emojiFlagsToImages, escADQ, escHTML, getLoadingIcon } from "../../utils/htmlStatics.js";
 import { linksToSpa } from "../../utils/htmlStuff.js";
 import {
+	hasParams,
 	isObjectEmpty,
 	numberToShort as numberToShort,
 	numberToShortStr,
@@ -65,7 +66,8 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 	postFlair: Ph_Flair;
 
 	constructor(postData: RedditApiType, isInFeed: boolean, feedUrl?: string) {
-		super(postData.data["name"], postData.data["permalink"], isInFeed);
+		super(postData?.data["name"], postData?.data["permalink"], isInFeed);
+		if (!hasParams(arguments)) return;
 
 		if (postData.kind !== "t3")
 			throw "Invalid comment data type";

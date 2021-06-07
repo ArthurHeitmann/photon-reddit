@@ -4,7 +4,7 @@ import { RedditApiType } from "../../../types/misc.js";
 import { fakeSubreddits } from "../../../utils/consts.js";
 import { escHTML, getLoadingIcon } from "../../../utils/htmlStatics.js";
 import { elementWithClassInTree } from "../../../utils/htmlStuff.js";
-import { sleep, throttle, waitForFullScreenExit } from "../../../utils/utils.js";
+import { hasParams, sleep, throttle, waitForFullScreenExit } from "../../../utils/utils.js";
 import Ph_Comment from "../../comment/comment.js";
 import Ph_Message from "../../message/message.js";
 import { ButtonLabel } from "../../misc/dropDown/dropDown.js";
@@ -42,6 +42,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 
 	constructor(posts: RedditApiType, requestUrl: string) {
 		super();
+		if (!hasParams(arguments)) return;
 
 		this.beforeData = posts.data.before;
 		this.afterData = posts.data.after;

@@ -3,7 +3,7 @@ import { RedditApiType } from "../../types/misc.js";
 import { thisUser } from "../../utils/globals.js";
 import { emojiFlagsToImages, escADQ, escHTML } from "../../utils/htmlStatics.js";
 import { linksToSpa } from "../../utils/htmlStuff.js";
-import { timePassedSinceStr } from "../../utils/utils.js";
+import { hasParams, timePassedSinceStr } from "../../utils/utils.js";
 import Ph_Readable from "../feed/feedItem/readable/readable.js";
 import Ph_MarkdownForm from "../misc/markdownForm/markdownForm.js";
 import Ph_Toast, { Level } from "../misc/toast/toast.js";
@@ -19,6 +19,7 @@ export default class Ph_Message extends Ph_Readable {
 	constructor(messageData: RedditApiType, isInFeed: boolean, isReply: boolean = false) {
 		super(messageData.data["name"], isInFeed ? `/message/messages/${messageData.data["id"]}` : null, !isReply,
 			messageData.data["dest"] === thisUser.name, !messageData.data["new"]);
+		if (!hasParams(arguments)) return;
 
 		this.fullName = this.itemId;
 		this.classList.add("message");

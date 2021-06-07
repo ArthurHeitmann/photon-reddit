@@ -1,3 +1,5 @@
+import { hasParams } from "../../../utils/utils.js";
+
 /**
  * A set of images that can be replaced by each other
  */
@@ -7,6 +9,7 @@ export default class Ph_SwitchingImage extends HTMLElement {
 
 	constructor(imgDictionary: { src: string, key: any }[], isButton = false) {
 		super();
+		if (!hasParams(arguments)) return;
 
 		this.className = "switchableImg imgWrapper";
 		this.setAttribute("draggable", "false");

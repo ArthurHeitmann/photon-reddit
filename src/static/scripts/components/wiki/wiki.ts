@@ -1,6 +1,7 @@
 import { RedditApiType } from "../../types/misc.js";
 import { emojiFlagsToImages } from "../../utils/htmlStatics.js";
 import { elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff.js";
+import { hasParams } from "../../utils/utils.js";
 import Ph_FeedInfo, { FeedType } from "../feed/feedInfo/feedInfo.js";
 import { Ph_ViewState } from "../viewState/viewState.js";
 
@@ -10,6 +11,7 @@ import { Ph_ViewState } from "../viewState/viewState.js";
 export default class Ph_Wiki extends HTMLElement {
 	constructor(wikiData: RedditApiType) {
 		super();
+		if (!hasParams(arguments)) return;
 
 		this.className = "wiki";
 

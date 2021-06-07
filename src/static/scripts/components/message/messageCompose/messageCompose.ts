@@ -1,4 +1,5 @@
 import { redditApiRequest } from "../../../api/redditApi.js";
+import { hasParams } from "../../../utils/utils.js";
 import Ph_MarkdownForm from "../../misc/markdownForm/markdownForm.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 
@@ -9,6 +10,7 @@ export default class Ph_MessageCompose extends HTMLElement {
 
 	constructor(params: { receiver?: string, subject?: string, message?: string }) {
 		super();
+		if (!hasParams(arguments)) return;
 
 		this.classList.add("messageCompose");
 

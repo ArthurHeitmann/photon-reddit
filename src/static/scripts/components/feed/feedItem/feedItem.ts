@@ -1,4 +1,5 @@
 import { isElementInViewport } from "../../../utils/htmlStatics.js";
+import { hasParams } from "../../../utils/utils.js";
 import Ph_PhotonBaseElement from "../../photon/photonBaseElement/photonBaseElement.js";
 
 export default class Ph_FeedItem extends Ph_PhotonBaseElement {
@@ -9,6 +10,7 @@ export default class Ph_FeedItem extends Ph_PhotonBaseElement {
 
 	constructor(id: string, link: string, isInFeed: boolean) {
 		super();
+		if (!hasParams(arguments)) return;
 
 		this.itemId = id;
 		this.link = link;

@@ -1,3 +1,5 @@
+import { hasParams } from "../../../utils/utils.js";
+
 export interface ToastOptions {
 	/** if > 0 --> remove toast after n ms */
 	timeout?: number,
@@ -28,6 +30,7 @@ export default class Ph_Toast extends HTMLElement {
 	 */
 	constructor(level: Level, displayHtml: string, options: ToastOptions = {}) {
 		super();
+		if (!hasParams(arguments)) return;
 
 		if ("groupId" in options) {
 			if (options.groupId in Ph_Toast.activeToasts) {

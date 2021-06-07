@@ -1,9 +1,11 @@
 import { RedditApiType } from "../../../types/misc.js";
+import { hasParams } from "../../../utils/utils.js";
 import Ph_Post from "../post.js";
 
 export default class Ph_PostCrossposts extends HTMLElement {
 	constructor(data: RedditApiType[]) {
 		super();
+		if (!hasParams(arguments)) return;
 
 		this.classList.add("postAndComments");
 

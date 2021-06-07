@@ -1,6 +1,7 @@
 import { HistoryState } from "../../types/misc.js";
 import { $tag } from "../../utils/htmlStatics.js";
 import { elementWithClassInTree } from "../../utils/htmlStuff.js";
+import { hasParams } from "../../utils/utils.js";
 import Ph_Header from "../global/header/header.js";
 import Ph_PhotonBaseElement from "../photon/photonBaseElement/photonBaseElement.js";
 
@@ -17,6 +18,7 @@ export abstract class Ph_ViewState extends Ph_PhotonBaseElement {
 
 	protected constructor(state: HistoryState) {
 		super();
+		if (!hasParams(arguments)) return;
 
 		this.className = "viewState";
 

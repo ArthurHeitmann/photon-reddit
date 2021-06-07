@@ -1,6 +1,7 @@
 import { RedditApiData, RedditApiType } from "../../../types/misc.js";
 import { escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { linksToSpa } from "../../../utils/htmlStuff.js";
+import { hasParams } from "../../../utils/utils.js";
 import Ph_MediaViewer from "../../mediaViewer/mediaViewer.js";
 import Ph_PostText from "./postText/postText.js";
 
@@ -21,6 +22,7 @@ export default class Ph_PostBody extends HTMLElement {
 	}
 
 	init(postData: RedditApiType) {
+		if (!hasParams(arguments)) return;
 		if (this.isInitialized)
 			return;
 		this.isInitialized = true;
