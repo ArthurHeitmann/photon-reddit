@@ -370,7 +370,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 				navigator.clipboard.writeText(`${location.origin + this.link}`);
 				break;
 			case "reddit link":
-				navigator.clipboard.writeText(`reddit.com${this.link}`);
+				navigator.clipboard.writeText(`https://reddit.com${this.link}`);
 				break;
 			default:
 				throw "Invalid share type";
