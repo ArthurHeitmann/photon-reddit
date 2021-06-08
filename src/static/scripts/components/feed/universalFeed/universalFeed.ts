@@ -125,6 +125,9 @@ export default class Ph_UniversalFeed extends HTMLElement {
 				new Ph_Toast(Level.error, `Error making feed item`);
 			}
 		}
+		if (posts.data.children.length === 0) {
+			this.innerHTML = `<h1>Nothing here</h1>`
+		}
 		this.checkIfFeedEmpty();
 	}
 
