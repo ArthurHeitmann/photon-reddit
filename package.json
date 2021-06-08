@@ -12,7 +12,8 @@
     "watch-tsc": "tsc -w",
     "watch": "npm run watch-sass & npm run watch-tsc",
     "watch-wsl2": "npm run watch-sass-wsl2 & npm run watch-tsc",
-    "version": "node other/changeVersion.mjs"
+    "version": "node other/changeVersion.mjs",
+    "cy-open": "cypress open"
   },
   "compilerOption": {
     "typesRoot": [
