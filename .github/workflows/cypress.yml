@@ -23,11 +23,15 @@
 #          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
 #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 name: Cypress tests
-on: [push]
+on:
+  push:
+    branches:
+      - deployed
+      - cypress-setup
 jobs:
   cypress-run:
     name: Cypress run
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -37,8 +41,9 @@ jobs:
         with:
           build: npm run build
           start: npm start
-          spec: cypress/**/*.js
-#          record: true
+          env: true
+          spec: cypress/**/*.ts
+          record: true
         env:
           # pass the Dashboard record key as an environment variable
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
