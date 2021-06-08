@@ -37,6 +37,7 @@ jobs:
         with:
           build: npm run build
           start: npm start
+          spec: cypress/**/*.js
 #          record: true
         env:
           # pass the Dashboard record key as an environment variable
