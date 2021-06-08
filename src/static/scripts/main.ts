@@ -64,6 +64,7 @@ async function init(): Promise<void> {
 		await thisUserFetch;
 
 	window.dispatchEvent(new Event("ph-page-ready"));
+	window["isReady"] = true;
 	if (localStorage["firstTimeFlag"] !== "set")
 		localStorage["firstTimeFlag"] = "set";
 

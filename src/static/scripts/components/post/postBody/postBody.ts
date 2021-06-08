@@ -11,8 +11,9 @@ import Ph_PostText from "./postText/postText.js";
 export default class Ph_PostBody extends HTMLElement {
 	isInitialized = false;
 
-	constructor(postData?: RedditApiType) {
+	constructor(postData: RedditApiType | undefined) {
 		super();
+		if (!hasParams(arguments)) return;
 
 		this.classList.add("content");
 		this.classList.add("aspect-ratio-16-9-wrapper");

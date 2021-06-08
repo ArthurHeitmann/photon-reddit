@@ -3,7 +3,7 @@ import ViewsStack from "../../historyState/viewsStack.js";
 import { RedditApiType, SortCommentsOrder } from "../../types/misc.js";
 import { getLoadingIcon } from "../../utils/htmlStatics.js";
 import { elementWithClassInTree } from "../../utils/htmlStuff.js";
-import { extractPath, extractQuery, hasParams } from "../../utils/utils.js";
+import { extractPath, extractQuery, hasHTML, hasParams } from "../../utils/utils.js";
 import Ph_Comment from "../comment/comment.js";
 import Ph_CommentsFeed from "../feed/commentsFeed/commentsFeed.js";
 import Ph_FeedInfo, { FeedType } from "../feed/feedInfo/feedInfo.js";
@@ -26,8 +26,9 @@ export default class Ph_PostAndComments extends HTMLElement {
 	areHeaderElementsSet = false;
 	firstTimeConnected = false;
 
-	constructor(data?: RedditApiType[], postHint?: { post: Ph_Post, subredditPrefixed: string, userPrefixed: string }) {
+	constructor(data: RedditApiType[], postHint?: { post: Ph_Post, subredditPrefixed: string, userPrefixed: string }) {
 		super();
+		if (!hasParams(arguments)) return;
 
 		this.classList.add("postAndComments");
 
@@ -109,6 +110,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 	}
 
 	connectedCallback() {
+		if (!hasHTML(this)) return;
 		if (this.firstTimeConnected)
 			return;
 		setTimeout(() => document.scrollingElement.scrollTo({ top: 0 }), 0);

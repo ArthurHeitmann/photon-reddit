@@ -4,7 +4,7 @@ import { fakeSubreddits } from "../../../utils/consts.js";
 import { ensurePageLoaded, thisUser } from "../../../utils/globals.js";
 import { escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { elementWithClassInTree, isElementIn, linksToSpa } from "../../../utils/htmlStuff.js";
-import { numberToShort } from "../../../utils/utils.js";
+import { hasHTML, numberToShort } from "../../../utils/utils.js";
 import Ph_Header from "../header/header.js";
 
 /**
@@ -18,6 +18,7 @@ export default class Ph_UserDropDown extends HTMLElement {
 
 	constructor() {
 		super();
+		if (hasHTML(this)) return;
 
 		this.className = "userDropDown";
 

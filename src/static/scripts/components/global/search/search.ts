@@ -5,7 +5,7 @@ import { RedditApiType, SortPostsTimeFrame, SortSearchOrder } from "../../../typ
 import { isLoggedIn } from "../../../utils/globals.js";
 import { escADQ, getLoadingIcon } from "../../../utils/htmlStatics.js";
 import { elementWithClassInTree, isElementIn, linksToSpa } from "../../../utils/htmlStuff.js";
-import { extractPath, extractQuery, throttle } from "../../../utils/utils.js";
+import { extractPath, extractQuery, hasHTML, throttle } from "../../../utils/utils.js";
 import Ph_DropDown, { ButtonLabel, DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import { DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_Flair from "../../misc/flair/flair.js";
@@ -36,6 +36,8 @@ export default class Ph_Search extends HTMLElement {
 	}
 
 	connectedCallback() {
+		if (hasHTML(this)) return;
+
 		this.classList.add("search");
 
 		this.quickSearchThrottled = throttle(this.quickSearch.bind(this), 750, { leading: false, trailing: true });

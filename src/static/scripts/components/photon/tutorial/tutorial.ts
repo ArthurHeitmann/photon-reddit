@@ -8,6 +8,7 @@ import {
 	enableMainPointerEvents,
 	enableMainScroll
 } from "../../../utils/htmlStatics.js";
+import { hasHTML } from "../../../utils/utils.js";
 import Ph_Header from "../../global/header/header.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 
@@ -153,6 +154,7 @@ export default class Ph_Tutorial extends HTMLElement {
 
 	constructor() {
 		super();
+		if (hasHTML(this)) return;
 
 		this.className = "tutorial";
 

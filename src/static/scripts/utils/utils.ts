@@ -221,6 +221,10 @@ export function randomString(length: number): string {
 	return randStr;
 }
 
-export function hasParams(params: any[] | IArguments): boolean {
+export function hasParams(params: IArguments): boolean {
 	return params.length > 0;
+}
+
+export function hasHTML(elem: Element): boolean {
+	return elem.innerHTML !== "";
 }

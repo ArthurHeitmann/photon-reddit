@@ -115,7 +115,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 
 
 
-		this.postBody = new Ph_PostBody();
+		this.postBody = new Ph_PostBody(undefined);
 		if (!isInFeed)
 			this.initPostBody(postData);
 

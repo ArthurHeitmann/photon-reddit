@@ -1,5 +1,6 @@
 import { getChangelog } from "../../../api/photonApi.js";
 import { disableMainScroll, enableMainScroll, getLoadingIcon } from "../../../utils/htmlStatics.js";
+import { hasHTML } from "../../../utils/utils.js";
 import { photonWebVersion } from "../../../utils/version.js";
 import VersionNumber from "../../../utils/versionNumber.js";
 
@@ -21,6 +22,8 @@ export default class Ph_Changelog extends HTMLElement {
 	}
 
 	connectedCallback() {
+		if (hasHTML(this)) return;
+
 		this.classList.add("changelog");
 		this.classList.add("remove");
 

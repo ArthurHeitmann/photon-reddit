@@ -1,6 +1,7 @@
 import { ViewChangeData } from "../../../historyState/viewsStack.js";
 import { SVGAnimateElement } from "../../../types/misc.js";
 import { $class } from "../../../utils/htmlStatics.js";
+import { hasHTML } from "../../../utils/utils.js";
 import Ph_DropDownArea from "../../misc/dropDown/dropDownArea/dropDownArea.js";
 import Ph_PhotonSettings from "../photonSettings/photonSettings.js";
 import Ph_Search from "../search/search.js";
@@ -23,12 +24,15 @@ export default class Ph_Header extends HTMLElement {
 
 	constructor() {
 		super();
+		if (hasHTML(this)) return;
 
 		window.addEventListener("ph-view-change", (e: CustomEvent) =>
 			this.setFeedElements((e.detail as ViewChangeData).viewState.headerElements));
 	}
 
 	connectedCallback() {
+		if (hasHTML(this)) return;
+
 		this.classList.add("header");
 
 		this.settings = document.body.appendChild(new Ph_PhotonSettings());

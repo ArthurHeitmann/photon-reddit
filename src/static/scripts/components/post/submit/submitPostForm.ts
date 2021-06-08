@@ -3,6 +3,7 @@ import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager
 import { thisUser } from "../../../utils/globals.js";
 import { emojiFlagsToImages } from "../../../utils/htmlStatics.js";
 import { linksToSpa } from "../../../utils/htmlStuff.js";
+import { hasHTML } from "../../../utils/utils.js";
 import Ph_FeedInfo, { FeedType } from "../../feed/feedInfo/feedInfo.js";
 import Ph_DropDown, { ButtonLabel, DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import { DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
@@ -56,6 +57,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 
 	constructor() {
 		super();
+		if (hasHTML(this)) return;
 
 		this.className = "submitPost";
 

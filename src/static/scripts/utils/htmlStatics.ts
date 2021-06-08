@@ -39,7 +39,6 @@ export function $cssAr(query: string): Array<HTMLElement> {
 	return Array.from(document.querySelectorAll(query));
 }
 
-
 Object.defineProperty(HTMLElement.prototype, "$id", {
 	value: function(idName) {
 		return this.getElementById(idName);
