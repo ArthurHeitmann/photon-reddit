@@ -19,8 +19,8 @@ jobs:
         with:
           build: npm run build
           start: npm start
-          spec: cypress/**/*.ts
           record: true
+          spec: cypress/**/*.ts
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
