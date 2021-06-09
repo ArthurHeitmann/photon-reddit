@@ -33,13 +33,15 @@ jobs:
     name: Cypress run
     runs-on: ubuntu-latest
     steps:
+      - uses: hmarr/debug-action@v2
+
       - name: Checkout
         uses: actions/checkout@v2
 
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
-          build: npm run build && echo ${{ secrets.CYPRESS_RECORD_KEY }}
+          build: npm run build
           start: npm start
           spec: cypress/**/*.ts
           record: true
