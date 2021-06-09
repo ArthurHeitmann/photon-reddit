@@ -252,6 +252,8 @@ export default class Ph_Tutorial extends HTMLElement {
 
 		this.nextButton.classList.toggle("remove", this.currentStepIndex === tutorialDescription.steps.length - 1);
 		this.prevButton.classList.toggle("remove", this.currentStepIndex === 0);
+		this.classList.toggle("isLast", this.currentStepIndex === tutorialDescription.steps.length - 1);
+		this.classList.toggle("isFirst", this.currentStepIndex === 0);
 	}
 
 	setUpdateInterval(currentStep: TutorialStep) {
