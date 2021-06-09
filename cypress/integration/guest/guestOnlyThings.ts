@@ -1,4 +1,4 @@
-import { loadPage } from "../../support/utils.js";
+import { hideHeader, loadPage } from "../../support/utils.js";
 
 const viewportSize = {
 	width: -1,
@@ -21,7 +21,7 @@ describe("Guest only things", () => {
 		cy.get("ph-header button").contains("Login")
 			.should("be.visible");
 
-		cy.get("ph-header").trigger("mouseleave");
+		hideHeader();
 		cy.scrollTo(0, 0);
 
 		// upvote should fail
@@ -49,7 +49,7 @@ describe("Guest only things", () => {
 })
 
 function tutorialStep() {
-	cy.wait(200);
+	cy.wait(50);
 	cy.get("@tutorial").then((tutorial) => {
 		// First step
 		if (tutorial.hasClass("isFirst")) {

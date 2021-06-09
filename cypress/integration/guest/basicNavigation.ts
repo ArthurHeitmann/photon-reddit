@@ -1,4 +1,4 @@
-import { loadPage } from "../../support/utils.js";
+import { loadPage, showHeader } from "../../support/utils.js";
 
 describe("Basic Navigation", () => {
 	it("A bit of everything", () => {
@@ -23,7 +23,7 @@ describe("Basic Navigation", () => {
 		});
 
 		// open subreddit info
-		cy.get("ph-header").trigger("mouseenter", { force: true });
+		showHeader();
 		cy.get("ph-header button.showInfo[data-feed-type=subreddit]")
 			.click();
 
@@ -40,7 +40,7 @@ describe("Basic Navigation", () => {
 		});
 
 		// open same feed info again
-		cy.get("ph-header").trigger("mouseenter", { force: true });
+		showHeader();
 		cy.get("ph-header button.showInfo[data-feed-type=subreddit]").click();
 		cy.get("ph-feed-info:not(.remove) .title").invoke("text")
 			.should(text => expect(text).to.have.length.gt(1));
@@ -61,7 +61,7 @@ describe("Basic Navigation", () => {
 		cy.get(".viewState:not(.hide)").click({ force: true });
 
 		// search for and go to r/AskReddit
-		cy.get("ph-header").trigger("mouseenter", { force: true });
+		showHeader();
 		cy.get("ph-search input[type=text]").type("r/AskReddit");
 		cy.get("ph-search .modeButton").contains("r/").should("have.class", "checked");
 		cy.get("ph-search .resultsWrapper").children().eq(0).as("askRedditLink");
@@ -72,7 +72,7 @@ describe("Basic Navigation", () => {
 		cy.get("@askRedditLink").click()
 		cy.url().should("contain", "/r/AskReddit")
 
-		cy.get("ph-header").trigger("mouseenter", { force: true });
+		showHeader();
 		cy.get("ph-search input[type=text]").focus();
 		cy.get("ph-search .expandedOptions [for=limitToSubreddit]")
 			.should("be.visible")

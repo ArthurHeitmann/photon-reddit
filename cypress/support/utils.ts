@@ -5,3 +5,11 @@ export function loadPage(url: string) {
 			return cy.window().its("isReady", { timeout: 80000 }).should("eq", true);
 		});
 }
+
+export function showHeader() {
+	return cy.get("ph-header").trigger("mouseenter", { force: true });
+}
+
+export function hideHeader() {
+	cy.get("ph-header").trigger("mouseleave");
+}
