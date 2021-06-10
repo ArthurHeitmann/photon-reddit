@@ -1,10 +1,12 @@
 import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager.js";
 import ViewsStack from "../../../historyState/viewsStack.js";
+import { RedditApiType } from "../../../types/misc.js";
 import { fakeSubreddits } from "../../../utils/consts.js";
 import { ensurePageLoaded, thisUser } from "../../../utils/globals.js";
 import { escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { elementWithClassInTree, isElementIn, linksToSpa } from "../../../utils/htmlStuff.js";
 import { hasHTML, numberToShort } from "../../../utils/utils.js";
+import Ph_FeedLink from "../../link/feedLink/feedLink.js";
 import Ph_Header from "../header/header.js";
 
 /**
@@ -28,7 +30,7 @@ export default class Ph_UserDropDown extends HTMLElement {
 		this.append(dropDownButton);
 		const dropDownArea = document.createElement("div");
 		dropDownArea.append(this.makeActionBar());
-		dropDownArea.append(this.makeSubredditGroup([{ path: "/r/popular", name: "r/popular" }, { path: "/r/all", name: "r/all" }], "Reddit Feeds"));
+		dropDownArea.append(this.makeSubredditGroup([ "r/popular", "r/all" ], "Reddit Feeds"));
 		this.append(dropDownArea);
 
 		window.addEventListener("click", e => {
@@ -37,23 +39,22 @@ export default class Ph_UserDropDown extends HTMLElement {
 		});
 		ensurePageLoaded().then(() => {
 			dropDownArea.append(this.makeSubredditGroup(
-				thisUser.multireddits.map(multi => ({name: multi.display_name, path: multi.path})),
+				thisUser.multiredditsData,
 				"Custom Feeds"
 			));
 			dropDownArea.append(this.makeSubredditGroup(
-				thisUser.subreddits.map(sub => <SubGroupData> {name: sub, path: `/${sub}`}),
+				thisUser.subredditsData,
 				"Subscribed"
 			));
 			this.setUnreadCount(thisUser.inboxUnread);
 		});
 	}
 
-	private makeSubredditGroup(subs: SubGroupData[], groupName: string): HTMLElement {
+	private makeSubredditGroup(feedsData: (RedditApiType | string)[], groupName: string): HTMLElement {
 		const group = document.createElement("div");
 		group.className = "subGroup separated";
 		group.innerHTML = `<div class="name">${groupName}</div>`;
-		subs.forEach(sub => group.insertAdjacentHTML("beforeend",
-			`<div class="sub"><a href="${escADQ(sub.path)}">${escHTML(sub.name || sub.path)}</a></div>`));
+		feedsData.forEach(feedData => group.append(new Ph_FeedLink(feedData)));
 		linksToSpa(group);
 		return group;
 	}

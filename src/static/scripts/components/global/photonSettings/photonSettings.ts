@@ -2,7 +2,7 @@ import { logOut } from "../../../auth/loginHandler.js";
 import { clearSeenPosts, ensurePageLoaded, isLoggedIn } from "../../../utils/globals.js";
 import { disableMainScroll, enableMainScroll, escADQ } from "../../../utils/htmlStatics.js";
 import "../../../utils/htmlStuff.js";
-import { deepClone, hasHTML, isObjectEmpty } from "../../../utils/utils.js";
+import { deepClone, hasHTML, isObjectEmpty, nameOf } from "../../../utils/utils.js";
 import { photonWebVersion } from "../../../utils/version.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Ph_Changelog from "../../photon/changelog/changelog.js";
@@ -443,8 +443,5 @@ export default class Ph_PhotonSettings extends HTMLElement {
 		enableMainScroll();
 	}
 }
-
-/** Compile time validator that @param name is a property of T */
-const nameOf = <T>(name: keyof T) => name;
 
 customElements.define("ph-photon-settings", Ph_PhotonSettings);

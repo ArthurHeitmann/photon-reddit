@@ -233,3 +233,6 @@ export function getPostIdFromUrl(url: string): string {
 	const matches = url?.match(/(?<=\/(r|u|user)\/[^/?#]+\/comments\/)[^/#?]+/);
 	return matches ? matches[0] : "";
 }
+
+/** Compile time validator that @param name is a property of T */
+export const nameOf = <T>(name: keyof T) => name;

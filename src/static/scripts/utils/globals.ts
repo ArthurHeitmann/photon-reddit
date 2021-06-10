@@ -10,8 +10,8 @@
  */
 
 import { getMyMultis, getMySubs, redditApiRequest } from "../api/redditApi.js";
-import { RedditApiType } from "../types/misc.js";
-import { stringSortComparer } from "./utils.js";
+import { RedditApiData, RedditApiType } from "../types/misc.js";
+import { nameOf, stringSortComparer } from "./utils.js";
 
 export let isLoggedIn: boolean = false;
 
@@ -35,7 +35,9 @@ export type MultiReddit = typeof _MultiReddit;
 export class User {
 	name: string;
 	subreddits: string[] = [];
+	subredditsData: RedditApiType[] = [];
 	multireddits: MultiReddit[] = [];
+	multiredditsData: RedditApiType[] = [];
 	inboxUnread: number = 0;
 	private static refreshEveryNMs = 1000 * 60 * 5;			// 5m
 
@@ -43,29 +45,22 @@ export class User {
 	async fetch() {
 		// get user data, subscribed subreddits, multireddits
 		await Promise.all([
-			(async () => {
-				try {
-					const storedSubs: StoredData = JSON.parse(localStorage.subreddits);
-					this.subreddits = storedSubs.data;
-					if (Date.now() - storedSubs.lastUpdatedMsUTC > User.refreshEveryNMs) {
-						await this.fetchSubs();
-					}
-				} catch (e) {
-					await this.fetchSubs();
-				}
-			})(),
-			(async () => {
-				try {
-					const storedMultis: StoredData = JSON.parse(localStorage.multis);
-						this.multireddits = storedMultis.data;
-					if (Date.now() - storedMultis.lastUpdatedMsUTC > User.refreshEveryNMs) {
-						await this.fetchMultis();
-					}
-				} catch (e) {
-					await this.fetchMultis();
-				}
-			})()
+			this.tryLoadFromLocalStorage(nameOf<User>("subreddits"), "subreddits", this.fetchSubs.bind(this)),
+			this.tryLoadFromLocalStorage(nameOf<User>("multireddits"), "multis", this.fetchMultis.bind(this)),
 		]);
+	}
+
+	private async tryLoadFromLocalStorage(userProp: string, lsProp, onFails: () => Promise<void>) {
+		try {
+			const storedShort: StoredData = JSON.parse(localStorage[lsProp]);
+			const storedData: StoredData = JSON.parse(localStorage[lsProp + "Data"]);
+			this[userProp] = storedShort.data;
+			this[userProp + "Data"] = storedData.data;
+			if (Date.now() - storedShort.lastUpdatedMsUTC > User.refreshEveryNMs)
+				await onFails();
+		} catch (e) {
+			await onFails();
+		}
 	}
 
 	/** fetched by auth.ts to verify that the access token is valid */
@@ -86,24 +81,35 @@ export class User {
 			subs.data.after = tmpSubs.data.after;
 		}
 		this.subreddits = subs.data.children.map(subData => subData.data["display_name_prefixed"]).sort(stringSortComparer);
+		this.subredditsData = subs.data.children.sort(
+			(a, b) => stringSortComparer(a.data["display_name"], b.data["display_name"]));
 
 		localStorage.subreddits = JSON.stringify(<StoredData> {
 			lastUpdatedMsUTC: Date.now(),
 			data: this.subreddits
 		});
+		localStorage.subredditsData = JSON.stringify(<StoredData> {
+			lastUpdatedMsUTC: Date.now(),
+			data: this.subredditsData
+		});
 	}
 
 	private async fetchMultis() {
-		this.multireddits = <MultiReddit[]>
-			(await getMyMultis() as RedditApiType[])
-				.map(multi => multi.data)						// simplify, by only using the data property
+		const multis = await getMyMultis() as RedditApiType[];
+		this.multiredditsData = multis;
+		this.multireddits = <MultiReddit[]> multis
+				.map(multi => multi.data)																// simplify, by only using the data property
 				.map(multi => Object.entries(multi))													// split
-				.map(multi => multi.filter(entries => Object.keys(_MultiReddit).includes(entries[0])))		// remove all entries that are not part of MultiReddit
+				.map(multi => multi.filter(entries => Object.keys(_MultiReddit).includes(entries[0])))	// remove all entries that are not part of MultiReddit
 				.map(filteredEntries => Object.fromEntries(filteredEntries))							// join again
 
 		localStorage.multis = JSON.stringify(<StoredData> {
 			lastUpdatedMsUTC: Date.now(),
 			data: this.multireddits
+		});
+		localStorage.multisData = JSON.stringify(<StoredData> {
+			lastUpdatedMsUTC: Date.now(),
+			data: this.multiredditsData
 		});
 	}
 }

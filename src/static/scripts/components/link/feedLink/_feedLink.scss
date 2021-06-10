@@ -1,0 +1,33 @@
+@use "../../../../style/vars";
+
+.feedLink {
+	> a {
+		display: flex;
+		align-items: center;
+		flex-grow: 1;
+		height: 2rem;
+
+		> .imageWrapper {
+			width: 1.4rem;
+			height: 1.4rem;
+			margin-right: .5rem;
+
+			> img {
+				width: 1.4rem;
+				height: 1.4rem;
+				border-radius: 50%;
+			}
+
+			&.default {
+				border-radius: 50%;
+				border: 1px dashed vars.$primary;
+			}
+
+			&.noBorderRadius {
+				&, & > img {
+					border-radius: 0;
+				}
+			}
+		}
+	}
+}

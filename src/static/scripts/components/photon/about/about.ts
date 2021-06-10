@@ -28,7 +28,14 @@ const template = `
 	Icons for the toast notifications are from <a href="https://thenounproject.com/icongeek/collection/sign/">this collection</a> by 
 	<a href="https://thenounproject.com/icongeek/">icongeek</a>.
 	<br>
-	The pin icon in the header is "Pin by Martins Ratkus from the Noun Project".
+	Other attributions:
+	<ul>
+		<li>The pin icon in the header: "Pin by Martins Ratkus from the Noun Project".</li>
+		<li>Icon for r/popular: "Trending up by DailyPM from the Noun Project"</li>
+		<li>Icon for r/all: "Earth by Royyan Wijaya from the Noun Project"</li>
+		<li></li>
+	</ul>
+	
 </p>
 
 <p>
