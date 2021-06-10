@@ -64,7 +64,6 @@ export default class Ph_PostAndComments extends HTMLElement {
 
 	initWithData(data: RedditApiType[]) {
 		if (!hasParams(arguments)) return;
-		this.tmpLoadingIcon?.remove();
 		Ph_ViewState.getViewOf(this)?.saveScroll();
 
 		// write comment form
@@ -102,6 +101,8 @@ export default class Ph_PostAndComments extends HTMLElement {
 			{ label: "Random", value: SortCommentsOrder.random, onSelectCallback: this.handleSort.bind(this) },
 		], curSort ? `Sort - ${curSort[0]}` : "Sorting", DirectionX.right, DirectionY.bottom, false);
 		this.sorter.classList.add("commentsSorter");
+
+		this.tmpLoadingIcon?.remove();
 
 		Ph_ViewState.getViewOf(this)?.loadScroll();
 
