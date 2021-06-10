@@ -21,8 +21,8 @@ import { linksToSpa } from "./utils/htmlStuff.js";
 import "./utils/sideEffectImports.js";
 import { extractHash, extractPath, extractQuery } from "./utils/utils.js";
 import { photonWebVersion } from "./utils/version.js";
-import VersionNumber from "./utils/versionNumber.js";
 import { setWaitingServiceWorker } from "./utils/versionManagement.js";
+import VersionNumber from "./utils/versionNumber.js";
 
 async function init(): Promise<void> {
 	console.log("Photon Init");

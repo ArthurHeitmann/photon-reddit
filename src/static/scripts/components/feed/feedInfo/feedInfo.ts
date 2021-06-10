@@ -15,7 +15,7 @@ import {
 import { RedditApiType } from "../../../types/misc.js";
 import { isLoggedIn, StoredData, thisUser } from "../../../utils/globals.js";
 import { $class, $cssAr, emojiFlagsToImages, escADQ, escHTML } from "../../../utils/htmlStatics.js";
-import { classInElementTree, linksToSpa, tagInElementTree } from "../../../utils/htmlStuff.js";
+import { linksToSpa, tagInElementTree } from "../../../utils/htmlStuff.js";
 import { hasParams, numberToShort, stringSortComparer, throttle } from "../../../utils/utils.js";
 import Ph_BetterButton from "../../global/betterElements/betterButton.js";
 import Ph_Header from "../../global/header/header.js";

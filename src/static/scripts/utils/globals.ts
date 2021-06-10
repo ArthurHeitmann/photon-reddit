@@ -10,7 +10,7 @@
  */
 
 import { getMyMultis, getMySubs, redditApiRequest } from "../api/redditApi.js";
-import { RedditApiData, RedditApiType } from "../types/misc.js";
+import { RedditApiType } from "../types/misc.js";
 import { nameOf, stringSortComparer } from "./utils.js";
 
 export let isLoggedIn: boolean = false;

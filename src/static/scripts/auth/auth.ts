@@ -1,4 +1,4 @@
-import { getImplicitGrant, getRefreshAccessToken, revokeToken } from "../api/redditAuthApi.js";
+import { getImplicitGrant, getRefreshAccessToken } from "../api/redditAuthApi.js";
 import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
 import { clientId } from "../unsuspiciousFolder/unsuspiciousFile.js";
 import { isLoggedIn, setIsLoggedIn, thisUser } from "../utils/globals.js";

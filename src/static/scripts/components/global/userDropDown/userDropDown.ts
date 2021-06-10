@@ -1,9 +1,8 @@
-import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager.js";
 import ViewsStack from "../../../historyState/viewsStack.js";
 import { RedditApiType } from "../../../types/misc.js";
 import { fakeSubreddits } from "../../../utils/consts.js";
 import { ensurePageLoaded, thisUser } from "../../../utils/globals.js";
-import { escADQ, escHTML } from "../../../utils/htmlStatics.js";
+import { escADQ } from "../../../utils/htmlStatics.js";
 import { elementWithClassInTree, isElementIn, linksToSpa } from "../../../utils/htmlStuff.js";
 import { hasHTML, numberToShort } from "../../../utils/utils.js";
 import Ph_FeedLink from "../../link/feedLink/feedLink.js";
