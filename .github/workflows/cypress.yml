@@ -8,6 +8,9 @@ jobs:
   cypress-run:
     name: Cypress run
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        browser: [chrome, firefox]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -18,6 +21,7 @@ jobs:
           start: npm start
           spec: cypress/**/*.ts
           record: true
+          browser: ${{ matrix.browser }}
         env:
           # pass the Dashboard record key as an environment variable
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
