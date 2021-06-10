@@ -228,3 +228,8 @@ export function hasParams(params: IArguments): boolean {
 export function hasHTML(elem: Element): boolean {
 	return elem.innerHTML !== "";
 }
+
+export function getPostIdFromUrl(url: string): string {
+	const matches = url?.match(/(?<=\/(r|u|user)\/[^/?#]+\/comments\/)[^/#?]+/);
+	return matches ? matches[0] : "";
+}

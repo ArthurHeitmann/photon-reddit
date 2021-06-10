@@ -12,12 +12,14 @@ import {
 	voteDirectionFromLikes
 } from "../../api/redditApi.js";
 import { pushLinkToHistoryComb, PushType } from "../../historyState/historyStateManager.js";
+import ViewsStack from "../../historyState/viewsStack.js";
 import { RedditApiData, RedditApiType } from "../../types/misc.js";
 import Votable from "../../types/votable.js";
 import { hasPostsBeenSeen, markPostAsSeen, thisUser } from "../../utils/globals.js";
 import { emojiFlagsToImages, escADQ, escHTML, getLoadingIcon } from "../../utils/htmlStatics.js";
 import { linksToSpa } from "../../utils/htmlStuff.js";
 import {
+	getPostIdFromUrl,
 	hasParams,
 	isObjectEmpty,
 	numberToShort as numberToShort,
@@ -414,9 +416,11 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 	linkToCommentsClick(e) {
 		if (e.ctrlKey)
 			return true;
-		if (!this.doubleLink)
+		const postHref = e.currentTarget.getAttribute("href");
+		const nextHistoryUrl = ViewsStack.getNextState()?.state.url;
+		if (!this.doubleLink && getPostIdFromUrl(nextHistoryUrl) !== getPostIdFromUrl(postHref))
 			this.doubleLink = new PostDoubleLink(this);
-		pushLinkToHistoryComb(e.currentTarget.getAttribute("href"), PushType.pushAfter, this.doubleLink);
+		pushLinkToHistoryComb(postHref, PushType.pushAfter, this.doubleLink);
 		return false;
 	}
 
