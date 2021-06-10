@@ -4,6 +4,8 @@ on:
     branches:
       - deployed
       - cypress-setup
+  schedule:
+    - cron: 20 4 */2 * *
 jobs:
   cypress-run:
     name: Cypress run
