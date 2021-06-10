@@ -82,6 +82,16 @@ export enum SortCommentsOrder {
 	random = "random",
 }
 
+export const SortCommentsOrderNamed = {
+	best: "Best",
+	top: "Top",
+	new: "New",
+	controversial: "Controversial",
+	old: "Old",
+	qa: "Q & A",
+	random: "Random",
+}
+
 export enum SortSearchOrder {
 	relevance = "relevance",
 	hot = "hot",

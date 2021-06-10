@@ -1,6 +1,6 @@
 import { RedditApiType, SortCommentsOrder } from "../../../types/misc.js";
 import { linksToSpa } from "../../../utils/htmlStuff.js";
-import { hasParams, extractQuery } from "../../../utils/utils.js";
+import { extractQuery, hasParams } from "../../../utils/utils.js";
 import Ph_Comment from "../../comment/comment.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Ph_Post from "../../post/post.js";
@@ -11,13 +11,14 @@ import Ph_Post from "../../post/post.js";
 export default class Ph_CommentsFeed extends HTMLElement {
 	sort: SortCommentsOrder;
 
-	constructor(comments: RedditApiType, post: Ph_Post) {
+	constructor(comments: RedditApiType, post: Ph_Post, suggestedSort: SortCommentsOrder | null) {
 		super();
 		if (!hasParams(arguments)) return;
 
 		this.classList.add("commentsFeed");
 
-		this.sort = SortCommentsOrder[new URLSearchParams(extractQuery(history.state.url)).get("sort") || "confidence"];
+		const urlSort = new URLSearchParams(extractQuery(history.state.url)).get("sort");
+		this.sort = urlSort ? SortCommentsOrder[urlSort] : suggestedSort;
 
 		for (const commentData of comments.data.children) {
 			try {

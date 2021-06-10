@@ -1,6 +1,6 @@
 import { redditApiRequest } from "../../api/redditApi.js";
 import ViewsStack from "../../historyState/viewsStack.js";
-import { RedditApiType, SortCommentsOrder } from "../../types/misc.js";
+import { RedditApiType, SortCommentsOrder, SortCommentsOrderNamed } from "../../types/misc.js";
 import { getLoadingIcon } from "../../utils/htmlStatics.js";
 import { elementWithClassInTree } from "../../utils/htmlStuff.js";
 import { extractPath, extractQuery, hasHTML, hasParams } from "../../utils/utils.js";
@@ -76,7 +76,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 		}
 
 		// comments
-		this.comments = new Ph_CommentsFeed(data[1], this.post);
+		this.comments = new Ph_CommentsFeed(data[1], this.post, data[0].data.children[0].data["suggested_sort"]);
 		this.append(this.comments);
 
 		// highlighted comment
@@ -90,16 +90,16 @@ export default class Ph_PostAndComments extends HTMLElement {
 		}
 
 		// sorting
-		const curSort = extractQuery(history.state.url).match(/(?<=sort=)\w+/);		// ?sort=top&limit=1 --> top
+		const curSort = this.comments.sort;
 		this.sorter = new Ph_DropDown([
-			{ label: "Best", value: SortCommentsOrder.best, onSelectCallback: this.handleSort.bind(this) },
-			{ label: "Top", value: SortCommentsOrder.top, onSelectCallback: this.handleSort.bind(this) },
-			{ label: "New", value: SortCommentsOrder.new, onSelectCallback: this.handleSort.bind(this) },
-			{ label: "Controversial", value: SortCommentsOrder.controversial, onSelectCallback: this.handleSort.bind(this) },
-			{ label: "Old", value: SortCommentsOrder.old, onSelectCallback: this.handleSort.bind(this) },
-			{ label: "Q & A", value: SortCommentsOrder.qa, onSelectCallback: this.handleSort.bind(this) },
-			{ label: "Random", value: SortCommentsOrder.random, onSelectCallback: this.handleSort.bind(this) },
-		], curSort ? `Sort - ${curSort[0]}` : "Sorting", DirectionX.right, DirectionY.bottom, false);
+			{ label: SortCommentsOrderNamed.best,	 		value: SortCommentsOrder.best, 			onSelectCallback: this.handleSort.bind(this) },
+			{ label: SortCommentsOrderNamed.top,	 		value: SortCommentsOrder.top, 			onSelectCallback: this.handleSort.bind(this) },
+			{ label: SortCommentsOrderNamed.new,	 		value: SortCommentsOrder.new, 			onSelectCallback: this.handleSort.bind(this) },
+			{ label: SortCommentsOrderNamed.controversial,	value: SortCommentsOrder.controversial,	onSelectCallback: this.handleSort.bind(this) },
+			{ label: SortCommentsOrderNamed.old,	 		value: SortCommentsOrder.old, 			onSelectCallback: this.handleSort.bind(this) },
+			{ label: SortCommentsOrderNamed.qa,	 			value: SortCommentsOrder.qa, 			onSelectCallback: this.handleSort.bind(this) },
+			{ label: SortCommentsOrderNamed.random,	 		value: SortCommentsOrder.random, 		onSelectCallback: this.handleSort.bind(this) },
+		], curSort ? `Sort - ${SortCommentsOrderNamed[curSort]}` : "Sort - Default", DirectionX.right, DirectionY.bottom, false);
 		this.sorter.classList.add("commentsSorter");
 
 		this.tmpLoadingIcon?.remove();
