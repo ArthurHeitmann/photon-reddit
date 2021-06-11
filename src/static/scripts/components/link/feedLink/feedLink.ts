@@ -1,8 +1,9 @@
 import { RedditApiType } from "../../../types/misc.js";
+import { linksToSpa } from "../../../utils/htmlStuff.js";
 import { hasParams } from "../../../utils/utils.js";
 
 export default class Ph_FeedLink extends HTMLElement {
-	constructor(feedData: RedditApiType | string) {
+	constructor(feedData: RedditApiType | string, blurNsfw = false) {
 		super();
 		if (!hasParams(arguments)) return
 
@@ -26,8 +27,23 @@ export default class Ph_FeedLink extends HTMLElement {
 					imageWrapper.innerHTML = `<img src="${subIconImg}" alt="sub">`
 				else
 					imageWrapper.classList.add("default");
+				imageWrapper.classList.toggle("nsfw", blurNsfw && feedData.data["over18"]);
+				this.classList.add("subreddit");
 				break;
-			case "LabeledMulti":
+			case "t2":	// user
+				linkText.innerText = `u/${feedData.data["name"]}`;
+				if (feedData.data["is_suspended"] === true)
+					linkText.innerText += " (suspended)";
+				linkWrapper.href = `/user/${feedData.data["name"]}`;
+				const userIconImg = feedData.data["subreddit"]?.["icon_img"] || feedData.data["icon_img"];
+				if (userIconImg)
+					imageWrapper.innerHTML = `<img src="${userIconImg}" alt="sub">`
+				else
+					imageWrapper.classList.add("default");
+				imageWrapper.classList.toggle("nsfw", blurNsfw && feedData.data["subreddit"]?.["over_18"]);
+				this.classList.add("user");
+				break;
+			case "LabeledMulti":	// multireddit
 				linkText.innerText = feedData.data["display_name"];
 				linkWrapper.href = feedData.data["path"];
 				const multiIconImg = feedData.data["icon_url"];
@@ -35,6 +51,8 @@ export default class Ph_FeedLink extends HTMLElement {
 					imageWrapper.innerHTML = `<img src="${multiIconImg}" alt="sub">`
 				else
 					imageWrapper.classList.add("default");
+				imageWrapper.classList.toggle("nsfw", blurNsfw && feedData.data["over_18"]);
+				this.classList.add("multireddit");
 				break;
 			default:
 				throw "Invalid feed type!";
@@ -51,6 +69,7 @@ export default class Ph_FeedLink extends HTMLElement {
 				imageWrapper.classList.add("default");
 		}
 
+		linksToSpa(this);
 	}
 }
 

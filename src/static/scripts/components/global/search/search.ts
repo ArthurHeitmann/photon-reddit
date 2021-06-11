@@ -4,8 +4,9 @@ import { ViewChangeData } from "../../../historyState/viewsStack.js";
 import { RedditApiType, SortPostsTimeFrame, SortSearchOrder } from "../../../types/misc.js";
 import { isLoggedIn } from "../../../utils/globals.js";
 import { escADQ, getLoadingIcon } from "../../../utils/htmlStatics.js";
-import { elementWithClassInTree, isElementIn, linksToSpa } from "../../../utils/htmlStuff.js";
+import { elementWithClassInTree, isElementIn } from "../../../utils/htmlStuff.js";
 import { extractPath, extractQuery, hasHTML, throttle } from "../../../utils/utils.js";
+import Ph_FeedLink from "../../link/feedLink/feedLink.js";
 import Ph_DropDown, { ButtonLabel, DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import { DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_Flair from "../../misc/flair/flair.js";
@@ -297,7 +298,7 @@ export default class Ph_Search extends HTMLElement {
 		this.resultsWrapper.innerText = "";
 		for (const entry of result.data.children) {
 			try {
-				this.resultsWrapper.insertAdjacentElement("beforeend", this.makeEntry(entry));
+				this.resultsWrapper.append(new Ph_FeedLink(entry, true));
 			}
 			catch (e) {
 				console.error("Error making search result entry");
@@ -305,47 +306,6 @@ export default class Ph_Search extends HTMLElement {
 				new Ph_Toast(Level.error, "Error making search result entry");
 			}
 		}
-	}
-
-	private makeEntry(data: RedditApiType): HTMLElement {
-		let entry;
-		switch (data.kind) {
-			case "t5":
-				entry = this.makeSubEntry(data);
-				break;
-			case "t2":
-				entry = this.makeUserEntry(data);
-				break;
-			default:
-				console.error("Invalid search result entry");
-				console.error(data);
-				new Ph_Toast(Level.error, "Invalid search result entry");
-				const errorElement = document.createElement("div");
-				errorElement.innerText = "ERROR";
-				entry = errorElement;
-		}
-		linksToSpa(entry);
-		return entry;
-	}
-
-	private makeSubEntry(data: RedditApiType): HTMLElement {
-		const a = document.createElement("a");
-		a.className = "subreddit";
-		a.href = `/r/${data.data["display_name"]}`;
-		a.innerText = `r/${data.data["display_name"]}`;
-		return a;
-	}
-
-	private makeUserEntry(data: RedditApiType): HTMLElement {
-		const a = document.createElement("a");
-		a.className = "user";
-		if (data.data["is_suspended"] === true)
-			a.innerText = `u/${data.data["name"]} (suspended)`;
-		else {
-			a.href = `/user/${data.data["name"]}`;
-			a.innerText = `u/${data.data["name"]}`;
-		}
-		return a;
 	}
 
 	async search(e) {

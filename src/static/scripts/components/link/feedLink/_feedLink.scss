@@ -1,6 +1,8 @@
 @use "../../../../style/vars";
 
 .feedLink {
+	$imgSize: 1.4rem;
+	
 	> a {
 		display: flex;
 		align-items: center;
@@ -8,13 +10,13 @@
 		height: 2rem;
 
 		> .imageWrapper {
-			width: 1.4rem;
-			height: 1.4rem;
+			width: $imgSize;
+			height: $imgSize;
 			margin-right: .5rem;
 
 			> img {
-				width: 1.4rem;
-				height: 1.4rem;
+				width: $imgSize;
+				height: $imgSize;
 				border-radius: 50%;
 			}
 
@@ -26,6 +28,30 @@
 			&.noBorderRadius {
 				&, & > img {
 					border-radius: 0;
+				}
+			}
+
+			&.nsfw {
+				position: relative;
+				overflow: hidden;
+				border-radius: 50%;
+
+				> img {
+					filter: blur(3px);
+
+				}
+
+				&::after {
+					content: "18+";
+					position: absolute;
+					width: $imgSize;
+					line-height: $imgSize;
+					text-align: center;
+					top: 0;
+					left: 0;
+					color: vars.$text-color;
+					font-size: .65rem;
+					filter: drop-shadow(0 0 2px black) drop-shadow(0 0 4px black);
 				}
 			}
 		}

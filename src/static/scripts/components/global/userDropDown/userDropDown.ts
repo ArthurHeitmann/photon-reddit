@@ -29,7 +29,7 @@ export default class Ph_UserDropDown extends HTMLElement {
 		this.append(dropDownButton);
 		const dropDownArea = document.createElement("div");
 		dropDownArea.append(this.makeActionBar());
-		dropDownArea.append(this.makeSubredditGroup([ "r/popular", "r/all" ], "Reddit Feeds"));
+		dropDownArea.append(this.makeSubredditGroup([ "r/all", "r/popular" ], "Reddit Feeds"));
 		this.append(dropDownArea);
 
 		window.addEventListener("click", e => {
