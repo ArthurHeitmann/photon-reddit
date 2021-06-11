@@ -29,6 +29,14 @@
 	}
 }
 
+.isInFullscreen {
+	.videoPlayer {
+		video {
+			height: 100%;
+		}
+	}
+}
+
 .mediaViewer .controls {
 	.volumeWrapper {
 		display: flex;
