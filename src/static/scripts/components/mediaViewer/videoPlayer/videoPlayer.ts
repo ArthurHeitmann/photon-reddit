@@ -376,8 +376,11 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 		timeTextHover.className = "timeTextHover";
 		this.controls.progressBar.appendChild(timeTextHover);
 		this.controls.progressBar.addEventListener("mousemove", e => {
-			timeTextHover.innerText = secondsToVideoTime(e.offsetX / this.controls.progressBar.offsetWidth * this.video.getMaxTime());
-			timeTextHover.style.left = `${e.offsetX}px`;
+			const barLeft = this.controls.progressBar.getBoundingClientRect().left;
+			const barWidth = this.controls.progressBar.offsetWidth;
+			const mouseOnBarPercent = (e.clientX - barLeft) / barWidth;
+			timeTextHover.innerText = secondsToVideoTime(mouseOnBarPercent * this.video.getMaxTime());
+			timeTextHover.style.left = `${e.clientX - barLeft}px`;
 		});
 		this.controls.progressBar.addEventListener("mouseenter",
 			() => timeTextHover.classList.add("show"));
