@@ -1,6 +1,17 @@
-export const photonVersion = "0.5.2";		/// <change version script>
+export const photonVersion = "0.5.3";		/// <change version script>
 
 export const photonChangelog = {
+	"0.5.3": {
+		"New": [
+			"Video pop out",
+			"List of subscribed subreddits & search results now have subreddit/user/multi icons",
+			"Added icons to most dropdown entries"
+		],
+		"Fixed": [
+			"Unified color scheme",
+			"Many small fixes and changes",
+		]
+	},
 	"0.5.2": {
 		"Fixed": [
 			"Unified color scheme",
