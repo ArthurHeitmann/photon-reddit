@@ -445,10 +445,26 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 	}
 
 	popoutVideo() {
+		const maxWidth = window.screen.width / 3;
+		const maxHeight = window.screen.height / 3;
+		let targetWidth = this.video.getDimensions()[0];
+		let targetHeight = this.video.getDimensions()[1];
+		if (targetWidth > maxWidth) {
+			const factor = targetWidth / maxWidth;
+			targetWidth /= factor;
+			targetHeight /= factor;
+		}
+		if (targetHeight > maxHeight) {
+			const factor = targetHeight / maxHeight;
+			targetWidth /= factor;
+			targetHeight /= factor;
+		}
+		targetWidth = Math.floor(targetWidth);
+		targetHeight = Math.floor(targetHeight);
 		window.open(
 			`/scripts/components/mediaViewer/videoPlayer/popoutVideoPlayer/popoutVideoPlayer.html?data=${encodeURIComponent(JSON.stringify(this.video.exportData()))}`,
 			"_blank",
-			`location=no,status=no,menubar=no,width=${this.video.getDimensions()[0]},height=${this.video.getDimensions()[1]}`
+			`location=no,status=no,menubar=no,width=${targetWidth},height=${targetHeight}`
 		);
 		this.video.pause();
 	}
