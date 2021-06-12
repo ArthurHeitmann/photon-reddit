@@ -64,7 +64,7 @@ describe("Basic Navigation", () => {
 		showHeader();
 		cy.get("ph-search input[type=text]").type("r/AskReddit");
 		cy.get("ph-search .modeButton").contains("r/").should("have.class", "checked");
-		cy.get("ph-search .resultsWrapper").children().eq(0).as("askRedditLink");
+		cy.get("ph-search .resultsWrapper a").first().as("askRedditLink");
 		cy.get("@askRedditLink")
 			.should("have.text", "r/AskReddit")
 			.should("have.attr", "href");

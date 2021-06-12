@@ -220,9 +220,9 @@ export default class Ph_FeedInfo extends HTMLElement {
 			if (tmpRules["error"] || !tmpRules["rules"])
 				throw `Invalid rules response ${JSON.stringify(tmpRules)}`;
 			rules = tmpRules["rules"];
-			const tmpMods = await getSubModerators(this.feedUrl);
+			let tmpMods = await getSubModerators(this.feedUrl);
 			if (tmpMods["error"] || !(tmpMods["kind"] === "UserList" && tmpMods["data"]))
-				throw `Invalid mods response ${JSON.stringify(tmpRules)}`;
+				tmpMods = { data: { children: [] } };
 			mods = tmpMods["data"]["children"];
 			if (isLoggedIn)
 				flairs = await getSubUserFlairs(this.feedUrl);
