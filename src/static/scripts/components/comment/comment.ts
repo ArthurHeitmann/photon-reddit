@@ -398,6 +398,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 				const content = this.getElementsByClassName("content")[0] as HTMLElement;
 				content.innerHTML = resp["body_html"];
 				linksToSpa(content, true);
+				emojiFlagsToImages(content);
 				new Ph_Toast(Level.success, "Edited comment", { timeout: 2000 });
 			} catch (e) {
 				console.error("Error editing comment");
