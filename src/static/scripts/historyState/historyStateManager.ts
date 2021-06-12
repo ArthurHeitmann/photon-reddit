@@ -18,7 +18,7 @@ import { Ph_ViewState } from "../components/viewState/viewState.js";
 import Ph_ViewStateLoader from "../components/viewState/viewStateLoader/viewStateLoader.js";
 import Ph_Wiki from "../components/wiki/wiki.js";
 import { $id } from "../utils/htmlStatics.js";
-import { extractHash, splitPathQuery } from "../utils/utils.js";
+import { deepClone, extractHash, splitPathQuery } from "../utils/utils.js";
 import ViewsStack from "./viewsStack.js";
 
 ViewsStack.setNextIsReplace();
@@ -34,8 +34,13 @@ window.addEventListener("popstate", (e: PopStateEvent) => {
 			return;
 		}
 	}
-	if (!e.state)		// new page load || something weird
-		return
+	if (!e.state) {		// new page load || click on link with # || something weird
+		if (!location.hash)
+			return;
+		const newState = deepClone(ViewsStack.getCurrentState().state);
+		newState.url = newState.url.replace(/(#.*)?$/, location.hash)
+		ViewsStack.replaceHistoryState(newState);
+	}
 	// forward
 	if (e.state.index > ViewsStack.getPosition()) {
 		for(let i = e.state.index - ViewsStack.getPosition(); i > 0; --i)

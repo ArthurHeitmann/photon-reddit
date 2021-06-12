@@ -59,10 +59,7 @@ export default class ViewsStack {
 		ViewsStack.views[ViewsStack.pos] = state;
 
 		if (ViewsStack.isNextReplace) {
-			if (globalSettings.isIncognitoEnabled)
-				ViewsStack.incognitoReplace(state.state);
-			else
-				history.replaceState(state.state, state.state.title, state.state.url);
+			ViewsStack.replaceHistoryState(state.state);
 			ViewsStack.isNextReplace = false;
 		}
 		else {
@@ -100,15 +97,7 @@ export default class ViewsStack {
 			throw "Trying to update historyState, but there is currently no historyState";
 			
 		ViewsStack.views[ViewsStack.pos].state.url = newUrl;
-		if (globalSettings.isIncognitoEnabled)
-			ViewsStack.incognitoReplace(ViewsStack.views[ViewsStack.pos].state);
-		else {
-			history.replaceState(
-				ViewsStack.views[ViewsStack.pos].state,
-				ViewsStack.views[ViewsStack.pos].state.title,
-				ViewsStack.views[ViewsStack.pos].state.url
-			);
-		}
+		ViewsStack.replaceHistoryState(ViewsStack.views[ViewsStack.pos].state)
 	}
 
 	/** go to next view state; load it if not loaded */
@@ -173,6 +162,10 @@ export default class ViewsStack {
 		return ViewsStack.views[ViewsStack.pos + 1] || null;
 	}
 
+	static getCurrentState(): Ph_ViewState {
+		return ViewsStack.views[ViewsStack.pos] || null;
+	}
+
 	/** Remove all view state from the DOM, except for the currently active one */
 	static clear() {
 		const viewIds: string[] = Object.keys(ViewsStack.views);
@@ -215,8 +208,11 @@ export default class ViewsStack {
 		history.pushState(state, `Photon; ${ViewsStack.randomUrl()}`, ViewsStack.randomUrl());
 	}
 
-	private static incognitoReplace(state) {
-		history.replaceState(state, `Photon; ${ViewsStack.randomUrl()}`, ViewsStack.randomUrl());
+	static replaceHistoryState(state: HistoryState) {
+		if (globalSettings.isIncognitoEnabled)
+			history.replaceState(state, `Photon; ${ViewsStack.randomUrl()}`, ViewsStack.randomUrl());
+		else
+			history.replaceState(state, state.title, state.url);
 	}
 
 	private static readonly allChars = "abcdefghijklmnopqrstuvxyz";
