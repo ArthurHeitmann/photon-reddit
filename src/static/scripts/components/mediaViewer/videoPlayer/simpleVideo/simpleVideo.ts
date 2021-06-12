@@ -9,6 +9,7 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 	video: HTMLVideoElement;
 	lastNon0Volume: number;
 	noAudioProgressCallback: () => void;
+	videoTracks: VideoTrackInfo[];
 
 	/** @param sourcesArray browser first tries to load src 0, when fails try src 1, ... */
 	constructor(sourcesArray: SourceData[]) {
@@ -16,6 +17,11 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 		if (!hasParams(arguments)) return;
 
 		sourcesArray.forEach(src => src.src = urlWithHttps(src.src));
+
+		this.videoTracks = sourcesArray.map(src => (<VideoTrackInfo> {
+			label: src.label || src.src,
+			key: src
+		}));
 
 		this.video = document.createElement("video");
 		this.video.setAttribute("loop", "");
@@ -116,10 +122,19 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 	}
 
 	getVideoTracks(): VideoTrackInfo[] {
-		return [];
+		return this.videoTracks;
 	}
 
-	setVideoTrack(key: any) {
+	setVideoTrack(key: SourceData) {
+		const currentTime = this.video.currentTime;
+		const isPaused = this.video.paused;
+		this.pause();
+		this.dispatchEvent(new Event("ph-buffering"));
+		this.video.innerHTML = `<source src="${escADQ(key.src)}" type="${escADQ(key.type)}">`;
+		this.video.load();
+		this.video.currentTime = currentTime;
+		if (!isPaused)
+			this.addEventListener("ph-ready", this.play.bind(this), { once: true })
 	}
 }
 

@@ -79,18 +79,14 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 						throw `Invalid gfycat oembed link ${postData.data["media"]["oembed"]["thumbnail_url"]}`;
 					}
 					videoOut.init(new Ph_SimpleVideo([
-						{src: `https://thumbs.gfycat.com/${capitalizedPath}-mobile.mp4`, type: "video/mp4"},
-						{src: `https://giant.gfycat.com/${capitalizedPath}.webm`, type: "video/webm"},
-						{src: `https://giant.gfycat.com/${capitalizedPath}.mp4`, type: "video/mp4"},
-						{src: `https://thumbs.gfycat.com/${capitalizedPath}-mobile.mp4`, type: "video/mp4"},
+						{src: `https://giant.gfycat.com/${capitalizedPath}.mp4`, type: "video/mp4", label: "Default"},
+						{src: `https://thumbs.gfycat.com/${capitalizedPath}-mobile.mp4`, type: "video/mp4", label: "Mobile"},
 					]));
 				}
 				// if no oembed data, use gfycat api
 				else {
 					getGfycatMp4SrcFromUrl(url, GfycatDomain.gfycat)
-						.then(mp4Urls => videoOut.init(new Ph_SimpleVideo(
-							mp4Urls.map(mp4Url => ({ src: mp4Url, type: "video/mp4" } ))
-						), true))
+						.then(sources => videoOut.init(new Ph_SimpleVideo(sources), true))
 						.catch(() => videoOut.init(null));
 				}
 				break;
@@ -209,9 +205,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 			case "redgifs.com":
 				// like gfycat but there is no usable info in the oembed data
 				getGfycatMp4SrcFromUrl(url, GfycatDomain.redgifs)
-					.then(mp4Urls => videoOut.init(new Ph_SimpleVideo(
-						 mp4Urls.map(mp4Url => ({ src: mp4Url, type: "video/mp4" }) )
-					), true))
+					.then(sources => videoOut.init(new Ph_SimpleVideo(sources), true))
 					.catch(() => videoOut.init(null));
 				break;
 			case "media2.giphy.com":
@@ -369,7 +363,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 					{label: "16.00x", value: 16.00, onSelectCallback: this.setVideoSpeed.bind(this)},
 				]
 			},
-			this.video.getVideoTracks().length > 0 && {
+			this.video.getVideoTracks().length > 1 && {
 				label: "Quality",
 				labelImgUrl: "/img/hd.svg",
 				nestedEntries: this.video.getVideoTracks().map(track => ({
