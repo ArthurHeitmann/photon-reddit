@@ -146,18 +146,18 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 		this.setVotesState(this.currentVoteDirection);
 		// additional actions drop down
 		const isLocked = commentData.data["locked"] || commentData.data["archived"];
-		const lockedReason = commentData.data["locked"] ? "locked" : "archived";
+		const lockedReason = commentData.data["locked"] ? "Locked" : "Archived";
 		let dropDownParams: DropDownEntryParam[] = [];
 		if (!isLocked)
-			dropDownParams.push({ label: "Reply", onSelectCallback: this.showReplyForm.bind(this) });
+			dropDownParams.push({ label: "Reply", labelImgUrl: "/img/commentEmpty.svg", onSelectCallback: this.showReplyForm.bind(this) });
 		if (commentData.data["author"] === thisUser.name) {
 			this.setupEditForm();
-			dropDownParams.push({ label: "Edit", onSelectCallback: this.editStart.bind(this) });
-			dropDownParams.push({ label: "Delete", onSelectCallback: this.deletePrompt.bind(this) });
+			dropDownParams.push({ label: "Edit", labelImgUrl: "/img/edit.svg", onSelectCallback: this.editStart.bind(this) });
+			dropDownParams.push({ label: "Delete", labelImgUrl: "/img/delete.svg", onSelectCallback: this.deletePrompt.bind(this) });
 		}
 		dropDownParams.push(...[
-			{ label: this.isSaved ? "Unsave" : "Save", onSelectCallback: this.toggleSave.bind(this) },
-			{ label: "Share", nestedEntries: [
+			{ label: this.isSaved ? "Unsave" : "Save", labelImgUrl: "/img/bookmarkEmpty.svg", onSelectCallback: this.toggleSave.bind(this) },
+			{ label: "Share", labelImgUrl: "/img/share.svg", nestedEntries: [
 					{ label: "Copy Comment Link", value: "comment link", onSelectCallback: this.share.bind(this) },
 					{ label: "Copy Reddit Link", value: "reddit link", onSelectCallback: this.share.bind(this) },
 				]

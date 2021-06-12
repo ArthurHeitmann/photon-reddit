@@ -22,7 +22,7 @@ export default class Ph_SearchFeedSorter extends HTMLElement {
 		const curSort = new URLSearchParams(extractQuery(history.state?.url || ""));
 		const curSortStr = `Sort - ${curSort.get("sort") || "relevance"}${curSort.get("t") ? `/${curSort.get("t")}` : ""}`;
 		this.append(this.dropdown = new Ph_DropDown([
-			{ label: "Relevance", value: SortSearchOrder.relevance, nestedEntries: [
+			{ label: "Relevance", value: SortSearchOrder.relevance, labelImgUrl: "/img/relevance.svg", nestedEntries: [
 					{ label: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.handleSortSelect.bind(this) },
 					{ label: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.handleSortSelect.bind(this) },
 					{ label: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.handleSortSelect.bind(this) },
@@ -30,7 +30,7 @@ export default class Ph_SearchFeedSorter extends HTMLElement {
 					{ label: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.handleSortSelect.bind(this) },
 					{ label: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.handleSortSelect.bind(this) },
 				] },
-			{ label: "Hot", value: SortSearchOrder.hot, nestedEntries: [
+			{ label: "Hot", labelImgUrl: "/img/hot.svg", value: SortSearchOrder.hot, nestedEntries: [
 					{ label: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.handleSortSelect.bind(this) },
 					{ label: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.handleSortSelect.bind(this) },
 					{ label: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.handleSortSelect.bind(this) },
@@ -38,7 +38,7 @@ export default class Ph_SearchFeedSorter extends HTMLElement {
 					{ label: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.handleSortSelect.bind(this) },
 					{ label: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.handleSortSelect.bind(this) },
 				] },
-			{ label: "top", value: SortSearchOrder.top, nestedEntries: [
+			{ label: "Top", labelImgUrl: "/img/top.svg", value: SortSearchOrder.top, nestedEntries: [
 					{ label: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.handleSortSelect.bind(this) },
 					{ label: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.handleSortSelect.bind(this) },
 					{ label: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.handleSortSelect.bind(this) },
@@ -46,8 +46,8 @@ export default class Ph_SearchFeedSorter extends HTMLElement {
 					{ label: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.handleSortSelect.bind(this) },
 					{ label: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.handleSortSelect.bind(this) },
 				] },
-			{ label: "New", value: SortSearchOrder.new, onSelectCallback: this.handleSortSelect.bind(this) },
-			{ label: "Comments", value: SortSearchOrder.comments, nestedEntries: [
+			{ label: "New", labelImgUrl: "/img/new.svg", value: SortSearchOrder.new, onSelectCallback: this.handleSortSelect.bind(this) },
+			{ label: "Comments", labelImgUrl: "/img/commentEmpty.svg", value: SortSearchOrder.comments, nestedEntries: [
 					{ label: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.handleSortSelect.bind(this) },
 					{ label: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.handleSortSelect.bind(this) },
 					{ label: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.handleSortSelect.bind(this) },

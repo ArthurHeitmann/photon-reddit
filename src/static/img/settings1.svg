@@ -1,1 +1,7 @@
-<svg height='300px' width='300px'  fill="#e4e4e4" xmlns="http://www.w3.org/2000/svg" data-name="Layer 2" viewBox="0 0 48 48" x="0px" y="0px"><title>video music player</title><path d="M17,14V12a2,2,0,0,0-4,0v2a2,2,0,0,0,0,4V36a2,2,0,0,0,4,0V18a2,2,0,0,0,0-4Z"></path><path d="M35,22V12a2,2,0,0,0-4,0V22a2,2,0,0,0,0,4V36a2,2,0,0,0,4,0V26a2,2,0,0,0,0-4Z"></path><path d="M26,30V12a2,2,0,0,0-4,0V30a2,2,0,0,0,0,4v2a2,2,0,0,0,4,0V34a2,2,0,0,0,0-4Z"></path></svg>
+<svg height='300px' width='300px' fill="#e4e4e4" xmlns="http://www.w3.org/2000/svg" data-name="Layer 2"
+	 viewBox="0 0 48 48" x="0px" y="0px">
+	<title>video music player</title>
+	<path d="M17,14V12a2,2,0,0,0-4,0v2a2,2,0,0,0,0,4V36a2,2,0,0,0,4,0V18a2,2,0,0,0,0-4Z"></path>
+	<path d="M35,22V12a2,2,0,0,0-4,0V22a2,2,0,0,0,0,4V36a2,2,0,0,0,4,0V26a2,2,0,0,0,0-4Z"></path>
+	<path d="M26,30V12a2,2,0,0,0-4,0V30a2,2,0,0,0,0,4v2a2,2,0,0,0,4,0V34a2,2,0,0,0,0-4Z"></path>
+</svg>

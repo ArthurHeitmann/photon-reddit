@@ -280,6 +280,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		this.settingsDropDown = new Ph_DropDown(
 			[{
 				label: "filters",
+				labelImgUrl: "/img/filters.svg",
 				nestedEntries: [
 					this.makeRotateFilter(),
 					this.makeBgFilter(),

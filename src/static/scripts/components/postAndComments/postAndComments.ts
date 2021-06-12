@@ -92,13 +92,13 @@ export default class Ph_PostAndComments extends HTMLElement {
 		// sorting
 		const curSort = this.comments.sort;
 		this.sorter = new Ph_DropDown([
-			{ label: SortCommentsOrderNamed.best,	 		value: SortCommentsOrder.best, 			onSelectCallback: this.handleSort.bind(this) },
-			{ label: SortCommentsOrderNamed.top,	 		value: SortCommentsOrder.top, 			onSelectCallback: this.handleSort.bind(this) },
-			{ label: SortCommentsOrderNamed.new,	 		value: SortCommentsOrder.new, 			onSelectCallback: this.handleSort.bind(this) },
-			{ label: SortCommentsOrderNamed.controversial,	value: SortCommentsOrder.controversial,	onSelectCallback: this.handleSort.bind(this) },
-			{ label: SortCommentsOrderNamed.old,	 		value: SortCommentsOrder.old, 			onSelectCallback: this.handleSort.bind(this) },
-			{ label: SortCommentsOrderNamed.qa,	 			value: SortCommentsOrder.qa, 			onSelectCallback: this.handleSort.bind(this) },
-			{ label: SortCommentsOrderNamed.random,	 		value: SortCommentsOrder.random, 		onSelectCallback: this.handleSort.bind(this) },
+			{ label: SortCommentsOrderNamed.best,	 		value: SortCommentsOrder.best, 			labelImgUrl: "/img/rocket.svg", onSelectCallback: this.handleSort.bind(this) },
+			{ label: SortCommentsOrderNamed.top,	 		value: SortCommentsOrder.top, 			labelImgUrl: "/img/top.svg", onSelectCallback: this.handleSort.bind(this) },
+			{ label: SortCommentsOrderNamed.new,	 		value: SortCommentsOrder.new, 			labelImgUrl: "/img/new.svg", onSelectCallback: this.handleSort.bind(this) },
+			{ label: SortCommentsOrderNamed.controversial,	value: SortCommentsOrder.controversial,	labelImgUrl: "/img/lightning.svg", onSelectCallback: this.handleSort.bind(this) },
+			{ label: SortCommentsOrderNamed.old,	 		value: SortCommentsOrder.old, 			labelImgUrl: "/img/history.svg", onSelectCallback: this.handleSort.bind(this) },
+			{ label: SortCommentsOrderNamed.qa,	 			value: SortCommentsOrder.qa, 			labelImgUrl: "/img/qa.svg", onSelectCallback: this.handleSort.bind(this) },
+			{ label: SortCommentsOrderNamed.random,	 		value: SortCommentsOrder.random, 		labelImgUrl: "/img/shuffle.svg", onSelectCallback: this.handleSort.bind(this) },
 		], curSort ? `Sort - ${SortCommentsOrderNamed[curSort]}` : "Sort - Default", DirectionX.right, DirectionY.bottom, false);
 		this.sorter.classList.add("commentsSorter");
 

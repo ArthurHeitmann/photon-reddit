@@ -9,7 +9,7 @@ import {
 	SortUserPostsOrder,
 	UserSection
 } from "../../../types/misc.js";
-import { thisUser } from "../../../utils/globals.js";
+import { isLoggedIn, thisUser } from "../../../utils/globals.js";
 import { getLoadingIcon } from "../../../utils/htmlStatics.js";
 import { extractPath, extractQuery, hasParams, splitPathQuery } from "../../../utils/utils.js";
 import Ph_DropDown, { ButtonLabel, DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
@@ -55,18 +55,20 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 		}
 
 		const query = new URLSearchParams(extractQuery(history.state?.url || ""));
-		let tmpCurSort = extractPath(history.state?.url || "").match(/(?<=\/)\w+$/);	// /r/all/top --> top
+		const path = extractPath(history.state?.url || "");
+		let tmpCurSort = path.match(/(?<=\/)\w+(?=$|\/$)/);	// /r/all/top --> top
 		let curSort = query.get("sort") || tmpCurSort && tmpCurSort[0] || "";
 		if (!(Object.values(SortPostsOrder) as string[]).includes(curSort.toLowerCase()))
 			curSort = "default";
 		const curSortTime = query.get("t");
 		const curSortStr = `Sort - ${curSort}${curSortTime ? `/${curSortTime}` : ""}`;
+		const pathWithoutSort = curSort ? path.replace(new RegExp(`${curSort}\/?`, "i"), "") : path;
 		let dropDownParams: DropDownEntryParam[];
 		if (feedType !== FeedType.user) {
 			dropDownParams = [
-				{ label: "Default", value: SortPostsOrder.default, onSelectCallback: this.handleSortSelect.bind(this) },
-				{ label: "Hot", value: SortPostsOrder.hot, onSelectCallback: this.handleSortSelect.bind(this) },
-				{ label: "Top", value: SortPostsOrder.top, nestedEntries: [
+				isLoggedIn && pathWithoutSort === "/" && { label: "Best", labelImgUrl: "/img/rocket.svg", value: SortPostsOrder.best, onSelectCallback: this.handleSortSelect.bind(this) },
+				{ label: "Hot", labelImgUrl: "/img/hot.svg", value: SortPostsOrder.hot, onSelectCallback: this.handleSortSelect.bind(this) },
+				{ label: "Top", labelImgUrl: "/img/top.svg", value: SortPostsOrder.top, nestedEntries: [
 						{ label: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.handleSortSelect.bind(this) },
 						{ label: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.handleSortSelect.bind(this) },
 						{ label: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.handleSortSelect.bind(this) },
@@ -74,9 +76,9 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 						{ label: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.handleSortSelect.bind(this) },
 						{ label: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.handleSortSelect.bind(this) }
 					] },
-				{ label: "Rising", value: SortPostsOrder.rising, onSelectCallback: this.handleSortSelect.bind(this) },
-				{ label: "New", value: SortPostsOrder.new, onSelectCallback: this.handleSortSelect.bind(this) },
-				{ label: "Controversial", value: SortPostsOrder.controversial, nestedEntries: [
+				{ label: "Rising", labelImgUrl: "/img/trendUp.svg", value: SortPostsOrder.rising, onSelectCallback: this.handleSortSelect.bind(this) },
+				{ label: "New", labelImgUrl: "/img/new.svg", value: SortPostsOrder.new, onSelectCallback: this.handleSortSelect.bind(this) },
+				{ label: "Controversial", labelImgUrl: "/img/lightning.svg", value: SortPostsOrder.controversial, nestedEntries: [
 						{ label: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.handleSortSelect.bind(this) },
 						{ label: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.handleSortSelect.bind(this) },
 						{ label: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.handleSortSelect.bind(this) },
@@ -84,12 +86,11 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 						{ label: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.handleSortSelect.bind(this) },
 						{ label: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.handleSortSelect.bind(this) }
 					] },
-				{ label: "Gilded", value: SortPostsOrder.gilded, onSelectCallback: this.handleSortSelect.bind(this) },
+				{ label: "Gilded", labelImgUrl: "/img/award.svg", value: SortPostsOrder.gilded, onSelectCallback: this.handleSortSelect.bind(this) },
 			];
 		}
 		else {
 			dropDownParams = [
-				{ label: "Default", value: SortUserPostsOrder.default, onSelectCallback: this.handleSortSelect.bind(this) },
 				{ label: "Hot", value: SortUserPostsOrder.hot, onSelectCallback: this.handleSortSelect.bind(this) },
 				{ label: "Top", value: SortUserPostsOrder.top, nestedEntries: [
 						{ label: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.handleSortSelect.bind(this) },

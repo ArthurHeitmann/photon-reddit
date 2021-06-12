@@ -86,7 +86,7 @@ export default abstract class Ph_Readable extends Ph_FeedItem implements FullNam
 				{ label: "Sent", value: MessageSection.sent, onSelectCallback: setMessageSection },
 			],
 			"Sections",
-			DirectionX.left,
+			DirectionX.right,
 			DirectionY.bottom,
 			false
 		));

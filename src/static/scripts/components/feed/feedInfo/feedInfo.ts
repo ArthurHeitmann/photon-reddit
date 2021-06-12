@@ -281,11 +281,12 @@ export default class Ph_FeedInfo extends HTMLElement {
 		});
 		subActionsWrapper.appendChild(subscribeButton);
 		const dropDownEntries: DropDownEntryParam[] = [];
-		dropDownEntries.push({label: `<a href="${this.feedUrl}">Visit</a>`});
-		dropDownEntries.push({label: `<a href="${this.feedUrl}/submit">Submit Post</a>`});
+		dropDownEntries.push({label: `<a href="${this.feedUrl}">Visit</a>`, labelImgUrl: "/img/rightArrow.svg"});
+		dropDownEntries.push({label: `<a href="${this.feedUrl}/submit">Submit Post</a>`, labelImgUrl: "/img/edit.svg"});
 		if (thisUser.multireddits.length > 0) {
 			dropDownEntries.push({
 				label: "Add to Multireddit",
+				labelImgUrl: "/img/add.svg",
 				nestedEntries:
 					thisUser.multireddits.map(multi => ({
 						label: multi.display_name,
@@ -297,6 +298,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		if (this.loadedInfo.data.flairs.length > 0) {
 			dropDownEntries.push({
 				label: this.loadedInfo.data["user_flair_template_id"] ? Ph_Flair.fromThingData(this.loadedInfo.data, "user") : "Select User Flair",
+				labelImgUrl: "/img/tag.svg",
 				nestedEntries:
 					[{ label: "No FLair", value: null, onSelectCallback: this.setSubFlair.bind(this) }].concat(
 					this.loadedInfo.data["flairs"].map((flair: FlairApiData) => {
@@ -410,7 +412,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		overviewBar.appendChild(userActionsWrapper);
 		userActionsWrapper.appendChild(new Ph_DropDown(
 			[
-				{ label: `<a href="${this.feedUrl}">Visit</a>` }
+				{ label: `<a href="${this.feedUrl}">Visit</a>`, labelImgUrl: "/img/rightArrow.svg" }
 			],
 			this.getKebabImg(),
 			DirectionX.left,

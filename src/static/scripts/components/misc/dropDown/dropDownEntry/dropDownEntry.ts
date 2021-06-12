@@ -36,7 +36,15 @@ export default class Ph_DropDownEntry extends HTMLButtonElement {
 		else
 			this.valueChain = [param.value];
 
+		if (param.labelImgUrl) {
+			const labelImg = document.createElement("div");
+			labelImg.className = "labelImg";
+			labelImg.style.setProperty("--img-url", `url("${param.labelImgUrl}")`);
+			this.append(labelImg);
+		}
+
 		this.label = document.createElement("div");
+		this.label.className = "label";
 		if (param.label instanceof  HTMLElement)
 			this.label.append(param.label);
 		else
@@ -99,7 +107,8 @@ export default class Ph_DropDownEntry extends HTMLButtonElement {
 }
 
 export interface DropDownEntryParam {
-	/** innerHTML of the label, if empty displayElement has to be set */
+	labelImgUrl?: string,
+	/** innerHTML or HTMLElement of the label */
 	label?: string | HTMLElement,
 	/** the value associated with this entry, will be passed to onSelectCallback */
 	value?: any,

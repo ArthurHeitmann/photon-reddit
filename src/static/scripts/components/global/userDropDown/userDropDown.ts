@@ -105,7 +105,7 @@ export default class Ph_UserDropDown extends HTMLElement {
 		actions.append(postAction);
 		// messages
 		const inboxAction = makeAction(
-			"/img/chat.svg",
+			"/img/envelope.svg",
 			"Inbox",
 			"/message/inbox"
 		);

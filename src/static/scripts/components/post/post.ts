@@ -123,8 +123,8 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 
 		// additional actions drop down
 		const dropDownEntries: DropDownEntryParam[] = [
-			{ label: this.isSaved ? "Unsave" : "Save", onSelectCallback: this.toggleSave.bind(this) },
-			{ label: "Share", nestedEntries: [
+			{ label: this.isSaved ? "Unsave" : "Save", labelImgUrl: "/img/bookmarkEmpty.svg", onSelectCallback: this.toggleSave.bind(this) },
+			{ label: "Share", labelImgUrl: "/img/share.svg", nestedEntries: [
 					{ label: "Copy Post Link", value: "post link", onSelectCallback: this.share.bind(this) },
 					{ label: "Copy Reddit Link", value: "reddit link", onSelectCallback: this.share.bind(this) },
 					{ label: "Copy Link", value: "link", onSelectCallback: this.share.bind(this) },
@@ -135,21 +135,22 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		if (thisUser && thisUser.name === postData.data["author"]) {
 			const editEntries: DropDownEntryParam[] = [];
 			if (this.postBody.children[0] instanceof Ph_PostText)
-				editEntries.push({ label: "Edit Text", onSelectCallback: this.editPost.bind(this) });
-			editEntries.push({ label: this.isNsfw ? "Unmark NSFW" : "Mark NSFW", onSelectCallback: this.toggleNsfw.bind(this) });
-			editEntries.push({ label: this.isSpoiler ? "Unmark Spoiler" : "Mark Spoiler", onSelectCallback: this.toggleSpoiler.bind(this) });
-			editEntries.push({ label: `${this.sendReplies ? "Disable" : "Enable"} Reply Notifications`, onSelectCallback: this.toggleSendReplies.bind(this) });
+				editEntries.push({ label: "Edit Text", labelImgUrl: "/img/text.svg", onSelectCallback: this.editPost.bind(this) });
+			editEntries.push({ label: this.isNsfw ? "Unmark NSFW" : "Mark NSFW", labelImgUrl: "/img/18+.svg", onSelectCallback: this.toggleNsfw.bind(this) });
+			editEntries.push({ label: this.isSpoiler ? "Unmark Spoiler" : "Mark Spoiler", labelImgUrl: "/img/warning.svg", onSelectCallback: this.toggleSpoiler.bind(this) });
+			editEntries.push({ label: `${this.sendReplies ? "Disable" : "Enable"} Reply Notifications`, labelImgUrl: "/img/notification.svg", onSelectCallback: this.toggleSendReplies.bind(this) });
 			if (!this.postFlair.classList.contains("empty")) {
-				editEntries.push({ label: "Change Flair", onSelectCallback: this.onEditFlairClick.bind(this), nestedEntries: [
+				editEntries.push({ label: "Change Flair", labelImgUrl: "/img/tag.svg", onSelectCallback: this.onEditFlairClick.bind(this), nestedEntries: [
 					{ label: getLoadingIcon() }
 				]});
 			}
-			dropDownEntries.push({ label: "Edit", nestedEntries: editEntries });
-			dropDownEntries.push({ label: "Delete", onSelectCallback: this.deletePostPrompt.bind(this) });
+			dropDownEntries.push({ label: "Edit", labelImgUrl: "/img/edit.svg", nestedEntries: editEntries });
+			dropDownEntries.push({ label: "Delete", labelImgUrl: "/img/delete.svg", onSelectCallback: this.deletePostPrompt.bind(this) });
 		}
 		if (postData.data["num_crossposts"] > 0) {
 			dropDownEntries.push({ label:
-				`<a href="${this.permalink.replace("comments", "duplicates")}" class="noStyle">View ${postData.data["num_crossposts"]} Crossposts</a>`
+				`<a href="${this.permalink.replace("comments", "duplicates")}" class="noStyle">View ${postData.data["num_crossposts"]} Crossposts</a>`,
+				labelImgUrl: "/img/shuffle.svg"
 			});
 		}
 		const moreDropDown = new Ph_DropDown(dropDownEntries, "", DirectionX.left, DirectionY.bottom, true);
@@ -175,7 +176,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		actionWrapper.append(commentsLink);
 
 		this.isLocked = postData.data["locked"] || postData.data["archived"];
-		const lockedReason = postData.data["locked"] ? "locked" : "archived";
+		const lockedReason = postData.data["locked"] ? "Locked" : "Archived";
 		let userAdditionClasses = "";
 		if (postData.data["distinguished"] === "moderator") {
 			userAdditionClasses += " mod";
@@ -468,7 +469,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 
 	async toggleSave(valueChain: any[], _, __, source: Ph_DropDownEntry) {
 		this.isSaved = !this.isSaved;
-		source.innerText = this.isSaved ? "Unsave" : "Save";
+		source.setLabel(this.isSaved ? "Unsave" : "Save");
 		if (!await save(this)) {
 			console.error(`error voting on post ${this.fullName}`);
 			new Ph_Toast(Level.error, "Error saving post");

@@ -118,7 +118,7 @@ export default class Ph_Search extends HTMLElement {
 		else
 			curSortStr = `Sort - relevance/all`;
 		this.sortBy = new Ph_DropDown([
-			{ label: "Relevance", value: SortSearchOrder.relevance, nestedEntries: [
+			{ label: "Relevance", labelImgUrl: "/img/relevance.svg", value: SortSearchOrder.relevance, nestedEntries: [
 				{ label: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.setSortOrder.bind(this) },
 				{ label: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.setSortOrder.bind(this) },
 				{ label: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.setSortOrder.bind(this) },
@@ -126,7 +126,7 @@ export default class Ph_Search extends HTMLElement {
 				{ label: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.setSortOrder.bind(this) },
 				{ label: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.setSortOrder.bind(this) },
 			] },
-			{ label: "Hot", value: SortSearchOrder.hot, nestedEntries: [
+			{ label: "Hot", labelImgUrl: "/img/hot.svg", value: SortSearchOrder.hot, nestedEntries: [
 				{ label: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.setSortOrder.bind(this) },
 				{ label: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.setSortOrder.bind(this) },
 				{ label: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.setSortOrder.bind(this) },
@@ -134,7 +134,7 @@ export default class Ph_Search extends HTMLElement {
 				{ label: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.setSortOrder.bind(this) },
 				{ label: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.setSortOrder.bind(this) },
 			] },
-			{ label: "top", value: SortSearchOrder.top, nestedEntries: [
+			{ label: "top", labelImgUrl: "/img/top.svg", value: SortSearchOrder.top, nestedEntries: [
 				{ label: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.setSortOrder.bind(this) },
 				{ label: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.setSortOrder.bind(this) },
 				{ label: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.setSortOrder.bind(this) },
@@ -142,8 +142,8 @@ export default class Ph_Search extends HTMLElement {
 				{ label: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.setSortOrder.bind(this) },
 				{ label: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.setSortOrder.bind(this) },
 			] },
-			{ label: "New", value: SortSearchOrder.new, onSelectCallback: this.setSortOrder.bind(this) },
-			{ label: "Comments", value: SortSearchOrder.comments, nestedEntries: [
+			{ label: "New", labelImgUrl: "/img/new.svg", value: SortSearchOrder.new, onSelectCallback: this.setSortOrder.bind(this) },
+			{ label: "Comments", labelImgUrl: "/img/commentEmpty.svg", value: SortSearchOrder.comments, nestedEntries: [
 				{ label: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.setSortOrder.bind(this) },
 				{ label: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.setSortOrder.bind(this) },
 				{ label: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.setSortOrder.bind(this) },

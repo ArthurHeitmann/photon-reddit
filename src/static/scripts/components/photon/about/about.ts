@@ -8,35 +8,12 @@ const template = `
 </p>
 
 <ul>
-	<li><a href="#credits">Credits</a></li>
 	<li><a href="#privacy">Privacy</a></li>
 	<li><a href="#github">GitHub & Source Code</a></li>
 	<li><a href="#contact">Contact</a></li>
+	<li><a href="#credits">Credits</a></li>
 </ul>
 <br>
-
-<h2 id="credits">Credits</h2>
-
-<p><h3>Icons</h3></p>
-
-<p>
-	Most icons are from <a href="https://thenounproject.com/">thenounproject.com</a>.
-	<br>
-	Mainly from <a href="https://thenounproject.com/kerismaker/collection/music-video-player/">this collection</a> by 
-	<a href="https://thenounproject.com/kerismaker/">tezar tantular</a>.
-	<br>
-	Icons for the toast notifications are from <a href="https://thenounproject.com/icongeek/collection/sign/">this collection</a> by 
-	<a href="https://thenounproject.com/icongeek/">icongeek</a>.
-	<br>
-	Other attributions:
-	<ul>
-		<li>The pin icon in the header: "Pin by Martins Ratkus from the Noun Project".</li>
-		<li>Icon for r/popular: "Trending up by DailyPM from the Noun Project"</li>
-		<li>Icon for r/all: "Earth by Royyan Wijaya from the Noun Project"</li>
-		<li></li>
-	</ul>
-	
-</p>
 
 <p>
 	The Photon logo is self made and may only be used in association with Photon Reddit.
@@ -82,6 +59,45 @@ const template = `
 
 <p>
 	You can contact the developer on <a href="/user/RaiderBDev">Reddit u/RaiderBDev</a> or via E-Mail art[dot]tec[dot]15[at]gmail[dot]com (replace [dot] with . and [at] with @)
+</p>
+
+<h2 id="credits">Credits</h2>
+
+<p><h3>Icons</h3></p>
+
+<p>
+	Most icons are from <a href="https://thenounproject.com/">thenounproject.com</a>.
+	<br>
+	Icons for the media viewer and more are from <a href="https://thenounproject.com/kerismaker/collection/music-video-player/">this collection</a> by 
+	<a href="https://thenounproject.com/kerismaker/">tezar tantular</a>.
+	<br>
+	Icons for the toast notifications are from <a href="https://thenounproject.com/icongeek/collection/sign/">this collection</a> by 
+	<a href="https://thenounproject.com/icongeek/">icongeek</a>.
+	<br>
+	Other attributions:
+	<ul>
+		<li>The pin icon in the header: "Pin by Martins Ratkus from the Noun Project".</li>
+		<li>Sort by relevance icon: "sorting by Evgeni Moryakov from the Noun Project"</li>
+		<li>Controversial icon: "Lightning by Rodolfo Alvarez from the Noun Project"</li>
+		<li>Q & A icon: "question and answer by Wolf Böse from the Noun Project"</li>
+		<li>Edit text icon: "text by Ricki Tri Putra from the Noun Project"</li>
+		<li>Icon for r/all: "Earth by Royyan Wijaya from the Noun Project"</li>
+		<li>Popular icon: "Trending up by DailyPM from the Noun Project"</li>
+		<li>Share icon: "Share by Arun Ganesh from the Noun Project"</li>
+		<li>Crosspost icon: "Shuffle by ghayn from the Noun Project"</li>
+		<li>Award icon: "Medal by Shashwathy from the Noun Project"</li>
+		<li>Best icon: "Rocket by The Icon Z from the Noun Project"</li>
+		<li>New icon: "new by Adrien Coquet from the Noun Project"</li>
+		<li>Inbox icon: "envelope by ghayn from the Noun Project"</li>
+		<li>Top icon: "Data by Fengquan Li from the Noun Project"</li>
+		<li>Save icon: "bookmark by ghayn from the Noun Project"</li>
+		<li>Delete icon: "Delete by ghayn from the Noun Project"</li>
+		<li>Hot icon: "Hot by Pawel Rak from the Noun Project"</li>
+		<li>Flair icon: "Tag by Ranjit from the Noun Project"</li>
+		<li> icon: ""</li>
+		<li> icon: ""</li> <!-- TODO -->
+	</ul>
+	
 </p>
 
 `;

@@ -346,7 +346,9 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 		// settings
 		this.controls.settingsEntries = [
 			{
-				label: "Speed", nestedEntries: [
+				label: "Speed",
+				labelImgUrl: "/img/fastForward.svg",
+				nestedEntries: [
 					{label: "0.10x", value: 0.10, onSelectCallback: this.setVideoSpeed.bind(this)},
 					{label: "0.25x", value: 0.25, onSelectCallback: this.setVideoSpeed.bind(this)},
 					{label: "0.50x", value: 0.50, onSelectCallback: this.setVideoSpeed.bind(this)},
@@ -358,7 +360,8 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				]
 			},
 			{
-				label: `<span>Popout</span>`,
+				label: `<span>Pop Out</span>`,
+				labelImgUrl: "/img/popUp.svg",
 				onSelectCallback: this.popoutVideo.bind(this)
 			},
 		];
