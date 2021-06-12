@@ -1,6 +1,6 @@
 import { escADQ } from "../../../../utils/htmlStatics.js";
 import { clamp, hasParams, urlWithHttps } from "../../../../utils/utils.js";
-import Ph_VideoWrapper, { BasicVideoData } from "../videoWrapper.js";
+import Ph_VideoWrapper, { BasicVideoData, SourceData, VideoTrackInfo } from "../videoWrapper.js";
 
 /**
  * Use this when you have 2 mp4s, 1 for video & 1 for audio. This will play, pause, seek, ... them together
@@ -13,13 +13,19 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 	hasAudio: boolean = true;
 	lastSyncMs: number = 0;
 	pendingPlay: boolean = false;
+	videoTracks: VideoTrackInfo[];
 
-	constructor(videoSources: { src: string, type: string }[], audioSources: { src: string, type: string }[]) {
+	constructor(videoSources: SourceData[], audioSources: { src: string, type: string }[]) {
 		super();
 		if (!hasParams(arguments)) return;
 
 		videoSources.forEach(src => src.src = urlWithHttps(src.src));
 		audioSources.forEach(src => src.src = urlWithHttps(src.src));
+
+		this.videoTracks = videoSources.map(src => (<VideoTrackInfo> {
+			label: src.label || src.src,
+			key: src
+		}));
 
 		this.video = document.createElement("video");
 		this.video.setAttribute("loop", "");
@@ -167,6 +173,22 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 			className: "Ph_VideoAudio",
 			data: [this.video.currentSrc, this.audio.currentSrc]
 		};
+	}
+
+	getVideoTracks(): VideoTrackInfo[] {
+		return this.videoTracks;
+	}
+
+	setVideoTrack(key: SourceData) {
+		const currentTime = this.video.currentTime;
+		const isPaused = this.video.paused;
+		this.pause();
+		this.dispatchEvent(new Event("ph-buffering"));
+		this.video.innerHTML = `<source src="${escADQ(key.src)}" type="${escADQ(key.type)}">`;
+		this.video.load();
+		this.video.currentTime = currentTime;
+		if (!isPaused)
+			this.addEventListener("ph-ready", this.play.bind(this), { once: true })
 	}
 }
 

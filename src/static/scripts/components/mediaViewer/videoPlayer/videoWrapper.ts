@@ -23,6 +23,8 @@ export default abstract class Ph_VideoWrapper extends HTMLElement {
 	abstract getDimensions(): number[];
 	abstract getUrl(): string;
 	abstract exportData(): BasicVideoData;
+	abstract getVideoTracks(): VideoTrackInfo[];
+	abstract setVideoTrack(key: any);
 
 	// should be dispatching the following events
 	// - ph-play			video starts playing
@@ -38,4 +40,15 @@ export default abstract class Ph_VideoWrapper extends HTMLElement {
 export interface BasicVideoData {
 	className: "Ph_SimpleVideo" | "Ph_VideoAudio" | "Ph_GifVideo",
 	data: any
+}
+
+export interface VideoTrackInfo {
+	label: string,
+	key: any
+}
+
+export interface SourceData {
+	src: string,
+	type: string,
+	label?: string
 }

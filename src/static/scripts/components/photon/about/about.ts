@@ -93,9 +93,8 @@ const template = `
 		<li>Save icon: "bookmark by ghayn from the Noun Project"</li>
 		<li>Delete icon: "Delete by ghayn from the Noun Project"</li>
 		<li>Hot icon: "Hot by Pawel Rak from the Noun Project"</li>
+		<li>HD icon: "HD by Vectorstall from the Noun Project"</li>
 		<li>Flair icon: "Tag by Ranjit from the Noun Project"</li>
-		<li> icon: ""</li>
-		<li> icon: ""</li> <!-- TODO -->
 	</ul>
 	
 </p>

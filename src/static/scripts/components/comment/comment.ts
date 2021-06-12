@@ -48,7 +48,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 	 * @param commentData Data returned by the reddit API
 	 * @param isChild false --> root comment
 	 * @param isInFeed true --> child of Ph_UniversalFeed, false --> child of Ph_PostAndComments|Ph_CommentsFeed
-	 * @param post parent posplt if available should be supied (needed to load possible child comments)
+	 * @param post parent post if available should be supplied (needed to load possible child comments)
 	 */
 	constructor(commentData: RedditApiType, isChild: boolean, isInFeed: boolean, post?: Ph_Post) {
 		super(

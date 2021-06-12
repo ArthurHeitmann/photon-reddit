@@ -1,6 +1,6 @@
 import { escADQ } from "../../../../utils/htmlStatics.js";
 import { clamp, hasParams, urlWithHttps } from "../../../../utils/utils.js";
-import Ph_VideoWrapper, { BasicVideoData } from "../videoWrapper.js";
+import Ph_VideoWrapper, { BasicVideoData, SourceData, VideoTrackInfo } from "../videoWrapper.js";
 
 /**
  * A video with a list of fallback sources
@@ -11,7 +11,7 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 	noAudioProgressCallback: () => void;
 
 	/** @param sourcesArray browser first tries to load src 0, when fails try src 1, ... */
-	constructor(sourcesArray: { src: string, type: string }[]) {
+	constructor(sourcesArray: SourceData[]) {
 		super();
 		if (!hasParams(arguments)) return;
 
@@ -113,6 +113,13 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 			className: "Ph_SimpleVideo",
 			data: this.video.currentSrc
 		};
+	}
+
+	getVideoTracks(): VideoTrackInfo[] {
+		return [];
+	}
+
+	setVideoTrack(key: any) {
 	}
 }
 

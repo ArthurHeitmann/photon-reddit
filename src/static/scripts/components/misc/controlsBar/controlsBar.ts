@@ -79,6 +79,7 @@ export default class Ph_ControlsBar extends HTMLElement {
 			const dropDownArea = dropDown.$class("dropDownArea ")[0] as Ph_DropDownArea;
 			newElements.settingsEntriesCurrent = deepClone(newElements.settingsEntries);
 			newElements.settingsEntriesElements = (newElements.settingsEntries)
+				.filter(param => Boolean(param))
 				.map(param => new Ph_DropDownEntry(param, dropDown, dropDownArea));
 		}
 		const entriesRoot = dropDown.$class("dropDownArea")[0];

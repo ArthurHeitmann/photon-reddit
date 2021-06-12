@@ -3,7 +3,7 @@ import { youtubeDlUrl } from "../../../api/photonApi.js";
 import { RedditApiType } from "../../../types/misc.js";
 import { $tagAr, escHTML } from "../../../utils/htmlStatics.js";
 import { classInElementTree, isElementIn } from "../../../utils/htmlStuff.js";
-import { hasParams, secondsToVideoTime } from "../../../utils/utils.js";
+import { hasParams, isJsonEqual, secondsToVideoTime } from "../../../utils/utils.js";
 import { globalSettings } from "../../global/photonSettings/photonSettings.js";
 import Ph_ControlsBar, { ControlsLayoutSlots } from "../../misc/controlsBar/controlsBar.js";
 import Ph_ProgressBar from "../../misc/progressBar/progressBar.js";
@@ -15,7 +15,7 @@ import Ph_GifVideo from "./gifVideo/gifVideo.js";
 import Ph_PlayImage from "./icons/playImage.js";
 import Ph_SimpleVideo from "./simpleVideo/simpleVideo.js";
 import Ph_VideoAudio from "./videoAudio/videoAudio.js";
-import Ph_VideoWrapper from "./videoWrapper.js";
+import Ph_VideoWrapper, { SourceData } from "./videoWrapper.js";
 
 /**
  * A custom video player with custom controls
@@ -101,22 +101,22 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				else {
 					const vReddItFallBack = () => {
 						videoOut.init(new Ph_VideoAudio([
-							{src: url + "/DASH_1080.mp4", type: "video/mp4"},
-							{src: url + "/DASH_1080", type: "video/mp4"},
-							{src: url + "/DASH_720.mp4", type: "video/mp4"},
-							{src: url + "/DASH_720", type: "video/mp4"},
-							{src: url + "/DASH_480.mp4", type: "video/mp4"},
-							{src: url + "/DASH_480", type: "video/mp4"},
-							{src: url + "/DASH_360.mp4", type: "video/mp4"},
-							{src: url + "/DASH_360", type: "video/mp4"},
-							{src: url + "/DASH_240.mp4", type: "video/mp4"},
-							{src: url + "/DASH_240", type: "video/mp4"},
-							{src: url + "/DASH_96.mp4", type: "video/mp4"},
-							{src: url + "/DASH_96", type: "video/mp4"},
-							{src: url + "/DASH_4_8_M", type: "video/mp4"},
-							{src: url + "/DASH_2_4_M", type: "video/mp4"},
-							{src: url + "/DASH_1_2_M", type: "video/mp4"},
-							{src: url + "/DASH_600_K", type: "video/mp4"},
+							{src: url + "/DASH_1080.mp4", type: "video/mp4", label: "1080p"},
+							{src: url + "/DASH_1080", type: "video/mp4", label: "1080p"},
+							{src: url + "/DASH_720.mp4", type: "video/mp4", label: "720p"},
+							{src: url + "/DASH_720", type: "video/mp4", label: "720p"},
+							{src: url + "/DASH_480.mp4", type: "video/mp4", label: "480p"},
+							{src: url + "/DASH_480", type: "video/mp4", label: "480p"},
+							{src: url + "/DASH_360.mp4", type: "video/mp4", label: "3600p"},
+							{src: url + "/DASH_360", type: "video/mp4", label: "3600p"},
+							{src: url + "/DASH_240.mp4", type: "video/mp4", label: "2400p"},
+							{src: url + "/DASH_240", type: "video/mp4", label: "2400p"},
+							{src: url + "/DASH_96.mp4", type: "video/mp4", label: "96p"},
+							{src: url + "/DASH_96", type: "video/mp4", label: "96p"},
+							{src: url + "/DASH_4_8_M", type: "video/mp4", label: "720p"},
+							{src: url + "/DASH_2_4_M", type: "video/mp4", label: "480p"},
+							{src: url + "/DASH_1_2_M", type: "video/mp4", label: "360p"},
+							{src: url + "/DASH_600_K", type: "video/mp4", label: "240p"},
 						], [
 							{src: url + "/DASH_audio.mp4", type: "audio/mp4"},
 							{src: url + "/DASH_audio", type: "audio/mp4"},
@@ -127,8 +127,10 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 
 					let dashUrl: string;
 					url = url.match(/https:\/\/v\.redd\.it\/[^/?#]+/)[0];
-					if (postData && postData.data["media"] && postData.data["media"]["reddit_video"])
-						dashUrl = postData.data["media"]["reddit_video"]["dash_url"];
+					const redditVideoData = postData.data["media"]["reddit_video"];
+					redditVideoData["fallback_url"] = redditVideoData["fallback_url"].replace(/\?.*/, "")
+					if (postData && postData.data["media"] && redditVideoData)
+						dashUrl = redditVideoData["dash_url"];
 					else
 						dashUrl = `${url}/DASHPlaylist.mpd`;
 
@@ -142,8 +144,15 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 								const bandwidthB = parseInt(b.getAttribute("bandwidth"));
 								return bandwidthB - bandwidthA;
 							})
-							.map(rep => rep.querySelector("BaseURL").textContent)
-							.map(baseUrl => ({ src: `${url}/${baseUrl}`, type: "video/mp4" }));
+							.map(rep => [rep.querySelector("BaseURL").textContent, rep.getAttribute("height") + "p"])
+							.map(trackData => (<SourceData> { src: `${url}/${trackData[0]}`, type: "video/mp4", label: trackData[1] }));
+						const fallbackSrc = <SourceData> {
+							src: redditVideoData["fallback_url"],
+							type: "video/mp4",
+							label: `${redditVideoData["height"]}p`
+						};
+						if (!isJsonEqual(fallbackSrc, videoSources[0]))
+							videoSources.splice(0, 0, fallbackSrc);
 						if (videoSources.length === 0) {
 							vReddItFallBack();
 							return;
@@ -358,6 +367,14 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 					{label: "8.00x", value: 8.00, onSelectCallback: this.setVideoSpeed.bind(this)},
 					{label: "16.00x", value: 16.00, onSelectCallback: this.setVideoSpeed.bind(this)},
 				]
+			},
+			this.video.getVideoTracks().length > 0 && {
+				label: "Quality",
+				labelImgUrl: "/img/hd.svg",
+				nestedEntries: this.video.getVideoTracks().map(track => ({
+					label: track.label,
+					onSelectCallback: () => this.video.setVideoTrack(track.key)
+				}))
 			},
 			{
 				label: `<span>Pop Out</span>`,

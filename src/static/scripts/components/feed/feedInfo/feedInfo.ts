@@ -710,6 +710,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 		const subText = document.createElement("div");
 		subText.innerHTML = `<a href="/r/${escADQ(sub)}">r/${escHTML(sub)}</a>`;
 		removeSubredditBar.appendChild(subText);
+		linksToSpa(removeSubredditBar);
 		return removeSubredditBar;
 	}
 
