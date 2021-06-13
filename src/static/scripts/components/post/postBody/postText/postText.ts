@@ -1,7 +1,7 @@
 import { editCommentOrPost } from "../../../../api/redditApi.js";
 import { RedditApiData } from "../../../../types/misc.js";
 import { emojiFlagsToImages, escHTML } from "../../../../utils/htmlStatics.js";
-import { elementWithClassInTree } from "../../../../utils/htmlStuff.js";
+import { elementWithClassInTree, linksToSpa } from "../../../../utils/htmlStuff.js";
 import { hasParams } from "../../../../utils/utils.js";
 import Ph_MarkdownForm from "../../../misc/markdownForm/markdownForm.js";
 import Ph_Toast, { Level } from "../../../misc/toast/toast.js";
@@ -118,6 +118,7 @@ export default class Ph_PostText extends HTMLElement {
 		this.markdown = editData["json"]["data"]["things"][0]["data"]["selftext"];
 		this.textWrapper.innerHTML = editData["json"]["data"]["things"][0]["data"]["selftext_html"];
 		emojiFlagsToImages(this.textWrapper);
+		linksToSpa(this, true)
 		this.endEditing();
 	}
 }

@@ -32,12 +32,14 @@
 	}
 
 	&.isEditing {
-		> div >.content {
-			display: none;
-		}
+		> div {
+			>.content {
+				display: none;
+			}
 
-		.editForm {
-			display: inherit;
+			> .editForm {
+				display: inherit;
+			}
 		}
 	}
 
