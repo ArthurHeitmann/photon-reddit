@@ -1,6 +1,15 @@
-export const photonVersion = "0.5.3";		/// <change version script>
+export const photonVersion = "0.5.4";		/// <change version script>
 
 export const photonChangelog = {
+	"0.5.4": {
+		"New": [
+			"You can now change the video quality on video from reddit or gfycat",
+			"Improved video playback speed setting",
+		],
+		"Fixed": [
+			"Several bugs related to editing posts & comments",
+		]
+	},
 	"0.5.3": {
 		"New": [
 			"Video pop out",
