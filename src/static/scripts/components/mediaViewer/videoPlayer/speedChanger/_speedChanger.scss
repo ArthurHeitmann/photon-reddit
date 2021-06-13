@@ -1,0 +1,28 @@
+
+ph-speed-changer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	height: 100%;
+	padding: 0 0.3rem;
+
+	> .speedBtn {
+		--dim: 2rem;
+		$btnSize: 1.25rem;
+		width: $btnSize;
+		height: $btnSize;
+
+		img {
+			width: $btnSize;
+			height: $btnSize;
+		}
+
+		&:first-child {
+			transform: rotate(180deg);
+		}
+
+		&:disabled {
+			opacity: .25;
+		}
+	}
+}
