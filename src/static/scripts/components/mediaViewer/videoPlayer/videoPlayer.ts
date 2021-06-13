@@ -97,22 +97,22 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				else {
 					const vReddItFallBack = () => {
 						videoOut.init(new Ph_VideoAudio([
-							{src: url + "/DASH_1080.mp4", type: "video/mp4", label: "1080p"},
-							{src: url + "/DASH_1080", type: "video/mp4", label: "1080p"},
-							{src: url + "/DASH_720.mp4", type: "video/mp4", label: "720p"},
-							{src: url + "/DASH_720", type: "video/mp4", label: "720p"},
-							{src: url + "/DASH_480.mp4", type: "video/mp4", label: "480p"},
-							{src: url + "/DASH_480", type: "video/mp4", label: "480p"},
-							{src: url + "/DASH_360.mp4", type: "video/mp4", label: "3600p"},
-							{src: url + "/DASH_360", type: "video/mp4", label: "3600p"},
-							{src: url + "/DASH_240.mp4", type: "video/mp4", label: "2400p"},
-							{src: url + "/DASH_240", type: "video/mp4", label: "2400p"},
-							{src: url + "/DASH_96.mp4", type: "video/mp4", label: "96p"},
-							{src: url + "/DASH_96", type: "video/mp4", label: "96p"},
-							{src: url + "/DASH_4_8_M", type: "video/mp4", label: "720p"},
-							{src: url + "/DASH_2_4_M", type: "video/mp4", label: "480p"},
-							{src: url + "/DASH_1_2_M", type: "video/mp4", label: "360p"},
-							{src: url + "/DASH_600_K", type: "video/mp4", label: "240p"},
+							{src: url + "/DASH_1080.mp4", type: "video/mp4"},
+							{src: url + "/DASH_1080", type: "video/mp4"},
+							{src: url + "/DASH_720.mp4", type: "video/mp4"},
+							{src: url + "/DASH_720", type: "video/mp4"},
+							{src: url + "/DASH_480.mp4", type: "video/mp4"},
+							{src: url + "/DASH_480", type: "video/mp4"},
+							{src: url + "/DASH_360.mp4", type: "video/mp4"},
+							{src: url + "/DASH_360", type: "video/mp4"},
+							{src: url + "/DASH_240.mp4", type: "video/mp4"},
+							{src: url + "/DASH_240", type: "video/mp4"},
+							{src: url + "/DASH_96.mp4", type: "video/mp4"},
+							{src: url + "/DASH_96", type: "video/mp4"},
+							{src: url + "/DASH_4_8_M", type: "video/mp4"},
+							{src: url + "/DASH_2_4_M", type: "video/mp4"},
+							{src: url + "/DASH_1_2_M", type: "video/mp4"},
+							{src: url + "/DASH_600_K", type: "video/mp4"},
 						], [
 							{src: url + "/DASH_audio.mp4", type: "audio/mp4"},
 							{src: url + "/DASH_audio", type: "audio/mp4"},
@@ -143,13 +143,16 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 							})
 							.map(rep => [rep.querySelector("BaseURL").textContent, rep.getAttribute("height") + "p"])
 							.map(trackData => (<SourceData> { src: `${url}/${trackData[0]}`, type: "video/mp4", label: trackData[1] }));
-						const fallbackSrc = <SourceData> {
-							src: redditVideoData["fallback_url"],
-							type: "video/mp4",
-							label: `${redditVideoData["height"]}p`
-						};
-						if (!isJsonEqual(fallbackSrc, videoSources[0]))
-							videoSources.splice(0, 0, fallbackSrc);
+						if (redditVideoData) {
+							const fallbackSrc = <SourceData> {
+								src: redditVideoData["fallback_url"],
+								type: "video/mp4",
+								label: `${redditVideoData["height"]}p`
+							};
+							if (!isJsonEqual(fallbackSrc, videoSources[0])) {
+								videoSources.splice(0, 0, fallbackSrc);
+							}
+						}
 						if (videoSources.length === 0) {
 							vReddItFallBack();
 							return;
@@ -162,7 +165,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 
 						videoOut.init(new Ph_VideoAudio(videoSources, audioSrc), true);
 					})
-						.catch(() => vReddItFallBack());
+						.catch((e) => vReddItFallBack());
 				}
 				break;
 			case "i.redd.it":

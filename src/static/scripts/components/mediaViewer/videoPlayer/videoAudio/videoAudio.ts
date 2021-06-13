@@ -22,10 +22,12 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 		videoSources.forEach(src => src.src = urlWithHttps(src.src));
 		audioSources.forEach(src => src.src = urlWithHttps(src.src));
 
-		this.videoTracks = videoSources.map(src => (<VideoTrackInfo> {
-			label: src.label || src.src,
-			key: src
-		}));
+		this.videoTracks = videoSources
+			.filter(src => Boolean(src.label))
+			.map(src => (<VideoTrackInfo> {
+				label: src.label || src.src,
+				key: src
+			}));
 
 		this.video = document.createElement("video");
 		this.video.setAttribute("loop", "");

@@ -18,10 +18,12 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 
 		sourcesArray.forEach(src => src.src = urlWithHttps(src.src));
 
-		this.videoTracks = sourcesArray.map(src => (<VideoTrackInfo> {
-			label: src.label || src.src,
-			key: src
-		}));
+		this.videoTracks = sourcesArray
+			.filter(src => Boolean(src.label))
+			.map(src => (<VideoTrackInfo> {
+				label: src.label || src.src,
+				key: src
+			}));
 
 		this.video = document.createElement("video");
 		this.video.setAttribute("loop", "");
