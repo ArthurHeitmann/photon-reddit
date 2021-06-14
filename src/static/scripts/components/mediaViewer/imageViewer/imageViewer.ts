@@ -46,6 +46,7 @@ export default class Ph_ImageViewer extends Ph_PhotonBaseElement implements Medi
 			this.previewImage.className = "preview";
 			this.previewImage.src = initData.previewUrl
 			this.previewImage.alt = initData.caption || this.url;
+			this.previewImage.onerror = this.startLoadingOriginal.bind(this);
 			nonDraggableImage(this.previewImage);
 			this.append(this.previewImage);
 			this.addEventListener("ph-entered-fullscreen", this.onFullscreenEnter.bind(this));
