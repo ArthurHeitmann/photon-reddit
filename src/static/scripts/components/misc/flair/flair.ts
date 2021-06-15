@@ -1,4 +1,5 @@
 import { RedditApiData } from "../../../types/misc.js";
+import { emojiFlagsToImages } from "../../../utils/htmlStatics.js";
 import { hasParams } from "../../../utils/utils.js";
 import Ph_Toast, { Level } from "../toast/toast.js";
 
@@ -88,6 +89,8 @@ export default class Ph_Flair extends HTMLElement {
 			console.log(data);
 		}
 
+		emojiFlagsToImages(this.flairContent);
+
 		if (data.isEditable && allowEdits) {
 			this.editButton = document.createElement("button");
 			this.editButton.className = "transparentButton";
@@ -116,6 +119,7 @@ export default class Ph_Flair extends HTMLElement {
 				this.hideEdit();
 				this.data.text = this.editInput.value;
 				this.flairContent.innerText = this.editInput.value;
+				emojiFlagsToImages(this.flairContent);
 				this.hasTextChanged = true;
 			});
 			this.append(this.confirmButton);
