@@ -126,7 +126,11 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 
 		// additional actions drop down
 		const dropDownEntries: DropDownEntryParam[] = [
-			{ label: this.isSaved ? "Unsave" : "Save", labelImgUrl: "/img/bookmarkEmpty.svg", onSelectCallback: this.toggleSave.bind(this) },
+			{
+				label: this.isSaved ? "Unsave" : "Save",
+				labelImgUrl: this.isSaved ? "/img/bookmarkFilled.svg" : "/img/bookmarkEmpty.svg",
+				onSelectCallback: this.toggleSave.bind(this)
+			},
 			{ label: "Share", labelImgUrl: "/img/share.svg", nestedEntries: [
 					{ label: "Copy Post Link", value: "post link", onSelectCallback: this.share.bind(this) },
 					{ label: "Copy Reddit Link", value: "reddit link", onSelectCallback: this.share.bind(this) },
@@ -473,6 +477,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 	async toggleSave(data: DropDownActionData) {
 		this.isSaved = !this.isSaved;
 		data.source.setLabel(this.isSaved ? "Unsave" : "Save");
+		data.source.setLabelImg(this.isSaved ? "/img/bookmarkFilled.svg" : "/img/bookmarkEmpty.svg");
 		if (!await save(this)) {
 			console.error(`error voting on post ${this.fullName}`);
 			new Ph_Toast(Level.error, "Error saving post");
