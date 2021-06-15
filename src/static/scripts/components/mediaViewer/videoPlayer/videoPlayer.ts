@@ -6,6 +6,7 @@ import { classInElementTree, isElementIn } from "../../../utils/htmlStuff.js";
 import { hasParams, isJsonEqual, secondsToVideoTime } from "../../../utils/utils.js";
 import { globalSettings } from "../../global/photonSettings/photonSettings.js";
 import Ph_ControlsBar, { ControlsLayoutSlots } from "../../misc/controlsBar/controlsBar.js";
+import Ph_DropDownEntry, { DropDownActionData } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_ProgressBar from "../../misc/progressBar/progressBar.js";
 import Ph_SwitchingImage from "../../misc/switchableImage/switchableImage.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
@@ -362,10 +363,11 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				this.video.getVideoTracks().length > 1 && {
 				label: "Quality",
 				labelImgUrl: "/img/hd.svg",
-				nestedEntries: this.video.getVideoTracks().map(track => ({
+				nestedEntries: this.video.getVideoTracks().map((track, i) => ({
 					label: track.label,
+					labelImgUrl: i === 0 ? "/img/circleFilled.svg" : "/img/circle.svg",
 					value: track.key,
-					onSelectCallback: this.video.setVideoTrack.bind(this.video)
+					onSelectCallback: this.onSetVideoQuality.bind(this)
 				}))
 			},
 			{
@@ -485,6 +487,14 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 			return;
 		Ph_VideoPlayer.globalIsMuted = newMuted;
 		$tagAr("ph-video-player").forEach((player: Ph_VideoPlayer) => player.toggleMuted(false, newMuted));
+	}
+
+	onSetVideoQuality(data: DropDownActionData) {
+		const currentTrackEntry = data.source.dropDownArea.$classAr("dropDownEntry")
+			.find((entry: Ph_DropDownEntry) => entry.labelImg.style.getPropertyValue("--img-url").includes("/img/circleFilled.svg")) as Ph_DropDownEntry;
+		currentTrackEntry?.setLabelImg("/img/circle.svg");
+		data.source.setLabelImg("/img/circleFilled.svg");
+		this.video.setVideoTrack(data);
 	}
 }
 

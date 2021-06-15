@@ -12,6 +12,7 @@ export default class Ph_DropDownEntry extends HTMLButtonElement {
 	dropDown: Ph_DropDown;
 	dropDownArea: Ph_DropDownArea;
 	parentEntry: Ph_DropDownEntry = null;
+	labelImg: HTMLElement;
 
 	/**
 	 * @param param determines content & behaviour of this entry
@@ -36,11 +37,11 @@ export default class Ph_DropDownEntry extends HTMLButtonElement {
 		else
 			this.valueChain = [param.value];
 
+		this.labelImg = document.createElement("div");
+		this.labelImg.className = "labelImg";
 		if (param.labelImgUrl) {
-			const labelImg = document.createElement("div");
-			labelImg.className = "labelImg";
-			labelImg.style.setProperty("--img-url", `url("${param.labelImgUrl}")`);
-			this.append(labelImg);
+			this.append(this.labelImg);
+			this.setLabelImg(param.labelImgUrl);
 		}
 
 		this.label = document.createElement("div");
@@ -104,6 +105,12 @@ export default class Ph_DropDownEntry extends HTMLButtonElement {
 		}
 		else
 			this.label.innerHTML = text;
+	}
+
+	setLabelImg(url: string) {
+		if (!this.labelImg.isConnected)
+			this.insertAdjacentElement("afterbegin", this.labelImg);
+		this.labelImg.style.setProperty("--img-url", `url("${url}")`);
 	}
 }
 
