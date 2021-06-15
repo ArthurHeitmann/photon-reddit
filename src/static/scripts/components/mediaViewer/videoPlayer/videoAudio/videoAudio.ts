@@ -1,5 +1,6 @@
 import { escADQ } from "../../../../utils/htmlStatics.js";
 import { clamp, hasParams, urlWithHttps } from "../../../../utils/utils.js";
+import { DropDownActionData } from "../../../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_VideoWrapper, { BasicVideoData, SourceData, VideoTrackInfo } from "../videoWrapper.js";
 
 /**
@@ -181,7 +182,8 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 		return this.videoTracks;
 	}
 
-	setVideoTrack(key: SourceData) {
+	setVideoTrack(data: DropDownActionData) {
+		const key = data.valueChain[1] as SourceData;
 		const currentTime = this.video.currentTime;
 		const isPaused = this.video.paused;
 		this.pause();

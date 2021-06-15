@@ -74,12 +74,13 @@ export default class Ph_DropDownEntry extends HTMLButtonElement {
 				}
 				// call callback
 				if (param.onSelectCallback) {
-					const shouldBeOpen = param.onSelectCallback(
-						this.valueChain,
-						(newLabel) => this.dropDown.setLabel(newLabel),
-						this.dropDown.getLabel(),
-						this
-					) || false;
+					const shouldBeOpen = param.onSelectCallback(<DropDownActionData> {
+						valueChain: this.valueChain,
+						setButtonLabel: (newLabel) => this.dropDown.setLabel(newLabel),
+						initialLabel: this.dropDown.getLabel(),
+						source: this
+					})
+						|| false;
 					if (!shouldBeOpen || shouldBeOpen instanceof Promise)
 						dropDownArea.closeMenu(true);
 				}
@@ -118,11 +119,18 @@ export interface DropDownEntryParam {
 	 * @param valueChain values of this and all previous entries
 	 * @return if true the dropdown should NOT be closed after the click, Promise is equal to false
 	 */
-	onSelectCallback?: (valueChain: any[], setButtonLabel: (newLabel: ButtonLabel) => void, initialLabel: HTMLElement, source: Ph_DropDownEntry) => boolean | Promise<any> | void,
+	onSelectCallback?: (data: DropDownActionData) => boolean | Promise<any> | void,
 	/** When clicking this entry don't execute an action, instead show the next nested drop down */
 	nestedEntries?: DropDownEntryParam[],
 	/** if true --> this entry will not be clickable */
 	nonSelectable?: boolean
+}
+
+export interface DropDownActionData {
+	valueChain: any[],
+	setButtonLabel: (newLabel: ButtonLabel) => void,
+	initialLabel: HTMLElement,
+	source: Ph_DropDownEntry
 }
 
 customElements.define("ph-drop-down-entry", Ph_DropDownEntry, { extends: "button" });

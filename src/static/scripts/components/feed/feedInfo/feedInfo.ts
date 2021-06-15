@@ -20,7 +20,7 @@ import { hasParams, numberToShort, stringSortComparer, throttle } from "../../..
 import Ph_BetterButton from "../../global/betterElements/betterButton.js";
 import Ph_Header from "../../global/header/header.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
-import Ph_DropDownEntry, { DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
+import { DropDownActionData, DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_Flair, { FlairApiData } from "../../misc/flair/flair.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import { clearAllOldData } from "./feedInfoCleanup.js";
@@ -291,7 +291,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 					thisUser.multireddits.map(multi => ({
 						label: multi.display_name,
 						value: multi.path,
-						onSelectCallback: ([_, multiPath]) => this.addSubToMulti(this.feedUrl, multiPath.replace(/\/?$/, ""), false)
+						onSelectCallback: (data: DropDownActionData) => this.addSubToMulti(this.feedUrl, data.valueChain[1].replace(/\/?$/, ""), false)
 					}))
 			});
 		}
@@ -772,18 +772,19 @@ export default class Ph_FeedInfo extends HTMLElement {
 		}
 	}
 	
-	private async setSubFlair([_, flair]: any[], __, ___, source: Ph_DropDownEntry) {
+	private async setSubFlair(data: DropDownActionData) {
+		const flair = data.valueChain[1];
 		if (flair instanceof Ph_Flair) {
 			const success = await setUserFlair(this.feedUrl, flair);
 			if (success)
-				source.parentEntry.setLabel(flair.clone(false));
+				data.source.parentEntry.setLabel(flair.clone(false));
 			else
 				new Ph_Toast(Level.error, "Couldn't change flair");
 		}
 		else {
 			const success = await deleteUserFlair(this.feedUrl);
 			if (success)
-				source.parentEntry.setLabel("Select Subreddit Flair");
+				data.source.parentEntry.setLabel("Select Subreddit Flair");
 			else
 				new Ph_Toast(Level.error, "Couldn't change flair");
 		}

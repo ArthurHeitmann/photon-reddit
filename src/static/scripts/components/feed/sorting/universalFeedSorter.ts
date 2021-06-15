@@ -12,8 +12,8 @@ import {
 import { isLoggedIn, thisUser } from "../../../utils/globals.js";
 import { getLoadingIcon } from "../../../utils/htmlStatics.js";
 import { extractPath, extractQuery, hasParams, splitPathQuery } from "../../../utils/utils.js";
-import Ph_DropDown, { ButtonLabel, DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
-import { DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
+import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
+import { DropDownActionData, DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import { FeedType } from "../feedInfo/feedInfo.js";
 import Ph_UniversalFeed from "../universalFeed/universalFeed.js";
@@ -115,16 +115,16 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 		this.append(this.sortDropDown);
 	}
 
-	handleSortSelect(valueChain: any[], setLabel: (newLabel: ButtonLabel) => void) {
+	handleSortSelect(data: DropDownActionData) {
 		const selection: PostSorting = {
-			order: valueChain[0],
-			timeFrame: valueChain[1]
+			order: data.valueChain[0],
+			timeFrame: data.valueChain[1]
 		};
 
-		setLabel(getLoadingIcon());
+		data.setButtonLabel(getLoadingIcon());
 
 		this.setSorting(selection)
-			.then(() => setLabel(`Sort - ${selection.order}${selection.timeFrame ? `/${selection.timeFrame}` : ""}`));
+			.then(() => data.setButtonLabel(`Sort - ${selection.order}${selection.timeFrame ? `/${selection.timeFrame}` : ""}`));
 	}
 
 	async setSorting(sortingMode: PostSorting): Promise<void> {
@@ -161,8 +161,9 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 		this.feed.replaceChildren(request.data.children, request.data.before, request.data.after);
 	}
 
-	async setUserSection([section]: UserSection[], setLabel: (newLabel: ButtonLabel) => void, initialLabel: HTMLElement) {
-		setLabel(getLoadingIcon());
+	async setUserSection(data: DropDownActionData) {
+		const section = data.valueChain[0] as UserSection;
+		data.setButtonLabel(getLoadingIcon());
 		const userName = this.feed.requestUrl.match(/(?<=^\/(u|user)\/)[^/?#]+/i)[0];		// /u/user --> user
 		const query = extractQuery(this.feed.requestUrl);
 		const isSortable = !NonSortableUserSections.includes(section);
@@ -177,7 +178,7 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 			this.feed.afterData = sectionItems.data.after;
 			this.feed.replaceChildren(sectionItems.data.children, sectionItems.data.before, sectionItems.data.after);
 			ViewsStack.changeCurrentUrl(this.feed.requestUrl);
-			setLabel(section || "Overview");
+			data.setButtonLabel(section || "Overview");
 			if (isSortable) {
 				if (this.sortDropDown.classList.contains("hide"))
 					this.sortDropDown.setLabel("Sorting");
@@ -189,7 +190,7 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 			new Ph_Toast(Level.error, "Error getting user section items");
 			console.error("Error getting user section items");
 			console.error(e);
-			setLabel(initialLabel);
+			data.setButtonLabel(data.initialLabel);
 		}
 	}
 }

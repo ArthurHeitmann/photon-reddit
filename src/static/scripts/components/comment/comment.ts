@@ -17,7 +17,10 @@ import Ph_CommentsFeed from "../feed/commentsFeed/commentsFeed.js";
 import Ph_Readable from "../feed/feedItem/readable/readable.js";
 import Ph_AwardsInfo from "../misc/awardsInfo/awardsInfo.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
-import Ph_DropDownEntry, { DropDownEntryParam } from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
+import Ph_DropDownEntry, {
+	DropDownActionData,
+	DropDownEntryParam
+} from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_Flair from "../misc/flair/flair.js";
 import Ph_CommentForm from "../misc/markdownForm/commentForm/commentForm.js";
 import Ph_MarkdownForm from "../misc/markdownForm/markdownForm.js";
@@ -356,17 +359,17 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 		}
 	}
 
-	async toggleSave(valueChain: any[], _, __, source: Ph_DropDownEntry) {
+	async toggleSave(data: DropDownActionData) {
 		this.isSaved = !this.isSaved;
-		source.innerText = this.isSaved ? "Unsave" : "Save";
+		data.source.innerText = this.isSaved ? "Unsave" : "Save";
 		if (!await save(this)) {
 			console.error(`error voting on comment ${this.fullName}`);
 			new Ph_Toast(Level.error, "Error saving post");
 		}
 	}
 
-	share([_, shareType]) {
-		switch (shareType) {
+	share(data: DropDownActionData) {
+		switch (data.valueChain[1]) {
 			case "comment link":
 				navigator.clipboard.writeText(`${location.origin + this.link}`);
 				break;
@@ -415,11 +418,11 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 		this.editForm.updateHeight();
 	}
 
-	deletePrompt(_, __, ___, source: Ph_DropDownEntry) {
+	deletePrompt(data: DropDownActionData) {
 		new Ph_Toast(
 			Level.warning,
 			"Are you sure you want to delete this comment?",
-			{ onConfirm: () => this.delete(source) }
+			{ onConfirm: () => this.delete(data.source) }
 		);
 	}
 

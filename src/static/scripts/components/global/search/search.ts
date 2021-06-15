@@ -7,8 +7,8 @@ import { escADQ, getLoadingIcon } from "../../../utils/htmlStatics.js";
 import { elementWithClassInTree, isElementIn } from "../../../utils/htmlStuff.js";
 import { extractPath, extractQuery, hasHTML, throttle } from "../../../utils/utils.js";
 import Ph_FeedLink from "../../link/feedLink/feedLink.js";
-import Ph_DropDown, { ButtonLabel, DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
-import { DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
+import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
+import { DropDownActionData, DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_Flair from "../../misc/flair/flair.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Ph_Header from "../header/header.js";
@@ -255,11 +255,11 @@ export default class Ph_Search extends HTMLElement {
 			(elementWithClassInTree(this.parentElement, "header") as Ph_Header)?.minimizeAll([this]);
 	}
 
-	setSortOrder(valueChain: any[], setLabel: (newLabel: ButtonLabel) => void) {
-		this.searchOrder = valueChain[0];
-		this.searchTimeFrame = valueChain.length === 2 ? valueChain[1] : null;
+	setSortOrder(data: DropDownActionData) {
+		this.searchOrder = data.valueChain[0];
+		this.searchTimeFrame = data.valueChain.length === 2 ? data.valueChain[1] : null;
 		const sortStr = `Sort - ${this.searchOrder}${this.searchTimeFrame ? `/${this.searchTimeFrame}` : ""}`;
-		setLabel(sortStr);
+		data.setButtonLabel(sortStr);
 	}
 
 	async quickSearch() {
@@ -346,7 +346,8 @@ export default class Ph_Search extends HTMLElement {
 		}
 	}
 
-	searchByFlair([flairText]: string[]) {
+	searchByFlair(data: DropDownActionData) {
+		const flairText = data.valueChain[0] as string;
 		this.limitToSubreddit.checked = true;
 		this.searchBar.value = `flair:${flairText}`;
 		this.searchPrefix = "";

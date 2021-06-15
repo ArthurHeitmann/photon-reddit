@@ -3,7 +3,8 @@ import ViewsStack from "../../../historyState/viewsStack.js";
 import { RedditApiType, SortPostsTimeFrame, SortSearchOrder } from "../../../types/misc.js";
 import { getLoadingIcon } from "../../../utils/htmlStatics.js";
 import { extractQuery, hasParams, splitPathQuery } from "../../../utils/utils.js";
-import Ph_DropDown, { ButtonLabel, DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
+import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
+import { DropDownActionData } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Ph_UniversalFeed from "../universalFeed/universalFeed.js";
 
@@ -58,11 +59,13 @@ export default class Ph_SearchFeedSorter extends HTMLElement {
 		], curSortStr, DirectionX.right, DirectionY.bottom, false));
 	}
 
-	handleSortSelect(valueChain: any[], setLabel: (newLabel: ButtonLabel) => void) {
-		setLabel(getLoadingIcon());
-		const sortStr = `Sort - ${valueChain[0]}${valueChain[1] ? `/${valueChain[1]}` : ""}`;
-		this.setSorting(valueChain[0], valueChain[1])
-			.then(() => setLabel(sortStr))
+	handleSortSelect(data: DropDownActionData) {
+		data.setButtonLabel(getLoadingIcon());
+		const sortType = data.valueChain[0] as SortSearchOrder;
+		const sortTime = data.valueChain[1] as SortPostsTimeFrame;
+		const sortStr = `Sort - ${sortType}${sortTime ? `/${sortTime}` : ""}`;
+		this.setSorting(sortType, sortTime)
+			.then(() => data.setButtonLabel(sortStr))
 	}
 
 	async setSorting(order: SortSearchOrder, timeFrame: SortPostsTimeFrame): Promise<void> {

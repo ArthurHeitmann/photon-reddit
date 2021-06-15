@@ -30,7 +30,10 @@ import Ph_FeedItem from "../feed/feedItem/feedItem.js";
 import { globalSettings, NsfwPolicy, PhotonSettings } from "../global/photonSettings/photonSettings.js";
 import Ph_AwardsInfo from "../misc/awardsInfo/awardsInfo.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
-import Ph_DropDownEntry, { DropDownEntryParam } from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
+import Ph_DropDownEntry, {
+	DropDownActionData,
+	DropDownEntryParam
+} from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_Flair, { FlairApiData } from "../misc/flair/flair.js";
 import Ph_Toast, { Level } from "../misc/toast/toast.js";
 import Ph_VoteButton from "../misc/voteButton/voteButton.js";
@@ -129,12 +132,12 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 					{ label: "Copy Reddit Link", value: "reddit link", onSelectCallback: this.share.bind(this) },
 					{ label: "Copy Link", value: "link", onSelectCallback: this.share.bind(this) },
 					{ label: "Crosspost", onSelectCallback: this.crossPost.bind(this) },
-				] }
+			] }
 		];
 		this.postFlair = Ph_Flair.fromThingData(postData.data, "link");
 		if (thisUser && thisUser.name === postData.data["author"]) {
 			const editEntries: DropDownEntryParam[] = [];
-			if (this.postBody.children[0] instanceof Ph_PostText)
+			if (postData.data["is_self"])
 				editEntries.push({ label: "Edit Text", labelImgUrl: "/img/text.svg", onSelectCallback: this.editPost.bind(this) });
 			editEntries.push({ label: this.isNsfw ? "Unmark NSFW" : "Mark NSFW", labelImgUrl: "/img/18+.svg", onSelectCallback: this.toggleNsfw.bind(this) });
 			editEntries.push({ label: this.isSpoiler ? "Unmark Spoiler" : "Mark Spoiler", labelImgUrl: "/img/warning.svg", onSelectCallback: this.toggleSpoiler.bind(this) });
@@ -467,17 +470,17 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			this.voteDownButton.vote(isAnimated);
 	}
 
-	async toggleSave(valueChain: any[], _, __, source: Ph_DropDownEntry) {
+	async toggleSave(data: DropDownActionData) {
 		this.isSaved = !this.isSaved;
-		source.setLabel(this.isSaved ? "Unsave" : "Save");
+		data.source.setLabel(this.isSaved ? "Unsave" : "Save");
 		if (!await save(this)) {
 			console.error(`error voting on post ${this.fullName}`);
 			new Ph_Toast(Level.error, "Error saving post");
 		}
 	}
 
-	share([ _, shareType ]) {
-		switch (shareType) {
+	share(data: DropDownActionData) {
+		switch (data.valueChain[1]) {
 			case "post link":
 				navigator.clipboard.writeText(location.origin + this.link);
 				break;
@@ -499,11 +502,11 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		postText.startEditing();
 	}
 
-	deletePostPrompt(_, __, ___, source: Ph_DropDownEntry) {
+	deletePostPrompt(data: DropDownActionData) {
 		new Ph_Toast(
 			Level.warning,
 			"Are you sure you want to delete this post?",
-			{ onConfirm: this.deletePost.bind(this, source) }
+			{ onConfirm: this.deletePost.bind(this, data.source) }
 		);
 	}
 
@@ -527,7 +530,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		new Ph_Toast(Level.success, "Deleted post", { timeout: 2000 });
 	}
 
-	async toggleNsfw (_, __, ___, entry: Ph_DropDownEntry) {
+	async toggleNsfw (data: DropDownActionData) {
 		const success = await setPostNsfw(this.fullName, !this.isNsfw);
 		if (!success) {
 			new Ph_Toast(Level.error, "Error changing nsfw", { timeout: 2500 });
@@ -535,10 +538,10 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		}
 		this.isNsfw = !this.isNsfw;
 		this.classList.toggle("nsfw", this.isNsfw);
-		entry.setLabel(this.isNsfw ? "Unmark NSFW" : "Mark NSFW");
+		data.source.setLabel(this.isNsfw ? "Unmark NSFW" : "Mark NSFW");
 	}
 
-	async toggleSpoiler (_, __, ___, entry: Ph_DropDownEntry) {
+	async toggleSpoiler (data: DropDownActionData) {
 		const success = await setPostSpoiler(this.fullName, !this.isSpoiler);
 		if (!success) {
 			new Ph_Toast(Level.error, "Error changing spoiler", { timeout: 2500 });
@@ -546,20 +549,20 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		}
 		this.isSpoiler = !this.isSpoiler;
 		this.classList.toggle("spoiler", this.isSpoiler);
-		entry.setLabel(this.isSpoiler ? "Unmark Spoiler" : "Mark Spoiler");
+		data.source.setLabel(this.isSpoiler ? "Unmark Spoiler" : "Mark Spoiler");
 	}
 
-	async toggleSendReplies (_, __, ___, entry: Ph_DropDownEntry) {
+	async toggleSendReplies (data: DropDownActionData) {
 		const success = await setPostSendReplies(this.fullName, !this.sendReplies);
 		if (!success) {
 			new Ph_Toast(Level.error, "Error changing send replies", { timeout: 2500 });
 			return;
 		}
 		this.sendReplies = !this.sendReplies;
-		entry.setLabel(`${this.sendReplies ? "Disable" : "Enable"} Reply Notifications`);
+		data.source.setLabel(`${this.sendReplies ? "Disable" : "Enable"} Reply Notifications`);
 	}
 
-	async onEditFlairClick(_, __, ___, source: Ph_DropDownEntry) {
+	async onEditFlairClick(data: DropDownActionData) {
 		if (this.haveFlairsLoaded)
 			return;
 		this.haveFlairsLoaded = true;
@@ -573,11 +576,11 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 				onSelectCallback: this.selectFlair.bind(this)
 			};
 		});
-		source.nextDropDown.setEntries(flairSelection, source.dropDown);
+		data.source.nextDropDown.setEntries(flairSelection, data.source.dropDown);
 	}
 
-	async selectFlair([_, __, flairData]) {
-		const { flair, sub } = flairData;
+	async selectFlair(data: DropDownActionData) {
+		const { flair, sub } = data.valueChain[2];
 		if ((flair as Ph_Flair).isEditing)
 			return;
 

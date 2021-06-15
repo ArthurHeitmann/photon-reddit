@@ -1,5 +1,8 @@
 import Ph_DropDown, { DirectionX, DirectionY } from "../../scripts/components/misc/dropDown/dropDown.js";
-import { DropDownEntryParam } from "../../scripts/components/misc/dropDown/dropDownEntry/dropDownEntry.js";
+import {
+	DropDownActionData,
+	DropDownEntryParam
+} from "../../scripts/components/misc/dropDown/dropDownEntry/dropDownEntry.js";
 import { $class, $css, $id, escHTML } from "../../scripts/utils/htmlStatics.js";
 import { numberToShort } from "../../scripts/utils/utils.js";
 
@@ -13,7 +16,8 @@ const timeFrameLabels = [
 ];
 let timeFrameIndicator: HTMLElement;
 
-function setTimeFrame([millis]) {
+function setTimeFrame(data: DropDownActionData) {
+	const millis = data.valueChain[0] as number;
 	timeFrame = millis;
 	timeFrameIndicator.innerText = timeFrameLabels.find(value => value[1] === millis)[0].toString();
 	loadUniqueClients();
@@ -103,5 +107,6 @@ window.addEventListener("load", () => {
 		false
 	));
 
-	setTimeFrame([timeFrame]);
+	// @ts-ignore
+	setTimeFrame( { valueChain: [timeFrame] });
 });

@@ -359,12 +359,13 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				label: speedChanger,
 				nonSelectable: true
 			},
-			this.video.getVideoTracks().length > 1 && {
+				this.video.getVideoTracks().length > 1 && {
 				label: "Quality",
 				labelImgUrl: "/img/hd.svg",
 				nestedEntries: this.video.getVideoTracks().map(track => ({
 					label: track.label,
-					onSelectCallback: () => this.video.setVideoTrack(track.key)
+					value: track.key,
+					onSelectCallback: this.video.setVideoTrack.bind(this.video)
 				}))
 			},
 			{

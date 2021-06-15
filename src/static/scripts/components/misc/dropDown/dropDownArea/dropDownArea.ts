@@ -36,7 +36,7 @@ export default class Ph_DropDownArea extends HTMLElement {
 
 	toggleMenu() {
 		if (this.isExpanded)
-			this.closeMenu();
+			this.closeMenu(false);
 		else
 			this.showMenu();
 	}
@@ -48,7 +48,7 @@ export default class Ph_DropDownArea extends HTMLElement {
 		setTimeout(() => window.addEventListener("click", this.cancelMenuFuncRef), 0);
 	}
 	
-	closeMenu(closeAllPrevious = false) {
+	closeMenu(closeAllPrevious) {
 		this.isExpanded = false;
 		this.classList.remove("show");
 		this.classList.add("remove");
@@ -59,7 +59,7 @@ export default class Ph_DropDownArea extends HTMLElement {
 	
 	cancelMenu(e) {
 		if (!this.contains(e.target))
-			this.closeMenu();
+			this.closeMenu(true);
 		
 		e.stopPropagation();
 	}

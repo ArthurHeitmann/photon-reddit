@@ -7,7 +7,7 @@ import { elementWithClassInTree } from "../../../utils/htmlStuff.js";
 import { hasParams, sleep, throttle, waitForFullScreenExit } from "../../../utils/utils.js";
 import Ph_Comment from "../../comment/comment.js";
 import Ph_Message from "../../message/message.js";
-import { ButtonLabel } from "../../misc/dropDown/dropDown.js";
+import { DropDownActionData } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Ph_Post from "../../post/post.js";
 import { Ph_ViewState } from "../../viewState/viewState.js";
@@ -131,8 +131,9 @@ export default class Ph_UniversalFeed extends HTMLElement {
 		this.checkIfFeedEmpty();
 	}
 
-	async setMessageSection([section]: MessageSection[], setLabel: (newLabel: ButtonLabel) => void, initialLabel: HTMLElement) {
-		setLabel(getLoadingIcon());
+	async setMessageSection(data: DropDownActionData) {
+		const section = data.valueChain[0] as MessageSection;
+		data.setButtonLabel(getLoadingIcon());
 		this.requestUrl = this.requestUrl.replace(/^(\/message)\/[^/#?]*/i, `$1/${section}`);	// /message/<old> --> /message/<new>
 		try {
 			const sectionItems: RedditApiType = await redditApiRequest(
@@ -144,12 +145,12 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			this.afterData = sectionItems.data.after;
 			this.replaceChildren(sectionItems.data.children, sectionItems.data.before, sectionItems.data.after);
 			ViewsStack.changeCurrentUrl(this.requestUrl);
-			setLabel(section);
+			data.setButtonLabel(section);
 		} catch (e) {
 			console.error("Error getting message section items");
 			new Ph_Toast(Level.error, "Error getting message section items");
 			console.error(e);
-			setLabel(initialLabel);
+			data.setButtonLabel(data.initialLabel);
 		}
 	}
 

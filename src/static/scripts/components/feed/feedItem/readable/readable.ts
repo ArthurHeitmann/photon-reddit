@@ -6,6 +6,7 @@ import { $class, $css } from "../../../../utils/htmlStatics.js";
 import { hasParams } from "../../../../utils/utils.js";
 import Ph_UserDropDown from "../../../global/userDropDown/userDropDown.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../../misc/dropDown/dropDown.js";
+import { DropDownActionData } from "../../../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_Toast, { Level } from "../../../misc/toast/toast.js";
 import { MessageSection } from "../../universalFeed/universalFeed.js";
 import Ph_FeedItem from "../feedItem.js";
@@ -63,7 +64,7 @@ export default abstract class Ph_Readable extends Ph_FeedItem implements FullNam
 		this.classList.toggle("unread", !this.isRead)
 	}
 
-	static getMessageFeedHeaderElements(setMessageSection: (v: any[]) => void): HTMLElement[] {
+	static getMessageFeedHeaderElements(setMessageSection: (data: DropDownActionData) => void): HTMLElement[] {
 		const elements = [];
 		const composeButton = document.createElement("button");
 		composeButton.className = "composeMsgBtn transparentButtonAlt";

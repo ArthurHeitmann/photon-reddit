@@ -5,8 +5,8 @@ import { emojiFlagsToImages } from "../../../utils/htmlStatics.js";
 import { linksToSpa } from "../../../utils/htmlStuff.js";
 import { hasHTML } from "../../../utils/utils.js";
 import Ph_FeedInfo, { FeedType } from "../../feed/feedInfo/feedInfo.js";
-import Ph_DropDown, { ButtonLabel, DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
-import { DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
+import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
+import { DropDownActionData, DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_Flair, { FlairApiData } from "../../misc/flair/flair.js";
 import Ph_MarkdownForm from "../../misc/markdownForm/markdownForm.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
@@ -381,16 +381,17 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		}
 	}
 
-	selectFlair([flair]: Ph_Flair[], setLabel: (newLabel: ButtonLabel) => void) {
+	selectFlair(data: DropDownActionData) {
+		const flair = data.valueChain[1] as Ph_Flair;
 		if (flair.isEditing)
 			return true;
 		if (this.selectedFlair?.data.id === flair.id) {
 			this.selectedFlair = null;
-			setLabel("Select Flair")
+			data.setButtonLabel("Select Flair")
 		}
 		else {
 			this.selectedFlair = flair;
-			setLabel(flair.clone(false));
+			data.setButtonLabel(flair.clone(false));
 		}
 	}
 

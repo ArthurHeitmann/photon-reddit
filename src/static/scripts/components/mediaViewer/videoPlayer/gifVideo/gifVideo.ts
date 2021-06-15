@@ -1,4 +1,5 @@
 import { hasParams, urlWithHttps } from "../../../../utils/utils.js";
+import { DropDownActionData } from "../../../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_VideoWrapper, { BasicVideoData, VideoTrackInfo } from "../videoWrapper.js";
 
 /**
@@ -116,7 +117,7 @@ export default class Ph_GifVideo extends Ph_VideoWrapper {
 		return [];
 	}
 
-	setVideoTrack(key: any) {
+	setVideoTrack(data: DropDownActionData) {
 	}
 }
 

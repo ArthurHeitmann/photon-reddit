@@ -7,7 +7,8 @@ import { extractPath, extractQuery, hasHTML, hasParams } from "../../utils/utils
 import Ph_Comment from "../comment/comment.js";
 import Ph_CommentsFeed from "../feed/commentsFeed/commentsFeed.js";
 import Ph_FeedInfo, { FeedType } from "../feed/feedInfo/feedInfo.js";
-import Ph_DropDown, { ButtonLabel, DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
+import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
+import { DropDownActionData } from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_CommentForm from "../misc/markdownForm/commentForm/commentForm.js";
 import Ph_Toast, { Level } from "../misc/toast/toast.js";
 import Ph_Post from "../post/post.js";
@@ -151,12 +152,13 @@ export default class Ph_PostAndComments extends HTMLElement {
 		this.areHeaderElementsSet = true;
 	}
 
-	async handleSort([sorting]: SortCommentsOrder[], setLabel: (newLabel: ButtonLabel) => void, initialLabel: HTMLElement) {
+	async handleSort(data: DropDownActionData) {
+		const sorting = data.valueChain[0] as SortCommentsOrder
 		const path = extractPath(history.state.url);
 		const params = new URLSearchParams(extractQuery(history.state.url));
 		params.set("sort", sorting);
 
-		setLabel(getLoadingIcon());
+		data.setButtonLabel(getLoadingIcon());
 
 		try {
 			const newUrl = `${path}?${params.toString()}`;
@@ -171,13 +173,13 @@ export default class Ph_PostAndComments extends HTMLElement {
 			}
 
 			ViewsStack.changeCurrentUrl(newUrl);
-			setLabel(`Sort - ${sorting}`);
+			data.setButtonLabel(`Sort - ${sorting}`);
 		}
 		catch (e) {
 			console.error("Error sorting comments");
 			console.error(e);
 			new Ph_Toast(Level.error, "Error sorting comments");
-			setLabel(initialLabel);
+			data.setButtonLabel(data.initialLabel);
 		}
 
 	}
