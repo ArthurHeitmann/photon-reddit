@@ -165,7 +165,7 @@ export function emojiFlagsToImages(element: Element): void {
 			})
 			.join("");
 		countryCode = escADQ(countryCode);
-		return `<img src="https://flagcdn.com/40x30/${countryCode}.webp" alt="${countryCode}" class="emojiFlag">`;
+		return `<img src="https://flagcdn.com/40x30/${countryCode}.webp" alt="${flag}" class="emojiFlag">`;
 	};
 
 	const reg = new RegExp("(?:\ud83c[\udde6-\uddff]){2}", "g");
