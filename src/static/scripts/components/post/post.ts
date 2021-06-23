@@ -135,7 +135,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 					{ label: "Copy Post Link", value: "post link", onSelectCallback: this.share.bind(this) },
 					{ label: "Copy Reddit Link", value: "reddit link", onSelectCallback: this.share.bind(this) },
 					{ label: "Copy Link", value: "link", onSelectCallback: this.share.bind(this) },
-					{ label: "Crosspost", onSelectCallback: this.crossPost.bind(this) },
+					// { label: "Crosspost", onSelectCallback: this.crossPost.bind(this) },
 			] }
 		];
 		this.postFlair = Ph_Flair.fromThingData(postData.data, "link");
