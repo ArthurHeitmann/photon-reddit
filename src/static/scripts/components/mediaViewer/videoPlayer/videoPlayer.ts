@@ -93,6 +93,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				}
 				break;
 			case "v.redd.it":
+			case "reddit.com":
 				if (/\.mp4([?#].*)?$/.test(url)) {
 					defaultCase();
 				}
@@ -124,14 +125,16 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 					};
 
 					let dashUrl: string;
-					url = url.match(/https:\/\/v\.redd\.it\/[^/?#]+/)[0];
+					// gets videoId from https://v.redd.it/[videoId] or https://reddit.com/link/[postId]/video/[videoId]
+					const vReddItId = url.match(/(https:\/\/v\.redd\.it\/|https?:\/\/reddit\.com\/link\/\w+\/video\/)([^/?#]+)|/)[2];
+					const vReddItUrl = `https://v.redd.it/${vReddItId}`;
 					const redditVideoData = postData?.data["media"]?.["reddit_video"];
 					if (redditVideoData)
 						redditVideoData["fallback_url"] = redditVideoData["fallback_url"].replace(/\?.*/, "")
 					if (postData && postData.data["media"] && redditVideoData)
 						dashUrl = redditVideoData["dash_url"];
 					else
-						dashUrl = `${url}/DASHPlaylist.mpd`;
+						dashUrl = `${vReddItUrl}/DASHPlaylist.mpd`;
 
 					fetch(dashUrl).then(async r => {
 						const hlsXml = (new DOMParser()).parseFromString(await r.text(), "application/xml");
@@ -144,7 +147,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 								return bandwidthB - bandwidthA;
 							})
 							.map(rep => [rep.querySelector("BaseURL").textContent, rep.getAttribute("height") + "p"])
-							.map(trackData => (<SourceData> { src: `${url}/${trackData[0]}`, type: "video/mp4", label: trackData[1] }));
+							.map(trackData => (<SourceData> { src: `${vReddItUrl}/${trackData[0]}`, type: "video/mp4", label: trackData[1] }));
 						if (redditVideoData) {
 							const fallbackSrc = <SourceData> {
 								src: redditVideoData["fallback_url"],
@@ -162,7 +165,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 
 						const audioUrlElement = hlsXml.querySelector(`Representation[id^=audio i] BaseURL`);
 						const audioSrc = audioUrlElement
-							? [{ src: `${url}/${audioUrlElement.textContent}`, type: "audio/mp4" }]
+							? [{ src: `${vReddItUrl}/${audioUrlElement.textContent}`, type: "audio/mp4" }]
 							: []
 
 						videoOut.init(new Ph_VideoAudio(videoSources, audioSrc), true);
