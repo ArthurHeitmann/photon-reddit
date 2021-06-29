@@ -116,10 +116,16 @@ export function nonDraggableImage(img: HTMLImageElement): HTMLImageElement {
 export function isElementInViewport(elem: HTMLElement) {
 	const rect = elem.getBoundingClientRect();
 	return (
-		rect.top >= 0 &&
-		rect.left >= 0 &&
-		rect.bottom <= window.innerHeight &&
-		rect.right <= window.innerWidth &&
+		(	// either the top or bottom edge has to be in the viewport
+			(rect.bottom >= 0 && rect.bottom <= window.innerHeight)
+			||
+			(rect.top >= 0 && rect.top <= window.innerHeight)
+		) &&
+		(	// either the left or right edge has to be in the viewport
+			(rect.left >= 0 && rect.left <= window.innerWidth)
+			||
+			(rect.right >= 0 && rect.right <= window.innerWidth)
+		) &&
 		rect.width > 0 &&
 		rect.height > 0
 	)
