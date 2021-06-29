@@ -40,6 +40,7 @@ export default class Ph_ImageViewer extends Ph_PhotonBaseElement implements Medi
 		this.originalImage = document.createElement("img")
 		this.originalImage.className = "original";
 		this.originalImage.alt = initData.caption || this.url;
+		this.originalImage.onerror = this.makeOnImageError();
 		nonDraggableImage(this.originalImage);
 		if (initData.previewUrl && globalSettings.imageLoadingPolicy !== ImageLoadingPolicy.alwaysOriginal) {
 			this.previewImage = document.createElement("img");
@@ -88,6 +89,27 @@ export default class Ph_ImageViewer extends Ph_PhotonBaseElement implements Medi
 			this.startLoadingOriginal();
 		}
 	}
+
+	makeOnImageError() {
+		return (e: Event) => {
+			const currentImg = e.currentTarget as HTMLImageElement;
+			const refreshButton = document.createElement("button");
+			refreshButton.innerHTML = `<img src="/img/refresh.svg" alt="refresh">`;
+			refreshButton.className = "refreshButton";
+			refreshButton.setAttribute("data-tooltip", "Reload Image");
+			refreshButton.onclick = () => {
+				const refreshButtonIndex = this.controls.rightItems.findIndex(e => e === refreshButton);
+				this.controls.rightItems.splice(refreshButtonIndex, 1);
+				this.dispatchEvent(new Event("ph-controls-changed"));
+				const currentSrc = currentImg.src;
+				currentImg.src = "";
+				currentImg.src = currentSrc;
+			};
+			this.controls.rightItems.push(refreshButton);
+			this.dispatchEvent(new Event("ph-controls-changed"));
+		}
+	}
 }
 
 customElements.define("ph-image-viewer", Ph_ImageViewer);
+

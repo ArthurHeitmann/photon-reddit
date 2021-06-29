@@ -18,3 +18,17 @@
 		}
 	}
 }
+
+.mediaViewer {
+	.controls {
+		.refreshButton {
+			display: flex;
+			align-items: center;
+
+			img {
+				width: 1.4rem;
+				height: 1.4rem;
+			}
+		}
+	}
+}
