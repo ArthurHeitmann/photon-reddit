@@ -153,14 +153,55 @@ export function enableMainPointerEvents() {
 	main.style.pointerEvents = "";
 }
 
+let areEmojiFlagsSupported = false;
+
 /**
- * Replaces all emoji flags with images from flagcdn.com.
+ * Checks if emoji flags are supported.
+ *
+ * 1. Render flag of the EU to a canvas
+ * 2. If more than one third of pixels are mostly blue, return true, else return false
+ */
+function checkAreEmojiFlagsSupported(): boolean {
+	if (areEmojiFlagsSupported)
+		return true;
+	const canvasSize = 30;
+	const canvas = document.createElement("canvas") as HTMLCanvasElement;
+	canvas.width = canvasSize;
+	canvas.height = canvasSize;
+	const ctx = canvas.getContext("2d");
+	ctx.font = `${canvasSize}px serif`;
+	ctx.fillText("🇪🇺", 0, canvasSize);
+
+	const imgData = ctx.getImageData(0, 0, canvasSize, canvasSize).data;
+	function getPixelDataAt(x: number, y: number) {
+		const base = y * (canvasSize * 4) + x * 4;
+		return [imgData[base], imgData[base + 1], imgData[base + 2]]
+	}
+
+	let bluePixels = 0;
+	for (let y = 0; y < canvasSize; ++y) {
+		for (let x = 0; x < canvasSize; ++x) {
+			const pix = getPixelDataAt(x, y);
+			pix[2] *= 0.5;
+			if (pix[2] > pix[0] && pix[2] > pix[1])
+				bluePixels++;
+		}
+	}
+
+	areEmojiFlagsSupported = bluePixels > canvasSize * canvasSize / 3;	// more than a third of pixel are blue
+	return areEmojiFlagsSupported;
+}
+
+/**
+ * Replaces all emoji flags with images from flagcdn.com (if flags aren't supported).
  *
  * Windows (for political reasons) doesn't support flag emojis, so we have to fix it ourselves
  *
  * @param element
  */
 export function emojiFlagsToImages(element: Element): void {
+	if (checkAreEmojiFlagsSupported())
+		return;
 	// black magic from https://stackoverflow.com/a/67633661/9819447
 	const flagEmojiToPNG = (flag) => {
 		let countryCode = Array.from(flag, (codeUnit: string) => {
