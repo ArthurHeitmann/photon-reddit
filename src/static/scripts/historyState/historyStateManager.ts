@@ -123,14 +123,15 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 	// make request to reddit
 	const requestData = await redditApiRequest(path, params, false);
 	if (requestData["error"]) {
-		stateLoader.error()
+		stateLoader.error();
 		new Ph_Toast(Level.error, "Error making request to reddit");
 		throw `Error making request to reddit (${path}, ${JSON.stringify(params)})`;
 	}
 
+	let newTabTitle: string = null;
 	if (postHintState === PostHintState.postNoComments) {
 		stateLoader.finishWith(requestData);
-		ViewsStack.setCurrentStateTitle(`${postHint.post.postTitle} - Photon`);
+		newTabTitle = `${postHint.post.postTitle} - Photon`;
 	}
 	// result is a posts comments or post crosspost list
 	else if (requestData instanceof Array) {		// --> [0]: post [1]: comments/posts
@@ -138,20 +139,24 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 			stateLoader.finishWith(new Ph_PostCrossposts(requestData));
 		else
 			stateLoader.finishWith(new Ph_PostAndComments(requestData));
-		ViewsStack.setCurrentStateTitle(`${requestData[0]["data"]["children"][0]["data"]["title"]} - Photon`);
+		newTabTitle = `${requestData[0]["data"]["children"][0]["data"]["title"]} - Photon`;
 	}
 	// result is something else
 	else if (requestData["kind"]) {
 		// result is some sort of generic feed
 		if (requestData["kind"] === "Listing") {
 			stateLoader.finishWith(new Ph_UniversalFeed(requestData, path + query));
-			ViewsStack.setCurrentStateTitle(`${(path.length > 3) ? path.slice(1) : "Home"} - Photon`);
+			newTabTitle = `${(path.length > 3) ? path.slice(1) : "Home"} - Photon`;
 		}
 		// result is a wiki page
 		else if (requestData["kind"] === "wikipage") {
 			stateLoader.finishWith(new Ph_Wiki(requestData));
-			ViewsStack.setCurrentStateTitle(`${path.match(/r\/[^/?#]+/i)[0]} Wiki - Photon`);
+			newTabTitle = `${path.match(/r\/[^/?#]+/i)[0]} Wiki - Photon`;
 		}
+	}
+
+	if (newTabTitle !== null) {
+		ViewsStack.setStateTitle(stateLoader, newTabTitle);
 	}
 
 	goToHash();

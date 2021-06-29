@@ -158,6 +158,12 @@ export default class ViewsStack {
 		history.state.title = title;
 	}
 
+	static setStateTitle(state: Ph_ViewState, title: string) {
+		history.state.title = title;
+		if (state === ViewsStack.getCurrentState())
+			document.title = globalSettings.isIncognitoEnabled ? `${ViewsStack.randomUrl()} - Photon` : title;
+	}
+
 	static getNextState(): Ph_ViewState {
 		return ViewsStack.views[ViewsStack.pos + 1] || null;
 	}
