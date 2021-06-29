@@ -14,7 +14,7 @@ export default class Ph_FeedLink extends HTMLElement {
 		const imageWrapper = document.createElement("div");
 		imageWrapper.className = "imageWrapper";
 		const linkText = document.createElement("div");
-		linkWrapper.className = "linkText";
+		linkText.className = "linkText";
 		linkWrapper.append(imageWrapper, linkText);
 
 		if (typeof feedData !== "string") {

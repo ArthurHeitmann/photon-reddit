@@ -1,7 +1,7 @@
 export const photonVersion = "0.5.5";		/// <change version script>
 
 export const photonChangelog = {
-	"o.5.5": {
+	"0.5.5": {
 		"New": [
 			"Added/improved dropdown icons a bit"
 		],
