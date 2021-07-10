@@ -1,3 +1,5 @@
+import { parseMarkdown } from "../../../lib/markdownForReddit/markdown-for-reddit.js";
+import { linksToSpa } from "../../../utils/htmlStuff.js";
 import { hasParams } from "../../../utils/utils.js";
 
 /**
@@ -7,6 +9,7 @@ export default class Ph_MarkdownForm extends HTMLElement {
 	textField: HTMLTextAreaElement;
 	shadowTextField: HTMLTextAreaElement;
 	submitCommentBtn: HTMLButtonElement;
+	markdownPreview: HTMLElement;
 
 	/**
 	 * @param submitBtnText if empty no submit button
@@ -18,14 +21,20 @@ export default class Ph_MarkdownForm extends HTMLElement {
 
 		this.classList.add("markdownForm")
 
+		const textArea = document.createElement("div");
+		textArea.className = "textArea";
+		this.append(textArea);
 		this.textField = document.createElement("textarea");
 		this.textField.className = "rawTextEditor";
 		this.shadowTextField = this.textField.cloneNode(true) as HTMLTextAreaElement;
 		this.textField.contentEditable = "true";
-		this.textField.addEventListener("input", this.updateHeight.bind(this));
-		this.appendChild(this.textField);
+		this.textField.addEventListener("input", this.onTextInput.bind(this));
+		textArea.appendChild(this.textField);
 		this.shadowTextField.classList.add("shadow");
-		this.appendChild(this.shadowTextField);
+		textArea.appendChild(this.shadowTextField);
+		this.markdownPreview = document.createElement("div");
+		this.markdownPreview.className = "markdownPreview";
+		textArea.append(this.markdownPreview);
 
 		const buttonsWrapper = document.createElement("div");
 		buttonsWrapper.className = "buttonsWrapper";
@@ -49,7 +58,7 @@ export default class Ph_MarkdownForm extends HTMLElement {
 			this.submitCommentBtn.addEventListener("click", () => this.dispatchEvent(new Event("ph-submit")));
 		}
 
-		setTimeout(this.updateHeight.bind(this), 0);
+		setTimeout(this.onTextInput.bind(this), 0);
 	}
 
 	clear() {
@@ -57,9 +66,19 @@ export default class Ph_MarkdownForm extends HTMLElement {
 		this.updateHeight();
 	}
 
+	onTextInput() {
+		this.updateHeight();
+		this.displayMarkdownPreview();
+	}
+
 	updateHeight() {
 		this.shadowTextField.value = this.textField.value;
 		this.textField.style.setProperty("--textarea-height", `calc(${this.shadowTextField.scrollHeight}px + 1.5rem)`)
+	}
+
+	displayMarkdownPreview() {
+		this.markdownPreview.innerHTML = parseMarkdown(this.textField.value);
+		linksToSpa(this.markdownPreview);
 	}
 }
 

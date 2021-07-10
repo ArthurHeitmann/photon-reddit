@@ -8,25 +8,47 @@
 		display: block;
 	}
 
-	.rawTextEditor {
-		--textarea-height: 5rem;
-		width: 100%;
-		min-height: 5rem;
-		height: var(--textarea-height);
+	.textArea {
 		background: vars.$background-el2;
-		padding: .5rem;
-		border-radius: 1rem;
 		border: 1px solid vars.$border-color;
-		transition: all .125s ease, height .05s linear;
-		resize: none;
-		font-family: 'Roboto Mono', monospace;
-		font-weight: 400;
+		border-radius: 1rem;
 
-		&.shadow {
-			visibility: hidden;
-			position: absolute;
+		> * {
+			display: block;
+			padding: .5rem;
+		}
+
+		.rawTextEditor {
+			--textarea-height: 5rem;
+			width: 100%;
+			min-height: 5rem;
+			height: var(--textarea-height);
+			transition: all .125s ease, height .05s linear;
+			resize: none;
+			font-family: 'Roboto Mono', monospace;
+			font-weight: 400;
+
+			&.shadow {
+				visibility: hidden;
+				position: absolute;
+			}
+		}
+
+		.markdownPreview {
+			border-top: 1px solid #909090;
+
+			&::before {
+				content: "Markdown Preview (Experimental):";
+				display: block;
+				font-size: 0.8em;
+			}
+
+			&:empty {
+				display: none;
+			}
 		}
 	}
+
 
 	> .buttonsWrapper {
 		display: flex;
