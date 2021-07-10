@@ -3,7 +3,7 @@ export const photonVersion = "0.5.6";		/// <change version script>
 export const photonChangelog = {
 	"0.5.6": {
 		"New": [
-			"Added markdown preview while writing/editing post/comments"
+			"Added markdown preview while writing/editing posts/comments"
 		],
 		"Fixed": [
 			"Fixed posts initially not loading on smaller screens",

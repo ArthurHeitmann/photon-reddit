@@ -58,7 +58,7 @@ export default class Ph_MarkdownForm extends HTMLElement {
 			this.submitCommentBtn.addEventListener("click", () => this.dispatchEvent(new Event("ph-submit")));
 		}
 
-		setTimeout(this.onTextInput.bind(this), 0);
+		setTimeout(this.updateHeight.bind(this), 0);
 	}
 
 	clear() {
