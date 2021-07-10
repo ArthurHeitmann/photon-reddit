@@ -1,6 +1,15 @@
-export const photonVersion = "0.5.5";		/// <change version script>
+export const photonVersion = "0.5.6";		/// <change version script>
 
 export const photonChangelog = {
+	"0.5.6": {
+		"New": [
+			"Added markdown preview while writing/editing post/comments"
+		],
+		"Fixed": [
+			"Fixed posts initially not loading on smaller screens",
+			"Some minor fixes"
+		]
+	},
 	"0.5.5": {
 		"New": [
 			"Added/improved dropdown icons a bit"
