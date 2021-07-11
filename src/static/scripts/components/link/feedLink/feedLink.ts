@@ -3,13 +3,14 @@ import { linksToSpa } from "../../../utils/htmlStuff.js";
 import { hasParams } from "../../../utils/utils.js";
 
 export default class Ph_FeedLink extends HTMLElement {
-	constructor(feedData: RedditApiType | string, blurNsfw = false) {
+	constructor(feedData: RedditApiType | string, blurNsfw = false, isClickable = true) {
 		super();
 		if (!hasParams(arguments)) return
 
 		this.className = "feedLink";
 
-		const linkWrapper = document.createElement("a");
+		const linkWrapper = document.createElement(isClickable ? "a" : "button");
+		linkWrapper.classList.add("linkWrapper");
 		this.append(linkWrapper);
 		const imageWrapper = document.createElement("div");
 		imageWrapper.className = "imageWrapper";
@@ -21,7 +22,8 @@ export default class Ph_FeedLink extends HTMLElement {
 			switch (feedData.kind) {
 			case "t5":	// subreddit
 				linkText.innerText = `r/${feedData.data["display_name"]}`;
-				linkWrapper.href = `/r/${feedData.data["display_name"]}`;
+				if (linkWrapper instanceof HTMLAnchorElement)
+					linkWrapper.href = `/r/${feedData.data["display_name"]}`;
 				const subIconImg = feedData.data["community_icon"] || feedData.data["icon_img"];
 				if (subIconImg)
 					imageWrapper.innerHTML = `<img src="${subIconImg}" alt="sub">`
@@ -34,7 +36,8 @@ export default class Ph_FeedLink extends HTMLElement {
 				linkText.innerText = `u/${feedData.data["name"]}`;
 				if (feedData.data["is_suspended"] === true)
 					linkText.innerText += " (suspended)";
-				linkWrapper.href = `/user/${feedData.data["name"]}`;
+				if (linkWrapper instanceof HTMLAnchorElement)
+					linkWrapper.href = `/user/${feedData.data["name"]}`;
 				const userIconImg = feedData.data["subreddit"]?.["icon_img"] || feedData.data["icon_img"];
 				if (userIconImg)
 					imageWrapper.innerHTML = `<img src="${userIconImg}" alt="sub">`
@@ -45,7 +48,8 @@ export default class Ph_FeedLink extends HTMLElement {
 				break;
 			case "LabeledMulti":	// multireddit
 				linkText.innerText = feedData.data["display_name"];
-				linkWrapper.href = feedData.data["path"];
+				if (linkWrapper instanceof HTMLAnchorElement)
+					linkWrapper.href = feedData.data["path"];
 				const multiIconImg = feedData.data["icon_url"];
 				if (multiIconImg)
 					imageWrapper.innerHTML = `<img src="${multiIconImg}" alt="sub">`
@@ -60,7 +64,8 @@ export default class Ph_FeedLink extends HTMLElement {
 		}
 		else {
 			linkText.innerText = feedData;
-			linkWrapper.href = `/${feedData}`;
+			if (linkWrapper instanceof HTMLAnchorElement)
+				linkWrapper.href = `/${feedData}`;
 			if (feedData in specialFeedImages) {
 				imageWrapper.innerHTML = `<img src="${specialFeedImages[feedData]}" alt="sub">`;
 				imageWrapper.classList.add("noBorderRadius");

@@ -8,7 +8,6 @@ import {
 	getSubUserFlairs,
 	getUserMultis,
 	removeSubFromMulti,
-	searchSubredditNames,
 	setUserFlair,
 	subscribe
 } from "../../../api/redditApi.js";
@@ -16,12 +15,13 @@ import { RedditApiType } from "../../../types/misc.js";
 import { isLoggedIn, StoredData, thisUser } from "../../../utils/globals.js";
 import { $class, $cssAr, emojiFlagsToImages, escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { linksToSpa, tagInElementTree } from "../../../utils/htmlStuff.js";
-import { hasParams, numberToShort, stringSortComparer, throttle } from "../../../utils/utils.js";
+import { hasParams, numberToShort, stringSortComparer } from "../../../utils/utils.js";
 import Ph_BetterButton from "../../global/betterElements/betterButton.js";
 import Ph_Header from "../../global/header/header.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import { DropDownActionData, DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_Flair, { FlairApiData } from "../../misc/flair/flair.js";
+import Ph_SubredditSelector from "../../misc/subredditSelector/subredditSelector.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import { clearAllOldData } from "./feedInfoCleanup.js";
 
@@ -291,7 +291,11 @@ export default class Ph_FeedInfo extends HTMLElement {
 					thisUser.multireddits.map(multi => ({
 						label: multi.display_name,
 						value: multi.path,
-						onSelectCallback: (data: DropDownActionData) => this.addSubToMulti(this.feedUrl, data.valueChain[1].replace(/\/?$/, ""), false)
+						onSelectCallback: (data: DropDownActionData) => this.addSubToMulti(
+							this.feedUrl,
+							data.valueChain[1].replace(/\/?$/, ""),
+							false
+						)
 					}))
 			});
 		}
@@ -629,9 +633,12 @@ export default class Ph_FeedInfo extends HTMLElement {
 			addSubInput.type = "text";
 			addSubInput.placeholder = "Subreddit";
 
-			const subsSearchResults = document.createElement("div");
-			subsSearchResults.className = "subsSearchResults remove";
-			addSubredditBar.appendChild(subsSearchResults);
+			const subredditSelector = new Ph_SubredditSelector();
+			subredditSelector.bind(addSubInput, async (subName: string) => {
+				await this.addSubToMulti(subName, this.feedUrl, true, addSubredditBar.parentElement);
+				this.checkMultiMaxSubCount();
+			});
+			addSubredditBar.appendChild(subredditSelector);
 
 			addSubredditBar.appendChild(addSubInput);
 			addSubButton.addEventListener("click", e => this.addSubToMulti(
@@ -640,37 +647,6 @@ export default class Ph_FeedInfo extends HTMLElement {
 				true,
 				(e.currentTarget as HTMLElement).parentElement.parentElement)
 			);
-			addSubInput.addEventListener("input", throttle(async () => {
-				addSubInput.value = addSubInput.value.replace(/^\/?r\//i, "");	// remove r/ prefix
-				if (addSubInput.value) {
-					subsSearchResults.classList.remove("remove");
-					const subs: { names: string[] } = await searchSubredditNames(addSubInput.value);
-					subsSearchResults.innerText = "";
-					subs.names.forEach(sub => {
-						const selectSubBtn = document.createElement("button");
-						selectSubBtn.innerText = sub;
-						subsSearchResults.appendChild(selectSubBtn);
-						selectSubBtn.addEventListener("click", async e => {
-							await this.addSubToMulti(
-								sub,
-								this.feedUrl,
-								true,
-								(e.currentTarget as HTMLElement).parentElement.parentElement.parentElement
-							);
-							this.checkMultiMaxSubCount();
-						});
-					});
-				} else {
-					subsSearchResults.classList.add("remove");
-				}
-			}, 500, {leading: true, trailing: true}));
-			addSubInput.addEventListener("keypress", e => ["Enter", "NumpadEnter"].includes(e.code) && this.addSubToMulti(
-				addSubInput.value,
-				this.feedUrl,
-				true,
-				(e.currentTarget as HTMLElement).parentElement.parentElement)
-			);
-			addSubInput.addEventListener("blur", () => subsSearchResults.classList.add("remove"));
 
 			outElements.push(addSubredditBar);
 		}

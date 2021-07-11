@@ -262,38 +262,6 @@
 		> input {
 			border-bottom: 1px solid vars.$border-color;
 		}
-
-		> .subsSearchResults {
-			position: absolute;
-			top: calc(100% + .5rem);
-			left: 0;
-			width: 100%;
-			padding: .5rem .75rem;
-			z-index: 1;
-			background: vars.$background-el1;
-			border: 1px solid vars.$border-color;
-			border-radius: 1.3rem;
-			opacity: 1;
-			visibility: visible;
-			transform: scale(1) translateY(0);
-			transition: all .25s ease;
-			@extend %shadow-diffuse;
-
-			&.remove {
-				opacity: 0;
-				visibility: hidden;
-				transform: scale(.9) translateY(-1.5rem);
-			}
-
-			> button {
-				display: block;
-				transition: transform .25s ease;
-
-				&:hover {
-					transform: translateX(.25rem);
-				}
-			}
-		}
 	}
 }
 
