@@ -157,6 +157,10 @@ hr {
 
 button {
 	cursor: pointer;
+	
+	&:disabled {
+		cursor: default;
+	}
 }
 
 blockquote {

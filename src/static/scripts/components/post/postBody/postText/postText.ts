@@ -105,7 +105,9 @@ export default class Ph_PostText extends HTMLElement {
 	}
 
 	async edit() {
+		this.editForm.submitCommentBtn.disabled = true;
 		const editData: any = await editCommentOrPost(this.editForm.textField.value, this.postFullName);
+		this.editForm.submitCommentBtn.disabled = false;
 		if (editData.json.errors.length > 0) {
 			console.error("Error editing post");
 			console.error(editData);

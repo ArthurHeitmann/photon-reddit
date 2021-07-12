@@ -391,28 +391,24 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 		this.editForm.classList.add("editForm")
 		this.editForm.textField.value = this.bodyMarkdown;
 		this.editForm.addEventListener("ph-submit", async () => {
-			try {
-				const resp = await edit(this, this.editForm.textField.value);
+			this.editForm.submitCommentBtn.disabled = true;
+			const resp = await edit(this, this.editForm.textField.value);
+			this.editForm.submitCommentBtn.disabled = false;
 
-				if (resp["json"] && resp["json"]["errors"]) {
-					new Ph_Toast(Level.error, resp["json"]["errors"][0].join(" | "));
-					return;
-				} else if (resp["error"]) {
-					new Ph_Toast(Level.error, resp["message"]);
-					return;
-				}
-				this.bodyMarkdown = resp["body"];
-				this.classList.remove("isEditing");
-				const content = this.getElementsByClassName("content")[0] as HTMLElement;
-				content.innerHTML = resp["body_html"];
-				emojiFlagsToImages(content);
-				linksToSpa(content, true);
-				new Ph_Toast(Level.success, "Edited comment", { timeout: 2000 });
-			} catch (e) {
-				console.error("Error editing comment");
-				console.error(e);
-				new Ph_Toast(Level.error, "Error editing comment");
+			if (resp["json"] && resp["json"]["errors"]) {
+				new Ph_Toast(Level.error, resp["json"]["errors"][0].join(" | "));
+				return;
+			} else if (resp["error"]) {
+				new Ph_Toast(Level.error, resp["message"]);
+				return;
 			}
+			this.bodyMarkdown = resp["body"];
+			this.classList.remove("isEditing");
+			const content = this.getElementsByClassName("content")[0] as HTMLElement;
+			content.innerHTML = resp["body_html"];
+			emojiFlagsToImages(content);
+			linksToSpa(content, true);
+			new Ph_Toast(Level.success, "Edited comment", { timeout: 2000 });
 		});
 		this.editForm.addEventListener("ph-cancel", () => this.classList.remove("isEditing"));
 		setTimeout(() => this.childComments.insertAdjacentElement("beforebegin", this.editForm), 0);

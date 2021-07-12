@@ -63,7 +63,7 @@
 			transition: filter .25s ease;
 
 			&:disabled {
-				filter: grayscale(.75);
+				filter: grayscale(.75) !important;
 			}
 
 			&:hover {

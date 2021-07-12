@@ -55,6 +55,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 	sendNotifications: boolean = true;
 	repostCheckButton: HTMLButtonElement;
 	checkForReposts: boolean = true;
+	isPosting: boolean = false;
 
 	constructor() {
 		super();
@@ -243,6 +244,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 	}
 
 	private async onSubmitPost() {
+		this.submitButton.disabled = true;
 		const params = [];
 		params.push(["sr", this.subreddit]);
 		params.push(["title", this.titleInput.$tag("input")[0]["value"]]);
@@ -274,6 +276,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		if (r["error"]) {
 			new Ph_Toast(Level.error, "Error posting");
 			console.error(r);
+			this.submitButton.disabled = false;
 			throw "error posting";
 		}
 		const jqueryArr: any[][] = r["jquery"];
@@ -286,6 +289,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		}
 		const path = jqueryArr[redirectIndex + 1][3][0].match(/(?<=reddit\.com).*/)[0];		// https://reddit.com/r/sub/... --> /r/sub/...
 		pushLinkToHistoryComb(path);
+		this.submitButton.disabled = false;
 	}
 
 	/** the community name has changed --> verify if it's valid and if so load it's data */
