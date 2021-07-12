@@ -199,7 +199,9 @@ function checkAreEmojiFlagsSupported(): boolean {
  *
  * @param element
  */
-export function emojiFlagsToImages(element: Element): void {
+export function emojiFlagsToImages(element: Element): void;
+export function emojiFlagsToImages(text: string): string;
+export function emojiFlagsToImages(element: Element | string): void | string {
 	if (checkAreEmojiFlagsSupported())
 		return;
 	// black magic from https://stackoverflow.com/a/67633661/9819447
@@ -216,5 +218,8 @@ export function emojiFlagsToImages(element: Element): void {
 	};
 
 	const reg = new RegExp("(?:\ud83c[\udde6-\uddff]){2}", "g");
-	element.innerHTML = element.innerHTML.replaceAll(reg, flagEmojiToPNG);
+	if (element instanceof Element)
+		element.innerHTML = element.innerHTML.replaceAll(reg, flagEmojiToPNG);
+	else
+		return element.replaceAll(reg, flagEmojiToPNG);
 }

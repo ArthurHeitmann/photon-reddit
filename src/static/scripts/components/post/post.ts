@@ -267,7 +267,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 								: ""
 							}
 						</div>
-						<div class="title">${escHTML(crosspostData["title"])}</div>
+						<div class="title">${emojiFlagsToImages(escHTML(crosspostData["title"]))}</div>
 					</div>
 				</div>
 			`;
