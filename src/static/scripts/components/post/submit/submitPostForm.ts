@@ -183,12 +183,13 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		if (/^\/r\/\w+\/submit/i.test(history.state.url)) {
 			const subMatches = history.state.url.match(/(?<=^\/r\/)\w+/i);	// /r/sub_reddit --> sub_reddit
 			(this.subInput.$tag("input")[0] as HTMLInputElement).value = `r/${subMatches[0]}`;
-			this.subInput.dispatchEvent(new Event("change"));
+			this.verifyAndLoadCommunity(`r/${subMatches[0]}`);
 		}
 		else if (/^\/(u|user)\/\w+\/submit/i.test(history.state.url)) {
 			const userMatches = history.state.url.match(/(?<=^\/(u|user)\/)\w+/i);
 			(this.subInput.$tag("input")[0] as HTMLInputElement).value = `user/${userMatches[0]}`;
 			this.subInput.dispatchEvent(new Event("change"));
+			// TODO
 		}
 	}
 
@@ -383,7 +384,6 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 			if (!this.isSpoilerAllowed && this.isSpoiler)
 				this.spoilerButton.click();
 
-			console.log(community);
 			this.subreddit = community;
 			this.submitButton.disabled = false;
 		}
@@ -403,10 +403,10 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 	}
 
 	selectFlair(data: DropDownActionData) {
-		const flair = data.valueChain[1] as Ph_Flair;
+		const flair = data.valueChain[0] as Ph_Flair;
 		if (flair.isEditing)
 			return true;
-		if (this.selectedFlair?.data.id === flair.id) {
+		if (this.selectedFlair?.data.id === flair.data.id) {
 			this.selectedFlair = null;
 			data.setButtonLabel("Select Flair")
 		}
