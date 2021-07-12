@@ -634,7 +634,7 @@ export default class Ph_FeedInfo extends HTMLElement {
 			addSubInput.placeholder = "Subreddit";
 
 			const subredditSelector = new Ph_SubredditSelector();
-			subredditSelector.bind(addSubInput, async (subName: string) => {
+			subredditSelector.bind(addSubInput, true, async (subName: string) => {
 				await this.addSubToMulti(subName, this.feedUrl, true, addSubredditBar.parentElement);
 				this.checkMultiMaxSubCount();
 			});

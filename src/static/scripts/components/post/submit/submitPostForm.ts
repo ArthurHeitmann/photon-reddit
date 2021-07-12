@@ -9,6 +9,7 @@ import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDow
 import { DropDownActionData, DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_Flair, { FlairApiData } from "../../misc/flair/flair.js";
 import Ph_MarkdownForm from "../../misc/markdownForm/markdownForm.js";
+import Ph_SubredditSelector from "../../misc/subredditSelector/subredditSelector.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 
 enum SubmitPostType {
@@ -33,7 +34,6 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 	linkUrlInput: HTMLDivElement;
 	textInput: Ph_MarkdownForm;
 	submitButton: HTMLButtonElement;
-	isCommunityNameValid: boolean = false;
 	allPossibleTypeSections: SubmitTypeSection[] = [];
 	currentSection: SubmitTypeSection;
 	sectionSelection: HTMLDivElement;
@@ -41,6 +41,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 	flairSelectorWrapper: HTMLDivElement;
 	textSubmitText: string = "Submit";
 	linkSubmitText: string = "Submit";
+	subreddit: string;
 	selectedFlair: Ph_Flair;
 	nsfwButton: HTMLButtonElement;
 	spoilerButton: HTMLButtonElement;
@@ -64,27 +65,42 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		// title
 		const title = document.createElement("h1");
 		title.innerText = "Submit a post";
-		this.appendChild(title);
+		this.append(title);
 		// community name
 		this.subInput = this.makeTextInput("sub", "Subreddit or User Name");
 		this.subInput.addEventListener("input", this.setCommunityIsNeutral.bind(this));
-		this.subInput.addEventListener("change", this.onSubChange.bind(this));
 		this.validIndicator = document.createElement("img");
 		this.validIndicator.className = "validStatus";
-		this.subInput.appendChild(this.validIndicator);
+		this.subInput.append(this.validIndicator);
 		this.subInfoButton = document.createElement("div");
 		this.subInfoButton.className = "subInfoButtonWrapper";
-		this.subInput.appendChild(this.subInfoButton);
-		this.appendChild(this.subInput);
+		this.subInput.append(this.subInfoButton);
+		const subFinder = new Ph_SubredditSelector();
+		const subInputField = this.subInput.$tag("input")[0] as HTMLInputElement;
+		subFinder.bind(
+			subInputField,
+			false,
+				subName => {
+					subInputField.value = `r/${subName}`;
+					this.verifyAndLoadCommunity(`r/${subName}`);
+				}
+		);
+		subInputField.addEventListener("change", () => setTimeout(() => {
+			if (subInputField.value === this.subreddit)
+				return;
+			this.setCommunityIsInvalid();
+		}, 0))
+		this.subInput.append(subFinder);
+		this.append(this.subInput);
 
 		// subreddit specific text
 		this.subSubmitText = document.createElement("div");
 		this.subSubmitText.className = "el2 roundedM hide subSubmitText";
-		this.appendChild(this.subSubmitText);
+		this.append(this.subSubmitText);
 
 		// post title
 		this.titleInput = this.makeTextInput("", "Title");
-		this.appendChild(this.titleInput);
+		this.append(this.titleInput);
 
 		// post text (self post)
 		this.textInput = new Ph_MarkdownForm("", false);
@@ -99,31 +115,31 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 			this.checkForReposts = this.repostCheckButton.classList.contains("selected");
 		})
 		this.repostCheckButton.classList.add("selected");
-		this.linkUrlInput.appendChild(this.repostCheckButton);
+		this.linkUrlInput.append(this.repostCheckButton);
 		this.allPossibleTypeSections.push({ type: SubmitPostType.link, element: this.linkUrlInput });
 
 		// selection for what type of post this is (text or link(
 		this.sectionSelection = document.createElement("div");
 		this.sectionSelection.className = "sectionSelection el2";
-		this.appendChild(this.sectionSelection);
+		this.append(this.sectionSelection);
 		for (const section of this.allPossibleTypeSections) {
 			const sectionButton = document.createElement("button");
 			sectionButton.innerText = section.type;
 			sectionButton.addEventListener("click", this.onSectionClick.bind(this));
-			this.sectionSelection.appendChild(sectionButton);
-			this.appendChild(section.element);
+			this.sectionSelection.append(sectionButton);
+			this.append(section.element);
 		}
 		this.setAllowedTypes([]);
 
 		// bottom bar
 		const bottomBar = document.createElement("div");
 		bottomBar.className = "bottomBar";
-		this.appendChild(bottomBar)
+		this.append(bottomBar)
 
 		// left items
 		const leftItems = document.createElement("div");
 		leftItems.className = "group";
-		bottomBar.appendChild(leftItems);
+		bottomBar.append(leftItems);
 
 		// nsfw & spoiler
 		this.nsfwButton = this.makeSpecialButton("NSFW", "nsfw", leftItems, () => {
@@ -138,12 +154,12 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		// flair
 		this.flairSelectorWrapper = document.createElement("div");
 		this.flairSelectorWrapper.className = "flairSelectorWrapper";
-		leftItems.appendChild(this.flairSelectorWrapper);
+		leftItems.append(this.flairSelectorWrapper);
 
 		// right items
 		const rightItems = document.createElement("div");
 		rightItems.className = "group";
-		bottomBar.appendChild(rightItems);
+		bottomBar.append(rightItems);
 
 		// notifications
 		this.notificationButton = this.makeImageButton("/img/notification.svg", "send notifications", "Send Notifications", () => {
@@ -152,14 +168,14 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		});
 		this.notificationButton.classList.add("notificationButton");
 		this.notificationButton.classList.add("selected");
-		rightItems.appendChild(this.notificationButton);
+		rightItems.append(this.notificationButton);
 
 		// submit button
 		this.submitButton = document.createElement("button");
 		this.submitButton.innerText = this.textSubmitText;
 		this.submitButton.className = "button submit";
 		this.submitButton.disabled = true;
-		rightItems.appendChild(this.submitButton);
+		rightItems.append(this.submitButton);
 		this.submitButton.addEventListener("click", this.onSubmitPost.bind(this));
 
 		// if the current url is like /r/AskReddit/submit then fill out the subreddit input field
@@ -184,7 +200,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		if (input instanceof HTMLInputElement)
 			input.type = "text";
 		input.placeholder = placeHolderText;
-		wrapper.appendChild(input)
+		wrapper.append(input)
 		return wrapper;
 	}
 
@@ -193,7 +209,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 		btn.className = `specialButton ${className}`;
 		btn.innerText = text;
 		btn.addEventListener("click", onClick);
-		appendTo.appendChild(btn);
+		appendTo.append(btn);
 		return btn;
 	}
 
@@ -228,7 +244,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 
 	private async onSubmitPost() {
 		const params = [];
-		params.push(["sr", this.subInput.$tag("input")[0]["value"]]);
+		params.push(["sr", this.subreddit]);
 		params.push(["title", this.titleInput.$tag("input")[0]["value"]]);
 		if (this.selectedFlair !== null) {
 			params.push(["flair_id", this.selectedFlair.data.id]);
@@ -273,9 +289,8 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 	}
 
 	/** the community name has changed --> verify if it's valid and if so load it's data */
-	private async onSubChange() {
-		this.submitButton.disabled = true;
-		let community = (this.subInput.$tag("input")[0] as HTMLInputElement).value;
+	private async verifyAndLoadCommunity(community: string) {
+		this.subreddit = "";
 		// basic schema
 		if (!/^(r|u|user)\//i.test(community)) {
 			new Ph_Toast(Level.error, `Community must start with "r/" or "u/" or "user/"`, {timeout: 3500});
@@ -314,7 +329,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 				this.subSubmitText.classList.add("hide");
 			// load detailed sub info
 			this.subInfoButton.innerText = "";
-			this.subInfoButton.appendChild(Ph_FeedInfo.getInfoButton(FeedType.subreddit, community));
+			this.subInfoButton.append(Ph_FeedInfo.getInfoButton(FeedType.subreddit, community));
 			await Ph_FeedInfo.loadedInfos[community].feedInfo.forceLoad();
 			const subData = Ph_FeedInfo.loadedInfos[community].feedInfo.loadedInfo.data;
 			// submit button text
@@ -348,7 +363,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 				};
 			});
 			if (flairDropdownEntries.length > 0) {
-				this.flairSelectorWrapper.appendChild(new Ph_DropDown(
+				this.flairSelectorWrapper.append(new Ph_DropDown(
 					flairDropdownEntries,
 					"Select Flair",
 					DirectionX.left,
@@ -364,6 +379,8 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 			if (!this.isSpoilerAllowed && this.isSpoiler)
 				this.spoilerButton.click();
 
+			console.log(community);
+			this.subreddit = community;
 			this.submitButton.disabled = false;
 		}
 		// TODO for user
@@ -376,7 +393,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 			}
 			this.setCommunityIsValid();
 			this.subInfoButton.innerText = "";
-			this.subInfoButton.appendChild(Ph_FeedInfo.getInfoButton(FeedType.user, community));
+			this.subInfoButton.append(Ph_FeedInfo.getInfoButton(FeedType.user, community));
 			new Ph_Toast(Level.warning, "Post to users aren't supported yet");
 		}
 	}

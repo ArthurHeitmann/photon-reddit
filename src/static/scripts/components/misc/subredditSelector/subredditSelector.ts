@@ -5,7 +5,7 @@ import Ph_FeedLink from "../../link/feedLink/feedLink.js";
 import Ph_Toast, { Level } from "../toast/toast.js";
 import BlurEvent = JQuery.BlurEvent;
 
-export type OnSubSelectCallbackSignature = (subName: string) => Promise<void>;
+export type OnSubSelectCallbackSignature = (subName: string) => Promise<void> | void;
 
 /**
  * Binds to a text field. When text is entered into that field a pop up will appear,
@@ -14,6 +14,7 @@ export type OnSubSelectCallbackSignature = (subName: string) => Promise<void>;
 export default class Ph_SubredditSelector extends HTMLElement {
 	private input: HTMLInputElement;
 	private onSubSelectedCallback: OnSubSelectCallbackSignature;
+	private removeLeadingR: boolean;
 
 	constructor() {
 		super();
@@ -21,17 +22,21 @@ export default class Ph_SubredditSelector extends HTMLElement {
 		this.className = "subredditSelector remove";
 	}
 
-	bind(input: HTMLInputElement, onSelectCallback: OnSubSelectCallbackSignature) {
+	bind(input: HTMLInputElement, removeLeadingR, onSelectCallback: OnSubSelectCallbackSignature) {
 		this.input = input;
 		this.input.addEventListener("input", throttle(this.onTextInput.bind(this), 250));
 		this.input.addEventListener("focus", this.onTextFocus.bind(this));
 		this.input.addEventListener("keypress", this.onTextEnter.bind(this));
 		this.input.addEventListener("blur", this.onTextBlur.bind(this));
+		this.removeLeadingR = removeLeadingR;
 		this.onSubSelectedCallback = onSelectCallback;
 	}
 
-	async onTextInput() {
-		this.input.value = this.input.value.replace(/^\/?r\//i, "");	// remove r/ prefix
+	async onTextInput(e: Event) {
+		e.stopPropagation();
+		e.stopImmediatePropagation();
+		if (this.removeLeadingR)
+			this.input.value = this.input.value.replace(/^\/?r\//i, "");	// remove r/ prefix
 		if (this.input.value) {
 			this.classList.remove("remove");
 			if (this.classList.contains("loading"))
