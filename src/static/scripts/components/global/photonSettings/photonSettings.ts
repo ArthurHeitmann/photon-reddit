@@ -6,6 +6,7 @@ import { deepClone, hasHTML, isObjectEmpty, nameOf } from "../../../utils/utils.
 import { photonWebVersion } from "../../../utils/version.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Ph_Changelog from "../../photon/changelog/changelog.js";
+import Ph_Tutorial from "../../photon/tutorial/tutorial.js";
 import "./styleSettingsListener.js";
 
 export enum ImageLoadingPolicy {
@@ -375,6 +376,14 @@ export default class Ph_PhotonSettings extends HTMLElement {
 			Ph_Changelog.show();
 		})
 		this.optionsArea.appendChild(showChangelogButton);
+		const showTutorialButton = document.createElement("button");
+		showTutorialButton.className = "button";
+		showTutorialButton.innerText = "Start Quick Tour";
+		showTutorialButton.addEventListener("click", () => {
+			this.hide();
+			new Ph_Tutorial();
+		})
+		this.optionsArea.appendChild(showTutorialButton);
 		this.optionsArea.insertAdjacentHTML("beforeend", `<span>v${photonWebVersion}</span>`)
 	}
 
