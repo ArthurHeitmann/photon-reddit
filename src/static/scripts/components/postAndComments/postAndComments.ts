@@ -6,7 +6,8 @@ import { elementWithClassInTree } from "../../utils/htmlStuff.js";
 import { extractPath, extractQuery, hasHTML, hasParams } from "../../utils/utils.js";
 import Ph_Comment from "../comment/comment.js";
 import Ph_CommentsFeed from "../feed/commentsFeed/commentsFeed.js";
-import Ph_FeedInfo, { FeedType } from "../feed/feedInfo/feedInfo.js";
+import { FeedType } from "../feed/feedInfo/feedInfo.js";
+import FeedInfoFactory from "../feed/feedInfo/feedInfoFactory.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
 import { DropDownActionData } from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_CommentForm from "../misc/markdownForm/commentForm/commentForm.js";
@@ -132,7 +133,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 			userTitle.className = "feedTitle";
 			userTitle.innerText = this.userPrefixed;
 			headerElements.push(userTitle);
-			headerElements.push(Ph_FeedInfo.getInfoButton(
+			headerElements.push(FeedInfoFactory.getInfoButton(
 				FeedType.user,
 				`/${this.userPrefixed}`
 			));
@@ -142,7 +143,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 		subTitle.className = "feedTitle";
 		subTitle.innerText = this.subredditPrefixed;
 		headerElements.push(subTitle);
-		headerElements.push(Ph_FeedInfo.getInfoButton(
+		headerElements.push(FeedInfoFactory.getInfoButton(
 			this.subredditPrefixed[0] === "r" ? FeedType.subreddit : FeedType.user,
 			`/${this.subredditPrefixed}`
 		));

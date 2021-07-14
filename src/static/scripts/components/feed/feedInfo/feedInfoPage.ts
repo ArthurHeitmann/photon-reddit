@@ -1,5 +1,6 @@
 import { hasParams } from "../../../utils/utils.js";
-import Ph_FeedInfo, { FeedType } from "./feedInfo.js";
+import { FeedType } from "./feedInfo.js";
+import FeedInfoFactory from "./feedInfoFactory.js";
 
 export default class Ph_FeedInfoPage extends HTMLElement {
 	constructor(path: string) {
@@ -19,7 +20,7 @@ export default class Ph_FeedInfoPage extends HTMLElement {
 		else
 			throw "Invalid feed type";
 		const isRules = /\/about\/rules/.test(path);
-		const feedInfo = new Ph_FeedInfo(feedType, feedPath);
+		const feedInfo = FeedInfoFactory.make(feedPath, feedType);
 		feedInfo.getOrUpdateInfo().then(() => {
 			if (!isRules)
 				return;

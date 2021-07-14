@@ -4,7 +4,8 @@ import { thisUser } from "../../../utils/globals.js";
 import { emojiFlagsToImages } from "../../../utils/htmlStatics.js";
 import { linksToSpa } from "../../../utils/htmlStuff.js";
 import { hasHTML } from "../../../utils/utils.js";
-import Ph_FeedInfo, { FeedType } from "../../feed/feedInfo/feedInfo.js";
+import { FeedType } from "../../feed/feedInfo/feedInfo.js";
+import FeedInfoFactory from "../../feed/feedInfo/feedInfoFactory.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import { DropDownActionData, DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_Flair, { FlairApiData } from "../../misc/flair/flair.js";
@@ -334,9 +335,9 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 				this.subSubmitText.classList.add("hide");
 			// load detailed sub info
 			this.subInfoButton.innerText = "";
-			this.subInfoButton.append(Ph_FeedInfo.getInfoButton(FeedType.subreddit, community));
-			await Ph_FeedInfo.loadedInfos[community].feedInfo.forceLoad();
-			const subData = Ph_FeedInfo.loadedInfos[community].feedInfo.loadedInfo.data;
+			this.subInfoButton.append(FeedInfoFactory.getInfoButton(FeedType.subreddit, community));
+			await FeedInfoFactory.loadedInfos[community].feedInfo.forceLoad();
+			const subData = FeedInfoFactory.loadedInfos[community].feedInfo.loadedInfo.data;
 			// submit button text
 			this.textSubmitText = subData["submit_text_label"] || "Submit";
 			this.linkSubmitText = subData["submit_link_label"] || "Submit";
@@ -397,7 +398,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 			}
 			this.setCommunityIsValid();
 			this.subInfoButton.innerText = "";
-			this.subInfoButton.append(Ph_FeedInfo.getInfoButton(FeedType.user, community));
+			this.subInfoButton.append(FeedInfoFactory.getInfoButton(FeedType.user, community));
 			new Ph_Toast(Level.warning, "Post to users aren't supported yet");
 		}
 	}

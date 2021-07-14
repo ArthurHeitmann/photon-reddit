@@ -2,7 +2,8 @@ import { RedditApiType } from "../../types/misc.js";
 import { emojiFlagsToImages } from "../../utils/htmlStatics.js";
 import { elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff.js";
 import { hasParams } from "../../utils/utils.js";
-import Ph_FeedInfo, { FeedType } from "../feed/feedInfo/feedInfo.js";
+import { FeedType } from "../feed/feedInfo/feedInfo.js";
+import FeedInfoFactory from "../feed/feedInfo/feedInfoFactory.js";
 import { Ph_ViewState } from "../viewState/viewState.js";
 
 /**
@@ -30,7 +31,7 @@ export default class Ph_Wiki extends HTMLElement {
 		title.className = "feedTitle";
 		title.innerText = subredditPath;
 		headerElements.push(title);
-		headerElements.push(Ph_FeedInfo.getInfoButton(FeedType.subreddit, subredditPath));
+		headerElements.push(FeedInfoFactory.getInfoButton(FeedType.subreddit, subredditPath));
 		(elementWithClassInTree(this.parentElement, "viewState") as Ph_ViewState).setHeaderElements(headerElements);
 	}
 }

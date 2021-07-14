@@ -12,6 +12,7 @@ import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Ph_Post from "../../post/post.js";
 import { Ph_ViewState } from "../../viewState/viewState.js";
 import Ph_FeedInfo, { FeedType } from "../feedInfo/feedInfo.js";
+import FeedInfoFactory from "../feedInfo/feedInfoFactory.js";
 import Ph_SearchFeedSorter from "../sorting/searchFeedSorter.js";
 import Ph_UniversalFeedSorter from "../sorting/universalFeedSorter.js";
 
@@ -102,7 +103,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 				feedType = FeedType.messages;
 			headerElements.push(title);
 			if (Ph_FeedInfo.supportedFeedTypes.includes(feedType) && !feedBaseUrl.includes("+"))
-				headerElements.push(Ph_FeedInfo.getInfoButton(feedType, feedBaseUrl));
+				headerElements.push(FeedInfoFactory.getInfoButton(feedType, feedBaseUrl));
 			if (feedType === FeedType.user) {
 			}
 			else if (feedType === FeedType.messages) {
