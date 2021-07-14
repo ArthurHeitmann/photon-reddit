@@ -1,11 +1,10 @@
 import { getChangelog } from "../../../api/photonApi.js";
 import { disableMainScroll, enableMainScroll, getLoadingIcon } from "../../../utils/htmlStatics.js";
-import { hasHTML } from "../../../utils/utils.js";
 import { photonWebVersion } from "../../../utils/version.js";
 import VersionNumber from "../../../utils/versionNumber.js";
+import Ph_ModalPane from "../../misc/modalPane/modalPane.js";
 
-export default class Ph_Changelog extends HTMLElement {
-	changelogContent: HTMLElement;
+export default class Ph_Changelog extends Ph_ModalPane {
 	previousVersion: VersionNumber;
 	static currentChangelog: Ph_Changelog;
 
@@ -16,34 +15,16 @@ export default class Ph_Changelog extends HTMLElement {
 
 	static show(prevVersion?: VersionNumber) {
 		if (!Ph_Changelog.currentChangelog)
-			document.body.append(this.currentChangelog = new Ph_Changelog(prevVersion));
-		this.currentChangelog.classList.remove("remove");
+			document.body.append(Ph_Changelog.currentChangelog = new Ph_Changelog(prevVersion));
+		Ph_Changelog.currentChangelog.show();
 		disableMainScroll();
 	}
 
 	connectedCallback() {
-		if (hasHTML(this)) return;
-
-		this.classList.add("changelog");
 		this.classList.add("remove");
+		this.classList.add("changelog");
 
-		this.changelogContent = document.createElement("div");
-		this.changelogContent.className = "content";
-		this.changelogContent.append(getLoadingIcon());
-		this.appendChild(this.changelogContent);
-
-
-		const closeButton = document.createElement("button");
-		closeButton.className = "closeButton transparentButton";
-		closeButton.innerHTML = `<img src="/img/close.svg" alt="close" draggable="false">`;
-		closeButton.addEventListener("click", this.close.bind(this));
-		this.changelogContent.appendChild(closeButton);
-
-
-		this.addEventListener("click", e => {
-			if (e.target === e.currentTarget)
-				this.close();
-		});
+		this.content.append(getLoadingIcon());
 
 		this.populate();
 	}
@@ -62,13 +43,13 @@ export default class Ph_Changelog extends HTMLElement {
 				${Object.entries(version[1]).map(versionChanges => `
 					<h3>${versionChanges[0]}</h3>
 					<ul>
-					${versionChanges[1].map(change => `<li>${change}</li>`).join("\n")}
+						${versionChanges[1].map(change => `<li>${change}</li>`).join("\n")}
 					</ul>
 				`).join("\n")}
 			`;
 		}).join("\n");
 		this.$class("loadingIcon")[0].remove();
-		this.changelogContent.insertAdjacentHTML("beforeend", newHtml);
+		this.content.insertAdjacentHTML("beforeend", newHtml);
 	}
 
 	close() {

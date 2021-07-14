@@ -2,8 +2,9 @@ import { logOut } from "../../../auth/loginHandler.js";
 import { clearSeenPosts, ensurePageLoaded, isLoggedIn } from "../../../utils/globals.js";
 import { disableMainScroll, enableMainScroll, escADQ } from "../../../utils/htmlStatics.js";
 import "../../../utils/htmlStuff.js";
-import { deepClone, hasHTML, isObjectEmpty, nameOf } from "../../../utils/utils.js";
+import { deepClone, isObjectEmpty, nameOf } from "../../../utils/utils.js";
 import { photonWebVersion } from "../../../utils/version.js";
+import Ph_ModalPane from "../../misc/modalPane/modalPane.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Ph_Changelog from "../../photon/changelog/changelog.js";
 import Ph_Tutorial from "../../photon/tutorial/tutorial.js";
@@ -57,14 +58,13 @@ export let globalSettings: PhotonSettings = {
 };
 
 /** Stores and manages global settings */
-export default class Ph_PhotonSettings extends HTMLElement {
+export default class Ph_PhotonSettings extends Ph_ModalPane {
 	/** unsaved settings are stored here */
 	temporarySettings: PhotonSettings = {};
 	optionsArea: HTMLElement;
 
 	constructor() {
 		super();
-		if (hasHTML(this)) return;
 
 		this.classList.add("photonSettings");
 		this.hide();
@@ -86,27 +86,13 @@ export default class Ph_PhotonSettings extends HTMLElement {
 	}
 
 	connectedCallback() {
-		if (hasHTML(this)) return;
-
 		ensurePageLoaded().then(() => this.init());
 	}
 
 	init() {
-		const windowWrapper = document.createElement("div");
-		windowWrapper.className = "windowWrapper";
-		this.addEventListener("click", (e: MouseEvent) =>
-			e.target === e.currentTarget && this.hide());
-		this.appendChild(windowWrapper);
-
-		const closeButton = document.createElement("button");
-		closeButton.className = "closeButton transparentButton";
-		closeButton.innerHTML = `<img src="/img/close.svg" alt="close" draggable="false">`;
-		closeButton.addEventListener("click", this.hide.bind(this));
-		windowWrapper.appendChild(closeButton);
-
 		const mainWrapper = document.createElement("div");
 		mainWrapper.className = "mainWrapper";
-		windowWrapper.appendChild(mainWrapper);
+		this.content.appendChild(mainWrapper);
 		const previewArea = document.createElement("div");
 		previewArea.className = "previewArea";
 		mainWrapper.appendChild(previewArea);
@@ -136,7 +122,7 @@ export default class Ph_PhotonSettings extends HTMLElement {
 			new Ph_Toast(Level.success, "Settings saved and applied", { timeout: 1500 });
 		});
 		bottomBar.appendChild(saveButton);
-		windowWrapper.appendChild(bottomBar);
+		this.content.appendChild(bottomBar);
 	}
 
 	private stageSettingChange(propertyName: string, validator?: (changed: any) => boolean, errorMessage?: string): (changed: any) => void {
@@ -443,12 +429,12 @@ export default class Ph_PhotonSettings extends HTMLElement {
 	}
 
 	show() {
-		this.classList.remove("remove");
+		super.show();
 		disableMainScroll();
 	}
 
 	hide() {
-		this.classList.add("remove");
+		super.hide();
 		enableMainScroll();
 	}
 }
