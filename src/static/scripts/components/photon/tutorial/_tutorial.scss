@@ -16,7 +16,7 @@
 		bottom: 0;
 		left: 0;
 		background-color: vars.$background;
-		opacity: .85;
+		opacity: .75;
 		transition: all .25s ease;
 
 		&.top {
@@ -48,7 +48,6 @@
 		left: var(--left-space);
 		border: 3px solid vars.$primary;
 		border-radius: vars.$border-radius;
-		pointer-events: none;
 		transition: all .25s ease;
 	}
 
@@ -66,12 +65,16 @@
 			font-size: 1.5rem;
 			padding: 0 1rem;
 			border-radius: vars.$border-radius;
-			transition: filter .25s ease;
+			transition: all .25s ease;
 			border: 1px solid vars.$border-color;
 
 			&.nextButton {
 				background: vars.$primary-contrast;
 				border: none;
+			}
+
+			&.prevButton {
+				margin-left: auto;
 			}
 
 			&:hover {
@@ -82,10 +85,6 @@
 				visibility: hidden;
 			}
 		}
-
-		.prevButton {
-			margin-left: auto;
-		}
 	}
 
 	.stepText {
@@ -95,9 +94,26 @@
 		right: 1rem;
 
 		* {
-			font-size: 2rem;
+			font-size: 1.75rem;
 			text-shadow:  0 0 30px black, 0 0 20px black, 0 0 15px black, 0 0 10px black, 0 0 5px black;
 			line-break: anywhere;
+		}
+	}
+
+	&.isFirst {
+		.prevButton {
+			visibility: hidden;
+		}
+	}
+
+	&.isLast {
+		.nextButton {
+			display: none;
+		}
+
+		.finishButton {
+			background: vars.$primary-contrast;
+			order: 2;
 		}
 	}
 }

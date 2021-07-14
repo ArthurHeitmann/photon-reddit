@@ -14,6 +14,7 @@ import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 
 interface TutorialStep {
 	highlightElementSelector: string | null,
+	getAdditionalHeight?: () => number,
 	updateHighlightForMs?: number,
 	displayText: string[],
 	showIf?: () => boolean,
@@ -32,18 +33,23 @@ const tutorialDescription: TutorialDescription = {
 		{
 			highlightElementSelector: null,
 			displayText: [
-				"Hello!",
-				"Photon is an unofficial opensource webclient for reddit",
-				"You can replace (almost) any reddit.com/... link with photon-reddit.com/...",
-				"For more information visit r/photon_reddit or photon-reddit.com/about"
+				"Hello there!",
 			]
 		},
 		{
 			highlightElementSelector: "main .viewState:not(.hide) .universalFeed",
-			displayText: [ "Here is your main content for posts, comments, messages, etc." ],
+			displayText: [ "Here is your main area for posts, comments, messages, etc." ],
 		},
 		{
-			highlightElementSelector: ".header .actions",
+			highlightElementSelector: "main .viewState:not(.hide) .post:not(.hide) .content",
+			displayText: [
+				"Double click on images/videos to view them in fullscreen",
+				"In fullscreen you can zoom in and drag images/videos"
+			],
+			updateHighlightForMs: 300,
+		},
+		{
+			highlightElementSelector: "ph-header .actions",
 			displayText: [
 				"The header is for special actions (searching, viewing your subreddits, sorting, etc.)",
 				"There are 3 sections...",
@@ -57,18 +63,16 @@ const tutorialDescription: TutorialDescription = {
 			}
 		},
 		{
-			highlightElementSelector: ".header > .actions > .leftItems",
-			displayText: [ "1. Change header behaviour" ],
-		},
-		{
-			highlightElementSelector: ".header > .actions > .mainItems",
-			displayText: [ "2. Search, Navigation, Actions, and Settings" ],
-		},
-		{
-			highlightElementSelector: ".header > .actions > .feedSpecific",
+			highlightElementSelector: "ph-header > .actions > .leftItems",
 			displayText: [
-				"3. These buttons change when viewing a subreddit, user, multireddit, etc.",
-				"You can use these buttons for sorting, viewing subreddit info and more"
+				"1. Change header behaviour",
+				"(pin it, minimize it)"
+			],
+		},
+		{
+			highlightElementSelector: "ph-header > .actions > .mainItems",
+			displayText: [
+				"2. General Navigation + Some Actions"
 			],
 		},
 		{
@@ -80,27 +84,29 @@ const tutorialDescription: TutorialDescription = {
 			showIf: () => !$id("loginButton").hidden
 		},
 		{
-			highlightElementSelector: ".header .search",
+			highlightElementSelector: "ph-header ph-search",
+			getAdditionalHeight: () => $css("ph-header ph-search .searchDropdown")[0].offsetHeight + 7,
 			updateHighlightForMs: 300,
 			displayText: [
 				"The searchbar can search for subreddits and users",
-				"Or you can search a subreddit for text or flairs"
+				"Or you can search in a subreddit for text or flairs"
 			],
-			beginAction: () => $css(".header .search .toggleDropdownButton")[0].click(),
-			endAction: () => $css(".header .search .toggleDropdownButton")[0].click()
+			beginAction: () => $css("ph-header ph-search .toggleDropdownButton")[0].click(),
+			endAction: () => $css("ph-header ph-search .toggleDropdownButton")[0].click()
 		},
 		{
-			highlightElementSelector: ".header .userDropDown",
+			highlightElementSelector: "ph-header ph-user-dropdown",
+			getAdditionalHeight: () => $css("ph-header ph-user-dropdown > div")[0].offsetHeight + 7,
 			updateHighlightForMs: 300,
 			displayText: [
-				"Quick access to actions and pages (like your profile, inbox, about page, ...)",
+				"Quick access to some pages and actions (like your profile, inbox, ...)",
 				"Your followed subreddits und multireddits"
 			],
-			beginAction: () => $css(".header .userDropDown > button")[0].click(),
-			endAction: () => $css(".header .userDropDown > button")[0].click()
+			beginAction: () => $css("ph-header ph-user-dropdown > button")[0].click(),
+			endAction: () => $css("ph-header ph-user-dropdown > button")[0].click()
 		},
 		{
-			highlightElementSelector: ".header .showSettingsButton",
+			highlightElementSelector: "ph-header .showSettingsButton",
 			updateHighlightForMs: 300,
 			displayText: [
 				"Open settings",
@@ -108,34 +114,58 @@ const tutorialDescription: TutorialDescription = {
 			],
 		},
 		{
-			highlightElementSelector: ".header .showInfo",
+			highlightElementSelector: "ph-photon-settings",
+			displayText: [ "You can explore the settings later in detail" ],
+			beginAction: () => $css("ph-header .showSettingsButton")[0].click(),
+			endAction: () => {
+				$css("ph-photon-settings .closeButton")[0].click();
+				const header = $class("header")[0] as Ph_Header;
+				header.expand();
+			},
+		},
+		{
+			highlightElementSelector: "ph-header > .actions > .feedSpecific",
+			updateHighlightForMs: 300,
+			displayText: [
+				"3. These buttons change when viewing a subreddit, user, multireddit, etc.",
+			],
+		},
+		{
+			highlightElementSelector: "ph-header .showInfo",
+			updateHighlightForMs: 300,
 			displayText: [
 				"View Subreddit (or user or multi) info",
-				"In the info you can find the description, rules, moderators and more",
-				"From the info you subscribe to subreddits, change your flair and more"
 			],
 		},
 		{
-			highlightElementSelector: ".header .feedSorter",
-			displayText: [ "Sort subreddits and posts" ],
-		},
-		{
-			highlightElementSelector: "main .viewState:not(.hide) .post:not(.hide) .content",
-			displayText: [
-				"Double click on images or videos to view them in fullscreen",
-				"In fullscreen you can zoom in (scroll wheel) and drag images and videos"
-			],
+			highlightElementSelector: "ph-feed-info:last-child",
 			updateHighlightForMs: 300,
-			beginAction: () => {
+			displayText: [
+				"Here you can find the description, rules, moderators and more",
+				"Subscribe to the subreddit, change your flair and more"
+			],
+			beginAction: () => $css("ph-header .showInfo")[0].click(),
+			endAction: () => {
+				$css("ph-header .showInfo")[0].click();
 				const header = $class("header")[0] as Ph_Header;
-				if (!header.isPinned)
-					header.isPinned = true;
 				header.expand();
-			}
+			},
+		},
+		{
+			highlightElementSelector: "ph-header .feedSorter",
+			updateHighlightForMs: 300,
+			displayText: [ "Sort subreddits and posts" ],
+			beginAction: () => $css("ph-header .feedSpecific .feedSorter .dropDownButton")[0].click(),
+			endAction: () => $css("ph-header .feedSpecific .feedSorter .dropDownButton")[0].click(),
 		},
 		{
 			highlightElementSelector: null,
-			displayText: [ "That's it for now. Discover many more features yourself!" ],
+			displayText: [
+				"That's it for now. Discover many more features yourself!",
+				"---",
+				"Photon is an unofficial opensource webclient for reddit",
+				"For more information visit r/photon_reddit or photon-reddit.com/about"
+			],
 		}
 	]
 }
@@ -187,7 +217,7 @@ export default class Ph_Tutorial extends HTMLElement {
 		this.finishButton.addEventListener("click", this.exitTutorial.bind(this));
 		buttonBar.appendChild(this.finishButton);
 		this.prevButton = document.createElement("button");
-		this.prevButton.className = "navButton prevButton remove";
+		this.prevButton.className = "navButton prevButton";
 		this.prevButton.innerText = "Back";
 		this.prevButton.addEventListener("click", this.previousStep.bind(this));
 		buttonBar.appendChild(this.prevButton);
@@ -250,14 +280,12 @@ export default class Ph_Tutorial extends HTMLElement {
 		if (currentStep.updateHighlightForMs)
 			this.setUpdateInterval(currentStep);
 
-		this.nextButton.classList.toggle("remove", this.currentStepIndex === tutorialDescription.steps.length - 1);
-		this.prevButton.classList.toggle("remove", this.currentStepIndex === 0);
 		this.classList.toggle("isLast", this.currentStepIndex === tutorialDescription.steps.length - 1);
 		this.classList.toggle("isFirst", this.currentStepIndex === 0);
 	}
 
 	setUpdateInterval(currentStep: TutorialStep) {
-		this.updateInterval = setInterval(() => this.updateHighlight(currentStep), 75);
+		this.updateInterval = setInterval(() => this.updateHighlight(currentStep), 25);
 		setTimeout(() => {
 			if (currentStep === tutorialDescription.steps[this.currentStepIndex])
 			this.updateHighlight(currentStep);
@@ -269,12 +297,13 @@ export default class Ph_Tutorial extends HTMLElement {
 	updateHighlight(currentStep: TutorialStep) {
 		if (currentStep.highlightElementSelector) {
 			const highlightTarget = $css(currentStep.highlightElementSelector)[0] as HTMLElement;
+			const additionHeight = currentStep.getAdditionalHeight?.() ?? 0;
 			if (highlightTarget) {
 				const bounds = highlightTarget.getBoundingClientRect();
 				this.setHighlightBounds(
 					Math.max(0, bounds.top - 7),
 					Math.max(0, window.innerWidth - bounds.right - 7),
-					Math.max(0, window.innerHeight - bounds.bottom - 7),
+					Math.max(0, window.innerHeight - bounds.bottom - 7) - additionHeight,
 					Math.max(0, bounds.left - 7),
 				);
 			}

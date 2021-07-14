@@ -28,8 +28,8 @@ body {
 	color: vars.$text-color;
 	opacity: 0;
 	visibility: hidden;
-	transition: all .25s ease;
-	transition-delay: .5s;
+	transition: all .15s ease;
+	transition-delay: .15s;
 }
 
 [data-tooltip]:hover::after {

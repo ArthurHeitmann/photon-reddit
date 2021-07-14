@@ -39,7 +39,7 @@ export default class Ph_UserDropDown extends HTMLElement {
 		ensurePageLoaded().then(() => {
 			dropDownArea.append(this.makeSubredditGroup(
 				thisUser.multiredditsData,
-				"Custom Feeds"
+				"Multireddits"
 			));
 			dropDownArea.append(this.makeSubredditGroup(
 				thisUser.subredditsData,
