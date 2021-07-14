@@ -1,4 +1,5 @@
 import { getInitialAccessToken, revokeToken } from "../api/redditAuthApi.js";
+import Ph_BeforeLoginInfo from "../components/misc/beforeLoginInfo/beforeLoginInfo.js";
 import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
 import { appId, redirectURI, scope, tokenDuration } from "../utils/consts.js";
 import { extractQuery, randomString } from "../utils/utils.js";
@@ -13,6 +14,10 @@ export function initiateLogin(_skipOriginCheck = false) {
 		return;
 	}
 
+	new Ph_BeforeLoginInfo();
+}
+
+export function redirectToLoginPage() {
 	const loginCode = randomString(128);
 	localStorage.loginCode = loginCode;
 	const loginUrl = "https://www.reddit.com/api/v1/authorize?" +

@@ -16,7 +16,7 @@ import ViewsStack from "./historyState/viewsStack.js";
 import { hasAnalyticsFileLoaded } from "./unsuspiciousFolder/unsuspiciousFile.js";
 import { loginSubredditFullName, loginSubredditName } from "./utils/consts.js";
 import { thisUser } from "./utils/globals.js";
-import { $id } from "./utils/htmlStatics.js";
+import { $css, $id } from "./utils/htmlStatics.js";
 import { linksToSpa } from "./utils/htmlStuff.js";
 import "./utils/sideEffectImports.js";
 import { extractHash, extractPath, extractQuery } from "./utils/utils.js";
@@ -33,7 +33,7 @@ async function init(): Promise<void> {
 	$id("mainWrapper").insertAdjacentElement("afterbegin", new Ph_Header());
 	linksToSpa(document.body);
 	checkIfAnalyticsFileLoaded()
-	const loginBtn = $id("loginButton");
+	const loginBtn = $css(".loginButton")[0];
 	loginBtn.addEventListener("click", () => initiateLogin());
 
 	await checkOrCompleteLoginRedirect();

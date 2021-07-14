@@ -2,7 +2,6 @@ import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager
 import {
 	$class,
 	$css,
-	$id,
 	disableMainPointerEvents,
 	disableMainScroll,
 	enableMainPointerEvents,
@@ -76,12 +75,12 @@ const tutorialDescription: TutorialDescription = {
 			],
 		},
 		{
-			highlightElementSelector: "#loginButton",
+			highlightElementSelector: ".loginButton",
 			updateHighlightForMs: 300,
 			displayText: [
 				"Login through reddit.com",
 			],
-			showIf: () => !$id("loginButton").hidden
+			showIf: () => !$css(".loginButton")[0].hidden
 		},
 		{
 			highlightElementSelector: "ph-header ph-search",

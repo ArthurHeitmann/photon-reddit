@@ -1,8 +1,6 @@
 // import your component styles here
 
 @use '../scripts/components/comment/comment';
-@use '../scripts/components/misc/markdownForm/markdownForm';
-@use '../scripts/components/misc/modalPane/modalPane';
 @use '../scripts/components/feed/commentsFeed/commentsFeed';
 @use '../scripts/components/feed/feed';
 @use '../scripts/components/feed/feedInfo/feedInfo';
@@ -12,21 +10,28 @@
 @use '../scripts/components/global/header/header';
 @use '../scripts/components/global/photonSettings/photonSettings';
 @use '../scripts/components/global/search/search';
+@use '../scripts/components/global/userDropDown/userDropDown';
 @use '../scripts/components/link/feedLink/feedLink';
+@use '../scripts/components/mediaViewer/imageViewer/imageView';
 @use '../scripts/components/mediaViewer/mediaViewer';
-@use '../scripts/components/misc/awardsInfo/awardsInfo';
-@use '../scripts/components/misc/controlsBar/controlsBar';
-@use '../scripts/components/misc/dropDown/dropDown';
-@use '../scripts/components/misc/flair/flair';
+@use '../scripts/components/mediaViewer/videoPlayer/gifVideo/gifVideo';
+@use '../scripts/components/mediaViewer/videoPlayer/speedChanger/speedChanger';
+@use '../scripts/components/mediaViewer/videoPlayer/videoPlayer';
 @use '../scripts/components/message/messageCompose/messageCompose';
 @use '../scripts/components/message/messageNotification/messageNotification';
 @use '../scripts/components/message/message';
+@use '../scripts/components/misc/awardsInfo/awardsInfo';
+@use '../scripts/components/misc/beforeLoginInfo/beforeLoginInfo';
+@use '../scripts/components/misc/controlsBar/controlsBar';
+@use '../scripts/components/misc/dropDown/dropDown';
+@use '../scripts/components/misc/flair/flair';
+@use '../scripts/components/misc/markdownForm/markdownForm';
+@use '../scripts/components/misc/modalPane/modalPane';
 @use '../scripts/components/misc/progressBar/progressBar';
 @use '../scripts/components/misc/randomHub/randomHub';
 @use '../scripts/components/misc/subredditSelector/subredditSelector';
 @use '../scripts/components/misc/switchableImage/switchableImage';
 @use '../scripts/components/misc/toast/toast';
-@use '../scripts/components/global/userDropDown/userDropDown';
 @use '../scripts/components/misc/voteButton/voteButton';
 @use '../scripts/components/photon/about/about';
 @use '../scripts/components/photon/changelog/changelog';
@@ -34,13 +39,9 @@
 @use '../scripts/components/post/submit/submitPostForm';
 @use '../scripts/components/post/post';
 @use '../scripts/components/post/postBody/draggableWrapper/draggableWrapper';
-@use '../scripts/components/mediaViewer/imageViewer/imageView';
 @use '../scripts/components/post/postBody/postText/postText';
 @use '../scripts/components/post/postBody/postText/redditPoll';
 @use '../scripts/components/postAndComments/postAndComment';
-@use '../scripts/components/mediaViewer/videoPlayer/gifVideo/gifVideo';
-@use '../scripts/components/mediaViewer/videoPlayer/speedChanger/speedChanger';
-@use '../scripts/components/mediaViewer/videoPlayer/videoPlayer';
 @use '../scripts/components/viewState/viewState';
 @use '../scripts/components/viewState/viewStateLoader/viewStateLoader';
 @use '../scripts/components/wiki/wiki';

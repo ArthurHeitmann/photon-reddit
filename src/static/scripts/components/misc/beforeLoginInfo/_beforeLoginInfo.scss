@@ -1,0 +1,17 @@
+.beforeLoginInfo {
+	--width: min(95vh, 45rem) !important;
+	--height: min(80vh, 25rem) !important;
+
+	.modalContent {
+		position: relative;
+		display: flex;
+		flex-flow: column;
+
+		.loginButton {
+			position: sticky;
+			bottom: 0;
+			min-height: 2.5rem;
+			margin-left: auto;
+		}
+	}
+}
