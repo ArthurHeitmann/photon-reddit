@@ -5,7 +5,10 @@ files = 0
 
 for filename in glob.iglob('src/**/*.ts', recursive=True):
      with open(filename, "r") as f:
-     	lines += len(f.readlines())
+     	lineCount = len(f.readlines())
+     	if lineCount > 400:
+     		print(filename + ": " + str(lineCount))
+     	lines += lineCount
      	files += 1
 
 print("typescript stats")

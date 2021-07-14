@@ -1244,10 +1244,6 @@ function parseMarkdown(markdown) {
   }
   return rootParser.toHtmlString();
 }
-console.log(parseMarkdown(`
-
-
-`));
 export {
   parseMarkdown
 };

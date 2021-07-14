@@ -15,10 +15,6 @@ const template = `
 </ul>
 <br>
 
-<p>
-	The Photon logo is self made and may only be used in association with Photon Reddit.
-</p>
-
 <h2 id="privacy">Privacy</h2>
 
 <p>
@@ -52,7 +48,7 @@ const template = `
 <h2 id="github">GitHub & Source Code</h2>
 
 <p>
-	All code can be read on <a href="https://github.com/ArthurHeitmann/photon-reddit">GitHub</a>. Feel free to contribute or to open issues!
+	All code can be read on <a href="https://github.com/ArthurHeitmann/photon-reddit">GitHub</a>. Feel free to contribute or to open issues.
 </p>
 
 <h2 id="contact">Contact</h2>
@@ -64,6 +60,10 @@ const template = `
 <h2 id="credits">Credits</h2>
 
 <p><h3>Icons</h3></p>
+
+<p>
+	The Photon logo is self made and may only be used in association with Photon Reddit.
+</p>
 
 <p>
 	Most icons are from <a href="https://thenounproject.com/">thenounproject.com</a>.
