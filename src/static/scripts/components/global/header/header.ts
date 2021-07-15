@@ -89,6 +89,8 @@ export default class Ph_Header extends HTMLElement {
 			else
 				this.minimizeAll();
 		});
+		this.onWindowResize();
+		window.addEventListener("resize", this.onWindowResize.bind(this));
 
 		this.$class("collapser")[0].addEventListener("click", e =>
 			this.$class("actions")[0].classList.toggle("collapsed"));
@@ -170,6 +172,10 @@ export default class Ph_Header extends HTMLElement {
 		if (!exclude.includes(this.userDropDown))
 			this.userDropDown.minimize();
 		this.$classAr("dropDownArea").forEach((area: Ph_DropDownArea) => area.closeMenu(true));
+	}
+
+	private onWindowResize() {
+		this.style.setProperty("--window-aspect-ratio", `${window.innerWidth / window.innerHeight}`)
 	}
 }
 

@@ -7,6 +7,7 @@
 	z-index: 50;
 	transform: translateY(-100%);
 	transition: transform .25s linear;
+	--window-aspect-ratio: 1.777;
 
 	.actions {
 		position: relative;
@@ -160,6 +161,7 @@
 		svg {
 			width: 100%;
 			height: calc(#{vars.$header-height} * 2);
+			transform: scaleX(max(1, calc(1.77777 / var(--window-aspect-ratio))));
 
 			.filled {
 				fill: var(--bg-color);
