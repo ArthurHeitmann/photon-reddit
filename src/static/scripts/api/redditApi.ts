@@ -363,3 +363,25 @@ export async function deleteUserFlair(subredditPath: string) {
 	);
 	return !("error" in r) && r["success"];
 }
+
+export async function blockUser(fullname: string): Promise<boolean> {
+	const response = await redditApiRequest(
+		"/api/block",
+		[["id", fullname]],
+		true,
+		{ method: "POST" }
+	);
+
+	return isObjectEmpty(response);
+}
+
+export async function deleteMessage(fullname: string) {
+	const response = await redditApiRequest(
+		"/api/del_msg",
+		[["id", fullname]],
+		true,
+		{ method: "POST" }
+	);
+
+	return isObjectEmpty(response);
+}

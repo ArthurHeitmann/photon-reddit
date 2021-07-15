@@ -1,4 +1,4 @@
-import { comment } from "../../api/redditApi.js";
+import { comment, deleteMessage } from "../../api/redditApi.js";
 import { RedditApiType } from "../../types/misc.js";
 import { thisUser } from "../../utils/globals.js";
 import { emojiFlagsToImages, escADQ, escHTML } from "../../utils/htmlStatics.js";
@@ -61,7 +61,7 @@ export default class Ph_Message extends Ph_Readable {
 				${
 				messageData.data["dest"]
 					? `	<span>to</span>
-						<a href="/user/${escADQ(messageData.data["dest"])}" class="user${userAdditionClasses}">
+						<a href="/user/${escADQ(messageData.data["dest"])}" class="user">
 							<span>u/${messageData.data["dest"]}</span>
 						</a>`
 					: ""
@@ -82,6 +82,11 @@ export default class Ph_Message extends Ph_Readable {
 		`;
 		emojiFlagsToImages(mainPart);
 
+		this.actionEntries.push({
+			label: "Delete for me",
+			labelImgUrl: "/img/delete.svg",
+			onSelectCallback: this.deleteMessage.bind(this)
+		});
 		this.lastMessageFromOther = this;
 		if (!isInFeed) {
 			if (messageData.data["replies"]) {
@@ -99,12 +104,17 @@ export default class Ph_Message extends Ph_Readable {
 				mainPart.append(replyForm);
 				replyForm.addEventListener("ph-submit", async () => {
 					const response = await comment(this.lastMessageFromOther, replyForm.textField.value);
-					if (response.json.errors.length) {
+					if (response["error"]) {
+						new Ph_Toast(Level.error, `Couldn't reply (${escHTML(response["message"])})`);
+						console.error(response);
+						return;
+					}
+					else if (response.json.errors.length) {
 						for (const error of response.json.errors) {
 							new Ph_Toast(Level.error, error instanceof Array ? error.join(" | ") : escHTML(JSON.stringify(error)));
 						}
 						console.error(response);
-						throw "Error replying to message";
+						return;
 					}
 					replyForm.insertAdjacentElement("beforebegin", document.createElement("hr"));
 					const newMessageData = response.json.data.things[0];
@@ -117,6 +127,15 @@ export default class Ph_Message extends Ph_Readable {
 		}
 
 		linksToSpa(this);
+	}
+
+	async deleteMessage() {
+		if (await deleteMessage(this.fullName)) {
+			new Ph_Toast(Level.success, "", { timeout: 3000 });
+			this.$css(".content .md")[0].innerHTML = "[deleted]";
+		}
+		else
+			new Ph_Toast(Level.error, "");
 	}
 }
 

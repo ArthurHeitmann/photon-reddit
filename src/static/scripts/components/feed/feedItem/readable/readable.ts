@@ -1,4 +1,4 @@
-import { readAllMessages, setMessageReadStatus } from "../../../../api/redditApi.js";
+import { blockUser, readAllMessages, setMessageReadStatus } from "../../../../api/redditApi.js";
 import { pushLinkToHistoryComb } from "../../../../historyState/historyStateManager.js";
 import { FullName } from "../../../../types/votable.js";
 import { thisUser } from "../../../../utils/globals.js";
@@ -6,7 +6,7 @@ import { $class, $css } from "../../../../utils/htmlStatics.js";
 import { hasParams } from "../../../../utils/utils.js";
 import Ph_UserDropDown from "../../../global/userDropDown/userDropDown.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../../misc/dropDown/dropDown.js";
-import { DropDownActionData } from "../../../misc/dropDown/dropDownEntry/dropDownEntry.js";
+import { DropDownActionData, DropDownEntryParam } from "../../../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_Toast, { Level } from "../../../misc/toast/toast.js";
 import { MessageSection } from "../../universalFeed/universalFeed.js";
 import Ph_FeedItem from "../feedItem.js";
@@ -15,6 +15,7 @@ export default abstract class Ph_Readable extends Ph_FeedItem implements FullNam
 	abstract fullName: string;
 	isRead: boolean;
 	canBeRead: boolean;
+	actionEntries: DropDownEntryParam[] = [];
 	
 	protected constructor(id: string, link: string, isInFeed: boolean, canBeRead: boolean, isRead: boolean) {
 		super(id, link, isInFeed);
@@ -31,11 +32,31 @@ export default abstract class Ph_Readable extends Ph_FeedItem implements FullNam
 	connectedCallback() {
 		if (!this.canBeRead)
 			return;
+		const actionBar = document.createElement("div");
+		actionBar.className = "actionBar";
+		this.actionEntries.push({
+			label:" Block User",
+			labelImgUrl: "/img/block.svg",
+			onSelectCallback: this.blockUser.bind(this)
+		});
+		const kebabImg = document.createElement("img");
+		kebabImg.src = "/img/kebab.svg";
+		kebabImg.alt = "actions";
+		const actionsDropdown = new Ph_DropDown(
+			this.actionEntries,
+			kebabImg,
+			DirectionX.right,
+			DirectionY.bottom,
+			false
+		);
+		actionsDropdown.toggleButton.classList.add("transparentButtonAlt")
+		actionBar.append(actionsDropdown);
 		const markReadButton = document.createElement("button");
 		markReadButton.className = "markRead transparentButtonAlt";
 		markReadButton.setAttribute("data-tooltip", "Toggle Mark Read");
 		markReadButton.addEventListener("click", this.onToggleRead.bind(this));
-		this.append(markReadButton);
+		actionBar.append(markReadButton);
+		this.append(actionBar);
 	}
 
 	async onToggleRead() {
@@ -108,5 +129,12 @@ export default abstract class Ph_Readable extends Ph_FeedItem implements FullNam
 		}
 		thisUser.inboxUnread = 0;
 		($class("userDropDown")[0] as Ph_UserDropDown).setUnreadCount(thisUser.inboxUnread);
+	}
+
+	async blockUser() {
+		if (await blockUser(this.fullName))
+			new Ph_Toast(Level.success, "", { timeout: 3000 });
+		else
+			new Ph_Toast(Level.error, "");
 	}
 }
