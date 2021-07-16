@@ -2,7 +2,7 @@ import { getSubInfo, getUserMultis } from "../../../api/redditApi.js";
 import { RedditApiType } from "../../../types/misc.js";
 import { escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { linksToSpa } from "../../../utils/htmlStuff.js";
-import { numberToShort } from "../../../utils/utils.js";
+import { makeElement, numberToShort } from "../../../utils/utils.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 import Ph_FeedInfo from "./feedInfo.js";
@@ -56,7 +56,7 @@ export default class Ph_FeedInfoUser extends Ph_FeedInfo {
 		overviewBar.appendChild(userActionsWrapper);
 		userActionsWrapper.appendChild(new Ph_DropDown(
 			[
-				{ label: `<a href="${this.feedUrl}">Visit</a>`, labelImgUrl: "/img/rightArrow.svg" }
+				{ label: makeElement("a", { href: `${this.feedUrl}` }, "Visit"), labelImgUrl: "/img/rightArrow.svg" }
 			],
 			this.getKebabImg(),
 			DirectionX.left,

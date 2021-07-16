@@ -220,8 +220,11 @@ export function emojiFlagsToImages(element: Element | string): void | string {
 	};
 
 	const reg = new RegExp("(?:\ud83c[\udde6-\uddff]){2}", "g");
-	if (element instanceof Element)
-		element.innerHTML = element.innerHTML.replaceAll(reg, flagEmojiToPNG);
+	if (element instanceof Element) {
+		const newInnerHTML = element.innerHTML.replaceAll(reg, flagEmojiToPNG);
+		if (newInnerHTML !== element.innerHTML)
+			element.innerHTML = element.innerHTML.replaceAll(reg, flagEmojiToPNG);
+	}
 	else
 		return element.replaceAll(reg, flagEmojiToPNG);
 }

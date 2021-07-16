@@ -138,10 +138,8 @@ a {
 	text-decoration: none;
 	font-size: inherit;
 
-	&:not(.noStyle) {
-		&, * {
-			color: vars.$link-color;
-		}
+	&, * {
+		color: vars.$link-color;
 	}
 }
 

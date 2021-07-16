@@ -22,6 +22,7 @@ import {
 	getPostIdFromUrl,
 	hasParams,
 	isObjectEmpty,
+	makeElement,
 	numberToShort as numberToShort,
 	numberToShortStr,
 	timePassedSinceStr
@@ -156,7 +157,11 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		}
 		if (postData.data["num_crossposts"] > 0) {
 			dropDownEntries.push({ label:
-				`<a href="${this.permalink.replace("comments", "duplicates")}" class="noStyle">View ${postData.data["num_crossposts"]} Crossposts</a>`,
+				makeElement(
+					"a",
+					{ href: `${this.permalink.replace("comments", "duplicates")}`, "class": "noStyle" },
+					`View ${postData.data["num_crossposts"]} Crossposts`
+				),
 				labelImgUrl: "/img/shuffle.svg"
 			});
 		}

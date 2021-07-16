@@ -12,7 +12,7 @@ import Votable from "../../types/votable.js";
 import { thisUser } from "../../utils/globals.js";
 import { emojiFlagsToImages, escADQ } from "../../utils/htmlStatics.js";
 import { elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff.js";
-import { hasParams, isObjectEmpty, numberToShort, timePassedSinceStr } from "../../utils/utils.js";
+import { hasParams, isObjectEmpty, makeElement, numberToShort, timePassedSinceStr } from "../../utils/utils.js";
 import Ph_CommentsFeed from "../feed/commentsFeed/commentsFeed.js";
 import Ph_Readable from "../feed/feedItem/readable/readable.js";
 import Ph_AwardsInfo from "../misc/awardsInfo/awardsInfo.js";
@@ -176,7 +176,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 		// comment collapser
 		const commentCollapser = document.createElement("div");
 		commentCollapser.className = "commentCollapser";
-		commentCollapser.innerHTML = `<div></div>`;
+		commentCollapser.append(makeElement("div"));
 		commentCollapser.addEventListener("click", e => this.collapse(e));
 		actionBar.appendChild(commentCollapser);
 
@@ -194,32 +194,34 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 
 		const mainPart = document.createElement("div");
 		mainPart.className = "w100";
-		mainPart.innerHTML = `
-			<div class="header flex">
-				${ commentData.data["stickied"] ? `<img class="pinned" src="/img/pin.svg" alt="pinned" draggable="false">` : "" }
-				<a href="/user/${escADQ(commentData.data["author"])}" class="user${userAdditionClasses}">
-					<span>u/${escADQ(commentData.data["author"])}</span>
-					${ commentData.data["author_cakeday"] ? `<img src="/img/cake.svg" class="cakeDay" alt="cake day">` : "" }
-				</a>
-				<span class="time" data-tooltip="${new Date(commentData.data["created_utc"] * 1000).toString()}">
-					${timePassedSinceStr(commentData.data["created_utc"])}
-				</span>
-				<span>ago</span>
-					${ commentData.data["edited"]
-					? `	<span>|</span><span>edited</span>
-						<span class="time" data-tooltip="${new Date(commentData.data["edited"] * 1000).toString()}">${timePassedSinceStr(commentData.data["edited"])}</span> 
-						<span>ago</span>`
-					: ""
-					}
-					${ 	isLocked 
-						? `<span class="locked" data-tooltip="${lockedReason}"><img src="/img/locked.svg" alt="locked"></span>`
-						: ""
-					}
-			</div>
-			<div class="content">
-				${commentData.data["body_html"]}
-			</div>
-		`;
+		mainPart.append(...[
+			makeElement("div", { "class": "header flex" }, [
+				commentData.data["stickied"] && makeElement("img", { "class": "pinned", src: "/img/pin.svg", alt: "pinned", draggable: "false" }),
+				makeElement("a", { href: `/user${commentData.data["author"]}`, "class": `user${userAdditionClasses}` }, [
+					makeElement("span", null, `u/${commentData.data["author"]}`),
+					commentData.data["author_cakeday"] && makeElement("img", { src: "/img/cake.svg", "class": "cakeDay", alt: "cake day" })
+				]),
+				makeElement(
+					"span",
+					{ "class": "time", "data-tooltip": `${new Date(commentData.data["created_utc"] * 1000).toString()}` },
+					timePassedSinceStr(commentData.data["created_utc"])
+				),
+				makeElement("span", null, "ago"),
+				commentData.data["edited"] && [
+					makeElement("span", null, "|"),
+					makeElement("span", null, "edited"),
+					makeElement("span", { "class": "time", "data-tooltip": `${new Date(commentData.data["edited"] * 1000).toString()}` }, timePassedSinceStr(commentData.data["edited"])),
+					makeElement("span", null, "ago"),
+				],
+				isLocked && makeElement(
+					"span",
+					{ "class": "locked", "data-tooltip": lockedReason },
+					[makeElement("img", { "src": "/img/locked.svg", alt: "locked" })]
+				)
+			]),
+			makeElement("div", { "class": "content" }, commentData.data["body_html"], true)
+		]);
+
 		emojiFlagsToImages(mainPart);
 		if (commentData.data["all_awardings"] && commentData.data["all_awardings"].length > 0) {
 			const nonLocked = mainPart.$css(".header > :not(.locked)");

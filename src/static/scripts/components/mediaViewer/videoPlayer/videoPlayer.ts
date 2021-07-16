@@ -374,7 +374,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				}))
 			},
 			{
-				label: `<span>Pop Out</span>`,
+				label: `Pop Out`,
 				labelImgUrl: "/img/popUp.svg",
 				onSelectCallback: this.popoutVideo.bind(this)
 			},

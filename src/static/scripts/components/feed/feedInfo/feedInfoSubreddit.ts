@@ -12,7 +12,7 @@ import { RedditApiType } from "../../../types/misc.js";
 import { isLoggedIn, StoredData, thisUser } from "../../../utils/globals.js";
 import { emojiFlagsToImages, escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { linksToSpa } from "../../../utils/htmlStuff.js";
-import { numberToShort } from "../../../utils/utils.js";
+import { makeElement, numberToShort } from "../../../utils/utils.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import { DropDownActionData, DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_Flair, { FlairApiData } from "../../misc/flair/flair.js";
@@ -114,8 +114,8 @@ export default class Ph_FeedInfoSubreddit extends Ph_FeedInfo {
 		});
 		subActionsWrapper.appendChild(subscribeButton);
 		const dropDownEntries: DropDownEntryParam[] = [];
-		dropDownEntries.push({label: `<a href="${this.feedUrl}">Visit</a>`, labelImgUrl: "/img/rightArrow.svg"});
-		dropDownEntries.push({label: `<a href="${this.feedUrl}/submit">Submit Post</a>`, labelImgUrl: "/img/edit.svg"});
+		dropDownEntries.push({label:makeElement("a", { href: this.feedUrl }, "Visit"), labelImgUrl: "/img/rightArrow.svg"});
+		dropDownEntries.push({label: makeElement("a", { href: `${this.feedUrl}/submit` }, "Submit Post"), labelImgUrl: "/img/edit.svg"});
 		if (thisUser.multireddits.length > 0) {
 			dropDownEntries.push({
 				label: "Add to Multireddit",

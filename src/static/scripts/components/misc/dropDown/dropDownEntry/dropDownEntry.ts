@@ -49,7 +49,7 @@ export default class Ph_DropDownEntry extends HTMLButtonElement {
 		if (param.label instanceof  HTMLElement)
 			this.label.append(param.label);
 		else
-			this.label.innerHTML = param.label;
+			this.label.innerText = param.label;
 		this.append(this.label);
 
 		if (param.nestedEntries && param.nestedEntries.length > 0) {
@@ -104,7 +104,7 @@ export default class Ph_DropDownEntry extends HTMLButtonElement {
 			this.label.appendChild(text);
 		}
 		else
-			this.label.innerHTML = text;
+			this.label.innerText = text;
 	}
 
 	setLabelImg(url: string) {
@@ -116,7 +116,7 @@ export default class Ph_DropDownEntry extends HTMLButtonElement {
 
 export interface DropDownEntryParam {
 	labelImgUrl?: string,
-	/** innerHTML or HTMLElement of the label */
+	/** innerText or HTMLElement of the label */
 	label?: string | HTMLElement,
 	/** the value associated with this entry, will be passed to onSelectCallback */
 	value?: any,
