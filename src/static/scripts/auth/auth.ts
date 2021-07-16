@@ -75,7 +75,8 @@ async function refreshAccessToken(): Promise<boolean> {
 		return false;
 	}
 	localStorage.accessToken = newTokens.access_token;
-	localStorage.refreshToken = newTokens.refresh_token;
+	if (newTokens.refresh_token)
+		localStorage.refreshToken = newTokens.refresh_token;
 	localStorage.expiration = (Date.now() + (59 * 60 * 1000)).toString();
 	return true;
 }
