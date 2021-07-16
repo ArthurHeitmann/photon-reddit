@@ -1,6 +1,19 @@
-export const photonVersion = "0.5.6";		/// <change version script>
+export const photonVersion = "0.5.7";		/// <change version script>
 
 export const photonChangelog = {
+	"0.5.7": {
+		"New": [
+			"Improved subreddit adding to multireddits",
+			"Added subreddit search when posting a post",
+			"Added some info before logging in",
+			"You can now delete messages & block users"
+		],
+		"Fixed": [
+			"Improved performance when viewing comments",
+			"Many small fixes"
+		]
+
+	},
 	"0.5.6": {
 		"New": [
 			"Added markdown preview while writing/editing posts/comments"
