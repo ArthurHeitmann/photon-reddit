@@ -153,6 +153,7 @@ export function enableMainPointerEvents() {
 	main.style.pointerEvents = "";
 }
 
+let emojiCheckCompleted = false
 let areEmojiFlagsSupported = false;
 
 /**
@@ -162,8 +163,8 @@ let areEmojiFlagsSupported = false;
  * 2. If more than one third of pixels are mostly blue, return true, else return false
  */
 function checkAreEmojiFlagsSupported(): boolean {
-	if (areEmojiFlagsSupported)
-		return true;
+	if (emojiCheckCompleted)
+		return areEmojiFlagsSupported;
 	const canvasSize = 30;
 	const canvas = document.createElement("canvas") as HTMLCanvasElement;
 	canvas.width = canvasSize;
@@ -188,6 +189,7 @@ function checkAreEmojiFlagsSupported(): boolean {
 		}
 	}
 
+	emojiCheckCompleted = true;
 	areEmojiFlagsSupported = bluePixels > canvasSize * canvasSize / 3;	// more than a third of pixel are blue
 	return areEmojiFlagsSupported;
 }
