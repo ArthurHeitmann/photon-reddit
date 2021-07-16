@@ -137,7 +137,7 @@ const tutorialDescription: TutorialDescription = {
 			],
 		},
 		{
-			highlightElementSelector: "ph-feed-info:last-child",
+			highlightElementSelector: "ph-feed-info-subreddit:last-child",
 			updateHighlightForMs: 300,
 			displayText: [
 				"Here you can find the description, rules, moderators and more",

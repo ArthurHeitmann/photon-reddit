@@ -28,9 +28,9 @@ describe("Basic Navigation", () => {
 			.click();
 
 		// open dropdown and visit subreddit
-		cy.get("ph-feed-info .overviewBar .subActionsWrapper ph-drop-down > button")
+		cy.get("ph-feed-info-subreddit .overviewBar .subActionsWrapper ph-drop-down > button")
 			.click();
-		cy.get("ph-feed-info .overviewBar .subActionsWrapper ph-drop-down .dropDownEntry")
+		cy.get("ph-feed-info-subreddit .overviewBar .subActionsWrapper ph-drop-down .dropDownEntry")
 			.contains("Visit")
 			.click();
 
@@ -42,11 +42,11 @@ describe("Basic Navigation", () => {
 		// open same feed info again
 		showHeader();
 		cy.get("ph-header button.showInfo[data-feed-type=subreddit]").click();
-		cy.get("ph-feed-info:not(.remove) .title").invoke("text")
+		cy.get("ph-feed-info-subreddit:not(.remove) .title").invoke("text")
 			.should(text => expect(text).to.have.length.gt(1));
 
 		// click through all 4 info sections
-		cy.get("ph-feed-info:not(.remove) .switcher").as("feedInfoSwitcher");
+		cy.get("ph-feed-info-subreddit:not(.remove) .switcher").as("feedInfoSwitcher");
 		cy.get("@feedInfoSwitcher").children().eq(0).should("have.class", "selected")
 		cy.get("@feedInfoSwitcher").contains(/^Description$/)
 			.click().should("have.class", "selected");
