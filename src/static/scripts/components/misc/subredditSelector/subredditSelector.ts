@@ -15,11 +15,13 @@ export default class Ph_SubredditSelector extends HTMLElement {
 	private input: HTMLInputElement;
 	private onSubSelectedCallback: OnSubSelectCallbackSignature;
 	private removeLeadingR: boolean;
+	private blurNsfw: boolean;
 
-	constructor() {
+	constructor(blurNsfw: boolean = true) {
 		super();
 
 		this.className = "subredditSelector remove";
+		this.blurNsfw = blurNsfw;
 	}
 
 	bind(input: HTMLInputElement, removeLeadingR, onSelectCallback: OnSubSelectCallbackSignature) {
@@ -44,7 +46,7 @@ export default class Ph_SubredditSelector extends HTMLElement {
 			const subs = await searchSubreddits(this.input.value);
 			this.innerText = "";
 			subs.data.children.forEach(sub => {
-				const selectSubBtn = new Ph_FeedLink(sub, true, false);
+				const selectSubBtn = new Ph_FeedLink(sub, this.blurNsfw, false);
 				this.appendChild(selectSubBtn);
 				selectSubBtn.addEventListener("click", () => this.addSubToMulti(sub.data["display_name"]));
 			});

@@ -213,7 +213,7 @@ export async function loadMoreComments(children: string[], postFullName: string,
 }
 
 export async function getMultiInfo(multiPath: string) {
-	return await redditApiRequest(`/api/multi${multiPath}`, [], false);
+	return await redditApiRequest(`/api/multi${multiPath}`, [["expand_srs", "1"]], false);
 }
 
 export async function getUserMultis(userName: string) {

@@ -239,6 +239,7 @@
 
 	.editableSub {
 		display: flex;
+		align-items: center;
 		margin-bottom: .25rem;
 		position: relative;
 
@@ -253,6 +254,7 @@
 			background-size: contain;
 			background-image: url("/img/close.svg");
 			margin-right: .25rem;
+			--dim: 1.85rem;
 
 			&.addSub {
 				background-image: url("/img/add.svg");
