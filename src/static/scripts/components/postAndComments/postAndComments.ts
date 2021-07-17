@@ -66,7 +66,6 @@ export default class Ph_PostAndComments extends HTMLElement {
 
 	initWithData(data: RedditApiType[]) {
 		if (!hasParams(arguments)) return;
-		Ph_ViewState.getViewOf(this)?.saveScroll();
 
 		// write comment form
 		if (!this.post.isLocked) {
@@ -107,8 +106,6 @@ export default class Ph_PostAndComments extends HTMLElement {
 		this.sorter.classList.add("commentsSorter");
 
 		this.tmpLoadingIcon?.remove();
-
-		Ph_ViewState.getViewOf(this)?.loadScroll();
 
 		if (!this.areHeaderElementsSet && this.isConnected)
 			this.setHeaderElements();
