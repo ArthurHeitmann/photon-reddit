@@ -132,16 +132,18 @@ catch (e) {
 	seenPosts = {};
 }
 
-export function saveSeenPosts() {
-	try {
-		// in case from another tab new posts have been seen
-		const tmpSeenPosts = JSON.parse(localStorage.seenPosts);
-		for (const [name, time] of Object.entries(tmpSeenPosts)) {
-			if (!seenPosts[name])
-				seenPosts[name] = time as number;
-		}
+export function saveSeenPosts(syncFirst = true) {
+	if (syncFirst) {
+		try {
+			// in case from another tab new posts have been seen
+			const tmpSeenPosts = JSON.parse(localStorage.seenPosts);
+			for (const [name, time] of Object.entries(tmpSeenPosts)) {
+				if (!seenPosts[name]) {
+					seenPosts[name] = time as number;
+				}
+			}
+		} catch (e) {}
 	}
-	catch (e) {}
 
 	localStorage.seenPosts = JSON.stringify(seenPosts);
 }

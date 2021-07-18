@@ -2,7 +2,7 @@
  * Clears cached data in the localstorage occasionally
  */
 
-import { seenPosts, StoredData, unmarkPostAsSeen } from "../../../utils/globals.js";
+import { saveSeenPosts, seenPosts, StoredData, unmarkPostAsSeen } from "../../../utils/globals.js";
 import { globalSettings } from "../../global/photonSettings/photonSettings.js";
 
 export function clearAllOldData() {
@@ -38,6 +38,18 @@ export function clearAllOldData() {
 		unmarkPostAsSeen(postName);
 		++removedSeen;
 	}
+	// remove some seen posts, if more than 35k marked as seen; leave 30k most recent
+	if (Object.keys(seenPosts).length > 35000) {
+		const tooManyPosts = Object.entries(seenPosts)							// all seen posts
+			.sort((a, b) => b[1] - a[1])	// sort descending by time seen
+			.slice(30000);														// select all starting from 30k
+		for (const post of tooManyPosts) {
+			unmarkPostAsSeen(post[0]);
+			++removedSeen;
+		}
+	}
+
+	saveSeenPosts(false);
 
 	console.log(`Cache cleaner took ${Date.now() - now}ms, removed ${removedCachedInfos} cached feed infos and ${removedSeen} seen posts`);
 }
