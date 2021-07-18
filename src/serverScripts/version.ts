@@ -1,6 +1,15 @@
-export const photonVersion = "0.5.7";		/// <change version script>
+export const photonVersion = "0.5.8";		/// <change version script>
 
 export const photonChangelog = {
+	"0.5.8": {
+		"New": [
+			"Added support for streamable.com videos",
+		],
+		"Fixed": [
+			"Some small fixes & changes"
+		]
+
+	},
 	"0.5.7": {
 		"New": [
 			"Improved subreddit adding to multireddits",
