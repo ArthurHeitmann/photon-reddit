@@ -62,9 +62,9 @@
 					}
 
 					> input[type=text], input[type=number] {
-						width: 6rem;
+						width: 4rem;
 						text-align: right;
-						border-bottom: 1px solid vars.$text-color;
+						border-bottom: 1px solid vars.$divider-color;
 						transition: border-bottom-color .25s ease;
 
 						&:focus {

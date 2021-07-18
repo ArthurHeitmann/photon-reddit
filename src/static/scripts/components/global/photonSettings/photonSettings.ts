@@ -2,7 +2,13 @@ import { logOut } from "../../../auth/loginHandler.js";
 import { clearSeenPosts, ensurePageLoaded, isLoggedIn } from "../../../utils/globals.js";
 import { disableMainScroll, enableMainScroll, escADQ } from "../../../utils/htmlStatics.js";
 import "../../../utils/htmlStuff.js";
-import { deepClone, isObjectEmpty, nameOf } from "../../../utils/utils.js";
+import {
+	deepClone,
+	editableTimeStrToMs,
+	isObjectEmpty,
+	nameOf,
+	timeMsToEditableTimeStr
+} from "../../../utils/utils.js";
 import { photonWebVersion } from "../../../utils/version.js";
 import Ph_ModalPane from "../../misc/modalPane/modalPane.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
@@ -36,7 +42,7 @@ export interface PhotonSettings {
 	clearSeenPostAfterMs?: number,
 	isIncognitoEnabled?: boolean,
 	tooltipsVisible?: boolean,
-	messageCheckIntervalS?: number,
+	messageCheckIntervalMs?: number,
 }
 
 // default config
@@ -54,7 +60,7 @@ export let globalSettings: PhotonSettings = {
 	clearSeenPostAfterMs: 1000 * 60 * 60 * 24 * 365,
 	isIncognitoEnabled: false,
 	tooltipsVisible: true,
-	messageCheckIntervalS: 30,
+	messageCheckIntervalMs: 30 * 1000,
 };
 
 /** Stores and manages global settings */
@@ -289,46 +295,42 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 		this.optionsArea.appendChild(tooltipsGroup);
 		// message checking
 		const messageCheckIntervalGroup = this.makeCustomLabeledInput(
-			"number",
-			"Check for new messages every N seconds (0 to disable)",
-			globalSettings.messageCheckIntervalS.toString(),
+			"text",
+			"New Message checking interval (0 to disable)",
+			timeMsToEditableTimeStr(globalSettings.messageCheckIntervalMs),
 			"messageCheckInterval"
 		);
 		messageCheckIntervalGroup.$tag("input")[0].addEventListener("input", e => {
-			this.stageSettingChange(nameOf<PhotonSettings>("messageCheckIntervalS"),
-				(num) => {
-					const parsed = parseInt(num);
-					return !isNaN(parsed) && (parsed === 0 || parsed >= 20);
-				}, "invalid seconds (must be >= 20 or 0)")
-			(parseInt((e.currentTarget as HTMLInputElement).value));
+			const ms = editableTimeStrToMs((e.currentTarget as HTMLInputElement).value);
+			this.stageSettingChange(nameOf<PhotonSettings>("messageCheckIntervalMs"),
+				() => (ms === 0 || ms >= 20), "invalid (must be >= 20s or 0)"
+			)(ms);
 		});
 		this.optionsArea.appendChild(messageCheckIntervalGroup);
 		this.optionsArea.appendChild(document.createElement("hr"));
 
 		// stored data duration
 		const feedInfoCacheGroup = this.makeCustomLabeledInput(
-			"number",
+			"text",
 			"Cached subreddit & user info",
-			globalSettings.clearFeedCacheAfterMs.toString(),
+			timeMsToEditableTimeStr(globalSettings.clearFeedCacheAfterMs),
 			"inputClearFeedCacheAfterMs",
 			""
 		);
 		feedInfoCacheGroup.$tag("input")[0].addEventListener("change", e => {
-			const ms = parseInt((e.currentTarget as HTMLInputElement).value);
-			this.stageSettingChange(nameOf<PhotonSettings>("clearFeedCacheAfterMs"),
-				changed => !isNaN(changed), "Invalid number")(ms);
+			const ms = editableTimeStrToMs((e.currentTarget as HTMLInputElement).value);
+			this.stageSettingChange(nameOf<PhotonSettings>("clearFeedCacheAfterMs"))(ms);
 		});
 		const seenPostsStoredGroup = this.makeCustomLabeledInput(
-			"number",
+			"text",
 			"Seen posts stay marked",
-			globalSettings.clearSeenPostAfterMs.toString(),
+			timeMsToEditableTimeStr(globalSettings.clearSeenPostAfterMs),
 			"inputClearSeenPostAfterMs",
 			""
 		);
 		seenPostsStoredGroup.$tag("input")[0].addEventListener("change", e => {
-			const ms = parseInt((e.currentTarget as HTMLInputElement).value);
-			this.stageSettingChange(nameOf<PhotonSettings>("clearSeenPostAfterMs"),
-				changed => !isNaN(changed), "Invalid number")(ms);
+			const ms = editableTimeStrToMs((e.currentTarget as HTMLInputElement).value);
+			this.stageSettingChange(nameOf<PhotonSettings>("clearSeenPostAfterMs"))(ms);
 		});
 		const clearSeenPostsBtn = document.createElement("button");
 		clearSeenPostsBtn.innerText = "Clear seen posts";
@@ -337,7 +339,7 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 			new Ph_Toast(Level.success, "", { timeout: 1500 });
 		});
 		clearSeenPostsBtn.className = "mla button";
-		this.optionsArea.appendChild(this.makeGeneralInputGroup("Keep stored data for N ms", [
+		this.optionsArea.appendChild(this.makeGeneralInputGroup("Keep stored data for set time frame", [
 			feedInfoCacheGroup,
 			seenPostsStoredGroup,
 			clearSeenPostsBtn

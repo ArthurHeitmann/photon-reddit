@@ -106,17 +106,17 @@ ensurePageLoaded().then( () => {
 	if (!isLoggedIn)
 		return;
 	Ph_MessageNotification.checkForNewMessages();
-	if (globalSettings.messageCheckIntervalS > 0)
-		messageCheckInterval = setInterval(Ph_MessageNotification.checkForNewMessages, globalSettings.messageCheckIntervalS * 1000);
+	if (globalSettings.messageCheckIntervalMs > 0)
+		messageCheckInterval = setInterval(Ph_MessageNotification.checkForNewMessages, globalSettings.messageCheckIntervalMs);
 });
 window.addEventListener("ph-settings-changed", (e: CustomEvent) => {
 	const changed = e.detail as PhotonSettings;
-	if (changed.messageCheckIntervalS === undefined)
+	if (changed.messageCheckIntervalMs === undefined)
 		return;
 	if (messageCheckInterval !== null)
 		clearInterval(messageCheckInterval);
-	if (changed.messageCheckIntervalS > 0)
-		messageCheckInterval = setInterval(Ph_MessageNotification.checkForNewMessages, globalSettings.messageCheckIntervalS * 1000);
+	if (changed.messageCheckIntervalMs > 0)
+		messageCheckInterval = setInterval(Ph_MessageNotification.checkForNewMessages, globalSettings.messageCheckIntervalMs);
 })
 
 customElements.define("ph-message-notification", Ph_MessageNotification);

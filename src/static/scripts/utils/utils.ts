@@ -2,6 +2,8 @@
  * Some general purpose utility funcitons
  */
 
+import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
+
 /** */
 function _numberToShort(num): { n: number, s: string } {
 	switch (Math.abs(num).toString().length) {
@@ -260,3 +262,119 @@ export function makeElement(tagName: string, attributes?: Record<string, string>
 		elem.innerHTML = inner;
 	return elem;
 }
+
+interface EditableTimeStrPartDefinition {
+	shortStr: string,
+	fullStr: string
+	ms: number,
+	isPreferred: boolean
+}
+
+const editableTimeStrParts: EditableTimeStrPartDefinition[] = [
+	{
+		shortStr: "y",
+		fullStr: "year",
+		ms: 1000 * 60 * 60 * 24 * 365,
+		isPreferred: true
+	},
+	{
+		shortStr: "mo",
+		fullStr: "month",
+		ms: 1000 * 60 * 60 * 24 * 365 / 12,
+		isPreferred: true
+	},
+	{
+		shortStr: "w",
+		fullStr: "week",
+		ms: 1000 * 60 * 60 * 24 * 7,
+		isPreferred: false
+	},
+	{
+		shortStr: "d",
+		fullStr: "day",
+		ms: 1000 * 60 * 60 * 24,
+		isPreferred: true
+	},
+	{
+		shortStr: "h",
+		fullStr: "hour",
+		ms: 1000 * 60 * 60,
+		isPreferred: true
+	},
+	{
+		shortStr: "m",
+		fullStr: "minute",
+		ms: 1000 * 60,
+		isPreferred: true
+	},
+	{
+		shortStr: "s",
+		fullStr: "second",
+		ms: 1000,
+		isPreferred: true
+	},
+	{
+		shortStr: "ms",
+		fullStr: "millisecond",
+		ms: 1,
+		isPreferred: true
+	},
+];
+
+export function timeMsToEditableTimeStr(timeMs: number): string {
+	if (timeMs === 0)
+		return "0";
+
+	let out = "";
+	let remainingTimeMs = timeMs;
+	for (const part of editableTimeStrParts) {
+		if (!part.isPreferred)
+			continue;
+		const partValue = Math.floor(remainingTimeMs / part.ms);
+		if (partValue < 1)
+			continue;
+		out += `${partValue}${part.shortStr}`;
+		remainingTimeMs -= partValue * part.ms;
+		if (remainingTimeMs <= 0)
+			break;
+		out += " ";
+	}
+	return out;
+}
+
+export function editableTimeStrToMs(editableStr: string): number {
+	try {
+		if (editableStr === "0")
+			return 0;
+
+		if (!/^\s*(\d+\s*[a-zA-Z]+\s*)+$/.test(editableStr)) {
+			throw new Error("Invalid time format (example: 1y 7 months 1day 30s");
+		}
+
+		let timeMs = 0;
+
+		const pairs: string[] = editableStr.match(/\d+\s*[a-zA-Z]+/g);
+		for (const pair of pairs) {
+			const matches = pair.match(/(\d+)\s*([a-zA-Z]+)/);
+			const number = parseInt(matches[1]);
+			if (!number && number !== 0) {
+				throw new Error(`Invalid number ${number}`);
+			}
+			const timeFrame = matches[2]?.toLowerCase();
+			const timeStrPart = editableTimeStrParts.find(value => {
+				return timeFrame === value.shortStr || timeFrame.replace(/s?$/, "") === value.fullStr;
+			});
+			if (!timeStrPart) {
+				throw new Error(`Invalid timeframe ${timeFrame}`);
+			}
+
+			timeMs += number * timeStrPart.ms;
+		}
+
+		return timeMs;
+	} catch (e) {
+		new Ph_Toast(Level.error, e.message);
+		throw e;
+	}
+}
+
