@@ -180,6 +180,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 			"(https?://w?w?w?\\.?redgifs.com/watch/\\w+))|" +						// redgifs
 			"(https?://gfycat.com/[\\w-]+)|" +										// gfycat
 			"(giphy\\.com/\\w+/\\w+)|" +											// giphy
+			"(streamable\\.com/\\w+)|" +											// streamable
 			"(\\.(gif|mp4)(\\?.*)?$)"												// .gif or .mp4 file
 		).test(url);
 	}

@@ -7,16 +7,15 @@ import { Changelog } from "../types/misc.js";
 import { getAuthHeader } from "./redditApi.js";
 
 /** */
-export async function youtubeDlUrl(url): Promise<string> {
+export async function youtubeDlUrl(url): Promise<{ url?: string, error?: string }> {
 	let res: Response;
 	try {
 		res = await fetch(`/api/youtube-dl?url=${encodeURIComponent(url)}`);
 	} catch (e) {
-		new Ph_Toast(Level.warning, "Couldn't reach Photon server", { timeout: 3500, groupId: "photon server unreachable" });
-		throw e;
+		console.error("error fetching youtube-dl url", e);
+		return { error: "error fetching youtube-dl url" }
 	}
-	const clipMp4 = (await res.json())["url"];
-	return clipMp4;
+	return await res.json();
 }
 
 export async function getChangelog(): Promise<Changelog> {

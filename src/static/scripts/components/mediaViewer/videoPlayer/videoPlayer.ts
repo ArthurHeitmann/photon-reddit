@@ -1,5 +1,6 @@
 import { getGfycatMp4SrcFromUrl, GfycatDomain } from "../../../api/gfycatApi.js";
 import { youtubeDlUrl } from "../../../api/photonApi.js";
+import { getStreamableUrl } from "../../../api/streamableApi.js";
 import { RedditApiType } from "../../../types/misc.js";
 import { $tagAr, escHTML } from "../../../utils/htmlStatics.js";
 import { classInElementTree, isElementIn } from "../../../utils/htmlStuff.js";
@@ -198,16 +199,17 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				}
 				// if not suitable oembed data use youtube-dl
 				if (!twitchMp4Found) {
-					youtubeDlUrl(url).then(async clipMp4 => {
+					youtubeDlUrl(url).then(async clip => {
+						if ("error" in clip || !clip["url"]) {
+							new Ph_Toast(Level.error, "Error getting Twitch clip");
+							videoOut.init(null);
+							return;
+						}
 						videoOut.init(new Ph_SimpleVideo(
-							clipMp4 ? [{ src: clipMp4, type: "video/mp4" }] : []
+							[{ src: clip.url, type: "video/mp4" }]
 							), true
 						);
-					}).catch(err => {
-						new Ph_Toast(Level.error, "Error getting Twitch clip");
-						console.error("Error getting twitch clip url");
-						console.error(err);
-					});
+					})
 				}
 				break;
 			case "redgifs.com":
@@ -221,6 +223,11 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				const giphyId = url.match(/(?<=giphy\.com\/\w+\/)\w+/)[0];		// gfycat.com/<id> or gfycat.com/something/<id> --> <id>
 				const giphyMp4 = `https://i.giphy.com/media/${giphyId}/giphy.mp4`;
 				videoOut.init(new Ph_SimpleVideo([{ src: giphyMp4, type: "video/mp4" }]));
+				break;
+			case "streamable.com":
+				getStreamableUrl(url).then(sources => {
+					videoOut.init(new Ph_SimpleVideo(sources), true)
+				});
 				break;
 			default:
 				// some other .mp4 or .gif file
