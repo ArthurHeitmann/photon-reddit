@@ -1,6 +1,5 @@
 import { hasParams, urlWithHttps } from "../../../../utils/utils.js";
-import { DropDownActionData } from "../../../misc/dropDown/dropDownEntry/dropDownEntry.js";
-import Ph_VideoWrapper, { BasicVideoData, VideoTrackInfo } from "../videoWrapper.js";
+import Ph_VideoWrapper, { BasicVideoData, SourceData, VideoTrackInfo } from "../videoWrapper.js";
 
 /**
  * A video wrapper for gifs. Very limited compared to videos (not time information, no seeking, no pause only stop).
@@ -117,7 +116,11 @@ export default class Ph_GifVideo extends Ph_VideoWrapper {
 		return [];
 	}
 
-	setVideoTrack(data: DropDownActionData) {
+	setVideoTrack(key: SourceData) {
+	}
+
+	getCurrentTrack(): VideoTrackInfo {
+		return null;
 	}
 }
 

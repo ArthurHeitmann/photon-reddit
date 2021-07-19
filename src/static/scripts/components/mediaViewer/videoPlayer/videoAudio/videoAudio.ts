@@ -1,6 +1,6 @@
 import { escADQ } from "../../../../utils/htmlStatics.js";
 import { clamp, hasParams, urlWithHttps } from "../../../../utils/utils.js";
-import { DropDownActionData } from "../../../misc/dropDown/dropDownEntry/dropDownEntry.js";
+import { globalSettings } from "../../../global/photonSettings/photonSettings.js";
 import Ph_VideoWrapper, { BasicVideoData, SourceData, VideoTrackInfo } from "../videoWrapper.js";
 
 /**
@@ -27,12 +27,17 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 			.filter(src => Boolean(src.label))
 			.map(src => (<VideoTrackInfo> {
 				label: src.label || src.src,
-				key: src
+				src: src,
 			}));
 
 		this.video = document.createElement("video");
 		this.video.setAttribute("loop", "");
-		for (const source of videoSources)
+		const qualityPreferenceSortedSources: SourceData[] =
+			globalSettings.preferHigherVideoQuality
+				? videoSources
+				: videoSources.filter(src => src.lowerQualityAlternative)
+				  .concat(videoSources.filter(src => !src.lowerQualityAlternative));
+		for (const source of qualityPreferenceSortedSources)
 			this.video.insertAdjacentHTML("beforeend", `<source src="${escADQ(source.src)}" type="${escADQ(source.type)}">`);
 		this.appendChild(this.video);
 		
@@ -182,10 +187,10 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 		return this.videoTracks;
 	}
 
-	setVideoTrack(data: DropDownActionData) {
-		const key = data.valueChain[1] as SourceData;
+	setVideoTrack(key: SourceData) {
 		const currentTime = this.video.currentTime;
 		const isPaused = this.video.paused;
+		const playbackSpeed = this.video.playbackRate;
 		this.pause();
 		this.dispatchEvent(new Event("ph-buffering"));
 		this.video.innerHTML = `<source src="${escADQ(key.src)}" type="${escADQ(key.type)}">`;
@@ -193,6 +198,12 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 		this.video.currentTime = currentTime;
 		if (!isPaused)
 			this.addEventListener("ph-ready", this.play.bind(this), { once: true })
+		if (playbackSpeed !== 1)
+			this.setPlaybackSpeed(playbackSpeed);
+	}
+
+	getCurrentTrack(): VideoTrackInfo {
+		return this.videoTracks.find(track => track.src.src === this.video.currentSrc);
 	}
 }
 

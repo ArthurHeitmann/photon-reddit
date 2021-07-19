@@ -7,7 +7,7 @@ import { classInElementTree, isElementIn } from "../../../utils/htmlStuff.js";
 import { hasParams, isJsonEqual, secondsToVideoTime } from "../../../utils/utils.js";
 import { globalSettings } from "../../global/photonSettings/photonSettings.js";
 import Ph_ControlsBar, { ControlsLayoutSlots } from "../../misc/controlsBar/controlsBar.js";
-import Ph_DropDownEntry, { DropDownActionData } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
+import { DropDownActionData } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_ProgressBar from "../../misc/progressBar/progressBar.js";
 import Ph_SwitchingImage from "../../misc/switchableImage/switchableImage.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
@@ -83,7 +83,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 					}
 					videoOut.init(new Ph_SimpleVideo([
 						{src: `https://giant.gfycat.com/${capitalizedPath}.mp4`, type: "video/mp4", label: "Default"},
-						{src: `https://thumbs.gfycat.com/${capitalizedPath}-mobile.mp4`, type: "video/mp4", label: "Mobile"},
+						{src: `https://thumbs.gfycat.com/${capitalizedPath}-mobile.mp4`, type: "video/mp4", label: "Mobile", lowerQualityAlternative: true},
 					]));
 				}
 				// if no oembed data, use gfycat api
@@ -101,27 +101,27 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				else {
 					const vReddItFallBack = () => {
 						videoOut.init(new Ph_VideoAudio([
-							{src: url + "/DASH_1080.mp4", type: "video/mp4"},
-							{src: url + "/DASH_1080", type: "video/mp4"},
-							{src: url + "/DASH_720.mp4", type: "video/mp4"},
-							{src: url + "/DASH_720", type: "video/mp4"},
-							{src: url + "/DASH_480.mp4", type: "video/mp4"},
-							{src: url + "/DASH_480", type: "video/mp4"},
-							{src: url + "/DASH_360.mp4", type: "video/mp4"},
-							{src: url + "/DASH_360", type: "video/mp4"},
-							{src: url + "/DASH_240.mp4", type: "video/mp4"},
-							{src: url + "/DASH_240", type: "video/mp4"},
-							{src: url + "/DASH_96.mp4", type: "video/mp4"},
-							{src: url + "/DASH_96", type: "video/mp4"},
-							{src: url + "/DASH_4_8_M", type: "video/mp4"},
-							{src: url + "/DASH_2_4_M", type: "video/mp4"},
-							{src: url + "/DASH_1_2_M", type: "video/mp4"},
-							{src: url + "/DASH_600_K", type: "video/mp4"},
+							{ src: url + "/DASH_1080.mp4", type: "video/mp4" },
+							{ src: url + "/DASH_1080", type: "video/mp4" },
+							{ src: url + "/DASH_720.mp4", type: "video/mp4", lowerQualityAlternative: true },
+							{ src: url + "/DASH_720", type: "video/mp4", lowerQualityAlternative: true },
+							{ src: url + "/DASH_480.mp4", type: "video/mp4", lowerQualityAlternative: true },
+							{ src: url + "/DASH_480", type: "video/mp4", lowerQualityAlternative: true },
+							{ src: url + "/DASH_360.mp4", type: "video/mp4" },
+							{ src: url + "/DASH_360", type: "video/mp4" },
+							{ src: url + "/DASH_240.mp4", type: "video/mp4" },
+							{ src: url + "/DASH_240", type: "video/mp4" },
+							{ src: url + "/DASH_96.mp4", type: "video/mp4" },
+							{ src: url + "/DASH_96", type: "video/mp4" },
+							{ src: url + "/DASH_4_8_M", type: "video/mp4" },
+							{ src: url + "/DASH_2_4_M", type: "video/mp4", lowerQualityAlternative: true },
+							{ src: url + "/DASH_1_2_M", type: "video/mp4" },
+							{ src: url + "/DASH_600_K", type: "video/mp4" },
 						], [
-							{src: url + "/DASH_audio.mp4", type: "audio/mp4"},
-							{src: url + "/DASH_audio", type: "audio/mp4"},
-							{src: url + "/audio.mp4", type: "audio/mp4"},
-							{src: url + "/audio", type: "audio/mp4"},
+							{ src: url + "/DASH_audio.mp4", type: "audio/mp4" },
+							{ src: url + "/DASH_audio", type: "audio/mp4" },
+							{ src: url + "/audio.mp4", type: "audio/mp4" },
+							{ src: url + "/audio", type: "audio/mp4" },
 						]), true);
 					};
 
@@ -147,13 +147,19 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 								const bandwidthB = parseInt(b.getAttribute("bandwidth"));
 								return bandwidthB - bandwidthA;
 							})
-							.map(rep => [rep.querySelector("BaseURL").textContent, rep.getAttribute("height") + "p"])
-							.map(trackData => (<SourceData> { src: `${vReddItUrl}/${trackData[0]}`, type: "video/mp4", label: trackData[1] }));
+							.map(rep => ({ path: rep.querySelector("BaseURL").textContent, height: parseInt(rep.getAttribute("height"))}))
+							.map(trackData => (<SourceData> {
+								src: `${vReddItUrl}/${trackData.path}`,
+								type: "video/mp4",
+								label: `${trackData.height}p`,
+								lowerQualityAlternative: Math.abs(600 - trackData.height) < 180	// true if approximately 720p or 480p
+							}));
 						if (redditVideoData) {
 							const fallbackSrc = <SourceData> {
 								src: redditVideoData["fallback_url"],
 								type: "video/mp4",
-								label: `${redditVideoData["height"]}p`
+								label: `${redditVideoData["height"]}p`,
+								lowerQualityAlternative: Math.abs(600 - redditVideoData["height"]) < 180	// true if approximately 720p or 480p
 							};
 							if (!isJsonEqual(fallbackSrc, videoSources[0])) {
 								videoSources.splice(0, 0, fallbackSrc);
@@ -303,6 +309,8 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 		this.video.addEventListener("ph-ready", () => {
 			this.overlayIcon.showImage("ready");
 			timeText.innerText = `${secondsToVideoTime(this.video.getCurrentTime())} / ${secondsToVideoTime(this.video.getMaxTime())}`;
+			const activeTrackName = this.video.getCurrentTrack()?.label;
+			this.markNewTrack(activeTrackName);
 		});
 		this.video.addEventListener("ph-buffering", () => this.overlayIcon.showImage("loading"));
 		this.video.addEventListener("ph-playing", () => this.overlayIcon.showImage("none"));
@@ -375,8 +383,8 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				labelImgUrl: "/img/hd.svg",
 				nestedEntries: this.video.getVideoTracks().map((track, i) => ({
 					label: track.label,
-					labelImgUrl: i === 0 ? "/img/circleFilled.svg" : "/img/circle.svg",
-					value: track.key,
+					labelImgUrl: "/img/circle.svg",
+					value: track.src,
 					onSelectCallback: this.onSetVideoQuality.bind(this)
 				}))
 			},
@@ -500,11 +508,25 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 	}
 
 	onSetVideoQuality(data: DropDownActionData) {
-		const currentTrackEntry = data.source.dropDownArea.$classAr("dropDownEntry")
-			.find((entry: Ph_DropDownEntry) => entry.labelImg.style.getPropertyValue("--img-url").includes("/img/circleFilled.svg")) as Ph_DropDownEntry;
-		currentTrackEntry?.setLabelImg("/img/circle.svg");
-		data.source.setLabelImg("/img/circleFilled.svg");
-		this.video.setVideoTrack(data);
+		const newSource = data.valueChain[1] as SourceData;
+		this.markNewTrack(newSource.label);
+		this.video.setVideoTrack(newSource);
+	}
+
+	markNewTrack(newTrackLabel: string) {
+		if (!newTrackLabel)
+			return;
+		const currentEntry = this.controls.settingsEntries
+			.find(entry => entry.label === "Quality")?.nestedEntries
+			?.find(entry => entry.labelImgUrl === "/img/circleFilled.svg");
+		if (currentEntry)
+			currentEntry.labelImgUrl = "/img/circle.svg";
+		const newEntry = this.controls.settingsEntries
+			.find(entry => entry.label === "Quality")?.nestedEntries
+			?.find(entry => entry.label === newTrackLabel);
+		if (newEntry)
+			newEntry.labelImgUrl = "/img/circleFilled.svg";
+		this.dispatchEvent(new Event("ph-controls-changed"))
 	}
 }
 

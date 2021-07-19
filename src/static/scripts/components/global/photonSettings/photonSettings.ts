@@ -33,6 +33,7 @@ export interface PhotonSettings {
 	loadInlineMedia?: boolean,
 	firstShowControlBar?: boolean,
 	imageLimitedHeight?: number,
+	preferHigherVideoQuality?: boolean,
 	autoplayVideos?: boolean,
 	globalVideoVolume?: boolean,
 	nsfwPolicy?: NsfwPolicy,
@@ -51,6 +52,7 @@ export let globalSettings: PhotonSettings = {
 	loadInlineMedia: false,
 	firstShowControlBar: true,
 	imageLimitedHeight: 80,
+	preferHigherVideoQuality: true,
 	autoplayVideos: true,
 	globalVideoVolume: false,
 	nsfwPolicy: NsfwPolicy.covered,
@@ -201,6 +203,19 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 		this.optionsArea.appendChild(document.createElement("hr"));
 
 		// videos
+		const videoQualityGroup = this.makeCustomLabeledInput(
+			"checkbox",
+			"Prefer higher video quality",
+			"",
+			"checkboxPreferHigherVideoQuality",
+			"",
+			globalSettings.preferHigherVideoQuality
+		);
+		videoQualityGroup.$tag("input")[0].addEventListener("input", e => {
+			this.stageSettingChange(nameOf<PhotonSettings>("preferHigherVideoQuality"))
+			((e.currentTarget as HTMLInputElement).checked);
+		});
+		this.optionsArea.append(videoQualityGroup);
 		// autoplay
 		const videoAutoplayGroup = this.makeCustomLabeledInput(
 			"checkbox",

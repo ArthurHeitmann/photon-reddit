@@ -25,7 +25,8 @@ export async function getGfycatMp4SrcFromUrl(url: string, domain: GfycatDomain):
 		{
 			src: data["gfyItem"]["mobileUrl"],
 			type: "video/mp4",
-			label: "Mobile"
+			label: "Mobile",
+			lowerQualityAlternative: true
 		}
 	];
 }

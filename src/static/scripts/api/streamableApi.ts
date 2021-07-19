@@ -13,7 +13,8 @@ export async function getStreamableUrl(url: string): Promise<SourceData[]> {
 		{
 			src: data["files"]["mp4-mobile"]["url"],
 			type: "video/mp4",
-			label: `${data["files"]["mp4-mobile"]["height"]}p`
+			label: `${data["files"]["mp4-mobile"]["height"]}p`,
+			lowerQualityAlternative: true
 		},
 	]
 }
