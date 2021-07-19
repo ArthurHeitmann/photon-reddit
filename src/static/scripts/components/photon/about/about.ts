@@ -76,21 +76,21 @@ const template = `
 	<br>
 	Other attributions:
 	<ul>
-		<li>The pin icon in the header: "Pin by Martins Ratkus from the Noun Project".</li>
 		<li>Sort by relevance icon: "sorting by Evgeni Moryakov from the Noun Project"</li>
+		<li>The pin icon in the header: "Pin by Martins Ratkus from the Noun Project"</li>
 		<li>Controversial icon: "Lightning by Rodolfo Alvarez from the Noun Project"</li>
 		<li>Q & A icon: "question and answer by Wolf Böse from the Noun Project"</li>
-		<li>Edit text icon: "text by Ricki Tri Putra from the Noun Project"</li>
-		<li>Icon for r/all: "Earth by Royyan Wijaya from the Noun Project"</li>
 		<li>Popular icon: "Trending up by DailyPM from the Noun Project"</li>
+		<li>Icon for r/all: "Earth by Royyan Wijaya from the Noun Project"</li>
+		<li>Edit text icon: "text by Ricki Tri Putra from the Noun Project"</li>
+		<li>Award icon: "Medal by Shashwathy from the Noun Project"</li>
 		<li>Share icon: "Share by Arun Ganesh from the Noun Project"</li>
 		<li>Crosspost icon: "Shuffle by ghayn from the Noun Project"</li>
-		<li>Award icon: "Medal by Shashwathy from the Noun Project"</li>
-		<li>Best icon: "Rocket by The Icon Z from the Noun Project"</li>
 		<li>New icon: "new by Adrien Coquet from the Noun Project"</li>
-		<li>Inbox icon: "envelope by ghayn from the Noun Project"</li>
-		<li>Top icon: "Data by Fengquan Li from the Noun Project"</li>
+		<li>Best icon: "Rocket by The Icon Z from the Noun Project"</li>
 		<li>Save icon: "bookmark by ghayn from the Noun Project"</li>
+		<li>Top icon: "Data by Fengquan Li from the Noun Project"</li>
+		<li>Inbox icon: "envelope by ghayn from the Noun Project"</li>
 		<li>Delete icon: "Delete by ghayn from the Noun Project"</li>
 		<li>Hot icon: "Hot by Pawel Rak from the Noun Project"</li>
 		<li>HD icon: "HD by Vectorstall from the Noun Project"</li>
