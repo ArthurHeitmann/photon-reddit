@@ -95,13 +95,16 @@ export default class Ph_Header extends HTMLElement {
 		this.$class("collapser")[0].addEventListener("click", e =>
 			this.$class("actions")[0].classList.toggle("collapsed"));
 		this.$class("pinToggleButton")[0].addEventListener("click", e => {
-			(e.currentTarget as HTMLElement).classList.toggle("pinned");
 			this.isPinned = !this.isPinned;
+			this.classList.toggle("pinned", this.isPinned);
+			(e.currentTarget as HTMLElement).classList.toggle("pinned", this.isPinned);
 			localStorage["isHeaderPinned"] = this.isPinned.toString();
 		});
 
 		if (localStorage["isHeaderPinned"] === "true") {
 			this.isPinned = true;
+			this.classList.toggle("pinned", this.isPinned);
+			this.$class("pinToggleButton")[0].classList.toggle("pinned", this.isPinned);
 			this.headerMouseEnter();
 		}
 		// if the user visits the page for the first time, expand the header for a brief amount of time.

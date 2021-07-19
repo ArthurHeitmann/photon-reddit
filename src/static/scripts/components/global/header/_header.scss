@@ -200,4 +200,10 @@
 			stroke: lightskyblue !important;
 		}
 	}
+
+	&.pinned {
+		> .accessibilitySpacer {
+			display: none;
+		}
+	}
 }
