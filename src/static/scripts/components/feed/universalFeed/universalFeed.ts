@@ -4,7 +4,7 @@ import { RedditApiType } from "../../../types/misc.js";
 import { fakeSubreddits } from "../../../utils/consts.js";
 import { escHTML, getLoadingIcon } from "../../../utils/htmlStatics.js";
 import { elementWithClassInTree } from "../../../utils/htmlStuff.js";
-import { hasParams, sleep, throttle, waitForFullScreenExit } from "../../../utils/utils.js";
+import { clamp, hasParams, sleep, throttle, waitForFullScreenExit } from "../../../utils/utils.js";
 import Ph_Comment from "../../comment/comment.js";
 import Ph_Message from "../../message/message.js";
 import { DropDownActionData } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
@@ -13,6 +13,7 @@ import Ph_Post from "../../post/post.js";
 import { Ph_ViewState } from "../../viewState/viewState.js";
 import Ph_FeedInfo, { FeedType } from "../feedInfo/feedInfo.js";
 import FeedInfoFactory from "../feedInfo/feedInfoFactory.js";
+import Ph_FeedItem from "../feedItem/feedItem.js";
 import Ph_SearchFeedSorter from "../sorting/searchFeedSorter.js";
 import Ph_UniversalFeedSorter from "../sorting/universalFeedSorter.js";
 
@@ -40,6 +41,9 @@ export default class Ph_UniversalFeed extends HTMLElement {
 	hasReachedEndOfFeed = false;
 	isSearchFeed = false;
 	private allPostFullNames: string[] = [];
+	private currentlyVisibleItem: Ph_FeedItem;
+	private currentlyVisibleItemScrollTop: number;
+	private lastWindowSize = [window.innerWidth, window.innerHeight]
 
 	constructor(posts: RedditApiType, requestUrl: string) {
 		super();
@@ -52,15 +56,18 @@ export default class Ph_UniversalFeed extends HTMLElement {
 		this.requestUrl = requestUrl;
 
 		const scrollChecker = throttle(this.onScroll.bind(this), 1000);
-		document.scrollingElement.addEventListener("wheel", scrollChecker, { passive: true });
-		document.scrollingElement.addEventListener("touchmove", scrollChecker, { passive: true });
+		this.addEventListener("wheel", scrollChecker, { passive: true });
+		this.addEventListener("touchmove", scrollChecker, { passive: true });
+		(new ResizeObserver(this.onResize.bind(this))).observe(this);
 
 		// find first FeedItem, once it has been added
 		const observer = new MutationObserver((mutationsList: MutationRecord[], observer) => {
 			for (const mutation of mutationsList) {
-				for (const addedNode of mutation.addedNodes) {
+				for (const addedNode of mutation.addedNodes as NodeListOf<Ph_FeedItem>) {
 					if (addedNode["itemId"]) {
 						this.absoluteFirst = addedNode["itemId"];
+						this.currentlyVisibleItem = addedNode;
+						this.currentlyVisibleItemScrollTop = addedNode.getBoundingClientRect().top;
 						observer.disconnect();
 						return;
 					}
@@ -191,6 +198,9 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			);
 			return;
 		}
+
+		this.storeCurrentlyVisibleItem();
+
 		let last = this.children[this.childElementCount - 1];
 		while (last.classList.contains("hide") && last.previousElementSibling)
 			last = last.previousElementSibling;
@@ -386,6 +396,35 @@ export default class Ph_UniversalFeed extends HTMLElement {
 				reject("timeout");
 			}, timeoutMs);
 		});
+	}
+
+	storeCurrentlyVisibleItem() {
+		function getItemVisibility(item: Element): { viewportHeight: number, height: number, topOffset: number } {
+			const bounds = item.getBoundingClientRect();
+			return {
+				viewportHeight: clamp(bounds.bottom, 0, window.innerHeight) - clamp(bounds.top, 0, window.innerHeight),
+				height: bounds.height,
+				topOffset: bounds.top
+			}
+		}
+
+		// check if the previously visible item is still visible
+		const currentVisibility = getItemVisibility(this.currentlyVisibleItem);
+		if (currentVisibility.viewportHeight > 0) {
+			this.currentlyVisibleItemScrollTop = currentVisibility.topOffset;
+			return;
+		}
+		this.currentlyVisibleItem = <Ph_FeedItem> Array.from(this.children).find(e => getItemVisibility(e).viewportHeight > 0);
+		this.currentlyVisibleItemScrollTop = getItemVisibility(this.currentlyVisibleItem).topOffset;
+	}
+
+	onResize(entries: ResizeObserverEntry[]) {
+		if (window.innerWidth === this.lastWindowSize[0] && window.innerHeight === this.lastWindowSize[1] || entries[0].contentBoxSize[0].blockSize === 0)
+			return;
+		this.lastWindowSize = [window.innerWidth, window.innerHeight];
+		const scrollTopDiff = this.currentlyVisibleItem.getBoundingClientRect().top - this.currentlyVisibleItemScrollTop;
+		document.scrollingElement.scrollBy(0, scrollTopDiff);
+		this.currentlyVisibleItemScrollTop = this.currentlyVisibleItem.getBoundingClientRect().top;
 	}
 }
 

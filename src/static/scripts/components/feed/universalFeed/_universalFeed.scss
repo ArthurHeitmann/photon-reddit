@@ -1,10 +1,10 @@
 @use "../../../../style/vars";
 
 .universalFeed {
-	width: vars.$widthM;
+	width: 100%;
+	padding: 0 calc(50vw - #{vars.$widthM} / 2);
 	@media (orientation: portrait) {
-		width: vars.$widthP;
-		margin: 0 .4rem 0 auto;
+		padding: 0 0.4rem 0 2.2rem;
 	}
 	display: flex;
 	flex-flow: column;

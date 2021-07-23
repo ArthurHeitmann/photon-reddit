@@ -11,7 +11,8 @@
       "ESNext"
     ],
     "types": [
-      "cypress"
+      "cypress",
+      "resize-observer-browser"
     ]
   },
   "include": ["./src", "./cypress"],
