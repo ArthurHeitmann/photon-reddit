@@ -378,3 +378,11 @@ export function editableTimeStrToMs(editableStr: string): number {
 	}
 }
 
+export function isParamRedditTruthy(param: string, fallback: boolean) {
+	if (/^true|1|on|yes$/i.test(param))
+		return true;
+	else if (/^false|0|off|no$/i.test(param))
+		return false;
+	else
+		return fallback;
+}

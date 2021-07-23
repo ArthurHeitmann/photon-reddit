@@ -5,7 +5,7 @@ import { RedditApiType, SortPostsTimeFrame, SortSearchOrder } from "../../../typ
 import { isLoggedIn } from "../../../utils/globals.js";
 import { escADQ, getLoadingIcon } from "../../../utils/htmlStatics.js";
 import { elementWithClassInTree, isElementIn } from "../../../utils/htmlStuff.js";
-import { extractPath, extractQuery, hasHTML, throttle } from "../../../utils/utils.js";
+import { extractPath, extractQuery, hasHTML, isParamRedditTruthy, throttle } from "../../../utils/utils.js";
 import Ph_FeedLink from "../../link/feedLink/feedLink.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
 import { DropDownActionData, DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
@@ -197,7 +197,7 @@ export default class Ph_Search extends HTMLElement {
 			this.searchBar.value = currParams.get("q");
 			this.searchOrder = SortSearchOrder[currParams.get("sort")];
 			this.searchTimeFrame = SortPostsTimeFrame[currParams.get("t")];
-			this.limitToSubreddit.checked = currParams.get("restrict_sr") === "true";
+			this.limitToSubreddit.checked = isParamRedditTruthy(currParams.get("restrict_sr"), true);
 		}
 
 		window.addEventListener("click", e => {
