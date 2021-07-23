@@ -1,3 +1,4 @@
+import { disableMainScroll, enableMainScroll } from "../../../utils/htmlStatics.js";
 import { hasHTML } from "../../../utils/utils.js";
 
 export default class Ph_ModalPane extends HTMLElement {
@@ -27,9 +28,11 @@ export default class Ph_ModalPane extends HTMLElement {
 
 	show() {
 		this.classList.remove("remove");
+		disableMainScroll();
 	}
 
 	hide() {
 		this.classList.add("remove");
+		enableMainScroll();
 	}
 }

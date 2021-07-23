@@ -1,5 +1,5 @@
 import { getChangelog } from "../../../api/photonApi.js";
-import { disableMainScroll, enableMainScroll, getLoadingIcon } from "../../../utils/htmlStatics.js";
+import { getLoadingIcon } from "../../../utils/htmlStatics.js";
 import { photonWebVersion } from "../../../utils/version.js";
 import VersionNumber from "../../../utils/versionNumber.js";
 import Ph_ModalPane from "../../misc/modalPane/modalPane.js";
@@ -17,7 +17,6 @@ export default class Ph_Changelog extends Ph_ModalPane {
 		if (!Ph_Changelog.currentChangelog)
 			document.body.append(Ph_Changelog.currentChangelog = new Ph_Changelog(prevVersion));
 		Ph_Changelog.currentChangelog.show();
-		disableMainScroll();
 	}
 
 	connectedCallback() {
@@ -50,11 +49,6 @@ export default class Ph_Changelog extends Ph_ModalPane {
 		}).join("\n");
 		this.$class("loadingIcon")[0].remove();
 		this.content.insertAdjacentHTML("beforeend", newHtml);
-	}
-
-	close() {
-		this.classList.add("remove");
-		enableMainScroll();
 	}
 }
 

@@ -1,6 +1,6 @@
 import { logOut } from "../../../auth/loginHandler.js";
 import { clearSeenPosts, ensurePageLoaded, isLoggedIn } from "../../../utils/globals.js";
-import { disableMainScroll, enableMainScroll, escADQ } from "../../../utils/htmlStatics.js";
+import { escADQ } from "../../../utils/htmlStatics.js";
 import "../../../utils/htmlStuff.js";
 import {
 	deepClone,
@@ -443,16 +443,6 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 		else {
 			this.hide();
 		}
-	}
-
-	show() {
-		super.show();
-		disableMainScroll();
-	}
-
-	hide() {
-		super.hide();
-		enableMainScroll();
 	}
 }
 
