@@ -1,6 +1,11 @@
-export const photonVersion = "0.5.9";		/// <change version script>
+export const photonVersion = "0.5.10";		/// <change version script>
 
 export const photonChangelog = {
+	"0.5.10": {
+		"Fixed": [
+			"Some small fixes & changes"
+		]
+	},
 	"0.5.9": {
 		"New": [
 			"Added option to play videos in lower quality by default",
