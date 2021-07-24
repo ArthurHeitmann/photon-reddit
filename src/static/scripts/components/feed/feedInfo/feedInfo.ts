@@ -125,7 +125,6 @@ export default abstract class Ph_FeedInfo extends HTMLElement {
 		const refreshButton = document.createElement("button");
 		refreshButton.className = "refreshButton transparentButtonAlt";
 		refreshButton.innerHTML = `<img src="/img/refresh.svg" draggable="false" alt="refresh">`;
-		refreshButton.setAttribute("data-tooltip", "auto ever 2h");
 		refreshButton.addEventListener("click", () => this.loadInfo().then(this.displayInfo.bind(this)));
 		return refreshButton;
 	}

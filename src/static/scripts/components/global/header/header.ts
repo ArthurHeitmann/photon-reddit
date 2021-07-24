@@ -57,12 +57,12 @@ export default class Ph_Header extends HTMLElement {
 			<div class="expander absolute w100">
 				<svg viewBox="0 0 1400 200" preserveAspectRatio="none">
 					<path d="M 0 0 v 100 h 500 c 100 0, 100 50, 200 50 s 100 -50, 200 -50 h500 v -100 z" class="filled" fill="var(--bg-color)" vector-effect="non-scaling-stroke">
-						<animate class="headerHideVisualizer" attributeName="d" dur="0.25s" fill="freeze" from="M 0 0 v 100 h 0 c 200 50, 600 50, 700 50 s 500 0, 700 -50 h 0 v -100 z" to="M 0 0 v 100 h 500 c 100 0, 100 50, 200 50 s 100 -50, 200 -50 h500 v -100 z" begin="indefinite"></animate>
-						<animate class="headerShowVisualizer" attributeName="d" dur="0.25s" fill="freeze" from="M 0 0 v 100 h 500 c 100 0, 100 50, 200 50 s 100 -50, 200 -50 h500 v -100 z" to="M 0 0 v 100 h 0 c 200 50, 600 50, 700 50 s 500 0, 700 -50 h 0 v -100 z" begin="indefinite"></animate>
+						<animate class="headerHideVisualizer" attributeName="d" dur="0.2s" fill="freeze" from="M 0 0 v 100 h 0 c 200 50, 600 50, 700 50 s 500 0, 700 -50 h 0 v -100 z" to="M 0 0 v 100 h 500 c 100 0, 100 50, 200 50 s 100 -50, 200 -50 h500 v -100 z" begin="indefinite"></animate>
+						<animate class="headerShowVisualizer" attributeName="d" dur="0.2s" fill="freeze" from="M 0 0 v 100 h 500 c 100 0, 100 50, 200 50 s 100 -50, 200 -50 h500 v -100 z" to="M 0 0 v 100 h 0 c 200 50, 600 50, 700 50 s 500 0, 700 -50 h 0 v -100 z" begin="indefinite"></animate>
 					</path>
 					<path d="M 0 100 h 500 c 100 0, 100 50, 200 50 s 100 -50, 200 -50 h 500" class="stroked" fill="none" stroke="#eeeeee" stroke-width="5" vector-effect="non-scaling-stroke">
-						<animate class="headerHideVisualizer" attributeName="d" dur="0.25s" fill="freeze" from="M 0 100 h 0 c 200 50, 600 50, 700 50 s 500 0, 700 -50 h 0" to="M 0 100 h 500 c 100 0, 100 50, 200 50 s 100 -50, 200 -50 h 500" begin="indefinite"></animate>
-						<animate class="headerShowVisualizer" attributeName="d" dur="0.25s" fill="freeze" from="M 0 100 h 500 c 100 0, 100 50, 200 50 s 100 -50, 200 -50 h 500" to="M 0 100 h 0 c 200 50, 600 50, 700 50 s 500 0, 700 -50 h 0" begin="indefinite"></animate>
+						<animate class="headerHideVisualizer" attributeName="d" dur="0.2s" fill="freeze" from="M 0 100 h 0 c 200 50, 600 50, 700 50 s 500 0, 700 -50 h 0" to="M 0 100 h 500 c 100 0, 100 50, 200 50 s 100 -50, 200 -50 h 500" begin="indefinite"></animate>
+						<animate class="headerShowVisualizer" attributeName="d" dur="0.2s" fill="freeze" from="M 0 100 h 500 c 100 0, 100 50, 200 50 s 100 -50, 200 -50 h 500" to="M 0 100 h 0 c 200 50, 600 50, 700 50 s 500 0, 700 -50 h 0" begin="indefinite"></animate>
 					</path>
 				</svg>
 			</div>
@@ -152,7 +152,7 @@ export default class Ph_Header extends HTMLElement {
 		if (this.isPinned)
 			return;
 
-		this.hideTimeout = setTimeout(this.hide.bind(this), e && e.relatedTarget === null ? 10000 : 750);
+		this.hideTimeout = setTimeout(this.hide.bind(this), e && e.relatedTarget === null ? 10000 : 700);
 	}
 
 	hide() {
