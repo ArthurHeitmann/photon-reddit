@@ -205,7 +205,7 @@ export function emojiFlagsToImages(element: Element): void;
 export function emojiFlagsToImages(text: string): string;
 export function emojiFlagsToImages(element: Element | string): void | string {
 	if (checkAreEmojiFlagsSupported())
-		return;
+		return element instanceof Element ? undefined : element;
 	// black magic from https://stackoverflow.com/a/67633661/9819447
 	const flagEmojiToPNG = (flag) => {
 		let countryCode = Array.from(flag, (codeUnit: string) => {
