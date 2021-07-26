@@ -179,6 +179,7 @@
 	> .accessibilitySpacer {
 		width: 25%;
 		height: 50%;
+		transform: translateX(-50%) scaleX(max(1, calc(1.77777 / var(--window-aspect-ratio))));
 	}
 
 	&.hover {
