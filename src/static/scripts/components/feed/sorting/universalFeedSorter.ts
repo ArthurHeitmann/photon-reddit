@@ -58,7 +58,7 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 		const path = extractPath(history.state?.url || "");
 		let tmpCurSort = path.match(/(?<=\/)\w+(?=$|\/$)/);	// /r/all/top --> top
 		let curSort = query.get("sort") || tmpCurSort && tmpCurSort[0] || "";
-		if (!(Object.values(SortPostsOrder) as string[]).includes(curSort.toLowerCase()))
+		if (!curSort || !(Object.values(SortPostsOrder) as string[]).includes(curSort.toLowerCase()))
 			curSort = "default";
 		const curSortTime = query.get("t");
 		const curSortStr = `Sort - ${curSort}${curSortTime ? `/${curSortTime}` : ""}`;
