@@ -59,6 +59,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 		this.addEventListener("wheel", scrollChecker, { passive: true });
 		this.addEventListener("touchmove", scrollChecker, { passive: true });
 		(new ResizeObserver(this.onResize.bind(this))).observe(this);
+		this.addEventListener("click", this.onBackAreaClick.bind(this));
 
 		// find first FeedItem, once it has been added
 		const observer = new MutationObserver((mutationsList: MutationRecord[], observer) => {
@@ -425,6 +426,17 @@ export default class Ph_UniversalFeed extends HTMLElement {
 		const scrollTopDiff = this.currentlyVisibleItem.getBoundingClientRect().top - this.currentlyVisibleItemScrollTop;
 		document.scrollingElement.scrollBy(0, scrollTopDiff);
 		this.currentlyVisibleItemScrollTop = this.currentlyVisibleItem.getBoundingClientRect().top;
+	}
+
+	onBackAreaClick(e: MouseEvent) {
+		if (e.currentTarget !== e.target || !ViewsStack.hasPreviousLoaded())
+			return;
+		const style = getComputedStyle(this);
+		const paddingLeft = parseInt(style.paddingLeft);
+		const paddingRight = parseInt(style.paddingRight);
+		if (e.clientX + 25 > paddingLeft && e.clientX - 25 < window.innerWidth - paddingRight)
+			return;
+		history.back();
 	}
 }
 
