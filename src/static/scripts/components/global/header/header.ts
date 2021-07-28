@@ -18,6 +18,8 @@ export default class Ph_Header extends HTMLElement {
 	userDropDown: Ph_UserDropDown;
 	headerHideVisualizer = $class("headerHideVisualizer");
 	headerShowVisualizer = $class("headerShowVisualizer");
+	headerPinnedBeginAnimations = $class("headerPinnedBeginAnimation");
+	headerPinnedEndAnimations = $class("headerPinnedEndAnimation");
 	hideTimeout = null;
 	settings: Ph_PhotonSettings;
 	feedSpecificElements: HTMLElement;
@@ -57,12 +59,16 @@ export default class Ph_Header extends HTMLElement {
 			<div class="expander absolute w100">
 				<svg viewBox="0 0 1400 200" preserveAspectRatio="none">
 					<path d="M 0 0 v 100 h 500 c 100 0, 100 50, 200 50 s 100 -50, 200 -50 h500 v -100 z" class="filled" fill="var(--bg-color)" vector-effect="non-scaling-stroke">
-						<animate class="headerHideVisualizer" attributeName="d" dur="0.2s" fill="freeze" from="M 0 0 v 100 h 0 c 200 50, 600 50, 700 50 s 500 0, 700 -50 h 0 v -100 z" to="M 0 0 v 100 h 500 c 100 0, 100 50, 200 50 s 100 -50, 200 -50 h500 v -100 z" begin="indefinite"></animate>
+						<animate class="headerHideVisualizer" attributeName="d" dur="0.2s" fill="freeze" from="M 0 0 v 100 h 0 c 200 50, 600 50, 700 50 s 500 0, 700 -50 h 0 v -100 z" to="M 0 0 v 100 h 500 c 100 0, 100 50, 200 50 s 100 -50, 200 -50 h 500 v -100 z" begin="indefinite"></animate>
 						<animate class="headerShowVisualizer" attributeName="d" dur="0.2s" fill="freeze" from="M 0 0 v 100 h 500 c 100 0, 100 50, 200 50 s 100 -50, 200 -50 h500 v -100 z" to="M 0 0 v 100 h 0 c 200 50, 600 50, 700 50 s 500 0, 700 -50 h 0 v -100 z" begin="indefinite"></animate>
+						<animate class="headerPinnedBeginAnimation" attributeName="d" dur="0.2s" fill="freeze" from="M 0 0 v 100 h 0 c 200 50, 600 50, 700 50 s 500 0, 700 -50 h 0 v -100 z" to="M 0 0 v 100 h 500 c 100 0, 100 0, 200 0 s 100 0, 200 0 h 500 v -100 z" begin="indefinite"></animate>
+						<animate class="headerPinnedEndAnimation" attributeName="d" dur="0.2s" fill="freeze" from="M 0 0 v 100 h 500 c 100 0, 100 0, 200 0 s 100 0, 200 0 h 500 v -100 z" to="M 0 0 v 100 h 0 c 200 50, 600 50, 700 50 s 500 0, 700 -50 h 0 v -100 z" begin="indefinite"></animate>
 					</path>
 					<path d="M 0 100 h 500 c 100 0, 100 50, 200 50 s 100 -50, 200 -50 h 500" class="stroked" fill="none" stroke="#eeeeee" stroke-width="5" vector-effect="non-scaling-stroke">
 						<animate class="headerHideVisualizer" attributeName="d" dur="0.2s" fill="freeze" from="M 0 100 h 0 c 200 50, 600 50, 700 50 s 500 0, 700 -50 h 0" to="M 0 100 h 500 c 100 0, 100 50, 200 50 s 100 -50, 200 -50 h 500" begin="indefinite"></animate>
 						<animate class="headerShowVisualizer" attributeName="d" dur="0.2s" fill="freeze" from="M 0 100 h 500 c 100 0, 100 50, 200 50 s 100 -50, 200 -50 h 500" to="M 0 100 h 0 c 200 50, 600 50, 700 50 s 500 0, 700 -50 h 0" begin="indefinite"></animate>
+						<animate class="headerPinnedBeginAnimation" attributeName="d" dur="0.2s" fill="freeze" from="M 0 100 h 0 c 200 50, 600 50, 700 50 s 500 0, 700 -50 h 0" to="M 0 100 h 500 c 100 0, 100 0, 200 0 s 100 0, 200 0 h 500" begin="indefinite"></animate>
+						<animate class="headerPinnedEndAnimation" attributeName="d" dur="0.2s" fill="freeze" from="M 0 100 h 500 c 100 0, 100 0, 200 0 s 100 0, 200 0 h 500" to="M 0 100 h 0 c 200 50, 600 50, 700 50 s 500 0, 700 -50 h 0" begin="indefinite"></animate>
 					</path>
 				</svg>
 			</div>
@@ -94,18 +100,12 @@ export default class Ph_Header extends HTMLElement {
 
 		this.$class("collapser")[0].addEventListener("click", e =>
 			this.$class("actions")[0].classList.toggle("collapsed"));
-		this.$class("pinToggleButton")[0].addEventListener("click", e => {
-			this.isPinned = !this.isPinned;
-			this.classList.toggle("pinned", this.isPinned);
-			(e.currentTarget as HTMLElement).classList.toggle("pinned", this.isPinned);
-			localStorage["isHeaderPinned"] = this.isPinned.toString();
-		});
+		const pinToggleButton = this.$class("pinToggleButton")[0] as HTMLButtonElement;
+		pinToggleButton.addEventListener("click", this.onPinnedToggle.bind(this));
 
 		if (localStorage["isHeaderPinned"] === "true") {
-			this.isPinned = true;
-			this.classList.toggle("pinned", this.isPinned);
-			this.$class("pinToggleButton")[0].classList.toggle("pinned", this.isPinned);
 			this.headerMouseEnter();
+			pinToggleButton.click();
 		}
 		// if the user visits the page for the first time, expand the header for a brief amount of time.
 		// Should help new users understand this feature
@@ -156,7 +156,7 @@ export default class Ph_Header extends HTMLElement {
 	}
 
 	hide() {
-		if (!this.isExpanded)
+		if (!this.isExpanded || this.isPinned)
 			return;
 
 		for (const anim of this.headerHideVisualizer) {
@@ -179,6 +179,21 @@ export default class Ph_Header extends HTMLElement {
 
 	private onWindowResize() {
 		this.style.setProperty("--window-aspect-ratio", `${window.innerWidth / window.innerHeight}`)
+	}
+
+	private onPinnedToggle(e: MouseEvent) {
+		this.isPinned = !this.isPinned;
+		this.classList.toggle("pinned", this.isPinned);
+		(e.currentTarget as HTMLElement).classList.toggle("pinned", this.isPinned);
+		localStorage["isHeaderPinned"] = this.isPinned.toString();
+		if (this.isPinned) {
+			for (const anim of this.headerPinnedBeginAnimations)
+				(anim as SVGAnimateElement).beginElement();
+		}
+		else {
+			for (const anim of this.headerPinnedEndAnimations)
+				(anim as SVGAnimateElement).beginElement();
+		}
 	}
 }
 
