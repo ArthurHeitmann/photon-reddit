@@ -197,7 +197,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 		mainPart.append(...[
 			makeElement("div", { "class": "header flex" }, [
 				commentData.data["stickied"] && makeElement("img", { "class": "pinned", src: "/img/pin.svg", alt: "pinned", draggable: "false" }),
-				makeElement("a", { href: `/user${commentData.data["author"]}`, "class": `user${userAdditionClasses}` }, [
+				makeElement("a", { href: `/user/${commentData.data["author"]}`, "class": `user${userAdditionClasses}` }, [
 					makeElement("span", null, `u/${commentData.data["author"]}`),
 					commentData.data["author_cakeday"] && makeElement("img", { src: "/img/cake.svg", "class": "cakeDay", alt: "cake day" })
 				]),
