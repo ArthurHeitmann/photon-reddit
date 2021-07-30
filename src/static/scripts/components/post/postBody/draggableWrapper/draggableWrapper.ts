@@ -3,6 +3,8 @@
  */
 import TouchGestureListener from "../../../../utils/touchGestureListener.js";
 
+const zoomInPercent = 0.15;
+const zoomOutPercent = -(1- 1 / 1.15);
 export default class Ph_DraggableWrapper extends HTMLElement {
 	prevX = 0;
 	prevY = 0;
@@ -84,7 +86,7 @@ export default class Ph_DraggableWrapper extends HTMLElement {
 	}
 
 	onWheelZoom(e: WheelEvent) {
-		this.addZoom(e.deltaY > 0 ? -.15 : .15);
+		this.addZoom(e.deltaY > 0 ? zoomOutPercent : zoomInPercent);
 		e.preventDefault();
 	}
 
