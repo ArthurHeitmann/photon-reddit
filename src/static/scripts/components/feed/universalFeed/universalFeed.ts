@@ -415,7 +415,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			this.currentlyVisibleItemScrollTop = currentVisibility.topOffset;
 			return;
 		}
-		this.currentlyVisibleItem = <Ph_FeedItem> Array.from(this.children).find(e => getItemVisibility(e).viewportHeight > 0);
+		this.currentlyVisibleItem = <Ph_FeedItem> Array.from(this.children).find(e => getItemVisibility(e).viewportHeight > 0) ?? this.currentlyVisibleItem;
 		this.currentlyVisibleItemScrollTop = getItemVisibility(this.currentlyVisibleItem).topOffset;
 	}
 
