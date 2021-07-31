@@ -75,14 +75,6 @@ const tutorialDescription: TutorialDescription = {
 			],
 		},
 		{
-			highlightElementSelector: ".loginButton",
-			updateHighlightForMs: 300,
-			displayText: [
-				"Login through reddit.com",
-			],
-			showIf: () => !$css(".loginButton")[0].hidden
-		},
-		{
 			highlightElementSelector: "ph-header ph-search",
 			getAdditionalHeight: () => $css("ph-header ph-search .searchDropdown")[0].offsetHeight + 7,
 			updateHighlightForMs: 300,
@@ -113,14 +105,29 @@ const tutorialDescription: TutorialDescription = {
 			],
 		},
 		{
-			highlightElementSelector: "ph-photon-settings",
+			highlightElementSelector: "ph-photon-settings > div",
 			displayText: [ "You can explore the settings later in detail" ],
-			beginAction: () => $css("ph-header .showSettingsButton")[0].click(),
+			beginAction() {
+				const header = $class("header")[0] as Ph_Header;
+				header.isPinned = false;
+				header.hide();
+				$css("ph-header .showSettingsButton")[0].click();
+			},
 			endAction: () => {
 				$css("ph-photon-settings .closeButton")[0].click();
 				const header = $class("header")[0] as Ph_Header;
+				header.isPinned = true;
 				header.expand();
 			},
+			updateHighlightForMs: 300,
+		},
+		{
+			highlightElementSelector: ".loginButton",
+			updateHighlightForMs: 300,
+			displayText: [
+				"Login through reddit.com",
+			],
+			showIf: () => !$css(".loginButton")[0].hidden
 		},
 		{
 			highlightElementSelector: "ph-header > .actions > .feedSpecific",
@@ -143,10 +150,16 @@ const tutorialDescription: TutorialDescription = {
 				"Here you can find the description, rules, moderators and more",
 				"Subscribe to the subreddit, change your flair and more"
 			],
-			beginAction: () => $css("ph-header .showInfo")[0].click(),
+			beginAction: () => {
+				const header = $class("header")[0] as Ph_Header;
+				header.isPinned = false;
+				header.hide();
+				$css("ph-header .showInfo")[0].click();
+			},
 			endAction: () => {
 				$css("ph-header .showInfo")[0].click();
 				const header = $class("header")[0] as Ph_Header;
+				header.isPinned = true;
 				header.expand();
 			},
 		},
@@ -301,7 +314,7 @@ export default class Ph_Tutorial extends HTMLElement {
 				const bounds = highlightTarget.getBoundingClientRect();
 				this.setHighlightBounds(
 					Math.max(0, bounds.top - 7),
-					Math.max(0, window.innerWidth - bounds.right - 7),
+					Math.max(0, window.innerWidth - bounds.right - 11),
 					Math.max(0, window.innerHeight - bounds.bottom - 7) - additionHeight,
 					Math.max(0, bounds.left - 7),
 				);

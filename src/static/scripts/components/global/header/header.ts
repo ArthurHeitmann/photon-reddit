@@ -51,8 +51,8 @@ export default class Ph_Header extends HTMLElement {
 				</div>
 				<div class="mainItems">
 					<a href="/" class="home" draggable="false"><img src="/img/logo.svg" alt="home" draggable="false"></a>
-					<button class="loginButton" hidden>Login</button>
 					<button class="showSettingsButton transparentButtonAlt"><img src="/img/settings1.svg" alt="show settings" draggable="false"></button>
+					<button class="loginButton" hidden>Login</button>
 				</div>
 				<div class="feedSpecific"></div>
 			</div>
