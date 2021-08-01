@@ -122,6 +122,9 @@ export default class Ph_Message extends Ph_Readable {
 					replyForm.insertAdjacentElement("beforebegin", message);
 					if (newMessageData.data["author"] !== thisUser.name)
 						this.lastMessageFromOther = message;
+					replyForm.textField.value = "";
+					replyForm.onTextInput();
+					new Ph_Toast(Level.success, "", { timeout: 3000 });
 				});
 			}
 		}
