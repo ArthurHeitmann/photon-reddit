@@ -2,9 +2,8 @@ import { blockUser, readAllMessages, setMessageReadStatus } from "../../../../ap
 import { pushLinkToHistoryComb } from "../../../../historyState/historyStateManager.js";
 import { FullName } from "../../../../types/votable.js";
 import { thisUser } from "../../../../utils/globals.js";
-import { $class, $css } from "../../../../utils/htmlStatics.js";
+import { $css } from "../../../../utils/htmlStatics.js";
 import { hasParams } from "../../../../utils/utils.js";
-import Ph_UserDropDown from "../../../global/userDropDown/userDropDown.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../../misc/dropDown/dropDown.js";
 import { DropDownActionData, DropDownEntryParam } from "../../../misc/dropDown/dropDownEntry/dropDownEntry.js";
 import Ph_Toast, { Level } from "../../../misc/toast/toast.js";
@@ -67,11 +66,7 @@ export default abstract class Ph_Readable extends Ph_FeedItem implements FullNam
 			console.error(r);
 			return;
 		}
-		if (this.isRead)
-			thisUser.inboxUnread++;
-		else
-			thisUser.inboxUnread--;
-		($class("userDropDown")[0] as Ph_UserDropDown).setUnreadCount(thisUser.inboxUnread);
+		thisUser.setInboxIdUnreadState(this.fullName, this.isRead)
 		$css(`.readable[data-id="${this.getAttribute("data-id")}"]`)
 			.forEach((readable: Ph_Readable) => readable.setIsRead(!readable.isRead));
 	}
@@ -127,8 +122,7 @@ export default abstract class Ph_Readable extends Ph_FeedItem implements FullNam
 		for (const message of $css(".readable.unread")) {
 			(message as Ph_Readable).setIsRead(true);
 		}
-		thisUser.inboxUnread = 0;
-		($class("userDropDown")[0] as Ph_UserDropDown).setUnreadCount(thisUser.inboxUnread);
+		thisUser.setAllInboxIdsAsRead();
 	}
 
 	async blockUser() {

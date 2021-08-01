@@ -10,7 +10,9 @@
  */
 
 import { getMyMultis, getMySubs, redditApiRequest } from "../api/redditApi.js";
+import Ph_UserDropDown from "../components/global/userDropDown/userDropDown.js";
 import { RedditApiType } from "../types/misc.js";
+import { $class } from "./htmlStatics.js";
 import { nameOf, stringSortComparer } from "./utils.js";
 
 export let isLoggedIn: boolean = false;
@@ -38,7 +40,7 @@ export class User {
 	subredditsData: RedditApiType[] = [];
 	multireddits: MultiReddit[] = [];
 	multiredditsData: RedditApiType[] = [];
-	inboxUnread: number = 0;
+	private inboxUnreadIds: Set<string> = new Set();
 	private static refreshEveryNMs = 1000 * 60 * 5;			// 5m
 
 	/** fetch data from reddit and set properties */
@@ -69,7 +71,6 @@ export class User {
 		if ("error" in userData)
 			return false;
 		thisUser.name = userData["name"] || "";
-		thisUser.inboxUnread = userData["inbox_count"] || 0;
 		return true;
 	}
 
@@ -111,6 +112,29 @@ export class User {
 			lastUpdatedMsUTC: Date.now(),
 			data: this.multiredditsData
 		});
+	}
+
+	setInboxIdsUnreadState(inboxItemIds: string[], isUnread: boolean): void {
+		for (const id of inboxItemIds)
+			this.setInboxIdUnreadState(id, isUnread);
+	}
+
+	setInboxIdUnreadState(inboxItemId: string, isUnread: boolean): void {
+		if (isUnread)
+			this.inboxUnreadIds.add(inboxItemId);
+		else
+			this.inboxUnreadIds.delete(inboxItemId);
+
+		($class("userDropDown")[0] as Ph_UserDropDown).setUnreadCount(this.getInboxUnreadCount());
+	}
+
+	setAllInboxIdsAsRead() {
+		this.inboxUnreadIds.clear();
+		($class("userDropDown")[0] as Ph_UserDropDown).setUnreadCount(0);
+	}
+
+	getInboxUnreadCount(): number {
+		return this.inboxUnreadIds.size;
 	}
 }
 

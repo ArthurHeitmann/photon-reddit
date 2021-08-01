@@ -1,12 +1,11 @@
 import { redditApiRequest, setMessageReadStatus } from "../../../api/redditApi.js";
 import { RedditApiType } from "../../../types/misc.js";
 import { ensurePageLoaded, isLoggedIn, thisUser } from "../../../utils/globals.js";
-import { $class, $css, escADQ, escHTML } from "../../../utils/htmlStatics.js";
+import { $css, escADQ, escHTML } from "../../../utils/htmlStatics.js";
 import { linksToSpa } from "../../../utils/htmlStuff.js";
 import { hasParams, numberToShort } from "../../../utils/utils.js";
 import Ph_Readable from "../../feed/feedItem/readable/readable.js";
 import { globalSettings, PhotonSettings } from "../../global/photonSettings/photonSettings.js";
-import Ph_UserDropDown from "../../global/userDropDown/userDropDown.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
 
 export default class Ph_MessageNotification extends HTMLElement {
@@ -68,8 +67,8 @@ export default class Ph_MessageNotification extends HTMLElement {
 			console.error(r);
 			return;
 		}
-		thisUser.inboxUnread -= messageFullNames.length;
-		($class("userDropDown")[0] as Ph_UserDropDown).setUnreadCount(thisUser.inboxUnread);
+
+		thisUser.setInboxIdsUnreadState(messageFullNames, false);
 		for (const msg of messageFullNames) {
 			$css(`.readable[data-id="${msg}"]`)
 				.forEach((readable: Ph_Readable) => readable.setIsRead(true));
@@ -82,11 +81,12 @@ export default class Ph_MessageNotification extends HTMLElement {
 			[], true) as RedditApiType;
 		const unreadMessages = unreadMessagesData.data.children;
 
+		thisUser.setInboxIdsUnreadState(unreadMessages.map(msg => msg.data.name), true);
+
 		if (unreadMessages.length < Ph_MessageNotification.previousUnreadMessages)
 			Ph_MessageNotification.previousUnreadMessages = unreadMessages.length;
 		if (unreadMessages.length === Ph_MessageNotification.previousUnreadMessages)
 			return;
-
 
 		const newMessages = Array.from(unreadMessages);
 		newMessages.splice(unreadMessages.length - Ph_MessageNotification.previousUnreadMessages);

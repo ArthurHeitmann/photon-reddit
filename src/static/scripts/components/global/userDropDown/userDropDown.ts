@@ -45,7 +45,6 @@ export default class Ph_UserDropDown extends HTMLElement {
 				thisUser.subredditsData,
 				"Subscribed"
 			));
-			this.setUnreadCount(thisUser.inboxUnread);
 		});
 	}
 
@@ -133,7 +132,6 @@ export default class Ph_UserDropDown extends HTMLElement {
 
 	setUnreadCount(unreadCount: number) {
 		this.unreadBadge.innerText = numberToShort(unreadCount);
-		thisUser.inboxUnread = unreadCount;
 		this.unreadBadge.classList.toggle("hide", unreadCount === 0)
 	}
 
