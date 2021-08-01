@@ -389,8 +389,10 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	toggleFullscreen() {
 		if (document.fullscreenElement)
 			document.exitFullscreen();
-		else
+		else {
+			Ph_ViewState.getViewOf(this).saveScroll(this, "top");
 			this.requestFullscreen();
+		}
 	}
 
 	onFullscreenChange() {
@@ -414,6 +416,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		this.draggableWrapper.reset();
 		this.fullscreenImage.showImage("fullscreen")
 		this.classList.remove("isInFullscreen");
+		Ph_ViewState.getViewOf(this).loadScroll();
 	}
 
 	cleanup() {
