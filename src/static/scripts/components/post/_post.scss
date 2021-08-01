@@ -155,7 +155,7 @@
 	}
 
 	.header {
-		margin: vars.$post-padding 0;
+		margin: vars.$post-padding 0 1rem 0;
 
 		> .top {
 			margin-bottom: math.div(vars.$post-padding, 4);
@@ -306,7 +306,7 @@
 		> div {
 			position: absolute;
 			color: vars.$background;
-			transform: translateY(-.1rem);
+			transform: translateY(-.2rem);
 			font-weight: 700;
 
 			&.medium {

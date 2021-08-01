@@ -50,7 +50,7 @@ const tutorialDescription: TutorialDescription = {
 		{
 			highlightElementSelector: "ph-header .actions",
 			displayText: [
-				"The header is for special actions (searching, viewing your subreddits, sorting, etc.)",
+				"The navigation bar is for special actions (searching, viewing your subreddits, sorting, etc.)",
 				"There are 3 sections...",
 			],
 			updateHighlightForMs: 300,
@@ -64,7 +64,7 @@ const tutorialDescription: TutorialDescription = {
 		{
 			highlightElementSelector: "ph-header > .actions > .leftItems",
 			displayText: [
-				"1. Change header behaviour",
+				"1. Change navigation bar behaviour",
 				"(pin it, minimize it)"
 			],
 		},
