@@ -116,10 +116,7 @@ export default class Ph_PostBody extends HTMLElement {
 	}
 
 	private makeTextBody(postData: RedditApiType) {
-		const text = new Ph_PostText(postData.data);
-		this.appendChild(text);
-		if (text.innerText)
-			this.classList.add("padded");
+		this.append(new Ph_PostText(postData.data));
 	}
 
 	private makeTweetBody(postData: RedditApiType) {

@@ -16,6 +16,10 @@
 		transition: padding-bottom .25s ease;
 		--max-height: 10rem;
 
+		> :not(.expandButton) {
+			padding: 0 2rem 1rem 2rem;
+		}
+
 		> div {
 			max-height: var(--max-height);
 			overflow: hidden;
