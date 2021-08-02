@@ -211,6 +211,6 @@ blockquote {
 }
 
 ::selection {
-	background: vars.$primary-contrast;
+	background: rgba(vars.$primary-var, 0.8);
 	color: vars.$text-color;
 }

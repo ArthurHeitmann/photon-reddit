@@ -96,7 +96,7 @@ a {
 	border-radius: 50%;
 	transition: background-color .25s ease;
 
-	&:hover, &:focus-visible {
+	&:where(:hover, :focus-visible) {
 		background-color: vars.$transparent-btn-hover;
 	}
 
@@ -124,7 +124,7 @@ a {
 		transition: background-color .25s ease;
 	}
 
-	&:hover, &:focus-visible {
+	&:where(:hover, :focus-visible) {
 		&::before {
 			background-color: vars.$transparent-btn-hover;
 		}
