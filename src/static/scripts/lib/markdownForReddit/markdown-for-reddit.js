@@ -1,4 +1,4 @@
-// src/parsers/P_Parser.js
+// https://github.com/ArthurHeitmann/markdownForReddit
 var AfterParseResult;
 (function(AfterParseResult2) {
   AfterParseResult2[AfterParseResult2["ended"] = 0] = "ended";
@@ -234,7 +234,7 @@ var P_Text = class extends P_Parser {
       text = text.replace(P_Text.escapableCharsRegex, "$1");
       text = escapeHtml(text);
       text = text.replace(/ {2,}\n/g, "<br/>\n");
-      text = text.replace(/(?<!<br\/>)\s*\n(?=.+)/g, " ");
+      text = text.replace(/((?!<br\/>)(?:.{5}|^.{0,4}))\s*\n(?=.+)/g, "$1 ");
     } else
       text = escapeHtml(text);
     return text;
@@ -533,7 +533,7 @@ var P_Paragraph = class extends P_Parser {
     }
   }
   toHtmlString() {
-    return `<p>${super.toHtmlString().replace(/^\s*|\s*(?<!\S )$/g, "")}</p>`;
+    return `<p>${super.toHtmlString().replace(/^\s*|\s*$/g, "")}</p>`;
   }
 };
 
@@ -781,7 +781,7 @@ var P_Table = class extends P_Parser {
   canStart() {
     const headerPipes = P_Table.countRowPipes(this.cursor.currentLine);
     const dividerPipes = P_Table.countRowPipes(this.cursor.nextLine);
-    return headerPipes >= 2 && dividerPipes >= 2 && (/^\|(.*?(?<!\\)\|+) *\n/.test(this.cursor.currentLine) && /^\|([:\- ]*(?<!\\)\|+)+ *(\n|$)/.test(this.cursor.nextLine));
+    return headerPipes >= 2 && dividerPipes >= 2 && (/^\|((.*[^\\]|)\|+) *\n/.test(this.cursor.currentLine) && /^\|([:\- ]*\|+)+ *(\n|$)/.test(this.cursor.nextLine));
   }
   parseChar() {
     if (this.parsingState === TableParsingState.header) {
@@ -905,7 +905,7 @@ var P_Table = class extends P_Parser {
       if (this.cursor.remainingText[1] === "|" && this.cursor.currentChar !== "\\") {
         this.dataRowParsingState = DataRowParsingState.pipe;
         onColumnCompleted();
-      } else if (/^. *(?<!\\)\|/.test(this.cursor.remainingText))
+      } else if (/^(. +|[^\\])\|/.test(this.cursor.remainingText))
         this.dataRowParsingState = DataRowParsingState.end;
     } else if (this.dataRowParsingState === DataRowParsingState.end) {
       if (this.cursor.remainingText[1] === "|") {
@@ -922,7 +922,7 @@ var P_Table = class extends P_Parser {
     return AfterParseResult.consumed;
   }
   static countRowPipes(row) {
-    return row?.match(/(?<!\\)\|/g)?.length ?? 0;
+    return row?.match(/(^|[^\\])\|/g)?.length ?? 0;
   }
 };
 
@@ -1234,7 +1234,7 @@ var ParsingCursor = class {
 
 // src/main.ts
 function parseMarkdown(markdown) {
-  markdown = markdown.replace(/^(\s*\n)*|(\s*\n)*$|(?<=\n)\s*$/g, "");
+  markdown = markdown.replace(/^(\s*\n)*|(\s*\n)*$/g, "").replace(/\n\s*$/g, "\n");
   const cursor = new ParsingCursor(markdown);
   const rootParser = new P_Root(cursor);
   let parseResult;
