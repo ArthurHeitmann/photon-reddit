@@ -207,11 +207,11 @@ export async function sleep(ms: number): Promise<void> {
 }
 
 export function waitForFullScreenExit(): Promise<boolean> {
-	return new Promise<boolean>(resolve => {
+	return new Promise<boolean>((resolve, reject) => {
 		if (!document.fullscreenElement) {
 			return resolve(false);
 		}
-		window.addEventListener("fullscreenchange", () => resolve(true), { once: true });
+		attachOnFullscreenChangeListener(window, () => resolve(true), true);
 	});
 }
 
@@ -385,4 +385,11 @@ export function isParamRedditTruthy(param: string, fallback: boolean) {
 		return false;
 	else
 		return fallback;
+}
+
+export function attachOnFullscreenChangeListener(target: Element | Window, func: (...args) => void, once = false) {
+	if ("onfullscreenchange" in document)
+		window.addEventListener("fullscreenchange", func, { once });
+	else if ("onwebkitfullscreenchange" in document)
+		window.addEventListener("onwebkitfullscreenchange", func, { once });
 }

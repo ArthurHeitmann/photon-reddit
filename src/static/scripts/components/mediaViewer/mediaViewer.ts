@@ -3,7 +3,7 @@ import { RedditApiData, RedditApiType } from "../../types/misc.js";
 import { mediaHostsWhiteList } from "../../utils/consts.js";
 import { nonDraggableImage } from "../../utils/htmlStatics.js";
 import { linksToSpa } from "../../utils/htmlStuff.js";
-import { hasHTML, hasParams } from "../../utils/utils.js";
+import { attachOnFullscreenChangeListener, hasHTML, hasParams } from "../../utils/utils.js";
 import { globalSettings } from "../global/photonSettings/photonSettings.js";
 import Ph_ControlsBar from "../misc/controlsBar/controlsBar.js";
 import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
@@ -306,7 +306,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		this.controls.setupSlots(controlSlots);
 
 		this.setupKeyListeners();
-		this.addEventListener("fullscreenchange", this.onFullscreenChange.bind(this));
+		attachOnFullscreenChangeListener(this, this.onFullscreenChange.bind(this));
 		this.draggableWrapper.addEventListener("dblclick", this.toggleFullscreen.bind(this));
 		for (const media of this.mediaElements) {
 			media.element.addEventListener("ph-controls-changed",
@@ -387,11 +387,18 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	}
 
 	toggleFullscreen() {
-		if (document.fullscreenElement)
-			document.exitFullscreen();
+		if (document.fullscreenElement) {
+			if (document.exitFullscreen)
+				document.exitFullscreen();
+			else if (document["webkitExitFullscreen"])
+				document["webkitExitFullscreen"]();
+		}
 		else {
 			Ph_ViewState.getViewOf(this).saveScroll(this, "top");
-			this.requestFullscreen();
+			if (this.requestFullscreen)
+				this.requestFullscreen();
+			else if (this["webkitRequestFullscreen"])
+				this["webkitRequestFullscreen"]();
 		}
 	}
 
