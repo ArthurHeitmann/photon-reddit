@@ -576,7 +576,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		if (this.haveFlairsLoaded)
 			return;
 		this.haveFlairsLoaded = true;
-		const sub = this.permalink.match(/(?<=\/\w+\/)[^/?#]+/)[0];		// /r/sub/top? --> sub
+		const sub = this.permalink.match(/\/\w+\/([^/?#]+)/)[1];		// /r/sub/top? --> sub
 		const flairs: FlairApiData[] = await getSubFlairs("/r/" + sub);
 		const flairSelection: DropDownEntryParam[] = flairs.map(flair => {
 			const flairElem = Ph_Flair.fromFlairApi(flair);

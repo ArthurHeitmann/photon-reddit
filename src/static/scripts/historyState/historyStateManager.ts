@@ -18,7 +18,7 @@ import { Ph_ViewState } from "../components/viewState/viewState.js";
 import Ph_ViewStateLoader from "../components/viewState/viewStateLoader/viewStateLoader.js";
 import Ph_Wiki from "../components/wiki/wiki.js";
 import { $id } from "../utils/htmlStatics.js";
-import { deepClone, extractHash, splitPathQuery } from "../utils/utils.js";
+import { deepClone, extractHash, makeElement, splitPathQuery } from "../utils/utils.js";
 import ViewsStack from "./viewsStack.js";
 
 ViewsStack.setNextIsReplace();
@@ -141,18 +141,24 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 			stateLoader.finishWith(new Ph_PostAndComments(requestData));
 		newTabTitle = `${requestData[0]["data"]["children"][0]["data"]["title"]} - Photon`;
 	}
-	// result is something else
-	else if (requestData["kind"]) {
 		// result is some sort of generic feed
-		if (requestData["kind"] === "Listing") {
-			stateLoader.finishWith(new Ph_UniversalFeed(requestData, path + query));
-			newTabTitle = `${(path.length > 3) ? path.slice(1) : "Home"} - Photon`;
-		}
-		// result is a wiki page
-		else if (requestData["kind"] === "wikipage") {
-			stateLoader.finishWith(new Ph_Wiki(requestData));
-			newTabTitle = `${path.match(/r\/[^/?#]+/i)[0]} Wiki - Photon`;
-		}
+	else if (requestData["kind"] === "Listing") {
+		stateLoader.finishWith(new Ph_UniversalFeed(requestData, path + query));
+		newTabTitle = `${(path.length > 3) ? path.slice(1) : "Home"} - Photon`;
+	}
+	// result is a wiki page
+	else if (requestData["kind"] === "wikipage") {
+		stateLoader.finishWith(new Ph_Wiki(requestData));
+		newTabTitle = `${path.match(/r\/[^/?#]+/i)[0]} Wiki - Photon`;
+	}
+	else if (requestData["message"] && requestData["reason"]) {
+		stateLoader.finishWith(makeElement("div", null, [
+			makeElement("p", null, requestData["message"]),
+			makeElement("p", null, requestData["reason"]),
+		]));
+	}
+	else {
+		stateLoader.error();
 	}
 
 	if (newTabTitle !== null) {
@@ -197,7 +203,7 @@ function handleSpecialPaths(path: string, query: string[][], stateLoader: Ph_Vie
 	// subreddit about page
 	else if (/^\/[^/]+\/[^/?#]+\/about/.test(path)) {
 		stateLoader.finishWith(new Ph_FeedInfoPage(path));
-		const community = path.match(/(?<=^\/[^/]+\/)[^/?#]+/)[0];
+		const community = path.match(/^\/[^/]+\/([^/?#]+)/)[1];
 		ViewsStack.setCurrentStateTitle(`${community} - About`);
 		return true;
 	}

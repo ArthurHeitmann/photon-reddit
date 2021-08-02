@@ -182,7 +182,7 @@ export function stringSortComparer(s1: string, s2): number {
 
 /** extracts the path part from an uri; example: "reddit.com/r/all?query" --> "/r/all" */
 export function extractPath(uri: string):string {
-	const matches = uri.match(/(?<!\/)\/(?!\/)[^?#]*/);
+	const matches = uri.match(/^\/(?!\/)[^?#]*/);
 	return matches && matches[0] || "";
 }
 
@@ -232,8 +232,8 @@ export function hasHTML(elem: Element): boolean {
 }
 
 export function getPostIdFromUrl(url: string): string {
-	const matches = url?.match(/(?<=\/(r|u|user)\/[^/?#]+\/comments\/)[^/#?]+/);
-	return matches ? matches[0] : "";
+	const matches = url?.match(/\/(?:r|u|user)\/[^/?#]+\/comments\/([^/#?]+)/);
+	return matches ? matches[1] : "";
 }
 
 /** Compile time validator that @param name is a property of T */

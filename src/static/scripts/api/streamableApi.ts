@@ -1,7 +1,7 @@
 import { SourceData } from "../components/mediaViewer/videoPlayer/videoWrapper.js";
 
 export async function getStreamableUrl(url: string): Promise<SourceData[]> {
-	const vidId = url.match(/(?<=streamable\.com\/)\w+/)[0];
+	const vidId = url.match(/streamable\.com\/(\w+)/)[1];
 	const r = await fetch(`https://api.streamable.com/videos/${vidId}`);
 	const data = await r.json();
 	return [

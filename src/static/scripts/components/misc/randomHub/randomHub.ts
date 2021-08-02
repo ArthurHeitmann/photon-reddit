@@ -38,7 +38,7 @@ export default class Ph_RandomHub extends HTMLElement {
 		}
 		else if (/^\/r\/[^/?#]+\/random([/#?].*)?$/i.test(url)) {
 			this.randomTarget = RandomTarget.RandomPost;
-			this.subreddit = url.match(/(?<=\/r\/)[^/?#]+/i)[0];		// /r/pics/top?q --> pics
+			this.subreddit = url.match(/\/r\/([^/?#]+)/i)[1];					// /r/pics/top?q --> pics
 			buttonText.innerText = `Random Post on r/${this.subreddit}`;
 			this.otherParams = url.match(/\/r\/[^/]+\/random([/?#].*)?/i)[1] || "";	// as ^^
 		}

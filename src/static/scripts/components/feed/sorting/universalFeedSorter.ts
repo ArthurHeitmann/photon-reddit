@@ -34,8 +34,8 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 		this.className = "feedSorter";
 
 		if (feedType === FeedType.user) {
-			const tmpCurSection = feed.requestUrl.match(/(?<=^\/(u|user)\/[^/?#]+\/)\w+/i);		// /user/username/top --> top
-			const curSection = tmpCurSection && tmpCurSection[0] || "Overview";
+			const tmpCurSection = feed.requestUrl.match(/^\/(?:u|user)\/[^/?#]+\/(\w+)/i);		// /user/username/top --> top
+			const curSection = tmpCurSection && tmpCurSection[1] || "Overview";
 			const userSections = <DropDownEntryParam[]> [
 				{ label: "Overview", value: UserSection.overview, onSelectCallback: this.setUserSection.bind(this) },
 				{ label: "Posts", value: UserSection.posts, onSelectCallback: this.setUserSection.bind(this) },
@@ -56,8 +56,8 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 
 		const query = new URLSearchParams(extractQuery(history.state?.url || ""));
 		const path = extractPath(history.state?.url || "");
-		let tmpCurSort = path.match(/(?<=\/)\w+(?=$|\/$)/);	// /r/all/top --> top
-		let curSort = query.get("sort") || tmpCurSort && tmpCurSort[0] || "";
+		let tmpCurSort = path.match(/\/(\w+)(?=$|\/$)/);	// /r/all/top --> top
+		let curSort = query.get("sort") || tmpCurSort && tmpCurSort[1] || "";
 		if (!curSort || !(Object.values(SortPostsOrder) as string[]).includes(curSort.toLowerCase()))
 			curSort = "default";
 		const curSortTime = query.get("t");
@@ -164,7 +164,7 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 	async setUserSection(data: DropDownActionData) {
 		const section = data.valueChain[0] as UserSection;
 		data.setButtonLabel(getLoadingIcon());
-		const userName = this.feed.requestUrl.match(/(?<=^\/(u|user)\/)[^/?#]+/i)[0];		// /u/user --> user
+		const userName = this.feed.requestUrl.match(/^\/(?:u|user)\/([^/?#]+)/i)[1];		// /u/user --> user
 		const query = extractQuery(this.feed.requestUrl);
 		const isSortable = !NonSortableUserSections.includes(section);
 		this.feed.requestUrl = `/user/${userName}/${section}${isSortable ? query : ""}`;

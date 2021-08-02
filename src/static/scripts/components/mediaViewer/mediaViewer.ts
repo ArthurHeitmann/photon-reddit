@@ -191,7 +191,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	}
 
 	static isUrlImage(url: string): boolean {
-		return Ph_MediaViewer.isUrlOnWhiteList(url) && /(?<!#.*)\.(png|jpg|jpeg|svg|webp)(\?.*)?$/i.test(url)
+		return Ph_MediaViewer.isUrlOnWhiteList(url) && /^[^#]+\.(png|jpg|jpeg|svg|webp)(\?.*)?$/i.test(url);		// ends with img file ending and does not have a "#" before that
 	}
 
 	static isUrlImgur(url: string): boolean {

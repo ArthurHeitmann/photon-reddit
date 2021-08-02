@@ -32,7 +32,7 @@ window.addEventListener("ph-view-change", (e: CustomEvent) => {
 		return;
 	// only track path up to subreddit name
 	const path = extractPath(viewChangeData.viewState.state.url)
-		.replace(/(?<=^\/[^/]+\/[^/]+)\/.*/, "")		// keep up to 2 directories (/r/pics/comments/.... --> /r/pics)
+		.replace(/(^\/[^/]+\/[^/]+)\/.*/, "$1")			// keep up to 2 directories (/r/pics/comments/.... --> /r/pics)
 		.replace(/\/$/,"")								// remove trailing /
 		.replace(/^$/, "/");							// add / when empty
 	if (viewChangeData.newLoad) {

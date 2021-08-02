@@ -79,7 +79,7 @@ export default class Ph_MessageCompose extends HTMLElement {
 			params.push(["to", user]);
 		}
 		else if (/^\/?r\//i.test(this.to)) {
-			const sub = this.to.match(/(?<=r\/).*/i)[0];		// r/sub --> sub
+			const sub = this.to.match(/r\/(.*)/i)[1];		// r/sub --> sub
 			if (!sub) {
 				new Ph_Toast(Level.error, "Missing Subreddit", { timeout: 2500 });
 				return;

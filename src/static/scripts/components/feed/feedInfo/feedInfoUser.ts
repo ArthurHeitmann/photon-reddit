@@ -15,7 +15,7 @@ export default class Ph_FeedInfoUser extends Ph_FeedInfo {
 			feedAbout = await getSubInfo(this.feedUrl);
 			if (feedAbout["error"] || !(feedAbout["kind"] && feedAbout["data"]))
 				throw `Invalid about response ${JSON.stringify(feedAbout)}`;
-			multis = await getUserMultis(this.feedUrl.match(/(?<=(u|user)\/)[^/?#]*/i)[0]);	// /u/username --> username
+			multis = await getUserMultis(this.feedUrl.match(/(?:u|user)\/([^/?#]*)/i)[1]);	// /u/username --> username
 			if (multis["error"])
 				throw `Invalid user multis response ${JSON.stringify(feedAbout)}`;
 		} catch (e) {

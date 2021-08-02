@@ -182,13 +182,13 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 
 		// if the current url is like /r/AskReddit/submit then fill out the subreddit input field
 		if (/^\/r\/\w+\/submit/i.test(history.state.url)) {
-			const subMatches = history.state.url.match(/(?<=^\/r\/)\w+/i);	// /r/sub_reddit --> sub_reddit
-			(this.subInput.$tag("input")[0] as HTMLInputElement).value = `r/${subMatches[0]}`;
-			this.verifyAndLoadCommunity(`r/${subMatches[0]}`);
+			const subMatches = history.state.url.match(/^\/r\/(\w+)/i);	// /r/sub_reddit --> sub_reddit
+			(this.subInput.$tag("input")[0] as HTMLInputElement).value = `r/${subMatches[1]}`;
+			this.verifyAndLoadCommunity(`r/${subMatches[1]}`);
 		}
 		else if (/^\/(u|user)\/\w+\/submit/i.test(history.state.url)) {
-			const userMatches = history.state.url.match(/(?<=^\/(u|user)\/)\w+/i);
-			(this.subInput.$tag("input")[0] as HTMLInputElement).value = `user/${userMatches[0]}`;
+			const userMatches = history.state.url.match(/^\/(?:u|user)\/(\w+)/i);
+			(this.subInput.$tag("input")[0] as HTMLInputElement).value = `user/${userMatches[1]}`;
 			this.subInput.dispatchEvent(new Event("change"));
 			// TODO
 		}
@@ -289,7 +289,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 			new Ph_Toast(Level.error, msg);
 			return;
 		}
-		const path = jqueryArr[redirectIndex + 1][3][0].match(/(?<=reddit\.com).*/)[0];		// https://reddit.com/r/sub/... --> /r/sub/...
+		const path = jqueryArr[redirectIndex + 1][3][0].match(/reddit\.com(.*)/)[1];		// https://reddit.com/r/sub/... --> /r/sub/...
 		pushLinkToHistoryComb(path);
 		this.submitButton.disabled = false;
 	}
@@ -308,7 +308,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 			return;
 		}
 		// user posts can only be submitted to self
-		else if (/^(u|user)\//i.test(community) && community.match(/(?<=^(u|user)\/)\w+/i)[0] !== thisUser.name) {
+		else if (/^(u|user)\//i.test(community) && community.match(/^(?:u|user)\/(\w+)/i)[1] !== thisUser.name) {
 			new Ph_Toast(Level.error, `You can only submit posts on your profile`, {timeout: 3500});
 			return;
 		}

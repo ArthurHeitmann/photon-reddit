@@ -35,7 +35,7 @@ function makeContentData(data): ImgurContent {
 }
 
 export async function getImgurContent(link: string): Promise<ImgurContent> {
-	const id = link.match(/(?<=(https?:\/\/)?imgur\.com\/)\w+/)[0];		// https://imgur.com/<id> --> <id>
+	const id = link.match(/(?:https?:\/\/)?imgur\.com\/(\w+)/)[1];		// https://imgur.com/<id> --> <id>
 	const options: RequestInit = {
 		headers: [
 			["Authorization", `Client-ID ${imgurClientID}`]
@@ -48,7 +48,7 @@ export async function getImgurContent(link: string): Promise<ImgurContent> {
 }
 
 export async function getImgurAlbumContents(link: string): Promise<ImgurContent[]> {
-	const id = link.match(/(?<=(https?:\/\/)?imgur\.com\/(a|album|gallery|t\/[^/?#]+)\/)\w+/)[0];	// example: https://imgur.com/a/<id> --> <id>
+	const id = link.match(/(?:https?:\/\/)?imgur\.com\/(?:a|album|gallery|t\/[^/?#]+)\/(\w+)/)[1];	// example: https://imgur.com/a/<id> --> <id>
 	const options: RequestInit = {
 		headers: [
 			["Authorization", `Client-ID ${imgurClientID}`]

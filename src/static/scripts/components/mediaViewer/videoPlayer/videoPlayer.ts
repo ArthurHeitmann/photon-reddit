@@ -226,7 +226,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				break;
 			case "media2.giphy.com":
 			case "giphy.com":
-				const giphyId = url.match(/(?<=giphy\.com\/\w+\/)\w+/)[0];		// gfycat.com/<id> or gfycat.com/something/<id> --> <id>
+				const giphyId = url.match(/giphy\.com\/\w+\/(\w+)/)[1];		// gfycat.com/<id> or gfycat.com/something/<id> --> <id>
 				const giphyMp4 = `https://i.giphy.com/media/${giphyId}/giphy.mp4`;
 				videoOut.init(new Ph_SimpleVideo([{ src: giphyMp4, type: "video/mp4" }]));
 				break;
