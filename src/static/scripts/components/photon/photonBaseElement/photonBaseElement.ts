@@ -32,3 +32,5 @@ export default class Ph_PhotonBaseElement extends HTMLElement {
 		super.remove()
 	}
 }
+
+customElements.define("ph-base", Ph_PhotonBaseElement);

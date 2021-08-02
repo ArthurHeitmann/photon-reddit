@@ -25,50 +25,55 @@
 
 	&:hover {
 		&.up {
-			> svg {
+			svg {
 				fill: vars.$upvote-hover;
 			}
 		}
 
 		&.down {
-			> svg {
+			svg {
 				fill: vars.$downvote-hover;
 			}
 		}
 	}
 
-	> svg {
+	button {
+		height: 2.5rem;
+		width: 2.5rem;
+	}
+
+	svg {
 		width: 100%;
 		transition: fill .1s ease;
 	}
 
-	> .shadowBtn {
+	.shadowBtn {
 		position: absolute;
 		transform-origin: center;
 		opacity: .75;
 	}
 
 	&.voted {
-		> .shadowBtn {
+		.shadowBtn {
 			position: absolute;
 			animation: vote 0.5s linear forwards;
 		}
 
 		&.up {
-			> svg {
+			svg {
 				fill: vars.$upvote-filled;
 			}
 		}
 
 		&.down {
-			> svg {
+			svg {
 				fill: vars.$downvote-filled;
 			}
 		}
 	}
 
 	&.down {
-		> svg {
+		svg {
 			transform: rotate(180deg);
 		}
 	}

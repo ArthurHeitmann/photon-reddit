@@ -1,6 +1,7 @@
 import { escHTML } from "../../../utils/htmlStatics.js";
-import Ph_BetterButton from "../../global/betterElements/betterButton.js";
+import { makeElement } from "../../../utils/utils.js";
 import Ph_Toast, { Level } from "../../misc/toast/toast.js";
+import Ph_PhotonBaseElement from "../../photon/photonBaseElement/photonBaseElement.js";
 import Ph_FeedInfo, { FeedType } from "./feedInfo.js";
 import Ph_FeedInfoMulti from "./feedInfoMulti.js";
 import Ph_FeedInfoSubreddit from "./feedInfoSubreddit.js";
@@ -11,16 +12,18 @@ export default class FeedInfoFactory {
 	static loadedInfos: { [feedUrl: string]: { feedInfo: Ph_FeedInfo, references: number } } = {};
 
 	/** Returns a button element that will open/close a feed info; preferred way for creating a feed info */
-	static getInfoButton(feedType: FeedType, feedUrl: string): HTMLButtonElement {
-		const button = new Ph_BetterButton();
-		button.className = "showInfo transparentButtonAlt";
-		button.innerHTML = `<img src="/img/info.svg" draggable="false" alt="info">`;
+	static getInfoButton(feedType: FeedType, feedUrl: string): HTMLElement {
+		const button = new Ph_PhotonBaseElement();
+		button.className = "showInfo";
+		button.append(makeElement("button", { "class": "transparentButtonAlt" }, [
+			makeElement("img", { src: "/img/info.svg", draggable: "false", alt: "info" })
+		]));
 		button.setAttribute("data-feed-url", feedUrl);
 		button.setAttribute("data-feed-type", FeedType[feedType]);
 
 		const info = FeedInfoFactory.getOrMake(feedUrl, feedType);
 
-		button.addEventListener("click", info.feedInfo.toggle.bind(info.feedInfo));
+		button.children[0].addEventListener("click", info.feedInfo.toggle.bind(info.feedInfo));
 
 		button.addEventListener("ph-added", () => FeedInfoFactory.onButtonAddedOrRemoved(button, true));
 		button.addEventListener("ph-removed", () => FeedInfoFactory.onButtonAddedOrRemoved(button, false));
@@ -54,7 +57,7 @@ export default class FeedInfoFactory {
 	}
 
 	/** Gets called whenever the info button gets added or removed from the DOM */
-	private static onButtonAddedOrRemoved(button: HTMLButtonElement, wasAdded: boolean) {
+	private static onButtonAddedOrRemoved(button: HTMLElement, wasAdded: boolean) {
 		const feedUrl: string = button.getAttribute("data-feed-url");
 		const feedType: FeedType = FeedType[button.getAttribute("data-feed-type")];
 		const feedInfo = FeedInfoFactory.getOrMake(feedUrl, feedType);

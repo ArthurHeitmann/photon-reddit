@@ -3,7 +3,7 @@ import { hasParams } from "../../../../utils/utils.js";
 import Ph_DropDown, { ButtonLabel } from "../dropDown.js";
 import Ph_DropDownArea from "../dropDownArea/dropDownArea.js";
 
-export default class Ph_DropDownEntry extends HTMLButtonElement {
+export default class Ph_DropDownEntry extends HTMLElement {
 	/** Each drop down entry has value. With nested drop downs this is includes the values of all preview drop downs */
 	valueChain: any[];
 	nextDropDown: Ph_DropDownArea = null;
@@ -140,4 +140,4 @@ export interface DropDownActionData {
 	source: Ph_DropDownEntry
 }
 
-customElements.define("ph-drop-down-entry", Ph_DropDownEntry, { extends: "button" });
+customElements.define("ph-drop-down-entry", Ph_DropDownEntry);

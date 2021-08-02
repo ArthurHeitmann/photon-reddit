@@ -268,12 +268,14 @@
 }
 
 .showInfo {
-	--dim: 2rem;
-	height: 1.25rem;
 	display: block;
 
-	> img {
+	&, & > button, & > button > img {
 		height: 1.25rem;
+	}
+
+	> button {
+		--dim: 2rem;
 	}
 }
 

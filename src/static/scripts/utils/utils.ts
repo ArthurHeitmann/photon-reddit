@@ -247,7 +247,7 @@ export const nameOf = <T>(name: keyof T) => name;
  * @param inner if of type array --> children of this element; else innerText (unless @param useInnerHTML is true)
  * @param useInnerHTML (default false) if true --> string for @param inner will be used for innerHTML
  */
-export function makeElement(tagName: string, attributes?: Record<string, string>, inner?: (HTMLElement | HTMLElement[])[] | string, useInnerHTML = false): HTMLElement {
+export function makeElement(tagName: string, attributes?: Record<string, string>, inner?: (HTMLElement | Node | HTMLElement[])[] | string, useInnerHTML = false): HTMLElement {
 	attributes = attributes || {};
 	inner = inner || [];
 	const elem = document.createElement(tagName);

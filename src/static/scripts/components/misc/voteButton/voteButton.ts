@@ -1,4 +1,4 @@
-import { hasParams } from "../../../utils/utils.js";
+import { hasParams, makeElement } from "../../../utils/utils.js";
 
 const svgTemplate = document.createElement("div");
 svgTemplate.innerHTML = `
@@ -21,17 +21,19 @@ svgTemplate.innerHTML = `
 /**
  * An up- or down-vote button with a cool animation
  */
-export default class Ph_VoteButton extends HTMLButtonElement {
+export default class Ph_VoteButton extends HTMLElement {
 	animated: SVGAnimateElement;
 
 	constructor(isUpVote: boolean) {
 		super();
 		if (!hasParams(arguments)) return;
 
-		this.className = `voteButton transparentButtonAlt ${isUpVote ? "up" : "down"}`;
+		this.className = `voteButton ${isUpVote ? "up" : "down"}`;
 
-		this.append(svgTemplate.children[0].cloneNode(true));
-		this.append(svgTemplate.children[1].cloneNode(true));
+		this.append(makeElement("button", { "class": "transparentButtonAlt" }, [
+			svgTemplate.children[0].cloneNode(true),
+			svgTemplate.children[1].cloneNode(true)
+		]))
 		this.animated = this.$tag("animate")[0] as SVGAnimateElement;
 	}
 
@@ -46,4 +48,4 @@ export default class Ph_VoteButton extends HTMLButtonElement {
 	}
 }
 
-customElements.define("ph-vote-button", Ph_VoteButton, { extends: "button" });
+customElements.define("ph-vote-button", Ph_VoteButton);
