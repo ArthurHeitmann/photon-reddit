@@ -405,7 +405,7 @@ export function enterFullscreen(target: HTMLElement) {
 }
 
 export function exitFullscreen() {
-	if (document.exitFullscreen())
+	if (document.exitFullscreen)
 		document.exitFullscreen();
 	else if (document.webkitExitFullscreen)
 		document.webkitExitFullscreen();
@@ -419,5 +419,5 @@ export function attachOnFullscreenChangeListener(target: Element | Document, fun
 		target.addEventListener("fullscreenchange", func, { once });
 	else if ("onwebkitfullscreenchange" in target)
 		// @ts-ignore
-		target.addEventListener("onwebkitfullscreenchange", func, { once });
+		target.addEventListener("webkitfullscreenchange", func, { once });
 }
