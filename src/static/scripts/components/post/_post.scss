@@ -34,6 +34,7 @@
 				border-bottom-left-radius: 1rem;
 				border-bottom-right-radius: 1rem;
 				overflow: hidden;
+				transform: translateZ(0);		// border-radius with videos doesn't work in Safari otherwise
 			}
 
 			> *:not(.cover) {
