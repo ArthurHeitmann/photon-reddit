@@ -19,6 +19,7 @@ import { hasPostsBeenSeen, markPostAsSeen, thisUser } from "../../utils/globals.
 import { emojiFlagsToImages, escADQ, escHTML, getLoadingIcon } from "../../utils/htmlStatics.js";
 import { linksToSpa } from "../../utils/htmlStuff.js";
 import {
+	getFullscreenElement,
 	getPostIdFromUrl,
 	hasParams,
 	isObjectEmpty,
@@ -353,7 +354,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		}
 		// post got hidden
 		else {
-			if (focusableChild.length > 0 && !document.fullscreenElement)
+			if (focusableChild.length > 0 && !getFullscreenElement())
 				focusableChild[0].blur();
 			if (this.becameVisibleAt) {
 				const visibilityDuration = Date.now() - this.becameVisibleAt;

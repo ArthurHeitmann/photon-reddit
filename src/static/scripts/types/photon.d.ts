@@ -11,3 +11,16 @@ interface HTMLElement {
 interface SVGAnimateElement extends SVGElement {
 	beginElement: () => any;
 }
+
+interface Element {
+	webkitRequestFullscreen: () => void;
+	webkitExitFullscreen: () => void;
+	onwebkitfullscreenchange: (event: Event) => void;
+}
+
+interface Document {
+	webkitRequestFullscreen: () => void;
+	webkitExitFullscreen: () => void;
+	webkitFullscreenElement: Element;
+	onwebkitfullscreenchange: (event: Event) => void;
+}

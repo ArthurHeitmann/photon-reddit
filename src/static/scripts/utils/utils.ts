@@ -208,10 +208,10 @@ export async function sleep(ms: number): Promise<void> {
 
 export function waitForFullScreenExit(): Promise<boolean> {
 	return new Promise<boolean>((resolve, reject) => {
-		if (!document.fullscreenElement) {
+		if (!isFullscreen()) {
 			return resolve(false);
 		}
-		attachOnFullscreenChangeListener(window, () => resolve(true), true);
+		attachOnFullscreenChangeListener(document, () => resolve(true), true);
 	});
 }
 
@@ -387,9 +387,37 @@ export function isParamRedditTruthy(param: string, fallback: boolean) {
 		return fallback;
 }
 
-export function attachOnFullscreenChangeListener(target: Element | Window, func: (...args) => void, once = false) {
-	if ("onfullscreenchange" in document)
-		window.addEventListener("fullscreenchange", func, { once });
-	else if ("onwebkitfullscreenchange" in document)
-		window.addEventListener("onwebkitfullscreenchange", func, { once });
+export function isFullscreen(): boolean {
+	return Boolean(getFullscreenElement());
+}
+
+export function getFullscreenElement(): Element {
+	return document.fullscreenElement || document.webkitFullscreenElement;
+}
+
+export function enterFullscreen(target: HTMLElement) {
+	if (target.requestFullscreen)
+		target.requestFullscreen();
+	else if (target.webkitRequestFullscreen)
+		target.webkitRequestFullscreen();
+	else
+		throw new Error("No function to enter FS");
+}
+
+export function exitFullscreen() {
+	if (document.exitFullscreen())
+		document.exitFullscreen();
+	else if (document.webkitExitFullscreen)
+		document.webkitExitFullscreen();
+	else
+		throw new Error("No function to exit FS");
+}
+
+export function attachOnFullscreenChangeListener(target: Element | Document, func: (...args) => void, once = false) {
+	(target as Document).onwebkitfullscreenchange;
+	if ("onfullscreenchange" in target)
+		target.addEventListener("fullscreenchange", func, { once });
+	else if ("onwebkitfullscreenchange" in target)
+		// @ts-ignore
+		target.addEventListener("onwebkitfullscreenchange", func, { once });
 }

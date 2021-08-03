@@ -18,15 +18,15 @@ import { Ph_ViewState } from "../components/viewState/viewState.js";
 import Ph_ViewStateLoader from "../components/viewState/viewStateLoader/viewStateLoader.js";
 import Ph_Wiki from "../components/wiki/wiki.js";
 import { $id } from "../utils/htmlStatics.js";
-import { deepClone, extractHash, makeElement, splitPathQuery } from "../utils/utils.js";
+import { deepClone, exitFullscreen, extractHash, isFullscreen, makeElement, splitPathQuery } from "../utils/utils.js";
 import ViewsStack from "./viewsStack.js";
 
 ViewsStack.setNextIsReplace();
 
 window.addEventListener("popstate", (e: PopStateEvent) => {
 	// don't change history state when going back & in fullscreen (the user probably just wanted to exit fullscreen)
-	if (document.fullscreenElement) {
-		document.exitFullscreen();
+	if (isFullscreen()) {
+		exitFullscreen();
 		if (e.state.index <= ViewsStack.getPosition()) {
 			// works only when previous history state has same domain
 			e.preventDefault();

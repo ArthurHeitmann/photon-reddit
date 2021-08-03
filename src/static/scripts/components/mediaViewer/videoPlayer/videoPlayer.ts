@@ -4,7 +4,13 @@ import { getStreamableUrl } from "../../../api/streamableApi.js";
 import { RedditApiType } from "../../../types/misc.js";
 import { $tagAr, escHTML } from "../../../utils/htmlStatics.js";
 import { classInElementTree, isElementIn } from "../../../utils/htmlStuff.js";
-import { hasParams, isJsonEqual, secondsToVideoTime } from "../../../utils/utils.js";
+import {
+	getFullscreenElement,
+	hasParams,
+	isFullscreen,
+	isJsonEqual,
+	secondsToVideoTime
+} from "../../../utils/utils.js";
 import { globalSettings } from "../../global/photonSettings/photonSettings.js";
 import Ph_ControlsBar, { ControlsLayoutSlots } from "../../misc/controlsBar/controlsBar.js";
 import { DropDownActionData } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
@@ -289,12 +295,12 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				if (
 					globalSettings.autoplayVideos &&
 					entries[0].intersectionRatio > .4 &&
-					Boolean(document.fullscreenElement) === (document.fullscreenElement === this) &&
+					isFullscreen() === (getFullscreenElement() === this) &&
 					!classInElementTree(this.parentElement, "covered")
 				) {
 					this.video.play();
 				}
-				else if (!(document.fullscreenElement && isElementIn(document.fullscreenElement, this))) {
+				else if (!(getFullscreenElement() && isElementIn(getFullscreenElement(), this))) {
 					this.video.pause();
 				}
 			},
