@@ -1,6 +1,14 @@
-export const photonVersion = "0.5.13";		/// <change version script>
+export const photonVersion = "0.6.0";		/// <change version script>
 
 export const photonChangelog = {
+	"0.6.0": {
+		"New": [
+			"Added initial support for Safari"
+		],
+		"Fixed": [
+			"Some small fixes"
+		]
+	},
 	"0.5.13": {
 		"Fixed": [
 			"Reduced the text size a little bit",
