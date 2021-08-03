@@ -9,6 +9,10 @@ export enum ImgurContentType {
 	image, video
 }
 
+enum ImgurLinkType {
+	image = "image", gallery = "gallery", album = "album"
+}
+
 export interface ImgurContent {
 	type: ImgurContentType,
 	link: string,
@@ -22,7 +26,7 @@ function makeContentData(data): ImgurContent {
 		link: undefined,
 		caption: data.description || ""
 	};
-	if (/(^video\/)|(^image\/gif)/.test(data.type)) {
+	if (/(^video\/)/.test(data.type) || /(^image\/gif)/.test(data.type) && data.mp4) {
 		content.type = ImgurContentType.video;
 		content.link = data.mp4;
 	}
@@ -34,31 +38,26 @@ function makeContentData(data): ImgurContent {
 	return content;
 }
 
-export async function getImgurContent(link: string): Promise<ImgurContent> {
-	const id = link.match(/(?:https?:\/\/)?imgur\.com\/(\w+)/)[1];		// https://imgur.com/<id> --> <id>
+export async function getImgurContent(link: string): Promise<ImgurContent[]> {
+	let linkType: ImgurLinkType;
+	if (/imgur\.com\/(?:a|album|t\/[^/?#]+)\//.test(link))
+		linkType = ImgurLinkType.album;
+	else if (/imgur\.com\/gallery\//.test(link))
+		linkType = ImgurLinkType.gallery;
+	else
+		linkType = ImgurLinkType.image;
+	const id = link.match(/imgur\.com(?:\/(?:a|album|gallery|t\/[^/?#]+))?\/(\w+)/)[1];
+
 	const options: RequestInit = {
 		headers: [
 			["Authorization", `Client-ID ${imgurClientID}`]
 		]
 	}
-	const response = await fetch(`https://api.imgur.com/3/image/${id}`, options);
-	const data = await response.json();		// in case of exception pass to caller
+	const response = await fetch(`https://api.imgur.com/3/${linkType}/${id}`, options);
+	const data = await response.json();
 
-	return makeContentData(data.data);
-}
-
-export async function getImgurAlbumContents(link: string): Promise<ImgurContent[]> {
-	const id = link.match(/(?:https?:\/\/)?imgur\.com\/(?:a|album|gallery|t\/[^/?#]+)\/(\w+)/)[1];	// example: https://imgur.com/a/<id> --> <id>
-	const options: RequestInit = {
-		headers: [
-			["Authorization", `Client-ID ${imgurClientID}`]
-		]
-	}
-	const response = await fetch(`https://api.imgur.com/3/album/${id}`, options);
-	const data = await response.json();		// in case of exception pass to caller
-
-	const contents: ImgurContent[] = [];
-	for (const img of data.data.images)
-		contents.push(makeContentData(img));
-	return contents;
+	if ("images" in data.data)
+		return data.data.images.map(img => makeContentData(img));
+	else
+		return [ makeContentData(data.data) ];
 }

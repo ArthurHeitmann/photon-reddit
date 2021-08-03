@@ -1,4 +1,4 @@
-import { getImgurAlbumContents, getImgurContent, ImgurContent, ImgurContentType } from "../../api/imgurApi.js";
+import { getImgurContent, ImgurContent, ImgurContentType } from "../../api/imgurApi.js";
 import { RedditApiData, RedditApiType } from "../../types/misc.js";
 import { mediaHostsWhiteList } from "../../utils/consts.js";
 import { nonDraggableImage } from "../../utils/htmlStatics.js";
@@ -125,28 +125,16 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 
 	static fromImgurUrl(url: string): Ph_MediaViewer {
 		const mediaViewer = new Ph_MediaViewer();
-		if (/imgur\.com\/(a|album|gallery|t\/[^/?#]+)\/[^/]+\/?$/.test(url)) {		// imgur album is either /a/... or /album/... or /gallery/...
-			getImgurAlbumContents(url).then((contents: ImgurContent[]) => {
-				mediaViewer.init(contents.map(imgurElement => {
-					if (imgurElement.type === ImgurContentType.image)
-						return  Ph_MediaViewer.makeImgurImage(imgurElement, url);
-					else
-						return  Ph_MediaViewer.makeImgurVideo(imgurElement, url);
-				}));
-			});
-		}
-		else {
-			getImgurContent(url).then(content => {
-				if (content.type === ImgurContentType.image) {
-					const img = Ph_MediaViewer.makeImgurImage(content, url);
-					mediaViewer.init([img]);
-				}
-				else {
-					const video = Ph_MediaViewer.makeImgurVideo(content, url);
-					mediaViewer.init([video]);
-				}
-			});
-		}
+		getImgurContent(url).then((contents: ImgurContent[]) =>
+			mediaViewer.init(contents.map(imgurElement => {
+				if (imgurElement.type === ImgurContentType.image)
+					return Ph_MediaViewer.makeImgurImage(imgurElement, url);
+				else if (imgurElement.type === ImgurContentType.video)
+					return Ph_MediaViewer.makeImgurVideo(imgurElement, url);
+				else
+					throw new Error("oops");
+			})))
+			.catch(() => mediaViewer.init([]));
 		return mediaViewer;
 	}
 
@@ -202,7 +190,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	}
 
 	static isUrlImgur(url: string): boolean {
-		return /^(https?:\/\/)?imgur\.com\/\w+(\/\w+)?/.test(url);
+		return /^(https?:\/\/)?(\w+\.)?imgur\.com\/\w+(\/\w+)?/.test(url);
 	}
 
 	static isUrlOnWhiteList(url: string): boolean {
@@ -239,6 +227,11 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 
 	init(initElements: MediaElement[]) {
 		if (!hasParams(arguments)) return;
+
+		if (initElements.length === 0) {
+			this.innerText = "Nothing loaded";
+			return;
+		}
 
 		this.mediaElements = initElements;
 

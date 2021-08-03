@@ -66,12 +66,12 @@ export default class Ph_PostBody extends HTMLElement {
 	private getPostType(postData: RedditApiData): PostType {
 		if (postData["is_self"])
 			return PostType.text;
+		else if (Ph_MediaViewer.isUrlImgur(postData["url"]))
+			return PostType.imgur;
 		else if (Ph_MediaViewer.isPostVideo(postData))
 			return PostType.video
 		else if (Ph_MediaViewer.isPostImage(postData))
 			return PostType.image;
-		else if (Ph_MediaViewer.isUrlImgur(postData["url"]))
-			return PostType.imgur;
 		else if (postData["gallery_data"])
 			return PostType.redditGallery;
 		else if (postData["post_hint"] == "rich:video")
