@@ -87,9 +87,10 @@
 				}
 			}
 		}
+	}
 
-		.filtersFilterWrapper {
-		}
+	.imageViewer img, .videoPlayer video {
+		max-height: var(--max-media-height);
 	}
 
 	&.isInFullscreen {
@@ -128,10 +129,6 @@
 
 		&:hover {
 			min-width: 25rem;
-		}
-
-		.imageViewer img, .videoPlayer video {
-			max-height: var(--max-media-height);
 		}
 	}
 
