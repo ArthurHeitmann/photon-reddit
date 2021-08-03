@@ -19,7 +19,7 @@ export default class Ph_FeedInfoPage extends HTMLElement {
 			feedType = FeedType.user;
 		else
 			throw "Invalid feed type";
-		const isRules = /\/about\/rules/.test(path);
+		const isRules = /^\/[^/]+\/[^/?#]+(\/about\/rules|\/rules)/.test(path);	// /r/<sub>/about/rules or /r/<sub>/rules
 		const feedInfo = FeedInfoFactory.make(feedPath, feedType);
 		feedInfo.getOrUpdateInfo().then(() => {
 			if (!isRules)

@@ -201,7 +201,7 @@ function handleSpecialPaths(path: string, query: string[][], stateLoader: Ph_Vie
 		return true;
 	}
 	// subreddit about page
-	else if (/^\/[^/]+\/[^/?#]+\/about/.test(path)) {
+	else if (/^\/[^/]+\/[^/?#]+\/(about|rules)/.test(path)) {
 		stateLoader.finishWith(new Ph_FeedInfoPage(path));
 		const community = path.match(/^\/[^/]+\/([^/?#]+)/)[1];
 		ViewsStack.setCurrentStateTitle(`${community} - About`);
