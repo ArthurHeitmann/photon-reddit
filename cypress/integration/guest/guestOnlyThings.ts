@@ -25,7 +25,7 @@ describe("Guest only things", () => {
 		cy.scrollTo(0, 0);
 
 		// upvote should fail
-		cy.get("ph-post button.voteButton.up").first().click();
+		cy.get("ph-post .voteButton.up button").first().click();
 		cy.get("ph-toast .title").should("contain.text", "Error");
 	})
 

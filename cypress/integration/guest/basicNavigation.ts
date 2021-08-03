@@ -24,7 +24,7 @@ describe("Basic Navigation", () => {
 
 		// open subreddit info
 		showHeader();
-		cy.get("ph-header button.showInfo[data-feed-type=subreddit]")
+		cy.get("ph-header .showInfo[data-feed-type=subreddit]")
 			.click();
 
 		// open dropdown and visit subreddit
@@ -41,7 +41,7 @@ describe("Basic Navigation", () => {
 
 		// open same feed info again
 		showHeader();
-		cy.get("ph-header button.showInfo[data-feed-type=subreddit]").click();
+		cy.get("ph-header .showInfo[data-feed-type=subreddit]").click();
 		cy.get("ph-feed-info-subreddit:not(.remove) .title").invoke("text")
 			.should(text => expect(text).to.have.length.gt(1));
 

@@ -154,10 +154,10 @@ const tutorialDescription: TutorialDescription = {
 				const header = $class("header")[0] as Ph_Header;
 				header.isPinned = false;
 				header.hide();
-				$css("ph-header .showInfo")[0].click();
+				$css("ph-header .showInfo button")[0].click();
 			},
 			endAction: () => {
-				$css("ph-header .showInfo")[0].click();
+				$css("ph-header .showInfo button")[0].click();
 				const header = $class("header")[0] as Ph_Header;
 				header.isPinned = true;
 				header.expand();
