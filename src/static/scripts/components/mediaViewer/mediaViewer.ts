@@ -391,7 +391,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 			exitFullscreen()
 		}
 		else {
-			Ph_ViewState.getViewOf(this).saveScroll(this, "top");
+			Ph_ViewState.getViewOf(this)?.saveScroll(this, "top");
 			enterFullscreen(this);
 		}
 	}

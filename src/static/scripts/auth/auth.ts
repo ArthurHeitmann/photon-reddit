@@ -28,7 +28,7 @@ export async function checkAuthOnPageLoad(): Promise<AuthState> {
 			// before returning AuthState.loggedIn verifyTokenWorks() must somewhere be called
 			setIsLoggedIn(true);
 			if (hasTokenExpired() && !await refreshAccessToken()) {
-				if (!verifyTokenWorks)
+				if (!await verifyTokenWorks())
 					authError("Failed to refresh authentication! If this is breaking the website, log out & reload?");
 			}
 			else if (!await verifyTokenWorks() && !await refreshAccessToken()) {

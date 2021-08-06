@@ -91,8 +91,8 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 		}
 		else {
 			dropDownParams = [
-				{ label: "Hot", value: SortUserPostsOrder.hot, onSelectCallback: this.handleSortSelect.bind(this) },
-				{ label: "Top", value: SortUserPostsOrder.top, nestedEntries: [
+				{ label: "Hot", labelImgUrl: "/img/hot.svg", value: SortUserPostsOrder.hot, onSelectCallback: this.handleSortSelect.bind(this) },
+				{ label: "Top", labelImgUrl: "/img/top.svg", value: SortUserPostsOrder.top, nestedEntries: [
 						{ label: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.handleSortSelect.bind(this) },
 						{ label: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.handleSortSelect.bind(this) },
 						{ label: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.handleSortSelect.bind(this) },
@@ -100,8 +100,8 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 						{ label: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.handleSortSelect.bind(this) },
 						{ label: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.handleSortSelect.bind(this) }
 					] },
-				{ label: "New", value: SortUserPostsOrder.new, onSelectCallback: this.handleSortSelect.bind(this) },
-				{ label: "Controversial", value: SortUserPostsOrder.controversial, nestedEntries: [
+				{ label: "New", labelImgUrl: "/img/new.svg", value: SortUserPostsOrder.new, onSelectCallback: this.handleSortSelect.bind(this) },
+				{ label: "Controversial", labelImgUrl: "/img/lightning.svg", value: SortUserPostsOrder.controversial, nestedEntries: [
 						{ label: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.handleSortSelect.bind(this) },
 						{ label: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.handleSortSelect.bind(this) },
 						{ label: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.handleSortSelect.bind(this) },

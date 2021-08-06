@@ -27,7 +27,10 @@ html, body {
 
 		> .dropDown {
 			width: max-content;
-			background: vars.$background-el1;
+
+			.dropDownButton {
+				background: vars.$background-el1;
+			}
 
 			> button {
 				height: 2rem;
