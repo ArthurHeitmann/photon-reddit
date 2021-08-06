@@ -116,7 +116,7 @@ dist
 .pnp.*
 
 src/**/*.js
-src/**/*.js.map
+*.js.map
 src/**/*.css
 src/**/*.css.map
 cypress/**/*.js

@@ -6,13 +6,9 @@
   "scripts": {
     "start": "node src/app.js",
     "start-dev": "nodemon src/app.js",
-    "build": "tsc --removeComments && sass src/static --style compressed && echo Build completed!",
-    "watch-sass": " sass --watch src/static",
-    "watch-sass-wsl2": " sass --watch --poll src/static",
-    "watch-tsc": "tsc -w",
-    "watch": "npm run watch-sass & npm run watch-tsc",
-    "watch-wsl2": "npm run watch-sass-wsl2 & npm run watch-tsc",
-    "version": "node other/changeVersion.mjs",
+    "build": "node esbuild.js",
+    "watch": "node esbuild.js watch",
+    "version": "node scripts/changeVersion.mjs",
     "cy-open": "cypress open"
   },
   "compilerOption": {
@@ -35,14 +31,17 @@
     "@types/resize-observer-browser": "^0.1.6",
     "cypress": "^7.7.0",
     "cypress-terminal-report": "^3.2.2",
+    "esbuild": "^0.12.17",
+    "esbuild-node-externals": "^1.3.0",
     "nodemon": "^2.0.7",
-    "sass": "^1.34.0",
+    "sass": "^1.37.5",
     "typescript": "^3.9.7"
   },
   "dependencies": {
     "@types/express-rate-limit": "^5.1.1",
     "body-parser": "^1.19.0",
     "dotenv": "^8.2.0",
+    "esbuild-sass-plugin": "^1.4.10",
     "express": "^4.16.4",
     "express-async-handler": "^1.1.4",
     "express-rate-limit": "^5.2.3",
