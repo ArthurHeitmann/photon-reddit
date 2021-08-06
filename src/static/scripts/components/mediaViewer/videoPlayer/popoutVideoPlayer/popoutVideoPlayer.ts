@@ -1,9 +1,9 @@
-import Ph_MediaViewer from "../../mediaViewer.js";
-import Ph_GifVideo from "../gifVideo/gifVideo.js";
-import Ph_SimpleVideo from "../simpleVideo/simpleVideo.js";
-import Ph_VideoAudio from "../videoAudio/videoAudio.js";
-import Ph_VideoPlayer from "../videoPlayer.js";
-import { BasicVideoData } from "../videoWrapper.js";
+import Ph_MediaViewer from "../../mediaViewer";
+import Ph_GifVideo from "../gifVideo/gifVideo";
+import Ph_SimpleVideo from "../simpleVideo/simpleVideo";
+import Ph_VideoAudio from "../videoAudio/videoAudio";
+import Ph_VideoPlayer from "../videoPlayer";
+import { BasicVideoData } from "../videoWrapper";
 
 const urlParams = new URLSearchParams(location.search)
 const data: BasicVideoData = JSON.parse(decodeURIComponent(urlParams.get("data")));

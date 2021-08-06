@@ -1,7 +1,7 @@
-import { RedditApiData } from "../../../types/misc.js";
-import { emojiFlagsToImages } from "../../../utils/htmlStatics.js";
-import { hasParams } from "../../../utils/utils.js";
-import Ph_Toast, { Level } from "../toast/toast.js";
+import { RedditApiData } from "../../../types/misc";
+import { emojiFlagsToImages } from "../../../utils/htmlStatics";
+import { hasParams } from "../../../utils/utils";
+import Ph_Toast, { Level } from "../toast/toast";
 
 export interface FlairData {
 	type: string,

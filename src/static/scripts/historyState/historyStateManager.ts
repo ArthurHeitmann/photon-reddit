@@ -2,24 +2,24 @@
  * This files extends the functionality of ViewStack
  */
 
-import { redditApiRequest } from "../api/redditApi.js";
-import Ph_FeedInfoPage from "../components/feed/feedInfo/feedInfoPage.js";
-import Ph_UniversalFeed from "../components/feed/universalFeed/universalFeed.js";
-import Ph_MessageCompose from "../components/message/messageCompose/messageCompose.js";
-import Ph_RandomHub from "../components/misc/randomHub/randomHub.js";
-import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
-import Ph_About from "../components/photon/about/about.js";
-import Ph_PostCrossposts from "../components/post/postCrossposts/postCrossPosts.js";
-import PostDoubleLink from "../components/post/postDoubleLink/postDoubleLink.js";
-import Ph_SubmitPostForm from "../components/post/submit/submitPostForm.js";
-import Ph_PostAndComments from "../components/postAndComments/postAndComments.js";
-import Ph_CommentsViewStateLoader from "../components/viewState/commentsViewStateLoader/commentsViewStateLoader.js";
-import { Ph_ViewState } from "../components/viewState/viewState.js";
-import Ph_ViewStateLoader from "../components/viewState/viewStateLoader/viewStateLoader.js";
-import Ph_Wiki from "../components/wiki/wiki.js";
-import { $id } from "../utils/htmlStatics.js";
-import { deepClone, exitFullscreen, extractHash, isFullscreen, makeElement, splitPathQuery } from "../utils/utils.js";
-import ViewsStack from "./viewsStack.js";
+import { redditApiRequest } from "../api/redditApi";
+import Ph_FeedInfoPage from "../components/feed/feedInfo/feedInfoPage";
+import Ph_UniversalFeed from "../components/feed/universalFeed/universalFeed";
+import Ph_MessageCompose from "../components/message/messageCompose/messageCompose";
+import Ph_RandomHub from "../components/misc/randomHub/randomHub";
+import Ph_Toast, { Level } from "../components/misc/toast/toast";
+import Ph_About from "../components/photon/about/about";
+import Ph_PostCrossposts from "../components/post/postCrossposts/postCrossPosts";
+import PostDoubleLink from "../components/post/postDoubleLink/postDoubleLink";
+import Ph_SubmitPostForm from "../components/post/submit/submitPostForm";
+import Ph_PostAndComments from "../components/postAndComments/postAndComments";
+import Ph_CommentsViewStateLoader from "../components/viewState/commentsViewStateLoader/commentsViewStateLoader";
+import { Ph_ViewState } from "../components/viewState/viewState";
+import Ph_ViewStateLoader from "../components/viewState/viewStateLoader/viewStateLoader";
+import Ph_Wiki from "../components/wiki/wiki";
+import { $id } from "../utils/htmlStatics";
+import { deepClone, exitFullscreen, extractHash, isFullscreen, makeElement, splitPathQuery } from "../utils/utils";
+import ViewsStack from "./viewsStack";
 
 ViewsStack.setNextIsReplace();
 

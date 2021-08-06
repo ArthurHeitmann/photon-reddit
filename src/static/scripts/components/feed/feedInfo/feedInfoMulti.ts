@@ -1,14 +1,14 @@
-import { addSubToMulti, getMultiInfo, removeSubFromMulti } from "../../../api/redditApi.js";
-import { RedditApiData, RedditApiType } from "../../../types/misc.js";
-import { StoredData } from "../../../utils/globals.js";
-import { emojiFlagsToImages, escADQ, escHTML } from "../../../utils/htmlStatics.js";
-import { linksToSpa } from "../../../utils/htmlStuff.js";
-import { numberToShort, stringSortComparer } from "../../../utils/utils.js";
-import Ph_FeedLink from "../../link/feedLink/feedLink.js";
-import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
-import Ph_SubredditSelector from "../../misc/subredditSelector/subredditSelector.js";
-import Ph_Toast, { Level } from "../../misc/toast/toast.js";
-import Ph_FeedInfo from "./feedInfo.js";
+import { addSubToMulti, getMultiInfo, removeSubFromMulti } from "../../../api/redditApi";
+import { RedditApiData, RedditApiType } from "../../../types/misc";
+import { StoredData } from "../../../utils/globals";
+import { emojiFlagsToImages, escADQ, escHTML } from "../../../utils/htmlStatics";
+import { linksToSpa } from "../../../utils/htmlStuff";
+import { numberToShort, stringSortComparer } from "../../../utils/utils";
+import Ph_FeedLink from "../../link/feedLink/feedLink";
+import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown";
+import Ph_SubredditSelector from "../../misc/subredditSelector/subredditSelector";
+import Ph_Toast, { Level } from "../../misc/toast/toast";
+import Ph_FeedInfo from "./feedInfo";
 
 export default class Ph_FeedInfoMulti extends Ph_FeedInfo {
 	async loadInfo(): Promise<void> {

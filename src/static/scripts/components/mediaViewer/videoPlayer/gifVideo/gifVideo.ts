@@ -1,5 +1,5 @@
-import { hasParams, urlWithHttps } from "../../../../utils/utils.js";
-import Ph_VideoWrapper, { BasicVideoData, SourceData, VideoTrackInfo } from "../videoWrapper.js";
+import { hasParams, urlWithHttps } from "../../../../utils/utils";
+import Ph_VideoWrapper, { BasicVideoData, SourceData, VideoTrackInfo } from "../videoWrapper";
 
 /**
  * A video wrapper for gifs. Very limited compared to videos (not time information, no seeking, no pause only stop).

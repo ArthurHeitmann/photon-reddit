@@ -1,4 +1,4 @@
-import { linksToSpa } from "../../../utils/htmlStuff.js";
+import { linksToSpa } from "../../../utils/htmlStuff";
 
 const template = `
 <h1>Photon</h1>

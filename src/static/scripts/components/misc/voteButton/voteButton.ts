@@ -1,4 +1,4 @@
-import { hasParams, makeElement } from "../../../utils/utils.js";
+import { hasParams, makeElement } from "../../../utils/utils";
 
 const svgTemplate = document.createElement("div");
 svgTemplate.innerHTML = `

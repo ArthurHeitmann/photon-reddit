@@ -7,17 +7,17 @@ import {
 	getSubUserFlairs,
 	setUserFlair,
 	subscribe
-} from "../../../api/redditApi.js";
-import { RedditApiType } from "../../../types/misc.js";
-import { isLoggedIn, StoredData, thisUser } from "../../../utils/globals.js";
-import { emojiFlagsToImages, escADQ, escHTML } from "../../../utils/htmlStatics.js";
-import { linksToSpa } from "../../../utils/htmlStuff.js";
-import { makeElement, numberToShort } from "../../../utils/utils.js";
-import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
-import { DropDownActionData, DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
-import Ph_Flair, { FlairApiData } from "../../misc/flair/flair.js";
-import Ph_Toast, { Level } from "../../misc/toast/toast.js";
-import Ph_FeedInfo from "./feedInfo.js";
+} from "../../../api/redditApi";
+import { RedditApiType } from "../../../types/misc";
+import { isLoggedIn, StoredData, thisUser } from "../../../utils/globals";
+import { emojiFlagsToImages, escADQ, escHTML } from "../../../utils/htmlStatics";
+import { linksToSpa } from "../../../utils/htmlStuff";
+import { makeElement, numberToShort } from "../../../utils/utils";
+import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown";
+import { DropDownActionData, DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry";
+import Ph_Flair, { FlairApiData } from "../../misc/flair/flair";
+import Ph_Toast, { Level } from "../../misc/toast/toast";
+import Ph_FeedInfo from "./feedInfo";
 
 interface SubredditRule {
 	kind: string,

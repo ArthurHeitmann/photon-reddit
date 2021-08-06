@@ -1,10 +1,10 @@
-import ViewsStack from "../../../historyState/viewsStack.js";
-import { HistoryState, RedditApiType } from "../../../types/misc.js";
-import { hasParams } from "../../../utils/utils.js";
-import Ph_Post from "../../post/post.js";
-import PostDoubleLink from "../../post/postDoubleLink/postDoubleLink.js";
-import Ph_PostAndComments from "../../postAndComments/postAndComments.js";
-import { Ph_ViewState } from "../viewState.js";
+import ViewsStack from "../../../historyState/viewsStack";
+import { HistoryState, RedditApiType } from "../../../types/misc";
+import { hasParams } from "../../../utils/utils";
+import Ph_Post from "../../post/post";
+import PostDoubleLink from "../../post/postDoubleLink/postDoubleLink";
+import Ph_PostAndComments from "../../postAndComments/postAndComments";
+import { Ph_ViewState } from "../viewState";
 
 /**
  * A Ph_ViewState with a loading screen

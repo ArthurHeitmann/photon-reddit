@@ -9,11 +9,11 @@
  *  - manage seen posts
  */
 
-import { getMyMultis, getMySubs, redditApiRequest } from "../api/redditApi.js";
-import Ph_UserDropDown from "../components/global/userDropDown/userDropDown.js";
-import { RedditApiType } from "../types/misc.js";
-import { $class } from "./htmlStatics.js";
-import { nameOf, stringSortComparer } from "./utils.js";
+import { getMyMultis, getMySubs, redditApiRequest } from "../api/redditApi";
+import Ph_UserDropDown from "../components/global/userDropDown/userDropDown";
+import { RedditApiType } from "../types/misc";
+import { $class } from "./htmlStatics";
+import { nameOf, stringSortComparer } from "./utils";
 
 export let isLoggedIn: boolean = false;
 

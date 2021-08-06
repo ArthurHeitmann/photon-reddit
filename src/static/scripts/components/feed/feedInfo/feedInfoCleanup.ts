@@ -2,8 +2,8 @@
  * Clears cached data in the localstorage occasionally
  */
 
-import { saveSeenPosts, seenPosts, StoredData, unmarkPostAsSeen } from "../../../utils/globals.js";
-import { globalSettings } from "../../global/photonSettings/photonSettings.js";
+import { saveSeenPosts, seenPosts, StoredData, unmarkPostAsSeen } from "../../../utils/globals";
+import { globalSettings } from "../../global/photonSettings/photonSettings";
 
 export function clearAllOldData() {
 	const now = Date.now();

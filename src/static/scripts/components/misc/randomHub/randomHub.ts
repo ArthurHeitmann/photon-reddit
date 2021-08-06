@@ -1,7 +1,7 @@
-import { getRandomSubreddit, getRandomSubredditPostUrl } from "../../../api/photonApi.js";
-import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager.js";
-import { hasParams } from "../../../utils/utils.js";
-import Ph_Toast, { Level } from "../toast/toast.js";
+import { getRandomSubreddit, getRandomSubredditPostUrl } from "../../../api/photonApi";
+import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager";
+import { hasParams } from "../../../utils/utils";
+import Ph_Toast, { Level } from "../toast/toast";
 
 enum RandomTarget {
 	Random, RandNsfw, RandomPost

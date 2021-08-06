@@ -10,14 +10,14 @@ import {
 	vote,
 	VoteDirection,
 	voteDirectionFromLikes
-} from "../../api/redditApi.js";
-import { pushLinkToHistoryComb, PushType } from "../../historyState/historyStateManager.js";
-import ViewsStack from "../../historyState/viewsStack.js";
-import { RedditApiData, RedditApiType } from "../../types/misc.js";
-import Votable from "../../types/votable.js";
-import { hasPostsBeenSeen, markPostAsSeen, thisUser } from "../../utils/globals.js";
-import { emojiFlagsToImages, escADQ, escHTML, getLoadingIcon } from "../../utils/htmlStatics.js";
-import { linksToSpa } from "../../utils/htmlStuff.js";
+} from "../../api/redditApi";
+import { pushLinkToHistoryComb, PushType } from "../../historyState/historyStateManager";
+import ViewsStack from "../../historyState/viewsStack";
+import { RedditApiData, RedditApiType } from "../../types/misc";
+import Votable from "../../types/votable";
+import { hasPostsBeenSeen, markPostAsSeen, thisUser } from "../../utils/globals";
+import { emojiFlagsToImages, escADQ, escHTML, getLoadingIcon } from "../../utils/htmlStatics";
+import { linksToSpa } from "../../utils/htmlStuff";
 import {
 	getFullscreenElement,
 	getPostIdFromUrl,
@@ -27,21 +27,18 @@ import {
 	numberToShort as numberToShort,
 	numberToShortStr,
 	timePassedSinceStr
-} from "../../utils/utils.js";
-import Ph_FeedItem from "../feed/feedItem/feedItem.js";
-import { globalSettings, NsfwPolicy, PhotonSettings } from "../global/photonSettings/photonSettings.js";
-import Ph_AwardsInfo from "../misc/awardsInfo/awardsInfo.js";
-import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
-import Ph_DropDownEntry, {
-	DropDownActionData,
-	DropDownEntryParam
-} from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
-import Ph_Flair, { FlairApiData } from "../misc/flair/flair.js";
-import Ph_Toast, { Level } from "../misc/toast/toast.js";
-import Ph_VoteButton from "../misc/voteButton/voteButton.js";
-import Ph_PostBody from "./postBody/postBody.js";
-import Ph_PostText from "./postBody/postText/postText.js";
-import PostDoubleLink from "./postDoubleLink/postDoubleLink.js";
+} from "../../utils/utils";
+import Ph_FeedItem from "../feed/feedItem/feedItem";
+import { globalSettings, NsfwPolicy, PhotonSettings } from "../global/photonSettings/photonSettings";
+import Ph_AwardsInfo from "../misc/awardsInfo/awardsInfo";
+import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown";
+import Ph_DropDownEntry, { DropDownActionData, DropDownEntryParam } from "../misc/dropDown/dropDownEntry/dropDownEntry";
+import Ph_Flair, { FlairApiData } from "../misc/flair/flair";
+import Ph_Toast, { Level } from "../misc/toast/toast";
+import Ph_VoteButton from "../misc/voteButton/voteButton";
+import Ph_PostBody from "./postBody/postBody";
+import Ph_PostText from "./postBody/postText/postText";
+import PostDoubleLink from "./postDoubleLink/postDoubleLink";
 
 /**
  * A reddit post

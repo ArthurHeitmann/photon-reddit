@@ -1,6 +1,6 @@
 /** Get access and refresh Tokens and implicit grants */
 
-import { appId, redirectURI } from "../utils/consts.js";
+import { appId, redirectURI } from "../utils/consts";
 
 interface AccessTokenReturn {
 	access_token?: string,

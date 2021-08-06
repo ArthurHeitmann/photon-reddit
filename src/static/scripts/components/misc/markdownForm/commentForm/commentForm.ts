@@ -1,9 +1,9 @@
-import { comment } from "../../../../api/redditApi.js";
-import { FullName } from "../../../../types/votable.js";
-import { escHTML } from "../../../../utils/htmlStatics.js";
-import { hasParams } from "../../../../utils/utils.js";
-import Ph_Toast, { Level } from "../../toast/toast.js";
-import Ph_MarkdownForm from "../markdownForm.js";
+import { comment } from "../../../../api/redditApi";
+import { FullName } from "../../../../types/votable";
+import { escHTML } from "../../../../utils/htmlStatics";
+import { hasParams } from "../../../../utils/utils";
+import Ph_Toast, { Level } from "../../toast/toast";
+import Ph_MarkdownForm from "../markdownForm";
 
 export default class Ph_CommentForm extends Ph_MarkdownForm {
 	constructor(thing: FullName, hasCancelBtn: boolean) {

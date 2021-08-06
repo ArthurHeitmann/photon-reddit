@@ -19,9 +19,9 @@
  *   - referer will be empty
  */
 
-import { globalSettings } from "../components/global/photonSettings/photonSettings.js";
-import { ViewChangeData } from "../historyState/viewsStack.js";
-import { extractPath, randomString } from "../utils/utils.js";
+import { globalSettings } from "../components/global/photonSettings/photonSettings";
+import { ViewChangeData } from "../historyState/viewsStack";
+import { extractPath, randomString } from "../utils/utils";
 
 window.addEventListener("ph-view-change", (e: CustomEvent) => {
 	if (location.hostname === "localhost")

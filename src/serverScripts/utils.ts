@@ -1,5 +1,5 @@
 import express from "express";
-import { env } from "./consts.js";
+import { env } from "./consts";
 
 /** Fallback for when service worker doesn't work */
 export function cacheControl(req: express.Request, res: express.Response, next: express.NextFunction) {

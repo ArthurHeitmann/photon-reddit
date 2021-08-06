@@ -2,14 +2,14 @@
  * For communication with reddit
  */
 
-import { checkTokenRefresh } from "../auth/auth.js";
-import { initiateLogin } from "../auth/loginHandler.js";
-import Ph_Flair, { FlairApiData } from "../components/misc/flair/flair.js";
-import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
-import { RedditApiType } from "../types/misc.js";
-import Votable, { FullName } from "../types/votable.js";
-import { isLoggedIn, thisUser, } from "../utils/globals.js";
-import { isObjectEmpty, splitPathQuery, throttle } from "../utils/utils.js";
+import { checkTokenRefresh } from "../auth/auth";
+import { initiateLogin } from "../auth/loginHandler";
+import Ph_Flair, { FlairApiData } from "../components/misc/flair/flair";
+import Ph_Toast, { Level } from "../components/misc/toast/toast";
+import { RedditApiType } from "../types/misc";
+import Votable, { FullName } from "../types/votable";
+import { isLoggedIn, thisUser, } from "../utils/globals";
+import { isObjectEmpty, splitPathQuery, throttle } from "../utils/utils";
 
 /**
  * Use this to make requests to reddit

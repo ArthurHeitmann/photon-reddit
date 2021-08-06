@@ -1,19 +1,19 @@
-import { redditApiRequest } from "../../api/redditApi.js";
-import ViewsStack from "../../historyState/viewsStack.js";
-import { RedditApiType, SortCommentsOrder, SortCommentsOrderNamed } from "../../types/misc.js";
-import { getLoadingIcon } from "../../utils/htmlStatics.js";
-import { elementWithClassInTree } from "../../utils/htmlStuff.js";
-import { extractPath, extractQuery, hasHTML, hasParams } from "../../utils/utils.js";
-import Ph_Comment from "../comment/comment.js";
-import Ph_CommentsFeed from "../feed/commentsFeed/commentsFeed.js";
-import { FeedType } from "../feed/feedInfo/feedInfo.js";
-import FeedInfoFactory from "../feed/feedInfo/feedInfoFactory.js";
-import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
-import { DropDownActionData } from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
-import Ph_CommentForm from "../misc/markdownForm/commentForm/commentForm.js";
-import Ph_Toast, { Level } from "../misc/toast/toast.js";
-import Ph_Post from "../post/post.js";
-import { Ph_ViewState } from "../viewState/viewState.js";
+import { redditApiRequest } from "../../api/redditApi";
+import ViewsStack from "../../historyState/viewsStack";
+import { RedditApiType, SortCommentsOrder, SortCommentsOrderNamed } from "../../types/misc";
+import { getLoadingIcon } from "../../utils/htmlStatics";
+import { elementWithClassInTree } from "../../utils/htmlStuff";
+import { extractPath, extractQuery, hasHTML, hasParams } from "../../utils/utils";
+import Ph_Comment from "../comment/comment";
+import Ph_CommentsFeed from "../feed/commentsFeed/commentsFeed";
+import { FeedType } from "../feed/feedInfo/feedInfo";
+import FeedInfoFactory from "../feed/feedInfo/feedInfoFactory";
+import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown";
+import { DropDownActionData } from "../misc/dropDown/dropDownEntry/dropDownEntry";
+import Ph_CommentForm from "../misc/markdownForm/commentForm/commentForm";
+import Ph_Toast, { Level } from "../misc/toast/toast";
+import Ph_Post from "../post/post";
+import { Ph_ViewState } from "../viewState/viewState";
 
 /**
  * A Ph_Post & Ph_CommentsFeed; Also sets user, & sub info + sorter in the header

@@ -1,17 +1,17 @@
-import { getSubFlairs, getSubInfo, redditApiRequest } from "../../../api/redditApi.js";
-import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager.js";
-import { thisUser } from "../../../utils/globals.js";
-import { emojiFlagsToImages } from "../../../utils/htmlStatics.js";
-import { linksToSpa } from "../../../utils/htmlStuff.js";
-import { hasHTML } from "../../../utils/utils.js";
-import { FeedType } from "../../feed/feedInfo/feedInfo.js";
-import FeedInfoFactory from "../../feed/feedInfo/feedInfoFactory.js";
-import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
-import { DropDownActionData, DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
-import Ph_Flair, { FlairApiData } from "../../misc/flair/flair.js";
-import Ph_MarkdownForm from "../../misc/markdownForm/markdownForm.js";
-import Ph_SubredditSelector from "../../misc/subredditSelector/subredditSelector.js";
-import Ph_Toast, { Level } from "../../misc/toast/toast.js";
+import { getSubFlairs, getSubInfo, redditApiRequest } from "../../../api/redditApi";
+import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager";
+import { thisUser } from "../../../utils/globals";
+import { emojiFlagsToImages } from "../../../utils/htmlStatics";
+import { linksToSpa } from "../../../utils/htmlStuff";
+import { hasHTML } from "../../../utils/utils";
+import { FeedType } from "../../feed/feedInfo/feedInfo";
+import FeedInfoFactory from "../../feed/feedInfo/feedInfoFactory";
+import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown";
+import { DropDownActionData, DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry";
+import Ph_Flair, { FlairApiData } from "../../misc/flair/flair";
+import Ph_MarkdownForm from "../../misc/markdownForm/markdownForm";
+import Ph_SubredditSelector from "../../misc/subredditSelector/subredditSelector";
+import Ph_Toast, { Level } from "../../misc/toast/toast";
 
 enum SubmitPostType {
 	text = "Text",

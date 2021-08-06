@@ -1,4 +1,4 @@
-import { SourceData } from "../components/mediaViewer/videoPlayer/videoWrapper.js";
+import { SourceData } from "../components/mediaViewer/videoPlayer/videoWrapper";
 
 export async function getStreamableUrl(url: string): Promise<SourceData[]> {
 	const vidId = url.match(/streamable\.com\/(\w+)/)[1];

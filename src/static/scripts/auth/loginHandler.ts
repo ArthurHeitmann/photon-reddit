@@ -1,8 +1,8 @@
-import { getInitialAccessToken, revokeToken } from "../api/redditAuthApi.js";
-import Ph_BeforeLoginInfo from "../components/misc/beforeLoginInfo/beforeLoginInfo.js";
-import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
-import { appId, redirectURI, scope, tokenDuration } from "../utils/consts.js";
-import { extractQuery, randomString } from "../utils/utils.js";
+import { getInitialAccessToken, revokeToken } from "../api/redditAuthApi";
+import Ph_BeforeLoginInfo from "../components/misc/beforeLoginInfo/beforeLoginInfo";
+import Ph_Toast, { Level } from "../components/misc/toast/toast";
+import { appId, redirectURI, scope, tokenDuration } from "../utils/consts";
+import { extractQuery, randomString } from "../utils/utils";
 
 export function initiateLogin(_skipOriginCheck = false) {
 	if (!redirectURI.startsWith(location.origin) && !_skipOriginCheck) {

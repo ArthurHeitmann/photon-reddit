@@ -1,10 +1,10 @@
-import { nonDraggableImage } from "../../../utils/htmlStatics.js";
-import { deepClone, hasParams, isJsonEqual } from "../../../utils/utils.js";
-import Ph_DropDown from "../dropDown/dropDown.js";
-import Ph_DropDownArea from "../dropDown/dropDownArea/dropDownArea.js";
-import Ph_DropDownEntry, { DropDownEntryParam } from "../dropDown/dropDownEntry/dropDownEntry.js";
-import Ph_ProgressBar from "../progressBar/progressBar.js";
-import Ph_SwitchingImage from "../switchableImage/switchableImage.js";
+import { nonDraggableImage } from "../../../utils/htmlStatics";
+import { deepClone, hasParams, isJsonEqual } from "../../../utils/utils";
+import Ph_DropDown from "../dropDown/dropDown";
+import Ph_DropDownArea from "../dropDown/dropDownArea/dropDownArea";
+import Ph_DropDownEntry, { DropDownEntryParam } from "../dropDown/dropDownEntry/dropDownEntry";
+import Ph_ProgressBar from "../progressBar/progressBar";
+import Ph_SwitchingImage from "../switchableImage/switchableImage";
 
 export interface ControlsLayoutSlots {
 	firstLeftItems?: HTMLElement[],

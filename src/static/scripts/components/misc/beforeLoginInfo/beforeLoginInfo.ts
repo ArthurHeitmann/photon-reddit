@@ -1,6 +1,6 @@
-import { redirectToLoginPage } from "../../../auth/loginHandler.js";
-import { parseMarkdown } from "../../../lib/markdownForReddit/markdown-for-reddit.js";
-import Ph_ModalPane from "../modalPane/modalPane.js";
+import { redirectToLoginPage } from "../../../auth/loginHandler";
+import { parseMarkdown } from "../../../lib/markdownForReddit/markdown-for-reddit";
+import Ph_ModalPane from "../modalPane/modalPane";
 
 const loginInfoMd = `
 ## Quick Info

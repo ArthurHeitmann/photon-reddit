@@ -1,4 +1,4 @@
-import { hasHTML } from "../../../../utils/utils.js";
+import { hasHTML } from "../../../../utils/utils";
 
 export default class Ph_SpeedChanger extends HTMLElement {
 	private readonly slowerBtn: HTMLButtonElement;

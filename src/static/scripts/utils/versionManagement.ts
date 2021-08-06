@@ -1,6 +1,6 @@
-import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
-import { photonWebVersion } from "./version.js";
-import VersionNumber from "./versionNumber.js";
+import Ph_Toast, { Level } from "../components/misc/toast/toast";
+import { photonWebVersion } from "./version";
+import VersionNumber from "./versionNumber";
 
 let pendingNewVersionNotification = false;
 let waitingServiceWorker: ServiceWorker = null;

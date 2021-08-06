@@ -1,7 +1,7 @@
-import { isElementIn } from "../../../../utils/htmlStuff.js";
-import { hasParams } from "../../../../utils/utils.js";
-import Ph_DropDown, { ButtonLabel } from "../dropDown.js";
-import Ph_DropDownArea from "../dropDownArea/dropDownArea.js";
+import { isElementIn } from "../../../../utils/htmlStuff";
+import { hasParams } from "../../../../utils/utils";
+import Ph_DropDown, { ButtonLabel } from "../dropDown";
+import Ph_DropDownArea from "../dropDownArea/dropDownArea";
 
 export default class Ph_DropDownEntry extends HTMLElement {
 	/** Each drop down entry has value. With nested drop downs this is includes the values of all preview drop downs */

@@ -1,4 +1,4 @@
-import { VoteDirection } from "../api/redditApi.js";
+import { VoteDirection } from "../api/redditApi";
 
 export interface FullName {
 	fullName: string,

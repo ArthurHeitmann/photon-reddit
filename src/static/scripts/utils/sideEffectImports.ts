@@ -1,2 +1,2 @@
-import "../components/message/messageNotification/messageNotification.js";
-import "./versionManagement.js";
+import "../components/message/messageNotification/messageNotification";
+import "./versionManagement";

@@ -1,8 +1,8 @@
-import { searchSubreddits } from "../../../api/redditApi.js";
-import { isElementIn } from "../../../utils/htmlStuff.js";
-import { throttle } from "../../../utils/utils.js";
-import Ph_FeedLink from "../../link/feedLink/feedLink.js";
-import Ph_Toast, { Level } from "../toast/toast.js";
+import { searchSubreddits } from "../../../api/redditApi";
+import { isElementIn } from "../../../utils/htmlStuff";
+import { throttle } from "../../../utils/utils";
+import Ph_FeedLink from "../../link/feedLink/feedLink";
+import Ph_Toast, { Level } from "../toast/toast";
 import BlurEvent = JQuery.BlurEvent;
 
 export type OnSubSelectCallbackSignature = (subName: string) => Promise<void> | void;

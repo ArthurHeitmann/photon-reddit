@@ -1,8 +1,8 @@
-import { getChangelog } from "../../../api/photonApi.js";
-import { getLoadingIcon } from "../../../utils/htmlStatics.js";
-import { photonWebVersion } from "../../../utils/version.js";
-import VersionNumber from "../../../utils/versionNumber.js";
-import Ph_ModalPane from "../../misc/modalPane/modalPane.js";
+import { getChangelog } from "../../../api/photonApi";
+import { getLoadingIcon } from "../../../utils/htmlStatics";
+import { photonWebVersion } from "../../../utils/version";
+import VersionNumber from "../../../utils/versionNumber";
+import Ph_ModalPane from "../../misc/modalPane/modalPane";
 
 export default class Ph_Changelog extends Ph_ModalPane {
 	previousVersion: VersionNumber;

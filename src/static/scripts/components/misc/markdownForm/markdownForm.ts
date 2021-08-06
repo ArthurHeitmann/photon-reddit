@@ -1,6 +1,6 @@
-import { parseMarkdown } from "../../../lib/markdownForReddit/markdown-for-reddit.js";
-import { linksToSpa } from "../../../utils/htmlStuff.js";
-import { hasParams } from "../../../utils/utils.js";
+import { parseMarkdown } from "../../../lib/markdownForReddit/markdown-for-reddit";
+import { linksToSpa } from "../../../utils/htmlStuff";
+import { hasParams } from "../../../utils/utils";
 
 /**
  * Not actually markdown yet, just plain text (but hopefully in the future)

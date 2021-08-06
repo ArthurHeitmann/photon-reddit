@@ -1,6 +1,6 @@
-import { hasParams } from "../../../../utils/utils.js";
-import Ph_DropDown from "../dropDown.js";
-import Ph_DropDownEntry, { DropDownEntryParam } from "../dropDownEntry/dropDownEntry.js";
+import { hasParams } from "../../../../utils/utils";
+import Ph_DropDown from "../dropDown";
+import Ph_DropDownEntry, { DropDownEntryParam } from "../dropDownEntry/dropDownEntry";
 
 /**
  * Contains one level of drop down entries

@@ -1,7 +1,7 @@
 /**
  * An expandable list with awards (of a post or comment) + individual award info
  */
-import { hasParams, numberToShort } from "../../../utils/utils.js";
+import { hasParams, numberToShort } from "../../../utils/utils";
 
 export default class Ph_AwardsInfo extends HTMLElement {
 	awardsData: AwardsData[];

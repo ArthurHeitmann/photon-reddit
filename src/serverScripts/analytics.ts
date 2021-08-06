@@ -2,8 +2,8 @@ import { config } from "dotenv";
 import express from "express";
 import RateLimit from "express-rate-limit";
 import mariadb from "mariadb";
-import { analyticsRateLimitConfig, basicRateLimitConfig } from "./consts.js";
-import { safeExcAsync } from "./utils.js";
+import { analyticsRateLimitConfig, basicRateLimitConfig } from "./consts";
+import { safeExcAsync } from "./utils";
 
 const env = process.env.NODE_ENV || "development";
 if (env !== "production")

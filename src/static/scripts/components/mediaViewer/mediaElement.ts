@@ -1,4 +1,4 @@
-import { ControlsLayoutSlots } from "../misc/controlsBar/controlsBar.js";
+import { ControlsLayoutSlots } from "../misc/controlsBar/controlsBar";
 
 export interface MediaElement {
 	url: string,

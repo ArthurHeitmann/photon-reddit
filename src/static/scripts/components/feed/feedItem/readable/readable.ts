@@ -1,14 +1,14 @@
-import { blockUser, readAllMessages, setMessageReadStatus } from "../../../../api/redditApi.js";
-import { pushLinkToHistoryComb } from "../../../../historyState/historyStateManager.js";
-import { FullName } from "../../../../types/votable.js";
-import { thisUser } from "../../../../utils/globals.js";
-import { $css } from "../../../../utils/htmlStatics.js";
-import { hasParams } from "../../../../utils/utils.js";
-import Ph_DropDown, { DirectionX, DirectionY } from "../../../misc/dropDown/dropDown.js";
-import { DropDownActionData, DropDownEntryParam } from "../../../misc/dropDown/dropDownEntry/dropDownEntry.js";
-import Ph_Toast, { Level } from "../../../misc/toast/toast.js";
-import { MessageSection } from "../../universalFeed/universalFeed.js";
-import Ph_FeedItem from "../feedItem.js";
+import { blockUser, readAllMessages, setMessageReadStatus } from "../../../../api/redditApi";
+import { pushLinkToHistoryComb } from "../../../../historyState/historyStateManager";
+import { FullName } from "../../../../types/votable";
+import { thisUser } from "../../../../utils/globals";
+import { $css } from "../../../../utils/htmlStatics";
+import { hasParams } from "../../../../utils/utils";
+import Ph_DropDown, { DirectionX, DirectionY } from "../../../misc/dropDown/dropDown";
+import { DropDownActionData, DropDownEntryParam } from "../../../misc/dropDown/dropDownEntry/dropDownEntry";
+import Ph_Toast, { Level } from "../../../misc/toast/toast";
+import { MessageSection } from "../../universalFeed/universalFeed";
+import Ph_FeedItem from "../feedItem";
 
 export default abstract class Ph_Readable extends Ph_FeedItem implements FullName {
 	abstract fullName: string;

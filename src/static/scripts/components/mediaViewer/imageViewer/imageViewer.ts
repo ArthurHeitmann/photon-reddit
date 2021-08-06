@@ -1,9 +1,9 @@
-import { getLoadingIcon, nonDraggableImage } from "../../../utils/htmlStatics.js";
-import { hasParams } from "../../../utils/utils.js";
-import { globalSettings, ImageLoadingPolicy, PhotonSettings } from "../../global/photonSettings/photonSettings.js";
-import { ControlsLayoutSlots } from "../../misc/controlsBar/controlsBar.js";
-import Ph_PhotonBaseElement from "../../photon/photonBaseElement/photonBaseElement.js";
-import { MediaElement } from "../mediaElement.js";
+import { getLoadingIcon, nonDraggableImage } from "../../../utils/htmlStatics";
+import { hasParams } from "../../../utils/utils";
+import { globalSettings, ImageLoadingPolicy, PhotonSettings } from "../../global/photonSettings/photonSettings";
+import { ControlsLayoutSlots } from "../../misc/controlsBar/controlsBar";
+import Ph_PhotonBaseElement from "../../photon/photonBaseElement/photonBaseElement";
+import { MediaElement } from "../mediaElement";
 
 interface ImageInitData {
 	originalUrl: string,

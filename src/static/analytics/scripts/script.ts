@@ -1,10 +1,10 @@
-import Ph_DropDown, { DirectionX, DirectionY } from "../../scripts/components/misc/dropDown/dropDown.js";
+import Ph_DropDown, { DirectionX, DirectionY } from "../../scripts/components/misc/dropDown/dropDown";
 import {
 	DropDownActionData,
 	DropDownEntryParam
-} from "../../scripts/components/misc/dropDown/dropDownEntry/dropDownEntry.js";
-import { $class, $css, $id, escHTML } from "../../scripts/utils/htmlStatics.js";
-import { numberToShort } from "../../scripts/utils/utils.js";
+} from "../../scripts/components/misc/dropDown/dropDownEntry/dropDownEntry";
+import { $class, $css, $id, escHTML } from "../../scripts/utils/htmlStatics";
+import { numberToShort } from "../../scripts/utils/utils";
 
 let timeFrame = 1000 * 60 * 60 * 24;
 const timeFrameLabels = [

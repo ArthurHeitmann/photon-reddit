@@ -1,7 +1,7 @@
-import { redditApiRequest } from "../../../api/redditApi.js";
-import { hasParams } from "../../../utils/utils.js";
-import Ph_MarkdownForm from "../../misc/markdownForm/markdownForm.js";
-import Ph_Toast, { Level } from "../../misc/toast/toast.js";
+import { redditApiRequest } from "../../../api/redditApi";
+import { hasParams } from "../../../utils/utils";
+import Ph_MarkdownForm from "../../misc/markdownForm/markdownForm";
+import Ph_Toast, { Level } from "../../misc/toast/toast";
 
 export default class Ph_MessageCompose extends HTMLElement {
 	to: string = "";

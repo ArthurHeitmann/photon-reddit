@@ -1,11 +1,11 @@
-import { getSubInfo, getUserMultis } from "../../../api/redditApi.js";
-import { RedditApiType } from "../../../types/misc.js";
-import { escADQ, escHTML } from "../../../utils/htmlStatics.js";
-import { linksToSpa } from "../../../utils/htmlStuff.js";
-import { makeElement, numberToShort } from "../../../utils/utils.js";
-import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
-import Ph_Toast, { Level } from "../../misc/toast/toast.js";
-import Ph_FeedInfo from "./feedInfo.js";
+import { getSubInfo, getUserMultis } from "../../../api/redditApi";
+import { RedditApiType } from "../../../types/misc";
+import { escADQ, escHTML } from "../../../utils/htmlStatics";
+import { linksToSpa } from "../../../utils/htmlStuff";
+import { makeElement, numberToShort } from "../../../utils/utils";
+import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown";
+import Ph_Toast, { Level } from "../../misc/toast/toast";
+import Ph_FeedInfo from "./feedInfo";
 
 export default class Ph_FeedInfoUser extends Ph_FeedInfo {
 	async loadInfo(): Promise<void> {

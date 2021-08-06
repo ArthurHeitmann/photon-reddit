@@ -1,4 +1,4 @@
-import { hasParams, throttle } from "../../../utils/utils.js";
+import { hasParams, throttle } from "../../../utils/utils";
 
 /**
  * A progress bar that can optionally be changed/dragged by the user

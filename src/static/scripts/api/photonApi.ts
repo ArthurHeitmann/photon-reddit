@@ -2,9 +2,9 @@
  *
  */
 
-import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
-import { Changelog } from "../types/misc.js";
-import { getAuthHeader } from "./redditApi.js";
+import Ph_Toast, { Level } from "../components/misc/toast/toast";
+import { Changelog } from "../types/misc";
+import { getAuthHeader } from "./redditApi";
 
 /** */
 export async function youtubeDlUrl(url): Promise<{ url?: string, error?: string }> {

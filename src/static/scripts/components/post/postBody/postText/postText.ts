@@ -1,11 +1,11 @@
-import { editCommentOrPost } from "../../../../api/redditApi.js";
-import { RedditApiData } from "../../../../types/misc.js";
-import { emojiFlagsToImages, escHTML } from "../../../../utils/htmlStatics.js";
-import { elementWithClassInTree, linksToSpa } from "../../../../utils/htmlStuff.js";
-import { hasParams } from "../../../../utils/utils.js";
-import Ph_MarkdownForm from "../../../misc/markdownForm/markdownForm.js";
-import Ph_Toast, { Level } from "../../../misc/toast/toast.js";
-import Ph_RedditPoll from "./redditPoll.js";
+import { editCommentOrPost } from "../../../../api/redditApi";
+import { RedditApiData } from "../../../../types/misc";
+import { emojiFlagsToImages, escHTML } from "../../../../utils/htmlStatics";
+import { elementWithClassInTree, linksToSpa } from "../../../../utils/htmlStuff";
+import { hasParams } from "../../../../utils/utils";
+import Ph_MarkdownForm from "../../../misc/markdownForm/markdownForm";
+import Ph_Toast, { Level } from "../../../misc/toast/toast";
+import Ph_RedditPoll from "./redditPoll";
 
 /**
  * Text of a post. If in feed, has a max height. If higher than max height, show expand button

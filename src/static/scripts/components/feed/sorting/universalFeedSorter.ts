@@ -1,5 +1,5 @@
-import { redditApiRequest } from "../../../api/redditApi.js";
-import ViewsStack from "../../../historyState/viewsStack.js";
+import { redditApiRequest } from "../../../api/redditApi";
+import ViewsStack from "../../../historyState/viewsStack";
 import {
 	NonSortableUserSections,
 	PostSorting,
@@ -8,15 +8,15 @@ import {
 	SortPostsTimeFrame,
 	SortUserPostsOrder,
 	UserSection
-} from "../../../types/misc.js";
-import { isLoggedIn, thisUser } from "../../../utils/globals.js";
-import { getLoadingIcon } from "../../../utils/htmlStatics.js";
-import { extractPath, extractQuery, hasParams, splitPathQuery } from "../../../utils/utils.js";
-import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
-import { DropDownActionData, DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
-import Ph_Toast, { Level } from "../../misc/toast/toast.js";
-import { FeedType } from "../feedInfo/feedInfo.js";
-import Ph_UniversalFeed from "../universalFeed/universalFeed.js";
+} from "../../../types/misc";
+import { isLoggedIn, thisUser } from "../../../utils/globals";
+import { getLoadingIcon } from "../../../utils/htmlStatics";
+import { extractPath, extractQuery, hasParams, splitPathQuery } from "../../../utils/utils";
+import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown";
+import { DropDownActionData, DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry";
+import Ph_Toast, { Level } from "../../misc/toast/toast";
+import { FeedType } from "../feedInfo/feedInfo";
+import Ph_UniversalFeed from "../universalFeed/universalFeed";
 
 /** Sorts a universal feed */
 export default class Ph_UniversalFeedSorter extends HTMLElement {

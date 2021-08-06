@@ -1,21 +1,21 @@
-import { redditApiRequest } from "../../../api/redditApi.js";
-import ViewsStack from "../../../historyState/viewsStack.js";
-import { RedditApiType } from "../../../types/misc.js";
-import { fakeSubreddits } from "../../../utils/consts.js";
-import { escHTML, getLoadingIcon } from "../../../utils/htmlStatics.js";
-import { elementWithClassInTree } from "../../../utils/htmlStuff.js";
-import { clamp, hasParams, sleep, throttle, waitForFullScreenExit } from "../../../utils/utils.js";
-import Ph_Comment from "../../comment/comment.js";
-import Ph_Message from "../../message/message.js";
-import { DropDownActionData } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
-import Ph_Toast, { Level } from "../../misc/toast/toast.js";
-import Ph_Post from "../../post/post.js";
-import { Ph_ViewState } from "../../viewState/viewState.js";
-import Ph_FeedInfo, { FeedType } from "../feedInfo/feedInfo.js";
-import FeedInfoFactory from "../feedInfo/feedInfoFactory.js";
-import Ph_FeedItem from "../feedItem/feedItem.js";
-import Ph_SearchFeedSorter from "../sorting/searchFeedSorter.js";
-import Ph_UniversalFeedSorter from "../sorting/universalFeedSorter.js";
+import { redditApiRequest } from "../../../api/redditApi";
+import ViewsStack from "../../../historyState/viewsStack";
+import { RedditApiType } from "../../../types/misc";
+import { fakeSubreddits } from "../../../utils/consts";
+import { escHTML, getLoadingIcon } from "../../../utils/htmlStatics";
+import { elementWithClassInTree } from "../../../utils/htmlStuff";
+import { clamp, hasParams, sleep, throttle, waitForFullScreenExit } from "../../../utils/utils";
+import Ph_Comment from "../../comment/comment";
+import Ph_Message from "../../message/message";
+import { DropDownActionData } from "../../misc/dropDown/dropDownEntry/dropDownEntry";
+import Ph_Toast, { Level } from "../../misc/toast/toast";
+import Ph_Post from "../../post/post";
+import { Ph_ViewState } from "../../viewState/viewState";
+import Ph_FeedInfo, { FeedType } from "../feedInfo/feedInfo";
+import FeedInfoFactory from "../feedInfo/feedInfoFactory";
+import Ph_FeedItem from "../feedItem/feedItem";
+import Ph_SearchFeedSorter from "../sorting/searchFeedSorter";
+import Ph_UniversalFeedSorter from "../sorting/universalFeedSorter";
 
 export enum MessageSection {
 	all = "inbox",

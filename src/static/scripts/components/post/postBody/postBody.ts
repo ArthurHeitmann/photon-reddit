@@ -1,9 +1,9 @@
-import { RedditApiData, RedditApiType } from "../../../types/misc.js";
-import { escADQ, escHTML } from "../../../utils/htmlStatics.js";
-import { linksToSpa } from "../../../utils/htmlStuff.js";
-import { hasParams } from "../../../utils/utils.js";
-import Ph_MediaViewer from "../../mediaViewer/mediaViewer.js";
-import Ph_PostText from "./postText/postText.js";
+import { RedditApiData, RedditApiType } from "../../../types/misc";
+import { escADQ, escHTML } from "../../../utils/htmlStatics";
+import { linksToSpa } from "../../../utils/htmlStuff";
+import { hasParams } from "../../../utils/utils";
+import Ph_MediaViewer from "../../mediaViewer/mediaViewer";
+import Ph_PostText from "./postText/postText";
 
 /**
  * Determines the post type and generates the type specific content

@@ -2,7 +2,7 @@
  * Some general purpose utility funcitons
  */
 
-import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
+import Ph_Toast, { Level } from "../components/misc/toast/toast";
 
 /** */
 function _numberToShort(num): { n: number, s: string } {

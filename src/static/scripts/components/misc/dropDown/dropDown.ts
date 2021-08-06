@@ -1,6 +1,6 @@
-import { hasParams } from "../../../utils/utils.js";
-import Ph_DropDownArea from "./dropDownArea/dropDownArea.js";
-import { DropDownEntryParam } from "./dropDownEntry/dropDownEntry.js";
+import { hasParams } from "../../../utils/utils";
+import Ph_DropDownArea from "./dropDownArea/dropDownArea";
+import { DropDownEntryParam } from "./dropDownEntry/dropDownEntry";
 
 /**
  * A drop down menu. Can have infinite sub drop downds

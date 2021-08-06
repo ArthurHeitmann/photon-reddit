@@ -1,6 +1,6 @@
-import { isElementInViewport } from "../../../utils/htmlStatics.js";
-import { hasParams } from "../../../utils/utils.js";
-import Ph_PhotonBaseElement from "../../photon/photonBaseElement/photonBaseElement.js";
+import { isElementInViewport } from "../../../utils/htmlStatics";
+import { hasParams } from "../../../utils/utils";
+import Ph_PhotonBaseElement from "../../photon/photonBaseElement/photonBaseElement";
 
 export default class Ph_FeedItem extends Ph_PhotonBaseElement {
 	itemId: string;

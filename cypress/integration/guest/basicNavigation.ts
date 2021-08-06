@@ -1,4 +1,4 @@
-import { loadPage, showHeader } from "../../support/utils.js";
+import { loadPage, showHeader } from "../../support/utils";
 
 describe("Basic Navigation", () => {
 	it("A bit of everything", () => {

@@ -4,25 +4,25 @@
  * This file gets loaded from index.html and imports all other files
  */
 
-import { subscribe } from "./api/redditApi.js";
-import { AuthState, checkAuthOnPageLoad, checkTokenRefresh } from "./auth/auth.js";
-import { checkOrCompleteLoginRedirect, initiateLogin } from "./auth/loginHandler.js";
-import Ph_Header from "./components/global/header/header.js";
-import Ph_Toast, { Level } from "./components/misc/toast/toast.js";
-import Ph_Changelog from "./components/photon/changelog/changelog.js";
-import Ph_Tutorial from "./components/photon/tutorial/tutorial.js";
-import { pushLinkToHistorySep } from "./historyState/historyStateManager.js";
-import ViewsStack from "./historyState/viewsStack.js";
-import { hasAnalyticsFileLoaded } from "./unsuspiciousFolder/unsuspiciousFile.js";
-import { loginSubredditFullName, loginSubredditName } from "./utils/consts.js";
-import { thisUser } from "./utils/globals.js";
-import { $css, $id } from "./utils/htmlStatics.js";
-import { linksToSpa } from "./utils/htmlStuff.js";
-import "./utils/sideEffectImports.js";
-import { extractHash, extractPath, extractQuery } from "./utils/utils.js";
-import { photonWebVersion } from "./utils/version.js";
-import { setWaitingServiceWorker } from "./utils/versionManagement.js";
-import VersionNumber from "./utils/versionNumber.js";
+import { subscribe } from "./api/redditApi";
+import { AuthState, checkAuthOnPageLoad, checkTokenRefresh } from "./auth/auth";
+import { checkOrCompleteLoginRedirect, initiateLogin } from "./auth/loginHandler";
+import Ph_Header from "./components/global/header/header";
+import Ph_Toast, { Level } from "./components/misc/toast/toast";
+import Ph_Changelog from "./components/photon/changelog/changelog";
+import Ph_Tutorial from "./components/photon/tutorial/tutorial";
+import { pushLinkToHistorySep } from "./historyState/historyStateManager";
+import ViewsStack from "./historyState/viewsStack";
+import { hasAnalyticsFileLoaded } from "./unsuspiciousFolder/unsuspiciousFile";
+import { loginSubredditFullName, loginSubredditName } from "./utils/consts";
+import { thisUser } from "./utils/globals";
+import { $css, $id } from "./utils/htmlStatics";
+import { linksToSpa } from "./utils/htmlStuff";
+import "./utils/sideEffectImports";
+import { extractHash, extractPath, extractQuery } from "./utils/utils";
+import { photonWebVersion } from "./utils/version";
+import { setWaitingServiceWorker } from "./utils/versionManagement";
+import VersionNumber from "./utils/versionNumber";
 
 async function init(): Promise<void> {
 	console.log("Photon Init");

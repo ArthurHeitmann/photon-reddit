@@ -1,7 +1,7 @@
-import { escADQ } from "../../../../utils/htmlStatics.js";
-import { clamp, hasParams, urlWithHttps } from "../../../../utils/utils.js";
-import { globalSettings } from "../../../global/photonSettings/photonSettings.js";
-import Ph_VideoWrapper, { BasicVideoData, SourceData, VideoTrackInfo } from "../videoWrapper.js";
+import { escADQ } from "../../../../utils/htmlStatics";
+import { clamp, hasParams, urlWithHttps } from "../../../../utils/utils";
+import { globalSettings } from "../../../global/photonSettings/photonSettings";
+import Ph_VideoWrapper, { BasicVideoData, SourceData, VideoTrackInfo } from "../videoWrapper";
 
 /**
  * A video with a list of fallback sources

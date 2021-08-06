@@ -6,27 +6,24 @@ import {
 	vote,
 	VoteDirection,
 	voteDirectionFromLikes
-} from "../../api/redditApi.js";
-import { RedditApiType } from "../../types/misc.js";
-import Votable from "../../types/votable.js";
-import { thisUser } from "../../utils/globals.js";
-import { emojiFlagsToImages, escADQ } from "../../utils/htmlStatics.js";
-import { elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff.js";
-import { hasParams, isObjectEmpty, makeElement, numberToShort, timePassedSinceStr } from "../../utils/utils.js";
-import Ph_CommentsFeed from "../feed/commentsFeed/commentsFeed.js";
-import Ph_Readable from "../feed/feedItem/readable/readable.js";
-import Ph_AwardsInfo from "../misc/awardsInfo/awardsInfo.js";
-import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
-import Ph_DropDownEntry, {
-	DropDownActionData,
-	DropDownEntryParam
-} from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
-import Ph_Flair from "../misc/flair/flair.js";
-import Ph_CommentForm from "../misc/markdownForm/commentForm/commentForm.js";
-import Ph_MarkdownForm from "../misc/markdownForm/markdownForm.js";
-import Ph_Toast, { Level } from "../misc/toast/toast.js";
-import Ph_VoteButton from "../misc/voteButton/voteButton.js";
-import Ph_Post from "../post/post.js";
+} from "../../api/redditApi";
+import { RedditApiType } from "../../types/misc";
+import Votable from "../../types/votable";
+import { thisUser } from "../../utils/globals";
+import { emojiFlagsToImages, escADQ } from "../../utils/htmlStatics";
+import { elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff";
+import { hasParams, isObjectEmpty, makeElement, numberToShort, timePassedSinceStr } from "../../utils/utils";
+import Ph_CommentsFeed from "../feed/commentsFeed/commentsFeed";
+import Ph_Readable from "../feed/feedItem/readable/readable";
+import Ph_AwardsInfo from "../misc/awardsInfo/awardsInfo";
+import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown";
+import Ph_DropDownEntry, { DropDownActionData, DropDownEntryParam } from "../misc/dropDown/dropDownEntry/dropDownEntry";
+import Ph_Flair from "../misc/flair/flair";
+import Ph_CommentForm from "../misc/markdownForm/commentForm/commentForm";
+import Ph_MarkdownForm from "../misc/markdownForm/markdownForm";
+import Ph_Toast, { Level } from "../misc/toast/toast";
+import Ph_VoteButton from "../misc/voteButton/voteButton";
+import Ph_Post from "../post/post";
 
 /**
  * A comment that has been posted under a post

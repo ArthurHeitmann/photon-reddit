@@ -1,12 +1,12 @@
-import { redditApiRequest, setMessageReadStatus } from "../../../api/redditApi.js";
-import { RedditApiType } from "../../../types/misc.js";
-import { ensurePageLoaded, isLoggedIn, thisUser } from "../../../utils/globals.js";
-import { $css, escADQ, escHTML } from "../../../utils/htmlStatics.js";
-import { linksToSpa } from "../../../utils/htmlStuff.js";
-import { hasParams, numberToShort } from "../../../utils/utils.js";
-import Ph_Readable from "../../feed/feedItem/readable/readable.js";
-import { globalSettings, PhotonSettings } from "../../global/photonSettings/photonSettings.js";
-import Ph_Toast, { Level } from "../../misc/toast/toast.js";
+import { redditApiRequest, setMessageReadStatus } from "../../../api/redditApi";
+import { RedditApiType } from "../../../types/misc";
+import { ensurePageLoaded, isLoggedIn, thisUser } from "../../../utils/globals";
+import { $css, escADQ, escHTML } from "../../../utils/htmlStatics";
+import { linksToSpa } from "../../../utils/htmlStuff";
+import { hasParams, numberToShort } from "../../../utils/utils";
+import Ph_Readable from "../../feed/feedItem/readable/readable";
+import { globalSettings, PhotonSettings } from "../../global/photonSettings/photonSettings";
+import Ph_Toast, { Level } from "../../misc/toast/toast";
 
 export default class Ph_MessageNotification extends HTMLElement {
 	static previousUnreadMessages = 0;

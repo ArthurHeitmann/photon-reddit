@@ -4,11 +4,11 @@
  *  - added & removing elements from the history
  */
 
-import { globalSettings } from "../components/global/photonSettings/photonSettings.js";
-import { Ph_ViewState } from "../components/viewState/viewState.js";
-import { HistoryState } from "../types/misc.js";
-import { $tag } from "../utils/htmlStatics.js";
-import { pushLinkToHistoryComb, PushType } from "./historyStateManager.js";
+import { globalSettings } from "../components/global/photonSettings/photonSettings";
+import { Ph_ViewState } from "../components/viewState/viewState";
+import { HistoryState } from "../types/misc";
+import { $tag } from "../utils/htmlStatics";
+import { pushLinkToHistoryComb, PushType } from "./historyStateManager";
 
 interface ViewType {
 	/** index will technically be stored as a string, but that shouldn't affect anything */

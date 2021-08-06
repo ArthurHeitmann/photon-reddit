@@ -1,6 +1,6 @@
-import { RedditApiType } from "../../../types/misc.js";
-import { linksToSpa } from "../../../utils/htmlStuff.js";
-import { hasParams } from "../../../utils/utils.js";
+import { RedditApiType } from "../../../types/misc";
+import { linksToSpa } from "../../../utils/htmlStuff";
+import { hasParams } from "../../../utils/utils";
 
 export default class Ph_FeedLink extends HTMLElement {
 	constructor(feedData: RedditApiType | string, blurNsfw = false, isClickable = true) {

@@ -4,10 +4,10 @@
  * Might import other files
  */
 
-import { globalSettings, PhotonSettings } from "../components/global/photonSettings/photonSettings.js";
-import Ph_MediaViewer from "../components/mediaViewer/mediaViewer.js";
-import { pushLinkToHistoryComb } from "../historyState/historyStateManager.js";
-import { $classAr } from "./htmlStatics.js";
+import { globalSettings, PhotonSettings } from "../components/global/photonSettings/photonSettings";
+import Ph_MediaViewer from "../components/mediaViewer/mediaViewer";
+import { pushLinkToHistoryComb } from "../historyState/historyStateManager";
+import { $classAr } from "./htmlStatics";
 
 export function linksToSpa(elem: HTMLElement, inlineMedia: boolean = false) {
 	if (inlineMedia)

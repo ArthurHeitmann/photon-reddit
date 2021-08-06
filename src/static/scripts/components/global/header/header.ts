@@ -1,11 +1,11 @@
-import { ViewChangeData } from "../../../historyState/viewsStack.js";
-import { SVGAnimateElement } from "../../../types/misc.js";
-import { $class } from "../../../utils/htmlStatics.js";
-import { hasHTML } from "../../../utils/utils.js";
-import Ph_DropDownArea from "../../misc/dropDown/dropDownArea/dropDownArea.js";
-import Ph_PhotonSettings from "../photonSettings/photonSettings.js";
-import Ph_Search from "../search/search.js";
-import Ph_UserDropDown from "../userDropDown/userDropDown.js";
+import { ViewChangeData } from "../../../historyState/viewsStack";
+import { SVGAnimateElement } from "../../../types/misc";
+import { $class } from "../../../utils/htmlStatics";
+import { hasHTML } from "../../../utils/utils";
+import Ph_DropDownArea from "../../misc/dropDown/dropDownArea/dropDownArea";
+import Ph_PhotonSettings from "../photonSettings/photonSettings";
+import Ph_Search from "../search/search";
+import Ph_UserDropDown from "../userDropDown/userDropDown";
 
 /**
  * The always present, expandable header at the top. Provides navigation options and a place for feeds to

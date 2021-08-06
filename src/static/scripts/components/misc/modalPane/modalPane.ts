@@ -1,5 +1,5 @@
-import { disableMainScroll, enableMainScroll } from "../../../utils/htmlStatics.js";
-import { hasHTML } from "../../../utils/utils.js";
+import { disableMainScroll, enableMainScroll } from "../../../utils/htmlStatics";
+import { hasHTML } from "../../../utils/utils";
 
 export default class Ph_ModalPane extends HTMLElement {
 	content: HTMLDivElement;

@@ -1,4 +1,4 @@
-import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager.js";
+import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager";
 import {
 	$class,
 	$css,
@@ -6,10 +6,10 @@ import {
 	disableMainScroll,
 	enableMainPointerEvents,
 	enableMainScroll
-} from "../../../utils/htmlStatics.js";
-import { hasHTML } from "../../../utils/utils.js";
-import Ph_Header from "../../global/header/header.js";
-import Ph_Toast, { Level } from "../../misc/toast/toast.js";
+} from "../../../utils/htmlStatics";
+import { hasHTML } from "../../../utils/utils";
+import Ph_Header from "../../global/header/header";
+import Ph_Toast, { Level } from "../../misc/toast/toast";
 
 interface TutorialStep {
 	highlightElementSelector: string | null,

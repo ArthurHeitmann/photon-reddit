@@ -1,4 +1,4 @@
-import { hasParams } from "../../../utils/utils.js";
+import { hasParams } from "../../../utils/utils";
 
 /**
  * An svg with a path element. The path can be changed, so that it morphs between different paths

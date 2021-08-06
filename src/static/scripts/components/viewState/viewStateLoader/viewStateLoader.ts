@@ -1,7 +1,7 @@
-import ViewsStack from "../../../historyState/viewsStack.js";
-import { HistoryState } from "../../../types/misc.js";
-import { hasParams } from "../../../utils/utils.js";
-import { Ph_ViewState } from "../viewState.js";
+import ViewsStack from "../../../historyState/viewsStack";
+import { HistoryState } from "../../../types/misc";
+import { hasParams } from "../../../utils/utils";
+import { Ph_ViewState } from "../viewState";
 
 /**
  * A Ph_ViewState with a loading screen

@@ -1,11 +1,11 @@
-import { escHTML } from "../../../utils/htmlStatics.js";
-import { makeElement } from "../../../utils/utils.js";
-import Ph_Toast, { Level } from "../../misc/toast/toast.js";
-import Ph_PhotonBaseElement from "../../photon/photonBaseElement/photonBaseElement.js";
-import Ph_FeedInfo, { FeedType } from "./feedInfo.js";
-import Ph_FeedInfoMulti from "./feedInfoMulti.js";
-import Ph_FeedInfoSubreddit from "./feedInfoSubreddit.js";
-import Ph_FeedInfoUser from "./feedInfoUser.js";
+import { escHTML } from "../../../utils/htmlStatics";
+import { makeElement } from "../../../utils/utils";
+import Ph_Toast, { Level } from "../../misc/toast/toast";
+import Ph_PhotonBaseElement from "../../photon/photonBaseElement/photonBaseElement";
+import Ph_FeedInfo, { FeedType } from "./feedInfo";
+import Ph_FeedInfoMulti from "./feedInfoMulti";
+import Ph_FeedInfoSubreddit from "./feedInfoSubreddit";
+import Ph_FeedInfoUser from "./feedInfoUser";
 
 export default class FeedInfoFactory {
 	/** All feed infos that are currently loaded */

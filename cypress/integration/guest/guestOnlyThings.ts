@@ -1,4 +1,4 @@
-import { hideHeader, loadPage } from "../../support/utils.js";
+import { hideHeader, loadPage } from "../../support/utils";
 
 const viewportSize = {
 	width: -1,

@@ -1,8 +1,8 @@
-import { getImgurContent, ImgurContent, ImgurContentType } from "../../api/imgurApi.js";
-import { RedditApiData, RedditApiType } from "../../types/misc.js";
-import { mediaHostsWhiteList } from "../../utils/consts.js";
-import { nonDraggableImage } from "../../utils/htmlStatics.js";
-import { linksToSpa } from "../../utils/htmlStuff.js";
+import { getImgurContent, ImgurContent, ImgurContentType } from "../../api/imgurApi";
+import { RedditApiData, RedditApiType } from "../../types/misc";
+import { mediaHostsWhiteList } from "../../utils/consts";
+import { nonDraggableImage } from "../../utils/htmlStatics";
+import { linksToSpa } from "../../utils/htmlStuff";
 import {
 	attachOnFullscreenChangeListener,
 	enterFullscreen,
@@ -10,21 +10,21 @@ import {
 	hasHTML,
 	hasParams,
 	isFullscreen
-} from "../../utils/utils.js";
-import { globalSettings } from "../global/photonSettings/photonSettings.js";
-import Ph_ControlsBar from "../misc/controlsBar/controlsBar.js";
-import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown.js";
-import { DropDownEntryParam } from "../misc/dropDown/dropDownEntry/dropDownEntry.js";
-import Ph_SwitchingImage from "../misc/switchableImage/switchableImage.js";
-import Ph_Toast, { Level } from "../misc/toast/toast.js";
-import Ph_PhotonBaseElement from "../photon/photonBaseElement/photonBaseElement.js";
-import Ph_DraggableWrapper from "../post/postBody/draggableWrapper/draggableWrapper.js";
-import { Ph_ViewState } from "../viewState/viewState.js";
-import Ph_ImageViewer from "./imageViewer/imageViewer.js";
-import { MediaElement } from "./mediaElement.js";
-import Ph_GifVideo from "./videoPlayer/gifVideo/gifVideo.js";
-import Ph_SimpleVideo from "./videoPlayer/simpleVideo/simpleVideo.js";
-import Ph_VideoPlayer from "./videoPlayer/videoPlayer.js";
+} from "../../utils/utils";
+import { globalSettings } from "../global/photonSettings/photonSettings";
+import Ph_ControlsBar from "../misc/controlsBar/controlsBar";
+import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown";
+import { DropDownEntryParam } from "../misc/dropDown/dropDownEntry/dropDownEntry";
+import Ph_SwitchingImage from "../misc/switchableImage/switchableImage";
+import Ph_Toast, { Level } from "../misc/toast/toast";
+import Ph_PhotonBaseElement from "../photon/photonBaseElement/photonBaseElement";
+import Ph_DraggableWrapper from "../post/postBody/draggableWrapper/draggableWrapper";
+import { Ph_ViewState } from "../viewState/viewState";
+import Ph_ImageViewer from "./imageViewer/imageViewer";
+import { MediaElement } from "./mediaElement";
+import Ph_GifVideo from "./videoPlayer/gifVideo/gifVideo";
+import Ph_SimpleVideo from "./videoPlayer/simpleVideo/simpleVideo";
+import Ph_VideoPlayer from "./videoPlayer/videoPlayer";
 
 export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	controls: Ph_ControlsBar;

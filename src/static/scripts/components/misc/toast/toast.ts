@@ -1,4 +1,4 @@
-import { hasParams } from "../../../utils/utils.js";
+import { hasParams } from "../../../utils/utils";
 
 export interface ToastOptions {
 	/** if > 0 --> remove toast after n ms */

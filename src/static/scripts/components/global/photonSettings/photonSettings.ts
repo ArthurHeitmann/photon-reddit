@@ -1,20 +1,14 @@
-import { logOut } from "../../../auth/loginHandler.js";
-import { clearSeenPosts, ensurePageLoaded, isLoggedIn } from "../../../utils/globals.js";
-import { escADQ } from "../../../utils/htmlStatics.js";
-import "../../../utils/htmlStuff.js";
-import {
-	deepClone,
-	editableTimeStrToMs,
-	isObjectEmpty,
-	nameOf,
-	timeMsToEditableTimeStr
-} from "../../../utils/utils.js";
-import { photonWebVersion } from "../../../utils/version.js";
-import Ph_ModalPane from "../../misc/modalPane/modalPane.js";
-import Ph_Toast, { Level } from "../../misc/toast/toast.js";
-import Ph_Changelog from "../../photon/changelog/changelog.js";
-import Ph_Tutorial from "../../photon/tutorial/tutorial.js";
-import "./styleSettingsListener.js";
+import { logOut } from "../../../auth/loginHandler";
+import { clearSeenPosts, ensurePageLoaded, isLoggedIn } from "../../../utils/globals";
+import { escADQ } from "../../../utils/htmlStatics";
+import "../../../utils/htmlStuff";
+import { deepClone, editableTimeStrToMs, isObjectEmpty, nameOf, timeMsToEditableTimeStr } from "../../../utils/utils";
+import { photonWebVersion } from "../../../utils/version";
+import Ph_ModalPane from "../../misc/modalPane/modalPane";
+import Ph_Toast, { Level } from "../../misc/toast/toast";
+import Ph_Changelog from "../../photon/changelog/changelog";
+import Ph_Tutorial from "../../photon/tutorial/tutorial";
+import "./styleSettingsListener";
 
 export enum ImageLoadingPolicy {
 	alwaysPreview = "alwaysPreview",

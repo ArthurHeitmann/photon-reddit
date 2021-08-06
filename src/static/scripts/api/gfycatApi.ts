@@ -2,7 +2,7 @@
  * Interface with redgifs api
  */
 
-import { SourceData } from "../components/mediaViewer/videoPlayer/videoWrapper.js";
+import { SourceData } from "../components/mediaViewer/videoPlayer/videoWrapper";
 
 export enum GfycatDomain {
 	gfycat = "gfycat",

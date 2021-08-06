@@ -1,4 +1,4 @@
-import { hasParams } from "../../../utils/utils.js";
+import { hasParams } from "../../../utils/utils";
 
 /**
  * A set of images that can be replaced by each other

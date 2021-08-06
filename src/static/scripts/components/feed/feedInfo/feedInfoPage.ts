@@ -1,6 +1,6 @@
-import { hasParams } from "../../../utils/utils.js";
-import { FeedType } from "./feedInfo.js";
-import FeedInfoFactory from "./feedInfoFactory.js";
+import { hasParams } from "../../../utils/utils";
+import { FeedType } from "./feedInfo";
+import FeedInfoFactory from "./feedInfoFactory";
 
 export default class Ph_FeedInfoPage extends HTMLElement {
 	constructor(path: string) {

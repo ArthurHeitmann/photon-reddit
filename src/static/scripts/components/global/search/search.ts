@@ -1,17 +1,17 @@
-import { getSubFlairs, searchSubreddits, searchUser } from "../../../api/redditApi.js";
-import { pushLinkToHistoryComb, pushLinkToHistorySep } from "../../../historyState/historyStateManager.js";
-import { ViewChangeData } from "../../../historyState/viewsStack.js";
-import { RedditApiType, SortPostsTimeFrame, SortSearchOrder } from "../../../types/misc.js";
-import { isLoggedIn } from "../../../utils/globals.js";
-import { escADQ, getLoadingIcon } from "../../../utils/htmlStatics.js";
-import { elementWithClassInTree, isElementIn } from "../../../utils/htmlStuff.js";
-import { extractPath, extractQuery, hasHTML, isParamRedditTruthy, throttle } from "../../../utils/utils.js";
-import Ph_FeedLink from "../../link/feedLink/feedLink.js";
-import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown.js";
-import { DropDownActionData, DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
-import Ph_Flair from "../../misc/flair/flair.js";
-import Ph_Toast, { Level } from "../../misc/toast/toast.js";
-import Ph_Header from "../header/header.js";
+import { getSubFlairs, searchSubreddits, searchUser } from "../../../api/redditApi";
+import { pushLinkToHistoryComb, pushLinkToHistorySep } from "../../../historyState/historyStateManager";
+import { ViewChangeData } from "../../../historyState/viewsStack";
+import { RedditApiType, SortPostsTimeFrame, SortSearchOrder } from "../../../types/misc";
+import { isLoggedIn } from "../../../utils/globals";
+import { escADQ, getLoadingIcon } from "../../../utils/htmlStatics";
+import { elementWithClassInTree, isElementIn } from "../../../utils/htmlStuff";
+import { extractPath, extractQuery, hasHTML, isParamRedditTruthy, throttle } from "../../../utils/utils";
+import Ph_FeedLink from "../../link/feedLink/feedLink";
+import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown";
+import { DropDownActionData, DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry";
+import Ph_Flair from "../../misc/flair/flair";
+import Ph_Toast, { Level } from "../../misc/toast/toast";
+import Ph_Header from "../header/header";
 
 /**
  * A search field to search reddit for subreddits, user, and posts; child of Ph_Header

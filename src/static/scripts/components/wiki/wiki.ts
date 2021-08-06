@@ -1,10 +1,10 @@
-import { RedditApiType } from "../../types/misc.js";
-import { emojiFlagsToImages } from "../../utils/htmlStatics.js";
-import { elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff.js";
-import { hasParams } from "../../utils/utils.js";
-import { FeedType } from "../feed/feedInfo/feedInfo.js";
-import FeedInfoFactory from "../feed/feedInfo/feedInfoFactory.js";
-import { Ph_ViewState } from "../viewState/viewState.js";
+import { RedditApiType } from "../../types/misc";
+import { emojiFlagsToImages } from "../../utils/htmlStatics";
+import { elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff";
+import { hasParams } from "../../utils/utils";
+import { FeedType } from "../feed/feedInfo/feedInfo";
+import FeedInfoFactory from "../feed/feedInfo/feedInfoFactory";
+import { Ph_ViewState } from "../viewState/viewState";
 
 /**
  * A simple wiki page

@@ -1,9 +1,9 @@
-import { HistoryState } from "../../types/misc.js";
-import { $tag } from "../../utils/htmlStatics.js";
-import { elementWithClassInTree } from "../../utils/htmlStuff.js";
-import { hasParams } from "../../utils/utils.js";
-import Ph_Header from "../global/header/header.js";
-import Ph_PhotonBaseElement from "../photon/photonBaseElement/photonBaseElement.js";
+import { HistoryState } from "../../types/misc";
+import { $tag } from "../../utils/htmlStatics";
+import { elementWithClassInTree } from "../../utils/htmlStuff";
+import { hasParams } from "../../utils/utils";
+import Ph_Header from "../global/header/header";
+import Ph_PhotonBaseElement from "../photon/photonBaseElement/photonBaseElement";
 
 /**
  * A page that is associated with a history state/url.

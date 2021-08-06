@@ -1,12 +1,12 @@
-import { comment, deleteMessage } from "../../api/redditApi.js";
-import { RedditApiType } from "../../types/misc.js";
-import { thisUser } from "../../utils/globals.js";
-import { emojiFlagsToImages, escADQ, escHTML } from "../../utils/htmlStatics.js";
-import { linksToSpa } from "../../utils/htmlStuff.js";
-import { hasParams, timePassedSinceStr } from "../../utils/utils.js";
-import Ph_Readable from "../feed/feedItem/readable/readable.js";
-import Ph_MarkdownForm from "../misc/markdownForm/markdownForm.js";
-import Ph_Toast, { Level } from "../misc/toast/toast.js";
+import { comment, deleteMessage } from "../../api/redditApi";
+import { RedditApiType } from "../../types/misc";
+import { thisUser } from "../../utils/globals";
+import { emojiFlagsToImages, escADQ, escHTML } from "../../utils/htmlStatics";
+import { linksToSpa } from "../../utils/htmlStuff";
+import { hasParams, timePassedSinceStr } from "../../utils/utils";
+import Ph_Readable from "../feed/feedItem/readable/readable";
+import Ph_MarkdownForm from "../misc/markdownForm/markdownForm";
+import Ph_Toast, { Level } from "../misc/toast/toast";
 
 /**
  * A message that has been sent by someone

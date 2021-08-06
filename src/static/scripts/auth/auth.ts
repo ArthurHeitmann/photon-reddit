@@ -1,8 +1,8 @@
-import { getImplicitGrant, getRefreshAccessToken } from "../api/redditAuthApi.js";
-import Ph_Toast, { Level } from "../components/misc/toast/toast.js";
-import { clientId } from "../unsuspiciousFolder/unsuspiciousFile.js";
-import { isLoggedIn, setIsLoggedIn, thisUser } from "../utils/globals.js";
-import { logOut } from "./loginHandler.js";
+import { getImplicitGrant, getRefreshAccessToken } from "../api/redditAuthApi";
+import Ph_Toast, { Level } from "../components/misc/toast/toast";
+import { clientId } from "../unsuspiciousFolder/unsuspiciousFile";
+import { isLoggedIn, setIsLoggedIn, thisUser } from "../utils/globals";
+import { logOut } from "./loginHandler";
 
 export enum AuthState {
 	loggedIn, implicitGrant

@@ -1,10 +1,10 @@
-import { StoredData } from "../../../utils/globals.js";
-import { $class, $cssAr, escHTML } from "../../../utils/htmlStatics.js";
-import { tagInElementTree } from "../../../utils/htmlStuff.js";
-import { hasParams } from "../../../utils/utils.js";
-import Ph_Header from "../../global/header/header.js";
-import Ph_Toast, { Level } from "../../misc/toast/toast.js";
-import { clearAllOldData } from "./feedInfoCleanup.js";
+import { StoredData } from "../../../utils/globals";
+import { $class, $cssAr, escHTML } from "../../../utils/htmlStatics";
+import { tagInElementTree } from "../../../utils/htmlStuff";
+import { hasParams } from "../../../utils/utils";
+import Ph_Header from "../../global/header/header";
+import Ph_Toast, { Level } from "../../misc/toast/toast";
+import { clearAllOldData } from "./feedInfoCleanup";
 
 export enum FeedType {
 	subreddit = "subreddit",

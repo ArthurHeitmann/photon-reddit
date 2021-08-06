@@ -2,14 +2,10 @@ import bodyParser from "body-parser";
 import express from "express";
 import RateLimit from "express-rate-limit";
 import helmet from "helmet";
-import { analyticsRouter } from "./serverScripts/analytics.js";
-import {
-	__dirname,
-	basicRateLimitConfig,
-	port,
-} from "./serverScripts/consts.js";
-import { photonApiRouter } from "./serverScripts/photonApi.js";
-import { cacheControl, checkSslAndWww, safeExc} from "./serverScripts/utils.js";
+import { analyticsRouter } from "./serverScripts/analytics";
+import { __dirname, basicRateLimitConfig, port, } from "./serverScripts/consts";
+import { photonApiRouter } from "./serverScripts/photonApi";
+import { cacheControl, checkSslAndWww, safeExc } from "./serverScripts/utils";
 
 const app = express();
 

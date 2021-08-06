@@ -1,10 +1,10 @@
-import ViewsStack from "../../../historyState/viewsStack.js";
-import { elementWithClassInTree } from "../../../utils/htmlStuff.js";
-import Ph_UniversalFeed from "../../feed/universalFeed/universalFeed.js";
-import Ph_PostAndComments from "../../postAndComments/postAndComments.js";
-import Ph_CommentsViewStateLoader from "../../viewState/commentsViewStateLoader/commentsViewStateLoader.js";
-import { Ph_ViewState } from "../../viewState/viewState.js";
-import Ph_Post from "../post.js";
+import ViewsStack from "../../../historyState/viewsStack";
+import { elementWithClassInTree } from "../../../utils/htmlStuff";
+import Ph_UniversalFeed from "../../feed/universalFeed/universalFeed";
+import Ph_PostAndComments from "../../postAndComments/postAndComments";
+import Ph_CommentsViewStateLoader from "../../viewState/commentsViewStateLoader/commentsViewStateLoader";
+import { Ph_ViewState } from "../../viewState/viewState";
+import Ph_Post from "../post";
 
 export default class PostDoubleLink {
 	post: Ph_Post;

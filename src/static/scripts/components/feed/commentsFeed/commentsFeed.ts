@@ -1,9 +1,9 @@
-import { RedditApiType, SortCommentsOrder } from "../../../types/misc.js";
-import { linksToSpa } from "../../../utils/htmlStuff.js";
-import { extractQuery, hasParams } from "../../../utils/utils.js";
-import Ph_Comment from "../../comment/comment.js";
-import Ph_Toast, { Level } from "../../misc/toast/toast.js";
-import Ph_Post from "../../post/post.js";
+import { RedditApiType, SortCommentsOrder } from "../../../types/misc";
+import { linksToSpa } from "../../../utils/htmlStuff";
+import { extractQuery, hasParams } from "../../../utils/utils";
+import Ph_Comment from "../../comment/comment";
+import Ph_Toast, { Level } from "../../misc/toast/toast";
+import Ph_Post from "../../post/post";
 
 /**
  * A list of Ph_Comment; has sorter; can have special link

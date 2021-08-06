@@ -1,30 +1,24 @@
-import { getGfycatMp4SrcFromUrl, GfycatDomain } from "../../../api/gfycatApi.js";
-import { youtubeDlUrl } from "../../../api/photonApi.js";
-import { getStreamableUrl } from "../../../api/streamableApi.js";
-import { RedditApiType } from "../../../types/misc.js";
-import { $tagAr, escHTML } from "../../../utils/htmlStatics.js";
-import { classInElementTree, isElementIn } from "../../../utils/htmlStuff.js";
-import {
-	getFullscreenElement,
-	hasParams,
-	isFullscreen,
-	isJsonEqual,
-	secondsToVideoTime
-} from "../../../utils/utils.js";
-import { globalSettings } from "../../global/photonSettings/photonSettings.js";
-import Ph_ControlsBar, { ControlsLayoutSlots } from "../../misc/controlsBar/controlsBar.js";
-import { DropDownActionData } from "../../misc/dropDown/dropDownEntry/dropDownEntry.js";
-import Ph_ProgressBar from "../../misc/progressBar/progressBar.js";
-import Ph_SwitchingImage from "../../misc/switchableImage/switchableImage.js";
-import Ph_Toast, { Level } from "../../misc/toast/toast.js";
-import Ph_PhotonBaseElement from "../../photon/photonBaseElement/photonBaseElement.js";
-import { MediaElement } from "../mediaElement.js";
-import Ph_GifVideo from "./gifVideo/gifVideo.js";
-import Ph_PlayImage from "./icons/playImage.js";
-import Ph_SimpleVideo from "./simpleVideo/simpleVideo.js";
-import Ph_SpeedChanger from "./speedChanger/speedChanger.js";
-import Ph_VideoAudio from "./videoAudio/videoAudio.js";
-import Ph_VideoWrapper, { SourceData } from "./videoWrapper.js";
+import { getGfycatMp4SrcFromUrl, GfycatDomain } from "../../../api/gfycatApi";
+import { youtubeDlUrl } from "../../../api/photonApi";
+import { getStreamableUrl } from "../../../api/streamableApi";
+import { RedditApiType } from "../../../types/misc";
+import { $tagAr, escHTML } from "../../../utils/htmlStatics";
+import { classInElementTree, isElementIn } from "../../../utils/htmlStuff";
+import { getFullscreenElement, hasParams, isFullscreen, isJsonEqual, secondsToVideoTime } from "../../../utils/utils";
+import { globalSettings } from "../../global/photonSettings/photonSettings";
+import Ph_ControlsBar, { ControlsLayoutSlots } from "../../misc/controlsBar/controlsBar";
+import { DropDownActionData } from "../../misc/dropDown/dropDownEntry/dropDownEntry";
+import Ph_ProgressBar from "../../misc/progressBar/progressBar";
+import Ph_SwitchingImage from "../../misc/switchableImage/switchableImage";
+import Ph_Toast, { Level } from "../../misc/toast/toast";
+import Ph_PhotonBaseElement from "../../photon/photonBaseElement/photonBaseElement";
+import { MediaElement } from "../mediaElement";
+import Ph_GifVideo from "./gifVideo/gifVideo";
+import Ph_PlayImage from "./icons/playImage";
+import Ph_SimpleVideo from "./simpleVideo/simpleVideo";
+import Ph_SpeedChanger from "./speedChanger/speedChanger";
+import Ph_VideoAudio from "./videoAudio/videoAudio";
+import Ph_VideoWrapper, { SourceData } from "./videoWrapper";
 
 /**
  * A custom video player with custom controls

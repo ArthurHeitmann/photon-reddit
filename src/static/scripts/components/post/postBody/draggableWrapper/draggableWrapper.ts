@@ -1,7 +1,7 @@
 /**
  * The children of this wrapper can be dragged around and zoomed in on with the mouse & scroll wheel
  */
-import TouchGestureListener from "../../../../utils/touchGestureListener.js";
+import TouchGestureListener from "../../../../utils/touchGestureListener";
 
 const zoomInPercent = 0.15;
 const zoomOutPercent = -(1- 1 / 1.15);

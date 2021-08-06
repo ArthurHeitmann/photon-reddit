@@ -1,6 +1,6 @@
-import { RedditApiData } from "../../../../types/misc.js";
-import { escHTML } from "../../../../utils/htmlStatics.js";
-import { hasParams, numberToShort, timePassedSince, timePeriodReadable } from "../../../../utils/utils.js";
+import { RedditApiData } from "../../../../types/misc";
+import { escHTML } from "../../../../utils/htmlStatics";
+import { hasParams, numberToShort, timePassedSince, timePeriodReadable } from "../../../../utils/utils";
 
 interface PollData {
 	user_selection: string,
