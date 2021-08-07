@@ -1,2 +1,5 @@
+User-agent: AhrefsBot
+Crawl-Delay: 3600
+
 User-agent: *
 Disallow:

@@ -1,3 +1,4 @@
+import dns from "dns";
 import express from "express";
 import { env } from "./consts";
 
@@ -45,4 +46,32 @@ export function safeExcAsync(func: (req: express.Request, res: express.Response,
 				console.error(err);
 				return res.status(400).json({ error: "¯\\_(ツ)_/¯" });
 			});
+}
+
+const isIpFromBotRegex = new RegExp("googlebot.com|msn.com|ahrefs.com|duckduckgo.com|netsystemsresearch.com".replace(/\./g, "\\."));
+/** Performs a reverse dns lookup on the ip. Check if the returned host matches a known bot/crawler. */
+export async function isIpFromBot(req: express.Request): Promise<boolean> {
+	try {
+		let tmpIp = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+		if (!tmpIp)
+			return false;
+
+		let ips: string[];
+		if (tmpIp instanceof Array)
+			ips = tmpIp;
+		else
+			ips = tmpIp.split(", ");
+
+		const reversedHosts = await Promise.allSettled(ips.map(ip => dns.promises.reverse(ip)));
+		const botHosts = reversedHosts
+			.filter(result => result.status === "fulfilled")
+			.map((result: PromiseFulfilledResult<string[]>) => result.value)
+			.flat()
+			.filter(host => isIpFromBotRegex.test(host));
+		console.log(JSON.stringify({ ips, "user-agent": req.headers["user-agent"], reversedHosts: reversedHosts }));
+
+		return botHosts.length > 0;
+	} catch {
+		return false;
+	}
 }

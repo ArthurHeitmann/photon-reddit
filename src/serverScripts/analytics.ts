@@ -27,9 +27,9 @@ import express from "express";
 import RateLimit from "express-rate-limit";
 import mariadb from "mariadb";
 import { analyticsRateLimitConfig, basicRateLimitConfig } from "./consts";
-import { safeExcAsync } from "./utils";
+import { isIpFromBot, safeExcAsync } from "./utils";
 
-const env = process.env.NODE_ENV || "development";
+const env: "production" | "development" | string = process.env.NODE_ENV || "development";
 if (env !== "production")
 	config();
 
@@ -211,6 +211,11 @@ async function trackBrowserFeature(featureName: string, isAvailable: boolean): P
 }
 
 analyticsRouter.post("/event", RateLimit(analyticsRateLimitConfig), safeExcAsync(async (req, res) => {
+	if (env === "production"  && await isIpFromBot(req)) {
+		res.send("yep");
+		console.log("not logging bot");
+		return;
+	}
 	let { clientId, path, referer } = req.body;
 	if (!path)
 		path = "/";
@@ -228,12 +233,12 @@ analyticsRouter.post("/event", RateLimit(analyticsRateLimitConfig), safeExcAsync
 	}
 	const serverTimeUtc = Date.now();
 
+	res.send("yep");
 	try {
 		await trackEvent(clientId, path.toLowerCase(), referer.toLowerCase() || "", serverTimeUtc);
-		res.send("yep");
 	}
 	catch (e) {
-		res.send("nope").status(400);
+		console.error("Error tracking event", e);
 	}
 }));
 

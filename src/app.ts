@@ -9,7 +9,6 @@ import { photonApiRouter } from "./serverScripts/photonApi";
 import { cacheControl, checkSslAndWww, safeExc } from "./serverScripts/utils";
 
 const app = express();
-
 // middlewares
 
 app.use(compression())
