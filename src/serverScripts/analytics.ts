@@ -1,4 +1,24 @@
 /**
+ * MariaDB Database Schema:
+ *
+ * Table trackedEvents:
+ * - id: INT(11) AUTO_INCREMENT
+ * - clientId: VARCHAR(128)
+ * - path: TEXT
+ * - referer: VARCHAR(128)
+ * - timeMillisUtc DECIMAL(15,0)
+ *
+ * Table browserFeatures:
+ * - id: INT(11) AUTO_INCREMENT
+ * - featureName: VARCHAR(50)
+ * - isAvailable: BOOL
+ * - data: DATE default=CURDATE()
+ *
+ * Table mediaHosts:
+ * - mediaHost: VARCHAR(50) default=''
+ * - linkHost: VARCHAR(50) default=''
+ * - type: VARCHAR(3)
+ * - count: INT(11) default=0
  *
  */
 
