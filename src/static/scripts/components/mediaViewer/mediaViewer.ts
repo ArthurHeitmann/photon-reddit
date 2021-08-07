@@ -451,7 +451,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		const wrapper = document.createElement("div");
 		wrapper.className = "filterWrapper bgFilter";
 		const label = document.createElement("span");
-		label.innerText = "Background:";
+		label.innerText = "background:";
 		wrapper.append(label);
 		const colorInput = document.createElement("input");
 		colorInput.type = "text";

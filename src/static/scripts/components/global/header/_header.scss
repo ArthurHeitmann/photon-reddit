@@ -120,7 +120,7 @@
 			}
 
 			.home {
-				img {
+				&, img {
 					width: 2.5rem;
 					height: 2.5rem;
 				}
@@ -149,6 +149,12 @@
 				overflow: hidden;
 				text-overflow: ellipsis;
 				text-align: right;
+			}
+
+			.dropDownButton {
+				height: 2.3rem;
+				line-height: 2.3rem;
+				border-radius: 1.15rem;
 			}
 		}
 	}

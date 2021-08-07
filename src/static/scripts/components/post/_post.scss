@@ -5,7 +5,11 @@
 	&.isInFeed {
 		.actions {
 			position: absolute;
-			transform: translateX(calc(-100% - .5rem));
+			transform: translateX(calc(-100% - .2rem)) translateY(-0.6rem);
+
+			.dropDownButton {
+				margin-top: -0.25rem;
+			}
 		}
 
 		@media (orientation: portrait) {
@@ -16,7 +20,7 @@
 
 		.header {
 			img.pinned {
-				transform: translateX(calc(-100% - 0.5rem)) translateY(0.1rem) rotate(45deg);
+				transform: translateX(calc(-100% - 0.4rem)) rotate(45deg);
 				position: absolute;
 			}
 
@@ -106,7 +110,7 @@
 			max-width: 75%;
 			overflow: hidden;
 			text-overflow: ellipsis;
-			height: 1.6em;
+			height: 1.5em;
 		}
 
 		> img {
@@ -144,12 +148,14 @@
 			}
 
 			.upvotes {
+				font-size: 1.1em;
+
 				&.medium {
-					font-size: .9em;
+					font-size: 0.95em;
 				}
 
 				&.small {
-					font-size: .7em;
+					font-size: .8em;
 				}
 			}
 		}
@@ -293,7 +299,8 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		margin-top: .45rem;
+		margin-top: .2rem;
+		filter: none;
 		--dim: 2.5rem;
 
 		&:hover {

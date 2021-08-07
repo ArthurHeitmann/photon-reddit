@@ -1,7 +1,7 @@
 @use "../../../../style/vars";
 
 .feedLink {
-	$imgSize: 1.4rem;
+	$imgSize: 1.65rem;
 	
 	> .linkWrapper {
 		display: flex;
@@ -72,6 +72,7 @@
 			overflow: hidden;
 			text-overflow: ellipsis;
 			transition: color 0.25s ease;
+			font-size: 1.075rem;
 		}
 	}
 }

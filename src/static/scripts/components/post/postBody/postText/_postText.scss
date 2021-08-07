@@ -1,3 +1,4 @@
+@use "../../../../../style/vars";
 
 .postText {
 	width: 100%;
@@ -17,7 +18,7 @@
 		--max-height: 10rem;
 
 		> :not(.expandButton) {
-			padding: 0 2rem 1rem 2rem;
+			padding: 0 vars.$post-padding 0.75rem 1.75rem;
 		}
 
 		> div {
@@ -27,7 +28,7 @@
 		}
 
 		&.expandableText {
-			padding-bottom: 2rem;
+			padding-bottom: vars.$post-padding;
 
 			> .expandButton {
 				display: initial;
@@ -36,16 +37,18 @@
 				bottom: 0;
 				left: 0;
 				width: 100%;
+				filter: drop-shadow(0px 0px 4px transparent) drop-shadow(0px 0px 6px transparent);
 
 				> img {
 					transform: scale(1);
-					transition: transform .25s ease;
+					transition: all .25s ease;
 					height: 100%;
 					width: 100%;
 					object-fit: contain;
 
 					&:hover {
 						transform: scale(1.125);
+						filter: drop-shadow(0px 0px 4px black) drop-shadow(0px 0px 6px black);
 					}
 
 					&:active {
