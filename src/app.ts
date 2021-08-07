@@ -1,4 +1,5 @@
 import bodyParser from "body-parser";
+import compression from "compression";
 import express from "express";
 import RateLimit from "express-rate-limit";
 import helmet from "helmet";
@@ -11,6 +12,7 @@ const app = express();
 
 // middlewares
 
+app.use(compression())
 app.use(helmet({
 	contentSecurityPolicy: false
 }));
