@@ -1,3 +1,7 @@
+/**
+ *
+ */
+
 import { config } from "dotenv";
 import express from "express";
 import RateLimit from "express-rate-limit";
@@ -60,7 +64,7 @@ async function trackEvent(clientId: string, path: string, referrer: string, time
 	`);
 	}
 	finally {
-		connection.release();
+		await connection.release();
 	}
 }
 
@@ -91,7 +95,7 @@ async function getEventsInTimeFrame(timeFrame: number, resolution: number): Prom
 		return Object.values(rows[0]);
 	}
 	finally {
-		connection.release();
+		await connection.release();
 	}
 }
 
@@ -109,7 +113,7 @@ async function getUniqueClientIdsInTimeFrame(timeFrame: number): Promise<string>
 		return rows[0]["cnt"];
 	}
 	finally {
-		connection.release();
+		await connection.release();
 	}
 }
 
@@ -142,7 +146,7 @@ async function getPopularPathsInTimeFrame(timeFrame: number, limit: number): Pro
 		return percentRows;
 	}
 	finally {
-		connection.release();
+		await connection.release();
 	}
 }
 
@@ -165,12 +169,29 @@ async function trackMediaHost(hosts: MediaHost[]): Promise<void> {
 		`);
 	}
 	finally {
-		connection.release();
+		await connection.release();
+	}
+}
+
+async function trackBrowserFeature(featureName: string, isAvailable: boolean): Promise<void> {
+	const connection = await getConnection();
+	if (connection === null)
+		return;
+
+	try {
+		await connection.query(`
+			INSERT INTO browserFeatures
+				(featureName, isAvailable)
+			 	VALUES (${connection.escape(featureName)}, ${connection.escape(isAvailable)})
+		`);
+	}
+	finally {
+		await connection.release();
 	}
 }
 
 analyticsRouter.post("/event", RateLimit(analyticsRateLimitConfig), safeExcAsync(async (req, res) => {
-	let { clientId, path, referer, timeMillisUtc } = req.body;
+	let { clientId, path, referer } = req.body;
 	if (!path)
 		path = "/";
 	if (!clientId || typeof clientId !== "string" || clientId.length > 128) {
@@ -186,16 +207,13 @@ analyticsRouter.post("/event", RateLimit(analyticsRateLimitConfig), safeExcAsync
 		return;
 	}
 	const serverTimeUtc = Date.now();
-	if (!timeMillisUtc || typeof timeMillisUtc !== "number" || referer.length > 128 || Math.abs(timeMillisUtc - serverTimeUtc) > 1000 * 10) {
-		timeMillisUtc = serverTimeUtc
-	}
+
 	try {
-		await trackEvent(clientId, path.toLowerCase(), referer.toLowerCase() || "", timeMillisUtc,);
+		await trackEvent(clientId, path.toLowerCase(), referer.toLowerCase() || "", serverTimeUtc);
 		res.send("yep");
 	}
 	catch (e) {
 		res.send("nope").status(400);
-		return;
 	}
 }));
 
@@ -289,4 +307,19 @@ analyticsRouter.post("/mediaHost", safeExcAsync(async (req, res) => {
 	// 	console.error(e);
 	// 	res.status(400).send("nope")
 	// }
+}));
+
+analyticsRouter.post("/browserFeatures", safeExcAsync(async (req, res) => {
+	const { featureName, isAvailable } = req.body;
+	if (typeof featureName !== "string" || typeof isAvailable !== "boolean") {
+		res.status(400).json({ error: "invalid parameters" });
+		return;
+	}
+	try {
+		await trackBrowserFeature(featureName, isAvailable);
+		res.send("yep");
+	}
+	catch (e) {
+		res.send("nope").status(400);
+	}
 }));

@@ -19,8 +19,10 @@
  *   - referer will be empty
  */
 
+import { trackBrowserFeatures } from "../api/photonApi";
 import { globalSettings } from "../components/global/photonSettings/photonSettings";
 import { ViewChangeData } from "../historyState/viewsStack";
+import { supportsIndexedDB, supportsServiceWorkers } from "../utils/browserFeatures";
 import { extractPath, randomString } from "../utils/utils";
 
 window.addEventListener("ph-view-change", (e: CustomEvent) => {
@@ -108,4 +110,22 @@ init();
 
 export function hasAnalyticsFileLoaded() {
 	return Boolean(clientId);
+}
+
+
+// track browser features
+
+window.addEventListener("load", () => {
+	if(localStorage["browserFeaturesTracked"] !== "true" && location.hostname !== "localhost")
+		sendBrowserFeatures();
+});
+
+async function sendBrowserFeatures() {
+	const idbSupported = await supportsIndexedDB();
+	const swSupported = supportsServiceWorkers();
+	await Promise.all([
+		trackBrowserFeatures({ featureName: "indexedDB", isAvailable: idbSupported }),
+		trackBrowserFeatures({ featureName: "serviceWorkers", isAvailable: swSupported }),
+	]);
+	localStorage["browserFeaturesTracked"] = "true";
 }

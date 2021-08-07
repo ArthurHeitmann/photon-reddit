@@ -14,6 +14,7 @@ import Ph_Tutorial from "./components/photon/tutorial/tutorial";
 import { pushLinkToHistorySep } from "./historyState/historyStateManager";
 import ViewsStack from "./historyState/viewsStack";
 import { hasAnalyticsFileLoaded } from "./unsuspiciousFolder/unsuspiciousFile";
+import { supportsIndexedDB } from "./utils/browserFeatures";
 import { loginSubredditFullName, loginSubredditName } from "./utils/consts";
 import { thisUser } from "./utils/globals";
 import { $css, $id } from "./utils/htmlStatics";
@@ -184,27 +185,21 @@ async function checkFirefoxPrivateMode(): Promise<boolean> {
 	return true;
 }
 
-function isFirefoxPrivateMode(): Promise<boolean> {
-	return new Promise(resolve => {
-		// as of now firefox does not support indexed db in private mode
-		const db = indexedDB.open("firefoxPrivateModeTest");
-		db.onsuccess = () => {
-			indexedDB.deleteDatabase("firefoxPrivateModeTest");
-			resolve(false);
-		};
-		db.onerror = async () => {
-			// firefox has an aggressive "Enhanced Tracking protection" in private mode, which blocks request to reddit
-			// check if basic request fails
-			try {
-				const r = await fetch("https://www.reddit.com/r/all.json?limit=1");
-				await r.json();
-				resolve(false);
-			}
-			catch (e) {
-				resolve(true);
-			}
-		};
-	});
+async function isFirefoxPrivateMode(): Promise<boolean> {
+	// as of now firefox does not support indexed db in private mode
+	const idbSupported = await supportsIndexedDB();
+	if (idbSupported)
+		return false;
+	try {
+		// firefox has an aggressive "Enhanced Tracking protection" in private mode, which blocks request to reddit
+		// check if basic request fails
+		const r = await fetch("https://www.reddit.com/r/all.json?limit=1");
+		await r.json();
+		return false;
+	}
+	catch {
+		return true;
+	}
 }
 
 window.addEventListener("load", init);

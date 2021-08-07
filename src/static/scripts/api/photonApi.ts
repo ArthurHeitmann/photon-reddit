@@ -60,6 +60,20 @@ export function trackMediaHost(mediaUrl: string, linkUrl: string, type: string) 
 	// localStorage.queuedHosts = "[]";
 }
 
+export async function trackBrowserFeatures(data: { featureName: string, isAvailable: boolean }): Promise<boolean> {
+	try {
+		const r = await fetch("/data/browserFeatures", {
+			method: "POST",
+			headers: { "content-type": "application/json" },
+			body: JSON.stringify(data)
+		});
+		const response = await r.text();
+		return response === "yep";
+	} catch (e) {
+		return false;
+	}
+}
+
 export async function getRandomSubreddit(isNsfw: boolean = false): Promise<string> {
 	let subReq: Response;
 	try {
