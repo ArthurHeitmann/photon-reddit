@@ -96,8 +96,8 @@ export default class Ph_FeedInfoUser extends Ph_FeedInfo {
 		}
 		linksToSpa(miscText);
 		this.appendChild(this.makeSwitchableBar([
-			{ titleHTML: "Description", content: publicDescription },
-			{ titleHTML: "Other", content: miscText },
+			{ title: "Description", content: publicDescription },
+			{ title: "Other", content: miscText },
 		]));
 
 		linksToSpa(this);

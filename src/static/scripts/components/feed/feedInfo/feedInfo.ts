@@ -1,7 +1,7 @@
 import { StoredData } from "../../../utils/globals";
 import { $class, $cssAr, escHTML } from "../../../utils/htmlStatics";
 import { tagInElementTree } from "../../../utils/htmlStuff";
-import { hasParams } from "../../../utils/utils";
+import { hasParams, makeElement } from "../../../utils/utils";
 import Ph_Header from "../../global/header/header";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
 import { clearAllOldData } from "./feedInfoCleanup";
@@ -97,18 +97,14 @@ export default abstract class Ph_FeedInfo extends HTMLElement {
 
 	abstract displayInfo(): void;
 
-	protected makeSwitchableBar(entries: { titleHTML: string, content: HTMLElement }[]): HTMLElement {
-		const wrapper = document.createElement("div");
-		wrapper.className = "switchableBar";
-		const switcher = document.createElement("div");
-		switcher.className = "switcher";
+	protected makeSwitchableBar(entries: { title: string, content: HTMLElement }[]): HTMLElement {
+		const wrapper = makeElement("div", { "class": "switchableBar" });
+		const switcher = makeElement("div", { "class": "switcher" });
 		wrapper.appendChild(switcher);
-		const content = document.createElement("div");
-		content.className = "content";
+		const content = makeElement("div", { "class": "content" });
 		wrapper.appendChild(content);
 		for (const entry of entries) {
-			const switchBtn = document.createElement("button");
-			switchBtn.innerHTML = entry.titleHTML;
+			const switchBtn = makeElement("button", null, entry.title);
 			switchBtn.addEventListener("click", () => {
 				content.firstElementChild?.remove();
 				content.appendChild(entry.content);
@@ -122,9 +118,8 @@ export default abstract class Ph_FeedInfo extends HTMLElement {
 	}
 
 	protected makeRefreshButton(): HTMLElement {
-		const refreshButton = document.createElement("button");
-		refreshButton.className = "refreshButton transparentButtonAlt";
-		refreshButton.innerHTML = `<img src="/img/refresh.svg" draggable="false" alt="refresh">`;
+		const refreshButton = makeElement("button", { "class": "refreshButton transparentButtonAlt" },
+			[makeElement("img", { src: "/img/refresh.svg", draggable: "false", alt: "refresh" })]);
 		refreshButton.addEventListener("click", () => this.loadInfo().then(this.displayInfo.bind(this)));
 		return refreshButton;
 	}
@@ -132,18 +127,16 @@ export default abstract class Ph_FeedInfo extends HTMLElement {
 	protected makeBannerImage(bannerUrl: string, appendTo: HTMLElement, bgColor: string): void {
 		let bannerImg;
 		if (bannerUrl) {
-			bannerImg = document.createElement("img");
-			bannerImg.src = bannerUrl;
-			bannerImg.alt = "banner"
+			bannerImg = makeElement("img", { src: bannerUrl, alt: "banner" });
 		}
 		else if (bgColor) {
-			bannerImg = document.createElement("div");
+			bannerImg = makeElement("div");
 			bannerImg.style.setProperty("--banner-bg", bgColor);
 		}
 
 		if (bannerImg) {
 			bannerImg.className = "bannerImg";
-			appendTo.appendChild(bannerImg);
+			appendTo.append(bannerImg);
 		}
 	}
 

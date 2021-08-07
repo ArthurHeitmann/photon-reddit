@@ -209,10 +209,10 @@ export default class Ph_FeedInfoSubreddit extends Ph_FeedInfo {
 		`;
 		linksToSpa(miscText);
 		this.appendChild(this.makeSwitchableBar([
-			{ titleHTML: "Description", content: description },
-			{ titleHTML: "Public Description", content: publicDescription },
-			{ titleHTML: "Rules", content: rules },
-			{ titleHTML: "Other", content: miscText },
+			{ title: "Description", content: description },
+			{ title: "Public Description", content: publicDescription },
+			{ title: "Rules", content: rules },
+			{ title: "Other", content: miscText },
 		]));
 
 		linksToSpa(this);

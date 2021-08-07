@@ -10,7 +10,7 @@ import {
 import { RedditApiType } from "../../types/misc";
 import Votable from "../../types/votable";
 import { thisUser } from "../../utils/globals";
-import { emojiFlagsToImages, escADQ } from "../../utils/htmlStatics";
+import { emojiFlagsToImages } from "../../utils/htmlStatics";
 import { elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff";
 import { hasParams, isObjectEmpty, makeElement, numberToShort, timePassedSinceStr } from "../../utils/utils";
 import Ph_CommentsFeed from "../feed/commentsFeed/commentsFeed";
@@ -32,7 +32,7 @@ import Ph_Post from "../post/post";
  */
 export default class Ph_Comment extends Ph_Readable implements Votable {
 	voteUpButton: Ph_VoteButton;
-	currentUpvotes: HTMLDivElement;
+	currentUpvotes: HTMLElement;
 	voteDownButton: Ph_VoteButton;
 	replyForm: Ph_CommentForm;
 	childComments: HTMLElement;
@@ -66,13 +66,12 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 
 		// this is not a comment, this is a load more comments button
 		if (commentData.kind === "more") {
-			const loadMoreButton = document.createElement("button");
-			loadMoreButton.className = "loadMoreButton button light";
-			this.appendChild(loadMoreButton);
+			const loadMoreButton = makeElement("button", { "class": "loadMoreButton button light" }) as HTMLButtonElement;
+			this.append(loadMoreButton);
 
 			// continue thread button/link
 			if (commentData.data["children"].length === 0) {
-				loadMoreButton.innerHTML = `<a href="${escADQ(post.permalink)}${escADQ(commentData.data["parent_id"].slice(3))}">Continue thread</a>`;
+				loadMoreButton.append(makeElement("a", { href: `${post.permalink}${commentData.data["parent_id"].slice(3)}` }, "Continue thread"));
 				linksToSpa(loadMoreButton);
 			}
 			// load n more comments button
@@ -128,17 +127,14 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 		// HTML elements
 
 		// actions bar
-		const actionBar = document.createElement("div");
-		actionBar.className = "actions";
+		const actionBar = makeElement("div", { "class": "actions" });
 		this.appendChild(actionBar);
 		// vote up button
 		this.voteUpButton = new Ph_VoteButton(true);
 		this.voteUpButton.addEventListener("click", e => this.vote(VoteDirection.up));
 		actionBar.appendChild(this.voteUpButton);
 		// current votes
-		this.currentUpvotes = document.createElement("div");
-		this.currentUpvotes.className = "upvotes";
-		actionBar.appendChild(this.currentUpvotes);
+		actionBar.append(this.currentUpvotes = makeElement("div", { "class": "upvotes" }));
 		// vote down button
 		this.voteDownButton = new Ph_VoteButton(false);
 		this.voteDownButton.addEventListener("click", e => this.vote(VoteDirection.down));
@@ -171,27 +167,20 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 		moreDropDown.toggleButton.classList.add("transparentButton");
 		actionBar.appendChild(moreDropDown);
 		// comment collapser
-		const commentCollapser = document.createElement("div");
-		commentCollapser.className = "commentCollapser";
-		commentCollapser.append(makeElement("div"));
+		const commentCollapser = makeElement("div", { "class": "commentCollapser" }, [makeElement("div")]);
 		commentCollapser.addEventListener("click", e => this.collapse(e));
 		actionBar.appendChild(commentCollapser);
 
 		// special user distinctions
 		let userAdditionClasses = "";
-		if (commentData.data["is_submitter"]) {
+		if (commentData.data["is_submitter"])
 			userAdditionClasses += " op";
-		}
-		if (commentData.data["distinguished"] === "moderator") {
+		if (commentData.data["distinguished"] === "moderator")
 			userAdditionClasses += " mod";
-		}
-		else if (commentData.data["distinguished"] === "admin") {
+		else if (commentData.data["distinguished"] === "admin")
 			userAdditionClasses += " admin";
-		}
 
-		const mainPart = document.createElement("div");
-		mainPart.className = "w100";
-		mainPart.append(...[
+		const mainPart = makeElement("div", { "class": "w100" }, [
 			makeElement("div", { "class": "header flex" }, [
 				commentData.data["stickied"] && makeElement("img", { "class": "pinned", src: "/img/pin.svg", alt: "pinned", draggable: "false" }),
 				makeElement("a", { href: `/user/${commentData.data["author"]}`, "class": `user${userAdditionClasses}` }, [
@@ -230,10 +219,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 			.insertAdjacentElement("afterend", Ph_Flair.fromThingData(commentData.data, "author"));
 
 		// child comments
-
-		this.childComments = document.createElement("div");
-		this.childComments.className = "replies";
-		mainPart.appendChild(this.childComments);
+		mainPart.appendChild(this.childComments = makeElement("div", { "class": "replies" }));
 
 		// reply form
 		if (!isLocked) {

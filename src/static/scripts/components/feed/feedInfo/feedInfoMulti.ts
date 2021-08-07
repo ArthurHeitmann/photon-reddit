@@ -3,7 +3,7 @@ import { RedditApiData, RedditApiType } from "../../../types/misc";
 import { StoredData } from "../../../utils/globals";
 import { emojiFlagsToImages, escADQ, escHTML } from "../../../utils/htmlStatics";
 import { linksToSpa } from "../../../utils/htmlStuff";
-import { numberToShort, stringSortComparer } from "../../../utils/utils";
+import { makeElement, numberToShort, stringSortComparer } from "../../../utils/utils";
 import Ph_FeedLink from "../../link/feedLink/feedLink";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown";
 import Ph_SubredditSelector from "../../misc/subredditSelector/subredditSelector";
@@ -32,32 +32,30 @@ export default class Ph_FeedInfoMulti extends Ph_FeedInfo {
 	displayInfo(): void {
 		this.innerText = "";
 
-		this.appendChild(this.makeRefreshButton());
+		this.append(this.makeRefreshButton());
 
-		const headerBar = document.createElement("div");
-		headerBar.className = "headerBar";
-		this.appendChild(headerBar);
+		const headerBar = makeElement("div", { "class": "headerBar" });
+		this.append(headerBar);
 		const iconUrl = this.loadedInfo.data["icon_url"];
 		if (iconUrl) {
-			const profileImg = document.createElement("img");
-			profileImg.src = iconUrl;
-			profileImg.alt = "profile";
-			profileImg.className = "profileImg";
-			headerBar.appendChild(profileImg);
+			headerBar.append(makeElement(
+				"img",
+				{ src: iconUrl, alt: "profile", "class": "profileImg" })
+			);
 		}
-		const overviewBar = document.createElement("div");
-		overviewBar.className = "overviewBar";
-		const userActionsWrapper = document.createElement("div");
-		userActionsWrapper.className = "subActionsWrapper";
-		overviewBar.appendChild(userActionsWrapper);
-		userActionsWrapper.appendChild(new Ph_DropDown(
+		const overviewBar = makeElement("div", { "class": "overviewBar" });
+		const dropDown = new Ph_DropDown(
 			[],
 			this.getKebabImg(),
 			DirectionX.left,
 			DirectionY.bottom,
 			false
-		))
-			.$class("dropDownButton")[0].classList.add("transparentButtonAlt");
+		);
+		dropDown.$class("dropDownButton")[0].classList.add("transparentButtonAlt");
+		overviewBar.appendChild(makeElement(
+			"div",
+			{ "class": "subActionsWrapper" },
+			[dropDown]));
 
 		const createdDate = new Date(this.loadedInfo.data["created_utc"] * 1000);
 		overviewBar.insertAdjacentHTML("beforeend", `
@@ -72,20 +70,17 @@ export default class Ph_FeedInfoMulti extends Ph_FeedInfo {
 			</div>
 		`);
 		headerBar.appendChild(overviewBar);
-		const title = document.createElement("h1");
-		title.className = "title";
-		title.innerText = this.loadedInfo.data["display_name"];
-		this.appendChild(title);
+		this.appendChild(makeElement("h1", { "class": "title" }, this.loadedInfo.data["display_name"]));
 
-		const description = document.createElement("div");
-		description.innerHTML = this.loadedInfo.data["description_html"];
+		const description = makeElement("div", null,
+			this.loadedInfo.data["description_html"], true);
 		emojiFlagsToImages(description);
 		this.multiSubManager = document.createElement("div");
 		this.multiSubManager.append(...this.makeMultiSubManager());
 		linksToSpa(this.multiSubManager);
 		this.appendChild(this.makeSwitchableBar([
-			{ titleHTML: "Subreddits", content: this.multiSubManager },
-			{ titleHTML: "Description", content: description },
+			{ title: "Subreddits", content: this.multiSubManager },
+			{ title: "Description", content: description },
 		]));
 
 		linksToSpa(this);
@@ -94,22 +89,16 @@ export default class Ph_FeedInfoMulti extends Ph_FeedInfo {
 	private makeMultiSubManager(): HTMLElement[] {
 		const outElements: HTMLElement[] = [];
 
-		const subCounter = document.createElement("div");
-		subCounter.className = "multiSubCounter";
-		subCounter.innerText = "xx/100";
+		const subCounter = makeElement("div", { "class": "multiSubCounter" }, "xx/100");
 		outElements.push(subCounter);
 
 		if (this.loadedInfo.data["can_edit"]) {
-			const addSubredditBar = document.createElement("div");
-			addSubredditBar.className = "editableSub addSub";
+			const addSubredditBar = makeElement("div", { "class": "editableSub addSub" });
 
-			const addSubButton = document.createElement("button");
-			addSubButton.className = "addSub transparentButtonAlt";
+			const addSubButton = makeElement("button", { "class": "addSub transparentButtonAlt" });
 			addSubredditBar.appendChild(addSubButton);
 
-			const addSubInput = document.createElement("input");
-			addSubInput.type = "text";
-			addSubInput.placeholder = "Subreddit";
+			const addSubInput = makeElement("input", { type: "text", placeholder: "Subreddit" }) as HTMLInputElement;
 
 			const subredditSelector = new Ph_SubredditSelector(!this.loadedInfo.data.over_18);
 			subredditSelector.bind(addSubInput, true, async (subName: string) => {
@@ -147,11 +136,9 @@ export default class Ph_FeedInfoMulti extends Ph_FeedInfo {
 	}
 
 	private makeRemoveSubBar(sub: RedditApiData) {
-		const removeSubredditBar = document.createElement("div");
-		removeSubredditBar.className = "editableSub";
+		const removeSubredditBar = makeElement("div", { "class": "editableSub" });
 		if (this.loadedInfo.data["can_edit"]) {
-			const removeSubButton = document.createElement("button");
-			removeSubButton.className = "removeSub transparentButtonAlt";
+			const removeSubButton = makeElement("button", { "class": "removeSub transparentButtonAlt" });
 			removeSubredditBar.appendChild(removeSubButton);
 			removeSubButton.addEventListener("click",
 				async e => {

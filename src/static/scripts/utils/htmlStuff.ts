@@ -9,6 +9,7 @@ import Ph_MediaViewer from "../components/mediaViewer/mediaViewer";
 import { pushLinkToHistoryComb } from "../historyState/historyStateManager";
 import { $classAr } from "./htmlStatics";
 
+/** Converts all same origin links of an element to SPA (single page application) links */
 export function linksToSpa(elem: HTMLElement, inlineMedia: boolean = false) {
 	if (inlineMedia)
 		_linksToInlineMedia(elem);
@@ -16,7 +17,6 @@ export function linksToSpa(elem: HTMLElement, inlineMedia: boolean = false) {
 	_linksToSpa(elem);
 }
 
-/** Converts all same origin links of an element to SPA (single page application) links */
 function _linksToSpa(elem: HTMLElement): void {
 	if (elem instanceof HTMLAnchorElement) {
 		setLinkOnClick(elem);

@@ -1,6 +1,6 @@
 import { RedditApiType, SortCommentsOrder } from "../../../types/misc";
 import { linksToSpa } from "../../../utils/htmlStuff";
-import { extractQuery, hasParams } from "../../../utils/utils";
+import { extractQuery, hasParams, makeElement } from "../../../utils/utils";
 import Ph_Comment from "../../comment/comment";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
 import Ph_Post from "../../post/post";
@@ -33,10 +33,11 @@ export default class Ph_CommentsFeed extends HTMLElement {
 	}
 
 	insertParentLink(link: string, displayText: string) {
-		const linkA = document.createElement("a");
-		linkA.href = link;
-		linkA.innerText = displayText;
-		linkA.className = "parentCommentsLink";
+		const linkA = makeElement(
+			"a",
+			{ href: link, "class": "parentCommentsLink" },
+			displayText
+		);
 		linksToSpa(linkA);
 		this.insertAdjacentElement("afterbegin", linkA);
 	}

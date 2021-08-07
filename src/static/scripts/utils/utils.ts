@@ -239,6 +239,8 @@ export function getPostIdFromUrl(url: string): string {
 /** Compile time validator that @param name is a property of T */
 export const nameOf = <T>(name: keyof T) => name;
 
+
+
 /**
  * Creates an element kinda in jsx fashion
  *
@@ -247,7 +249,12 @@ export const nameOf = <T>(name: keyof T) => name;
  * @param inner if of type array --> children of this element; else innerText (unless @param useInnerHTML is true)
  * @param useInnerHTML (default false) if true --> string for @param inner will be used for innerHTML
  */
-export function makeElement(tagName: string, attributes?: Record<string, string>, inner?: (HTMLElement | Node | HTMLElement[])[] | string, useInnerHTML = false): HTMLElement {
+export function makeElement<K extends keyof HTMLElementTagNameMap>(
+	tagName: K | string,
+	attributes?: Record<string, string>,
+	inner?: (HTMLElement | Node | string | HTMLElement[])[] | string,
+	useInnerHTML = false
+): HTMLElement {
 	attributes = attributes || {};
 	inner = inner || [];
 	const elem = document.createElement(tagName);

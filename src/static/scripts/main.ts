@@ -19,7 +19,7 @@ import { thisUser } from "./utils/globals";
 import { $css, $id } from "./utils/htmlStatics";
 import { linksToSpa } from "./utils/htmlStuff";
 import "./utils/sideEffectImports";
-import { extractHash, extractPath, extractQuery } from "./utils/utils";
+import { extractHash, extractPath, extractQuery, makeElement } from "./utils/utils";
 import { photonWebVersion } from "./utils/version";
 import { setWaitingServiceWorker } from "./utils/versionManagement";
 import VersionNumber from "./utils/versionNumber";
@@ -74,12 +74,11 @@ async function init(): Promise<void> {
 }
 
 function showInitErrorPage() {
-	const errorPage = document.createElement("div");
-	errorPage.innerHTML = `
-		<h1>Bad error happened!</h1>
-		<p>Maybe check <a href="https://www.redditstatus.com/" target="_blank">redditstatus.com</a></p>
-	`;
-	ViewsStack.attachmentPoint.appendChild(errorPage);
+	ViewsStack.attachmentPoint.append(makeElement("div", null, [
+		makeElement("h1", null, "Bad error happened!"),
+		makeElement("p", null, ["Maybe check ",
+			makeElement("a", { href: "https://www.redditstatus.com/", target:"_blank" }, "redditstatus.com")])
+	]));
 }
 
 function loadPosts() {
