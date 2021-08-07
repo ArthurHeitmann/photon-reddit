@@ -185,9 +185,9 @@ analyticsRouter.post("/event", RateLimit(analyticsRateLimitConfig), safeExcAsync
 		res.status(400).json({ error: "invalid parameters" });
 		return;
 	}
-	if (!timeMillisUtc || typeof timeMillisUtc !== "number" || referer.length > 128) {
-		res.status(400).json({ error: "invalid parameters" });
-		return;
+	const serverTimeUtc = Date.now();
+	if (!timeMillisUtc || typeof timeMillisUtc !== "number" || referer.length > 128 || Math.abs(timeMillisUtc - serverTimeUtc) > 1000 * 10) {
+		timeMillisUtc = serverTimeUtc
 	}
 	try {
 		await trackEvent(clientId, path.toLowerCase(), referer.toLowerCase() || "", timeMillisUtc,);

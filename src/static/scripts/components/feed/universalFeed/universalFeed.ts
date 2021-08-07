@@ -342,6 +342,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 		this.allPostFullNames = [];
 		this.beforeData = beforeData;
 		this.afterData = afterData;
+		this.hasReachedEndOfFeed = !Boolean(afterData);
 		document.scrollingElement.scrollTo(0, 0);
 
 		for (const item of posts) {
