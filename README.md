@@ -52,8 +52,7 @@ npm run start-dev
 
 ```bash
 # watch for Typescript & Sass file changes and auto recompile
-npm run watch-tsc
-npm run watch-sass		# or watch-wsl2 for wsl support
+npm run watch
 ```
 
 ## Getting Login to work
@@ -101,12 +100,12 @@ More infos in `analyticsQueryMiddleware()` in `src/serverScripts/analytics.ts`.
 
 ## Frontend
 
-Just compiled Typescript & Sass, no other frameworks or libraries are (and for the most part should be) used.
+Esbuild is used to transpile and bundle Typescript (vanilla JS) and Scss files. No other frameworks or libraries are used.
 
 Instead of using for example react components with jsx, a mix of the following is used:
 
 ```Typescript
-// 1. For complicated components
+// 1. For complex components
 export default class Ph_ComponentName extends HTMLElement  {
 	// ...
 }
@@ -114,12 +113,24 @@ customElements.define("ph-component-name", Ph_ComponentName);
 
 const element = new Ph_ComponentName(args);
 ```
+
 ```Typescript
-// 2. When a specific element needs to be stored
-const element = document.createElement("div");
+// 2. Custom makeElement() function (similar to React.createElement)
+const element = makeElement("div", { "class": "someClass", "data-tooltip": "tooltip" }, [
+	// children
+	makeElement("span", null, "Inner Text"),
+	makeElement("img", { src: "/img/logo.svg" }),
+]);
 ```
+
 ```Typescript
-// 3. For writing a lot of elements at once (escape untrusted string inputs with escHTML() or escADQ())
+// 2.5 longer alternative
+const element = document.createElement("div");
+// ...
+```
+
+```Typescript
+// 3. Lazy method for writing a lot of elements at once (escape untrusted string inputs with escHTML() or escADQ())
 element.innerHTML = `
 	<div class="${classNameVariable}">
 		<span>...</span>
@@ -142,11 +153,11 @@ If a component has a custom style its _componentName.scss file lies in the compo
 
 ## Backend
 
-An express server. Mostly only needed for making cross-origin request for a client that otherwise get CORS blocked (mostly some reddit api calls).
+An express server. Mostly only needed for making cross-origin request for a client that otherwise get CORS blocked (mostly some reddit api calls) and handling new version releases.
 
 node 12.x is not supported because ES6 `import {} from "lib"` are used instead of `require("lib")`.
 
-Also used for analytics purposes with MariaDB. Except for anonymized analytics data, no user data is stored.
+Also used for analytics purposes with MariaDB. Except for minimal anonymized data, no user data is stored.
 
 ## Naming conventions
 
