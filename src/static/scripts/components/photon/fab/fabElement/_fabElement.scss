@@ -1,0 +1,56 @@
+@use "../../../../../style/vars";
+@use "../fab";
+
+.fabElement {
+	--img: "";
+	--angle: 0;
+	--distance: 1;
+
+	position: absolute;
+	z-index: 1;
+	bottom: 0;
+	left: 0;
+	width: 3rem;
+	height: 3rem;
+	margin: 0.5rem;
+	transform-origin: 1rem;
+	display: flex;
+	opacity: 0;
+	transition: all .25s ease;
+
+	.icon {
+		transform: rotate(calc(-1deg * var(--angle)));
+		margin-left: auto;
+		background-color: vars.$background-el1;
+		background-image: var(--img);
+		background-size: contain;
+		background-origin: content-box;
+		background-repeat: no-repeat;
+		padding: .5rem;
+		width: 3rem;
+		height: 3rem;
+		border-radius: 50%;
+		border: 1px solid vars.$border-color;
+		will-change: transform;
+		transition: background-color .25s ease, padding .1s ease;
+
+		&.clickable {
+			cursor: pointer;
+
+			&:hover {
+				background-color: vars.$background-el2;
+			}
+			&:active {
+				padding: .4rem;
+			}
+		}
+	}
+}
+
+.floatingActionButton:hover {
+	.fabElement {
+		transform: rotate(calc(1deg * var(--angle)));
+		width: calc(9rem * var(--distance));
+		opacity: 1;
+	}
+}

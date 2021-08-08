@@ -68,7 +68,6 @@ export async function isIpFromBot(req: express.Request): Promise<boolean> {
 			.map((result: PromiseFulfilledResult<string[]>) => result.value)
 			.flat()
 			.filter(host => isIpFromBotRegex.test(host));
-		console.log(JSON.stringify({ ips, "user-agent": req.headers["user-agent"], reversedHosts: reversedHosts }));
 
 		return botHosts.length > 0;
 	} catch {

@@ -7,13 +7,11 @@ const isWatchMode = process.argv.includes("watch") || process.argv.includes("-w"
 
 const tscTypeChecker = spawn("npx", ["tsc", "--noEmit", "--preserveWatchOutput"].concat(isWatchMode ? "-w" : []), { shell: true });
 function displayChunk(chunk) {
-	if (/^\s*$/.test(chunk))
-		return;
-	if (/^\s*[\d.: ]+.{0,5}?Starting compilation in watch mode...\s*$/.test(chunk.toString()))
-		return;
-	if (/^\s*[\d.: ]+.{0,5}?Found 0 errors. Watching for file changes.\s*$/.test(chunk.toString()))
-		return;
-	if (/^\s*[\d.: ]+.{0,5}?File change detected. Starting incremental compilation...\s*$/.test(chunk.toString()))
+	if (/^\s*$/.test(chunk)
+		|| /^\s*[\d.: ]+.{0,5}?Starting compilation in watch mode...\s*$/.test(chunk.toString())
+		|| /^\s*[\d.: ]+.{0,5}?Found 0 errors. Watching for file changes.\s*$/.test(chunk.toString())
+		|| /^\s*[\d.: ]+.{0,5}?Starting compilation in watch mode...\s*[\d.: ]+.{0,5}?Found 0 errors. Watching for file changes\s*$/.test(chunk.toString())
+		|| /^\s*[\d.: ]+.{0,5}?File change detected. Starting incremental compilation...\s*$/.test(chunk.toString()))
 		return;
 	process.stdout.write(chunk);
 }
