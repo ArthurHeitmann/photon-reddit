@@ -7,6 +7,7 @@
 	bottom: 0;
 	left: 0;
 	margin: 1rem;
+	--last-layer-distance: 0.5rem;
 
 	.rootElement {
 		position: absolute;
@@ -55,9 +56,9 @@
 		z-index: -1;
 		bottom: 0;
 		left: 0;
-		width: 5rem;
-		height: 5rem;
-		border-top-right-radius: 50%;
+		width: calc(var(--last-layer-distance) + 6rem);
+		height: calc(var(--last-layer-distance) + 6rem);
+		border-top-right-radius: 100%;
 	}
 
 	&.show:not(.remove) {
@@ -74,11 +75,6 @@
 					visibility: visible;
 				}
 			}
-		}
-
-		&::after {
-			width: 13rem;
-			height: 13rem;
 		}
 	}
 

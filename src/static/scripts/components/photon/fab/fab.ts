@@ -9,16 +9,17 @@ interface LayerConfiguration {
 }
 
 const layerConfigurations: LayerConfiguration[] = [
-	{ distance: 10, maxElementCount: 4 },
+	{ distance: 6, maxElementCount: 3 },
+	{ distance: 10, maxElementCount: 5 },
 	{ distance: 14, maxElementCount: 6 },
-	{ distance: 18, maxElementCount: 7 },
+	{ distance: 18, maxElementCount: 8 },
 	{ distance: 22, maxElementCount: 9 },
-	{ distance: 26, maxElementCount: 11 },
 ];
 const maxElementCount = layerConfigurations.reduce((prev, curr) => prev + curr.maxElementCount, 0);
 
 export default class Ph_Fab extends HTMLElement {
 	fabElements: Ph_FabElement[] = [];
+	hideTimeout = null;
 
 	constructor() {
 		super();
@@ -41,16 +42,17 @@ export default class Ph_Fab extends HTMLElement {
 		]);
 		this.recalculatePositions();
 
-		const addElementButton = new Ph_FabElement("/img/add.svg", this.addElement.bind(this), this.onElementRemoved.bind(this), -65, 6.5, FabElementSize.small);
+		const addElementButton = new Ph_FabElement("/img/add.svg", this.addElement.bind(this), this.onElementRemoved.bind(this),
+			-70, 3.75, FabElementSize.small);
 		const disableFabButton = new Ph_FabElement("/img/delete.svg",
 			() => void new Ph_Toast(Level.info, "Remove FAB? (can be reenabled in the settings)", { groupId: "disabled FAB", onConfirm: () => this.setIsEnabled(false) }),
-			this.onElementRemoved.bind(this), -25, 6.5, FabElementSize.small);
+			this.onElementRemoved.bind(this), -20, 3.75, FabElementSize.small);
 		addElementButton.classList.add("editingOnlyVisible");
 		disableFabButton.classList.add("editingOnlyVisible");
 		this.append(addElementButton, disableFabButton);
 
 		this.addEventListener("mouseenter", this.show.bind(this));
-		this.addEventListener("mouseleave", this.hide.bind(this));
+		this.addEventListener("mouseleave", this.beginHide.bind(this));
 	}
 
 	addElement() {
@@ -83,6 +85,7 @@ export default class Ph_Fab extends HTMLElement {
 			}
 			++layer;
 		}
+		this.style.setProperty("--last-layer-distance", `${layerConfigurations[layer - 1]?.distance ?? 0.5}rem`);
 	}
 
 	onElementRemoved(elem: Ph_FabElement) {
@@ -97,12 +100,25 @@ export default class Ph_Fab extends HTMLElement {
 
 	show() {
 		this.classList.add("show");
+		if (this.hideTimeout !== null) {
+			clearTimeout(this.hideTimeout);
+			this.hideTimeout = null;
+		}
+	}
+
+	beginHide() {
+		if (this.hideTimeout !== null)
+			clearTimeout(this.hideTimeout);
+		this.hideTimeout = setTimeout(() => {
+			this.hide();
+		}, 400);
 	}
 
 	hide() {
 		if (this.classList.contains("editing"))
 			return;
 		this.classList.remove("show");
+		this.hideTimeout = null;
 	}
 
 	setIsEnabled(isEnabled: boolean) {

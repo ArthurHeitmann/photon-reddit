@@ -9,6 +9,8 @@ export enum FabElementSize {
 
 export default class Ph_FabElement extends HTMLElement {
 	icon: HTMLElement;
+	angle: number;
+	distance: number;
 
 	constructor(imgSrc: string, onClick: onClickAction, onRemoved: (elem: Ph_FabElement) => void, angle: number = 0, distance = 10, size: FabElementSize = FabElementSize.normal) {
 		super();
@@ -16,8 +18,19 @@ export default class Ph_FabElement extends HTMLElement {
 		this.classList.add("fabElement");
 		this.classList.add(size);
 		this.style.setProperty("--img", `url("${imgSrc}")`);
-		this.style.setProperty("--angle", `${angle}`);
-		this.style.setProperty("--distance", `${distance}rem`);
+		this.angle = angle;
+		this.distance = distance;
+		this.calculateXY();
+
+		if (size === FabElementSize.normal) {
+			const editButton = makeElement("button", { "class": "subFab shadow-diffuse", "data-tooltip": "Edit" },
+				[makeElement("img", { "src": "/img/edit.svg", "alt": "edit" })]);
+			const moveButton = makeElement("button", { "class": "subFab shadow-diffuse", "data-tooltip": "Move" },
+				[makeElement("img", { "src": "/img/drag.svg", "alt": "move" })]);
+			const deleteButton = makeElement("button", { "class": "subFab shadow-diffuse", "data-tooltip": "Delete" },
+				[makeElement("img", { "src": "/img/delete.svg", "alt": "delete" })]);
+			this.append(moveButton, deleteButton, editButton);
+		}
 
 		this.icon = makeElement(typeof onClick === "string" ? "a" : "button", { "class": "icon clickable shadow-diffuse" });
 		this.append(this.icon);
@@ -39,8 +52,17 @@ export default class Ph_FabElement extends HTMLElement {
 	}
 
 	setAngleAndDistance(angle: number, distance: number) {
-		this.style.setProperty("--angle", `${angle}`);
-		this.style.setProperty("--distance", `${distance}rem`);
+		this.angle = angle;
+		this.distance = distance;
+		this.calculateXY();
+	}
+
+	private calculateXY() {
+		const x = Math.cos(this.angle * Math.PI / 180) * this.distance;
+		const y = -Math.sin(this.angle * Math.PI / 180) * this.distance;
+
+		this.style.setProperty("--x", `${x}rem`);
+		this.style.setProperty("--y", `${y}rem`);
 	}
 }
 

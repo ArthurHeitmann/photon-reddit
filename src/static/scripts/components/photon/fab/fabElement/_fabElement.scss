@@ -1,5 +1,6 @@
 @use "../../../../../style/vars";
 @use "../fab";
+@use 'sass:math';
 
 @keyframes popInFabElement {
 	from {
@@ -13,24 +14,18 @@
 
 .fabElement {
 	--img: "";
-	--angle: 0;
-	--distance: 10rem;
+	--x: 0;
+	--y: 0;
 
 	position: absolute;
-	z-index: 1;
 	bottom: 0;
 	left: 0;
 	width: 3rem;
 	height: 3rem;
-	margin: 0.5rem;
-	transform: rotate(calc(0.15deg * var(--angle)));
-	transform-origin: 1rem;
 	display: flex;
-	opacity: 0;
 	transition: all .25s ease;
 
 	.icon {
-		transform: rotate(calc(-0.15deg * var(--angle)));
 		margin-left: auto;
 		background-color: vars.$background-el1;
 		background-image: var(--img);
@@ -43,20 +38,9 @@
 		border-radius: 50%;
 		border: 1px solid vars.$border-color;
 		will-change: transform;
+		opacity: 0;
 		transition: all .25s ease, padding .1s ease;
 		animation: popInFabElement 0.2s ease forwards;
-
-		&.clickable {
-			cursor: pointer;
-
-			&:hover {
-				background-color: vars.$background-el2;
-			}
-
-			&:active {
-				padding: .4rem;
-			}
-		}
 	}
 
 	&.small {
@@ -74,27 +58,88 @@
 		}
 	}
 
-	&.small.editingOnlyVisible {
-		z-index: 2;
+	.subFab {
+		background: vars.$background-el2;
+		border: 1px solid vars.$border-color;
+		width: 2rem;
+		height: 2rem;
+		position: absolute;
+		z-index: 1;
+		border-radius: 50%;
+		transition: all .25s ease;
+		transition-delay: 0.1s;
+		opacity: 0;
+		visibility: hidden;
+		margin: 0.5rem;
+		transform: scale(0.25);
+
+		img {
+			width: 2rem;
+			height: 2rem;
+			padding: .25rem;
+
+			&:active {
+				padding: .15rem;
+			}
+		}
 	}
 }
 
 .floatingActionButton {
 	&.show:not(.remove) {
 		.fabElement {
-			transform: rotate(calc(1deg * var(--angle)));
-			width: var(--distance);
-			opacity: 1;
+			margin-left: calc(0.25rem + var(--x));
+			margin-bottom: calc(0.25rem + var(--y));
 
 			.icon {
-				transform: rotate(calc(-1deg * var(--angle)));
+				opacity: 1;
 			}
 		}
 	}
 
-	&:not(.editing) .fabElement.editingOnlyVisible {
-		width: 0;
-		transform: rotate(calc(0.15deg * var(--angle)));
-		opacity: 0;
+	&:not(.editing) {
+		.fabElement.clickable {
+			cursor: pointer;
+
+			&:hover {
+				background-color: vars.$background-el2;
+			}
+
+			&:active {
+				padding: .4rem;
+			}
+		}
+
+		.fabElement.editingOnlyVisible {
+			margin-left: 1rem;
+			margin-bottom: 1rem;
+		}
+	}
+
+	&.editing {
+		.fabElement:hover {
+			$subFabDistance: 3rem;
+
+			.subFab {
+				opacity: 1;
+				visibility: visible;
+				transition-delay: 0s;
+
+				&:nth-of-type(1) {
+					$angle: 60 * math.div(math.$pi, 180);
+					transform: translateX(math.cos($angle) * $subFabDistance) translateY(math.sin($angle) * $subFabDistance) scale(1);
+				}
+
+				&:nth-of-type(2) {
+					$angle: 180 * math.div(math.$pi, 180);
+					transform: translateX(math.cos($angle) * $subFabDistance) translateY(math.sin($angle) * $subFabDistance) scale(1);
+				}
+
+				&:nth-of-type(3) {
+					$angle: 300 * math.div(math.$pi, 180);
+					transform: translateX(math.cos($angle) * $subFabDistance) translateY(math.sin($angle) * $subFabDistance) scale(1);
+				}
+			}
+		}
 	}
 }
