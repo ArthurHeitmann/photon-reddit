@@ -1,28 +1,51 @@
 @use "../../../../style/vars";
+@use "../../../../style/shadow";
 
 .floatingActionButton {
 	position: fixed;
 	z-index: 4;
 	bottom: 0;
 	left: 0;
-	margin: 2rem;
+	margin: 1rem;
 
 	.rootElement {
 		position: absolute;
 		z-index: 5;
 		bottom: 0;
 		left: 0;
-		width: 4rem;
-		height: 4rem;
-		filter: grayscale(1) brightness(0.5) contrast(1);
+		width: 3.5rem;
+		height: 3.5rem;
 		border-radius: 50%;
 		background-color: vars.$background-el1;
-		border: 1px solid vars.$border-color;
 		transition: all .25s ease;
+		@extend %shadow-shorter;
+		--shadow-color: tranparent;
 
 		img {
-			width: 100%;
-			height: 100%;
+			transition: all .25s ease;
+
+			&.bg {
+				filter: grayscale(1) brightness(0.5) opacity(0.65);
+				width: 100%;
+				height: 100%;
+			}
+
+			&.edit {
+				position: absolute;
+				bottom: 0;
+				left: 0;
+				margin: 0.75rem;
+				width: 2rem;
+				height: 2rem;
+				opacity: 0;
+				visibility: hidden;
+
+				&.end {
+					margin: 0.5rem;
+					width: 2.5rem;
+					height: 2.5rem;
+				}
+			}
 		}
 	}
 
@@ -32,19 +55,50 @@
 		z-index: -1;
 		bottom: 0;
 		left: 0;
-		width: 6rem;
-		height: 6rem;
+		width: 5rem;
+		height: 5rem;
 		border-top-right-radius: 50%;
 	}
 
-	&:hover {
+	&.show:not(.remove) {
 		.rootElement {
-			filter: grayscale(1) brightness(1) contrast(0.5);
+			--shadow-color: #0000009c;
+
+			img.bg {
+				filter: grayscale(1) brightness(.4) opacity(1);
+			}
+
+			img.edit {
+				&.start {
+					opacity: 1;
+					visibility: visible;
+				}
+			}
 		}
 
 		&::after {
-			width: 14rem;
-			height: 14rem;
+			width: 13rem;
+			height: 13rem;
 		}
+	}
+
+	&.editing:not(.remove) {
+		.rootElement {
+			img.edit {
+				&.start {
+					opacity: 0;
+				}
+
+				&.end {
+					opacity: 1;
+					visibility: visible;
+				}
+			}
+		}
+	}
+
+	&.remove {
+		opacity: 0;
+		visibility: hidden;
 	}
 }

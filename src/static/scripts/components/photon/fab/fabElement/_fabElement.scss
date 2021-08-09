@@ -1,10 +1,20 @@
 @use "../../../../../style/vars";
 @use "../fab";
 
+@keyframes popInFabElement {
+	from {
+		filter: opacity(0) blur(5px);
+	}
+
+	to {
+		filter: opacity(1) blur(0);
+	}
+}
+
 .fabElement {
 	--img: "";
 	--angle: 0;
-	--distance: 1;
+	--distance: 10rem;
 
 	position: absolute;
 	z-index: 1;
@@ -13,13 +23,14 @@
 	width: 3rem;
 	height: 3rem;
 	margin: 0.5rem;
+	transform: rotate(calc(0.15deg * var(--angle)));
 	transform-origin: 1rem;
 	display: flex;
 	opacity: 0;
 	transition: all .25s ease;
 
 	.icon {
-		transform: rotate(calc(-1deg * var(--angle)));
+		transform: rotate(calc(-0.15deg * var(--angle)));
 		margin-left: auto;
 		background-color: vars.$background-el1;
 		background-image: var(--img);
@@ -32,7 +43,8 @@
 		border-radius: 50%;
 		border: 1px solid vars.$border-color;
 		will-change: transform;
-		transition: background-color .25s ease, padding .1s ease;
+		transition: all .25s ease, padding .1s ease;
+		animation: popInFabElement 0.2s ease forwards;
 
 		&.clickable {
 			cursor: pointer;
@@ -40,17 +52,49 @@
 			&:hover {
 				background-color: vars.$background-el2;
 			}
+
 			&:active {
 				padding: .4rem;
 			}
 		}
 	}
+
+	&.small {
+		width: 2rem;
+		height: 2rem;
+
+		.icon {
+			width: 2rem;
+			height: 2rem;
+			padding: .25rem;
+
+			&:active {
+				padding: .15rem;
+			}
+		}
+	}
+
+	&.small.editingOnlyVisible {
+		z-index: 2;
+	}
 }
 
-.floatingActionButton:hover {
-	.fabElement {
-		transform: rotate(calc(1deg * var(--angle)));
-		width: calc(9rem * var(--distance));
-		opacity: 1;
+.floatingActionButton {
+	&.show:not(.remove) {
+		.fabElement {
+			transform: rotate(calc(1deg * var(--angle)));
+			width: var(--distance);
+			opacity: 1;
+
+			.icon {
+				transform: rotate(calc(-1deg * var(--angle)));
+			}
+		}
+	}
+
+	&:not(.editing) .fabElement.editingOnlyVisible {
+		width: 0;
+		transform: rotate(calc(0.15deg * var(--angle)));
+		opacity: 0;
 	}
 }

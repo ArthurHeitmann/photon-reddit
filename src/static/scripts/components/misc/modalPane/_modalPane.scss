@@ -11,7 +11,6 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	transform-origin: center 25%;
 	transition: all .25s ease;
 	--width: 80vw;
 	--height: 80vh;
@@ -19,10 +18,9 @@
 	&.remove {
 		opacity: 0;
 		visibility: hidden;
-		transform: scale(.9);
 
-		> .content {
-			transform: scale(.85);
+		> div {
+			transform: scale(.9);
 		}
 	}
 
@@ -34,6 +32,8 @@
 		border: 1px solid vars.$border-color;
 		border-radius: vars.$border-radius;
 		padding: vars.$post-padding;
+		transform-origin: center 25%;
+		transition: all .25s ease;
 
 		> .closeButton {
 			position: absolute;
