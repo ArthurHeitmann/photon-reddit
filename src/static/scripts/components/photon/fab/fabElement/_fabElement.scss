@@ -41,6 +41,19 @@
 		opacity: 0;
 		transition: all .25s ease, padding .1s ease;
 		animation: popInFabElement 0.2s ease forwards;
+		@extend %shadow-diffuse;
+
+		&.clickable {
+			cursor: pointer;
+
+			&:hover {
+				background-color: vars.$background-el2;
+			}
+
+			&:active {
+				padding: .4rem;
+			}
+		}
 	}
 
 	&.small {
@@ -72,6 +85,7 @@
 		visibility: hidden;
 		margin: 0.5rem;
 		transform: scale(0.25);
+		@extend %shadow-diffuse;
 
 		img {
 			width: 2rem;
@@ -98,46 +112,61 @@
 	}
 
 	&:not(.editing) {
-		.fabElement.clickable {
-			cursor: pointer;
-
-			&:hover {
-				background-color: vars.$background-el2;
-			}
-
-			&:active {
-				padding: .4rem;
-			}
-		}
-
 		.fabElement.editingOnlyVisible {
 			margin-left: 1rem;
 			margin-bottom: 1rem;
 		}
 	}
 
-	&.editing {
-		.fabElement:hover {
-			$subFabDistance: 3rem;
+	&.editing:not(.isDragging) .fabElement:hover, &.editing.isDragging .fabElement.draggable {
+		$subFabDistance: 2.75rem;
 
-			.subFab {
-				opacity: 1;
-				visibility: visible;
-				transition-delay: 0s;
+		.subFab {
+			opacity: 1;
+			visibility: visible;
+			transition-delay: 0s;
 
-				&:nth-of-type(1) {
-					$angle: 60 * math.div(math.$pi, 180);
-					transform: translateX(math.cos($angle) * $subFabDistance) translateY(math.sin($angle) * $subFabDistance) scale(1);
+			&:nth-of-type(1) {
+				$angle: 60 * math.div(math.$pi, 180);
+				transform: translateX(math.cos($angle) * $subFabDistance) translateY(math.sin($angle) * $subFabDistance) scale(1);
+			}
+
+			&:nth-of-type(2) {
+				$angle: 180 * math.div(math.$pi, 180);
+				transform: translateX(math.cos($angle) * $subFabDistance) translateY(math.sin($angle) * $subFabDistance) scale(1);
+			}
+
+			&:nth-of-type(3) {
+				$angle: 300 * math.div(math.$pi, 180);
+				transform: translateX(math.cos($angle) * $subFabDistance) translateY(math.sin($angle) * $subFabDistance) scale(1);
+			}
+		}
+	}
+
+	&.isDragging {
+		.fabElement {
+			transition: all .25s ease, margin 0s;
+
+			&:not(.draggable, .small) {
+				.icon {
+					border-width: 3px;
+					@extend %shadow-5;
 				}
+			}
 
-				&:nth-of-type(2) {
-					$angle: 180 * math.div(math.$pi, 180);
-					transform: translateX(math.cos($angle) * $subFabDistance) translateY(math.sin($angle) * $subFabDistance) scale(1);
+			&.draggable {
+				z-index: 3;
+				pointer-events: none;
+				.icon {
+					@extend %shadow-4;
 				}
+			}
 
-				&:nth-of-type(3) {
-					$angle: 300 * math.div(math.$pi, 180);
-					transform: translateX(math.cos($angle) * $subFabDistance) translateY(math.sin($angle) * $subFabDistance) scale(1);
+			&.dragTarget {
+				.icon {
+					border-width: 5px;
+					filter: brightness(3);
+					@extend %shadow-6;
 				}
 			}
 		}

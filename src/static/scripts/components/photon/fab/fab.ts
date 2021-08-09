@@ -60,8 +60,9 @@ export default class Ph_Fab extends HTMLElement {
 			new Ph_Toast(Level.warning, "Limit reached", { groupId: "fab limit reached", timeout: 2000 });
 			return;
 		}
-
-		const newElement = new Ph_FabElement("", "", this.onElementRemoved.bind(this));
+		const img = ["earth", "trendUp", "add", "envelope"];
+		const rand = Math.floor(Math.random() * img.length);
+		const newElement = new Ph_FabElement(`/img/${img[rand]}.svg`, "#", this.onElementRemoved.bind(this));
 		this.fabElements.push(newElement);
 		this.append(newElement);
 		this.recalculatePositions();
@@ -119,6 +120,28 @@ export default class Ph_Fab extends HTMLElement {
 			return;
 		this.classList.remove("show");
 		this.hideTimeout = null;
+	}
+
+	swap2FabElements(elem1: Ph_FabElement, elem2: Ph_FabElement) {
+		let index1 = this.fabElements.findIndex(e => e === elem1);
+		let index2 = this.fabElements.findIndex(e => e === elem2);
+		if (index1 > index2) {
+			const tmpIndex = index1;
+			index1 = index2;
+			index2 = tmpIndex;
+			const tmpElem = elem1;
+			elem1 = elem2;
+			elem2 = tmpElem;
+		}
+		this.fabElements.splice(index1, 1, elem2);
+		this.fabElements.splice(index2, 1, elem1);
+	}
+
+	setIsDragging(isDragging: boolean, dragged: Ph_FabElement) {
+		this.classList.toggle("isDragging", isDragging);
+		for (const fabElement of this.fabElements) {
+			fabElement.setIsDraggableTarget(isDragging, dragged);
+		}
 	}
 
 	setIsEnabled(isEnabled: boolean) {

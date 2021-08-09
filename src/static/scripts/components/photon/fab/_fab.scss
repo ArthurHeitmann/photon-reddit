@@ -6,7 +6,7 @@
 	z-index: 4;
 	bottom: 0;
 	left: 0;
-	margin: 1rem;
+	margin: 1.5rem;
 	--last-layer-distance: 0.5rem;
 
 	.rootElement {
@@ -56,8 +56,8 @@
 		z-index: -1;
 		bottom: 0;
 		left: 0;
-		width: calc(var(--last-layer-distance) + 6rem);
-		height: calc(var(--last-layer-distance) + 6rem);
+		width: calc(6.5rem);
+		height: calc(6.5rem);
 		border-top-right-radius: 100%;
 	}
 
@@ -75,6 +75,11 @@
 					visibility: visible;
 				}
 			}
+		}
+
+		&::after {
+			width: calc(var(--last-layer-distance) + 6rem);
+			height: calc(var(--last-layer-distance) + 6rem);
 		}
 	}
 
