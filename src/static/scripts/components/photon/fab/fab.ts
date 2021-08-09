@@ -1,5 +1,6 @@
 import { elementWithClassInTree } from "../../../utils/htmlStuff";
 import { makeElement } from "../../../utils/utils";
+import { PhotonSettings } from "../../global/photonSettings/photonSettings";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
 import Ph_FabElement, { FabElementSize } from "./fabElement/fabElement";
 
@@ -43,16 +44,23 @@ export default class Ph_Fab extends HTMLElement {
 		this.recalculatePositions();
 
 		const addElementButton = new Ph_FabElement("/img/add.svg", this.addElement.bind(this), this.onElementRemoved.bind(this),
-			-70, 3.75, FabElementSize.small);
-		const disableFabButton = new Ph_FabElement("/img/delete.svg",
-			() => void new Ph_Toast(Level.info, "Remove FAB? (can be reenabled in the settings)", { groupId: "disabled FAB", onConfirm: () => this.setIsEnabled(false) }),
-			this.onElementRemoved.bind(this), -20, 3.75, FabElementSize.small);
+			-45, 3.75, FabElementSize.small);
+		// const disableFabButton = new Ph_FabElement("/img/delete.svg",
+		// 	() => void new Ph_Toast(Level.info, "Remove FAB? (can be reenabled in the settings)", { groupId: "disabled FAB", onConfirm: () => this.setIsEnabled(false) }),
+		// 	this.onElementRemoved.bind(this), -20, 3.75, FabElementSize.small);
 		addElementButton.classList.add("editingOnlyVisible");
-		disableFabButton.classList.add("editingOnlyVisible");
-		this.append(addElementButton, disableFabButton);
+		// disableFabButton.classList.add("editingOnlyVisible");
+		this.append(addElementButton/*, disableFabButton*/);
 
 		this.addEventListener("mouseenter", this.show.bind(this));
 		this.addEventListener("mouseleave", this.beginHide.bind(this));
+
+		window.addEventListener("ph-settings-changed", (e: CustomEvent) => {
+			const changed = e.detail as PhotonSettings;
+			if (!("enableFab" in changed))
+				return;
+			this.setIsEnabled(changed.enableFab);
+		});
 	}
 
 	addElement() {

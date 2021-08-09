@@ -35,6 +35,7 @@ export interface PhotonSettings {
 	hideSeenPosts?: boolean,
 	clearFeedCacheAfterMs?: number,
 	clearSeenPostAfterMs?: number,
+	enableFab?: boolean,
 	isIncognitoEnabled?: boolean,
 	tooltipsVisible?: boolean,
 	messageCheckIntervalMs?: number,
@@ -54,6 +55,7 @@ export let globalSettings: PhotonSettings = {
 	hideSeenPosts: false,
 	clearFeedCacheAfterMs: 1000 * 60 * 60 * 24,
 	clearSeenPostAfterMs: 1000 * 60 * 60 * 24 * 365,
+	enableFab: true,
 	isIncognitoEnabled: false,
 	tooltipsVisible: true,
 	messageCheckIntervalMs: 30 * 1000,
@@ -273,6 +275,20 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 		this.optionsArea.append(seenPostsGroup);
 		this.optionsArea.appendChild(document.createElement("hr"));
 
+		// FAB
+		const fabGroup = this.makeCustomLabeledInput(
+			"checkbox",
+			"Enable FAB (floating action button)",
+			"",
+			"checkboxFabEnabled",
+			"",
+			globalSettings.enableFab
+		);
+		fabGroup.$tag("input")[0].addEventListener("input", e =>
+			this.stageSettingChange(nameOf<PhotonSettings>("enableFab"))
+				((e.currentTarget as HTMLInputElement).checked)
+		);
+		this.optionsArea.appendChild(fabGroup);
 		// incognito mode
 		const incognitoGroup = this.makeCustomLabeledInput(
 			"checkbox",
