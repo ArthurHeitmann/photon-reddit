@@ -1,14 +1,17 @@
+import { nonDraggableImage } from "../../../../utils/htmlStatics";
 import { linksToSpa } from "../../../../utils/htmlStuff";
-import { makeElement } from "../../../../utils/utils";
+import { bufferedMouseLeave, makeElement } from "../../../../utils/utils";
 import Ph_Fab from "../fab";
+import Ph_FabElementEditPane from "../fabElementEditPane/fabElementEditPane";
 
-export type onClickAction = string | (() => boolean | void);
+export type OnClickAction = string | (() => boolean | void);
 export enum FabElementSize {
 	normal = "normal", small = "small"
 }
 
 export default class Ph_FabElement extends HTMLElement {
 	icon: HTMLElement;
+	editPane: Ph_FabElementEditPane;
 	angle: number;
 	distance: number;
 	cordX: number;
@@ -22,22 +25,31 @@ export default class Ph_FabElement extends HTMLElement {
 	dragTargetEnterCallback: () => void;
 	dragTargetLeaveCallback: () => void;
 
-	constructor(imgSrc: string, onClick: onClickAction, onRemoved: (elem: Ph_FabElement) => void, angle: number = 0, distance = 10, size: FabElementSize = FabElementSize.normal) {
+	constructor(imgSrc: string, onClick: OnClickAction, onRemoved: (elem: Ph_FabElement) => void, angle: number = 0, distance = 10, size: FabElementSize = FabElementSize.normal) {
 		super();
 
 		this.classList.add("fabElement");
 		this.classList.add(size);
-		this.style.setProperty("--img", `url("${imgSrc}")`);
+		this.setIcon(imgSrc);
 		this.onRemovedCallback = onRemoved;
 		this.angle = angle;
 		this.distance = distance;
 		this.calculateXY();
 
 		if (size === FabElementSize.normal) {
+			this.editPane = new Ph_FabElementEditPane(this);
 			const editButton = makeElement("button", { "class": "subFab shadow-diffuse" },
 				[makeElement("img", { "src": "/img/edit.svg", "alt": "edit" })]);
+			editButton.addEventListener("click", () => {
+				this.classList.add("editPaneOpen");
+				this.editPane.show();
+			});
+			bufferedMouseLeave(this, 400, () => {
+				this.classList.remove("editPaneOpen");
+				this.editPane.hide();
+			});
 			const moveButton = makeElement("button", { "class": "subFab shadow-diffuse" },
-				[makeElement("img", { "src": "/img/drag.svg", "alt": "move", "draggable": "false" })]);
+				[nonDraggableImage(makeElement("img", { "src": "/img/drag.svg", "alt": "move", "draggable": "false" }) as HTMLImageElement)]);
 			moveButton.addEventListener("mousedown", this.startDrag.bind(this));
 			this.onMouseMoveCallback = this.onMouseMove.bind(this);
 			this.onMouseUpCallback = this.endDrag.bind(this);
@@ -45,18 +57,13 @@ export default class Ph_FabElement extends HTMLElement {
 				[makeElement("img", { "src": "/img/delete.svg", "alt": "delete" })]);
 			deleteButton.addEventListener("click", this.delete.bind(this));
 			this.append(moveButton, deleteButton, editButton);
+			this.append(this.editPane);
 		}
 
-		this.icon = makeElement(typeof onClick === "string" ? "a" : "button", { "class": "icon clickable", draggable: "false" });
-		this.append(this.icon);
-		if (typeof onClick === "string") {
-			this.icon.setAttribute("href", onClick);
-			linksToSpa(this);
-		}
-		this.icon.addEventListener("click", () => this.onClickWrapper(onClick));
+		this.setAction(onClick);
 	}
 
-	onClickWrapper(onClick: onClickAction) {
+	onClickWrapper(onClick: OnClickAction) {
 		if (!this.icon.classList.contains("clickable"))
 			return;
 		let closeAfterClick = true;
@@ -70,6 +77,27 @@ export default class Ph_FabElement extends HTMLElement {
 		this.remove();
 		this.onRemovedCallback(this);
 		this.onRemovedCallback = null;
+	}
+
+	setIcon(imgSrc: string) {
+		this.style.setProperty("--img", `url("${imgSrc}")`);
+	}
+
+	setAction(action: OnClickAction) {
+		const oldIcon = this.icon;
+		this.icon = nonDraggableImage(makeElement(typeof action === "string" ? "a" : "button", { "class": "icon clickable", draggable: "false" })  as HTMLImageElement);
+		if (typeof action === "string") {
+			this.icon.setAttribute("href", action);
+			linksToSpa(this.icon);
+		}
+		this.icon.addEventListener("click", () => this.onClickWrapper(action));
+		if (oldIcon) {
+			oldIcon.after(this.icon);
+			oldIcon.remove();
+		}
+		else {
+			this.append(this.icon);
+		}
 	}
 
 	startDrag(e: MouseEvent) {

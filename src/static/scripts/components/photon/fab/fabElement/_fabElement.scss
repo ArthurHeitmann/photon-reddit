@@ -71,6 +71,12 @@
 		}
 	}
 
+	&.editPaneOpen {
+		.subFab {
+			transition-delay: 0.4s;
+		}
+	}
+
 	.subFab {
 		background: vars.$background-el2;
 		border: 1px solid vars.$border-color;
@@ -91,6 +97,7 @@
 			width: 2rem;
 			height: 2rem;
 			padding: .25rem;
+			margin: -1px 0 0 -1px;
 
 			&:active {
 				padding: .15rem;

@@ -428,3 +428,30 @@ export function attachOnFullscreenChangeListener(target: Element | Document, fun
 		// @ts-ignore
 		target.addEventListener("webkitfullscreenchange", func, { once });
 }
+
+/**
+ * After a `mouseleave` event is triggered call `callback` after `bufferMs` milliseconds.
+ * If a `mouseenter` event is triggered in the meanwhile, cancel the timeout.
+ */
+export function bufferedMouseLeave(elem: HTMLElement, bufferMs: number, callback: (...args) => any) {
+	let timeout;
+	function callbackWrapper(...args) {
+		if (timeout !== null) {
+			clearTimeout(timeout);
+			timeout = null;
+		}
+		callback(...args);
+	}
+
+	elem.addEventListener("mouseleave", (...args) => {
+		if (timeout !== null)
+			clearTimeout(timeout);
+		timeout = setTimeout(() => callbackWrapper(...args), bufferMs);
+	});
+	elem.addEventListener("mouseenter", () => {
+		if (timeout !== null) {
+			clearTimeout(timeout);
+			timeout = null;
+		}
+	});
+}

@@ -81,6 +81,7 @@ const template = `
 		<li>Controversial icon: "Lightning by Rodolfo Alvarez from the Noun Project"</li>
 		<li>Q & A icon: "question and answer by Wolf Böse from the Noun Project"</li>
 		<li>Popular icon: "Trending up by DailyPM from the Noun Project"</li>
+		<li>Frontpage icon: "book open by icon 54 from the Noun Project"</li>
 		<li>Icon for r/all: "Earth by Royyan Wijaya from the Noun Project"</li>
 		<li>Edit text icon: "text by Ricki Tri Putra from the Noun Project"</li>
 		<li>Award icon: "Medal by Shashwathy from the Noun Project"</li>

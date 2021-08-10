@@ -1,5 +1,6 @@
+import { nonDraggableImage } from "../../../utils/htmlStatics";
 import { elementWithClassInTree } from "../../../utils/htmlStuff";
-import { makeElement } from "../../../utils/utils";
+import { bufferedMouseLeave, makeElement } from "../../../utils/utils";
 import { PhotonSettings } from "../../global/photonSettings/photonSettings";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
 import Ph_FabElement, { FabElementSize } from "./fabElement/fabElement";
@@ -20,7 +21,6 @@ const maxElementCount = layerConfigurations.reduce((prev, curr) => prev + curr.m
 
 export default class Ph_Fab extends HTMLElement {
 	fabElements: Ph_FabElement[] = [];
-	hideTimeout = null;
 
 	constructor() {
 		super();
@@ -28,9 +28,9 @@ export default class Ph_Fab extends HTMLElement {
 		this.classList.add("floatingActionButton");
 
 		const rootButton = makeElement("button", { "class": "rootElement" }, [
-			makeElement("img", { "src": "/img/logo.png", "class": "bg" }),
-			makeElement("img", { "src": "/img/edit.svg", "class": "edit start" }),
-			makeElement("img", { "src": "/img/check.svg", "class": "edit end" }),
+			nonDraggableImage(makeElement("img", { "src": "/img/logo.png", "class": "bg", "draggable": "false" }) as HTMLImageElement),
+			nonDraggableImage(makeElement("img", { "src": "/img/edit.svg", "class": "edit start", "draggable": "false" }) as HTMLImageElement),
+			nonDraggableImage(makeElement("img", { "src": "/img/check.svg", "class": "edit end", "draggable": "false" }) as HTMLImageElement),
 		]);
 		rootButton.addEventListener("click", this.toggleEditing.bind(this));
 		this.append(rootButton);
@@ -41,6 +41,7 @@ export default class Ph_Fab extends HTMLElement {
 			// new Ph_FabElement("/img/earth.svg", "/r/all"),
 			// new Ph_FabElement("/img/settings1.svg", () => true),
 		]);
+		this.addElement();
 		this.recalculatePositions();
 
 		const addElementButton = new Ph_FabElement("/img/add.svg", this.addElement.bind(this), this.onElementRemoved.bind(this),
@@ -53,7 +54,7 @@ export default class Ph_Fab extends HTMLElement {
 		this.append(addElementButton/*, disableFabButton*/);
 
 		this.addEventListener("mouseenter", this.show.bind(this));
-		this.addEventListener("mouseleave", this.beginHide.bind(this));
+		bufferedMouseLeave(this, 400, this.hide.bind(this));
 
 		window.addEventListener("ph-settings-changed", (e: CustomEvent) => {
 			const changed = e.detail as PhotonSettings;
@@ -70,7 +71,9 @@ export default class Ph_Fab extends HTMLElement {
 		}
 		const img = ["earth", "trendUp", "add", "envelope"];
 		const rand = Math.floor(Math.random() * img.length);
-		const newElement = new Ph_FabElement(`/img/${img[rand]}.svg`, "#", this.onElementRemoved.bind(this));
+		const newElement = new Ph_FabElement(`/img/${img[rand]}.svg`,
+			() => void new Ph_Toast(Level.info, "No action assigned", { timeout: 2000, groupId: "fab elem no action" }),
+			this.onElementRemoved.bind(this));
 		this.fabElements.push(newElement);
 		this.append(newElement);
 		this.recalculatePositions();
@@ -109,25 +112,12 @@ export default class Ph_Fab extends HTMLElement {
 
 	show() {
 		this.classList.add("show");
-		if (this.hideTimeout !== null) {
-			clearTimeout(this.hideTimeout);
-			this.hideTimeout = null;
-		}
-	}
-
-	beginHide() {
-		if (this.hideTimeout !== null)
-			clearTimeout(this.hideTimeout);
-		this.hideTimeout = setTimeout(() => {
-			this.hide();
-		}, 400);
 	}
 
 	hide() {
 		if (this.classList.contains("editing"))
 			return;
 		this.classList.remove("show");
-		this.hideTimeout = null;
 	}
 
 	swap2FabElements(elem1: Ph_FabElement, elem2: Ph_FabElement) {
