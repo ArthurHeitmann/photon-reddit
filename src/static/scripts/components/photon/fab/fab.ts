@@ -28,16 +28,17 @@ export default class Ph_Fab extends HTMLElement {
 
 		this.classList.add("floatingActionButton");
 
-		const rootButton = makeElement("button", { "class": "rootElement" }, [
+		this.append(makeElement("button", {
+			"class": "rootElement",
+			onclick: () => {
+				this.show();
+				this.toggleEditing();
+			}
+		}, [
 			nonDraggableElement(makeElement("img", { "src": "/img/logo.png", "class": "bg", "draggable": "false" }) as HTMLImageElement),
 			nonDraggableElement(makeElement("img", { "src": "/img/edit.svg", "class": "edit start", "draggable": "false" }) as HTMLImageElement),
 			nonDraggableElement(makeElement("img", { "src": "/img/check.svg", "class": "edit end", "draggable": "false" }) as HTMLImageElement),
-		]);
-		rootButton.addEventListener("click", () => {
-			this.show();
-			this.toggleEditing();
-		});
-		this.append(rootButton);
+		]));
 
 		this.append(...this.fabElements = [
 			// new Ph_FabElement("/img/envelope.svg", "/message/inbox"),
@@ -50,12 +51,8 @@ export default class Ph_Fab extends HTMLElement {
 
 		const addElementButton = new Ph_FabElement("/img/add.svg", this.addElement.bind(this), this.onElementRemoved.bind(this),
 			-45, 3.75, FabElementSize.small);
-		// const disableFabButton = new Ph_FabElement("/img/delete.svg",
-		// 	() => void new Ph_Toast(Level.info, "Remove FAB? (can be reenabled in the settings)", { groupId: "disabled FAB", onConfirm: () => this.setIsEnabled(false) }),
-		// 	this.onElementRemoved.bind(this), -20, 3.75, FabElementSize.small);
 		addElementButton.classList.add("editingOnlyVisible");
-		// disableFabButton.classList.add("editingOnlyVisible");
-		this.append(addElementButton/*, disableFabButton*/);
+		this.append(addElementButton);
 
 		this.addEventListener("mouseenter", this.show.bind(this));
 		bufferedMouseLeave(this, 400, this.hide.bind(this));

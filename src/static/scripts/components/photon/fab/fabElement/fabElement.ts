@@ -39,24 +39,21 @@ export default class Ph_FabElement extends HTMLElement {
 
 		if (size === FabElementSize.normal) {
 			this.editPane = new Ph_FabElementEditPane(this);
-			const editButton = makeElement("button", { "class": "subFab shadow-diffuse" },
-				[makeElement("img", { "src": "/img/edit.svg", "alt": "edit" })]);
-			editButton.addEventListener("click", () => {
+			const editButton = makeElement("button", { "class": "subFab shadow-diffuse", onclick: () => {
 				this.classList.add("editPaneOpen");
 				this.editPane.show();
-			});
+			}},
+				[makeElement("img", { "src": "/img/edit.svg", "alt": "edit" })]);
 			bufferedMouseLeave(this, 400, () => {
 				this.classList.remove("editPaneOpen");
 				this.editPane.hide();
 			});
-			const moveButton = makeElement("button", { "class": "subFab shadow-diffuse" },
+			const moveButton = makeElement("button", { "class": "subFab shadow-diffuse", onclick: this.startDrag.bind(this) },
 				[nonDraggableElement(makeElement("img", { "src": "/img/drag.svg", "alt": "move", "draggable": "false" }) as HTMLImageElement)]);
-			moveButton.addEventListener("mousedown", this.startDrag.bind(this));
 			this.onMouseMoveCallback = this.onMouseMove.bind(this);
 			this.onMouseUpCallback = this.endDrag.bind(this);
-			const deleteButton = makeElement("button", { "class": "subFab shadow-diffuse" },
+			const deleteButton = makeElement("button", { "class": "subFab shadow-diffuse", onclick: this.delete.bind(this) },
 				[makeElement("img", { "src": "/img/delete.svg", "alt": "delete" })]);
-			deleteButton.addEventListener("click", this.delete.bind(this));
 			this.append(moveButton, deleteButton, editButton);
 			this.append(this.editPane);
 		}
@@ -91,13 +88,15 @@ export default class Ph_FabElement extends HTMLElement {
 
 	setAction(action: OnClickAction) {
 		this.iconWrapper.innerText = "";
-		const actionElement = nonDraggableElement(makeElement(typeof action === "string" ? "a" : "button", { "class": "icon", draggable: "false" }));
+		const actionElement = nonDraggableElement(makeElement(
+			typeof action === "string" ? "a" : "button",
+			{ "class": "icon", draggable: "false", onclick: () => this.onClickWrapper(action) }
+		));
 		this.iconWrapper.append(actionElement);
 		if (typeof action === "string") {
 			actionElement.setAttribute("href", action);
 			linksToSpa(actionElement);
 		}
-		actionElement.addEventListener("click", () => this.onClickWrapper(action));
 	}
 
 	startDrag(e: MouseEvent) {

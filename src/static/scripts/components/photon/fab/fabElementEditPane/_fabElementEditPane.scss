@@ -100,10 +100,15 @@
 
 			input {
 				flex-grow: 1;
+
+				&::placeholder {
+					font-size: 0.8rem;
+				}
 			}
 		}
 
 		.results {
+			overflow-x: hidden;
 			overflow-y: auto;
 			display: flex;
 			flex-wrap: wrap;

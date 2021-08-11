@@ -252,7 +252,7 @@ export const nameOf = <T>(name: keyof T) => name;
  */
 export function makeElement<K extends keyof HTMLElementTagNameMap>(
 	tagName: K | string,
-	attributes?: Record<string, string>,
+	attributes?: Record<string, string | EventListener>,
 	inner?: (HTMLElement | Node | string | HTMLElement[])[] | string,
 	useInnerHTML = false
 ): HTMLElement {
@@ -260,7 +260,10 @@ export function makeElement<K extends keyof HTMLElementTagNameMap>(
 	inner = inner || [];
 	const elem = document.createElement(tagName);
 	for (const [k, v] of Object.entries(attributes)) {
-		elem.setAttribute(k, v);
+		if (/^on/.test(k))
+			elem.addEventListener(k.match(/on(.*)/)?.[1], v as EventListener);
+		else
+			elem.setAttribute(k, v as string);
 	}
 	if (inner instanceof Array)
 		elem.append(...inner.flat().filter(value => Boolean(value)));
