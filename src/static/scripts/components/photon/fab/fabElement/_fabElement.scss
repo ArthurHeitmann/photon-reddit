@@ -25,7 +25,7 @@
 	display: flex;
 	transition: all .25s ease;
 
-	.icon {
+	> .icon {
 		margin-left: auto;
 		background-color: vars.$background-el1;
 		background-image: var(--img);
@@ -60,7 +60,7 @@
 		width: 2rem;
 		height: 2rem;
 
-		.icon {
+		> .icon {
 			width: 2rem;
 			height: 2rem;
 			padding: .25rem;
@@ -112,7 +112,7 @@
 			margin-left: calc(0.25rem + var(--x));
 			margin-bottom: calc(0.25rem + var(--y));
 
-			.icon {
+			> .icon {
 				opacity: 1;
 			}
 		}
@@ -155,7 +155,7 @@
 			transition: all .25s ease, margin 0s;
 
 			&:not(.draggable, .small) {
-				.icon {
+				> .icon {
 					border-width: 2px;
 				}
 			}
@@ -163,13 +163,13 @@
 			&.draggable {
 				z-index: 3;
 				pointer-events: none;
-				.icon {
+				> .icon {
 					@extend %shadow-4;
 				}
 			}
 
 			&.dragTarget {
-				.icon {
+				> .icon {
 					border-width: 5px;
 					filter: brightness(3);
 					@extend %shadow-6;

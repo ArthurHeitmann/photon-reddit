@@ -18,12 +18,14 @@
 	transform: scale(0.75);
 	transform-origin: bottom center;
 	transition: all .25s ease;
+	pointer-events: none;
 	@extend %shadow-diffuse;
 
 	&.show {
 		opacity: 1;
 		visibility: visible;
 		transform: scale(1);
+		pointer-events: all;
 	}
 
 	.header {
@@ -70,7 +72,7 @@
 		visibility: hidden;
 		position: absolute;
 
-		&.active {
+		&.selected {
 			opacity: 1;
 			visibility: visible;
 		}

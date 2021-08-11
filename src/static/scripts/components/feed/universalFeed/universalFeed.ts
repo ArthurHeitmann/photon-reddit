@@ -88,7 +88,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			title.className = "feedTitle";
 			let feedType: FeedType = FeedType.misc;
 			let feedBaseUrl = requestUrl;
-			if (/^\/?(\?.*)?$/.test(requestUrl) || new RegExp(`^/r/(${fakeSubreddits.join("|")})`, "i").test(requestUrl)) {	// home page or special subreddit
+			if (/^\/?(\?.*)?$/.test(requestUrl) || new RegExp(`^/r/(${fakeSubreddits.join("|")})($|/|\\?|#)`, "i").test(requestUrl)) {	// home page or special subreddit
 				feedType = FeedType.misc;
 			}
 			else if (/^\/r\/[^/]+/i.test(requestUrl)) {								// subreddit
