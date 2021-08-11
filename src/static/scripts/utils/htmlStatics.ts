@@ -105,7 +105,7 @@ export function getLoadingIcon(): HTMLImageElement {
 	return loadingIcon;
 }
 
-export function nonDraggableImage(img: HTMLImageElement): HTMLImageElement {
+export function nonDraggableElement(img: HTMLElement): HTMLElement {
 	img.addEventListener("dragstart", e => {
 		e.preventDefault();
 		return false;

@@ -12,7 +12,7 @@
 	border: 1px solid vars.$border-color;
 	border-radius: vars.$border-radius;
 	width: 17.5rem;
-	height: 12.5rem;
+	height: 15.5rem;
 	opacity: 0;
 	visibility: hidden;
 	transform: scale(0.75);
@@ -68,16 +68,15 @@
 	.section {
 		padding: .5rem;
 		width: 100%;
-		opacity: 0;
-		visibility: hidden;
-		position: absolute;
+		display: none;
+		flex-direction: column;
+		gap: .25rem;
 
 		&.selected {
-			opacity: 1;
-			visibility: visible;
+			display: flex;
 		}
 
-		.searchWrapper {
+		.inputWrapper {
 			height: 1.75rem;
 			border-radius: math.div(1.75rem, 2);
 			display: flex;
@@ -109,18 +108,42 @@
 			display: flex;
 			flex-wrap: wrap;
 			justify-content: space-evenly;
-			max-height: 7.05rem;
-			margin-top: .5rem;
 
-			.result.preset {
-				width: 2.5rem;
-				height: 3.5rem;
+			&.presets {
+				max-height: 10.05rem;
+			}
+
+			&:where(.actions, .icons) {
+				max-height: 8.0rem;
+			}
+
+			&.actions {
 				display: flex;
-				align-items: center;
 				flex-direction: column;
-				padding: .25rem;
+				align-items: flex-start;
+				justify-content: flex-start;
+				gap: .25rem;
+				flex-wrap: nowrap;
+			}
+
+			.result {
 				border-radius: .5rem;
 				transition: background-color .25s ease;
+
+				&.preset {
+					width: 3.5rem;
+					height: 3.5rem;
+				}
+
+				&.icon {
+					width: 2.75rem;
+					height: 2.75rem;
+					justify-content: center;
+				}
+
+				&.action {
+					padding: 0.125rem .25rem;
+				}
 
 				&:hover {
 					background: vars.$transparent-btn-hover;
@@ -130,22 +153,33 @@
 					background: vars.$transparent-btn-active;
 				}
 
-				img {
-					width: 2rem;
-					height: 2rem;
-				}
+				&:where(.preset, .icon) {
+					display: flex;
+					align-items: center;
+					flex-direction: column;
+					padding: .25rem;
 
-				div {
-					height: 1rem;
-					width: 100%;
-					text-align: center;
-					overflow: hidden;
-					white-space: nowrap;
-					text-overflow: ellipsis;
-					font-size: .75rem;
+					img {
+						width: 2rem;
+						height: 2rem;
 
-					&.small {
-						font-size: .6rem;
+						&[src=""] {
+							visibility: hidden;
+						}
+					}
+
+					div {
+						height: 1rem;
+						width: 100%;
+						text-align: center;
+						overflow: hidden;
+						white-space: nowrap;
+						text-overflow: ellipsis;
+						font-size: .75rem;
+
+						&.small {
+							font-size: .6rem;
+						}
 					}
 				}
 			}

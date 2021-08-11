@@ -1,4 +1,4 @@
-import { nonDraggableImage } from "../../../utils/htmlStatics";
+import { nonDraggableElement } from "../../../utils/htmlStatics";
 import { elementWithClassInTree } from "../../../utils/htmlStuff";
 import { bufferedMouseLeave, makeElement } from "../../../utils/utils";
 import { PhotonSettings } from "../../global/photonSettings/photonSettings";
@@ -21,6 +21,7 @@ const maxElementCount = layerConfigurations.reduce((prev, curr) => prev + curr.m
 
 export default class Ph_Fab extends HTMLElement {
 	fabElements: Ph_FabElement[] = [];
+	isEditable: boolean = false;
 
 	constructor() {
 		super();
@@ -28,11 +29,14 @@ export default class Ph_Fab extends HTMLElement {
 		this.classList.add("floatingActionButton");
 
 		const rootButton = makeElement("button", { "class": "rootElement" }, [
-			nonDraggableImage(makeElement("img", { "src": "/img/logo.png", "class": "bg", "draggable": "false" }) as HTMLImageElement),
-			nonDraggableImage(makeElement("img", { "src": "/img/edit.svg", "class": "edit start", "draggable": "false" }) as HTMLImageElement),
-			nonDraggableImage(makeElement("img", { "src": "/img/check.svg", "class": "edit end", "draggable": "false" }) as HTMLImageElement),
+			nonDraggableElement(makeElement("img", { "src": "/img/logo.png", "class": "bg", "draggable": "false" }) as HTMLImageElement),
+			nonDraggableElement(makeElement("img", { "src": "/img/edit.svg", "class": "edit start", "draggable": "false" }) as HTMLImageElement),
+			nonDraggableElement(makeElement("img", { "src": "/img/check.svg", "class": "edit end", "draggable": "false" }) as HTMLImageElement),
 		]);
-		rootButton.addEventListener("click", this.toggleEditing.bind(this));
+		rootButton.addEventListener("click", () => {
+			this.show();
+			this.toggleEditing();
+		});
 		this.append(rootButton);
 
 		this.append(...this.fabElements = [
@@ -69,9 +73,7 @@ export default class Ph_Fab extends HTMLElement {
 			new Ph_Toast(Level.warning, "Limit reached", { groupId: "fab limit reached", timeout: 2000 });
 			return;
 		}
-		const img = ["earth", "trendUp", "add", "envelope"];
-		const rand = Math.floor(Math.random() * img.length);
-		const newElement = new Ph_FabElement(`/img/${img[rand]}.svg`,
+		const newElement = new Ph_FabElement("",
 			() => void new Ph_Toast(Level.info, "No action assigned", { timeout: 2000, groupId: "fab elem no action" }),
 			this.onElementRemoved.bind(this));
 		this.fabElements.push(newElement);
@@ -107,17 +109,22 @@ export default class Ph_Fab extends HTMLElement {
 	}
 
 	toggleEditing() {
+		if (!this.isEditable)
+			return;
 		this.classList.toggle("editing");
 	}
 
 	show() {
 		this.classList.add("show");
+		if (!this.isEditable)
+			setTimeout(() => this.isEditable = true, 10);
 	}
 
 	hide() {
 		if (this.classList.contains("editing"))
 			return;
 		this.classList.remove("show");
+		this.isEditable = false;
 	}
 
 	swap2FabElements(elem1: Ph_FabElement, elem2: Ph_FabElement) {

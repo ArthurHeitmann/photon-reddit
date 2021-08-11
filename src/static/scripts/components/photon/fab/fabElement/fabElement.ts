@@ -1,7 +1,8 @@
-import { nonDraggableImage } from "../../../../utils/htmlStatics";
+import { nonDraggableElement } from "../../../../utils/htmlStatics";
 import { linksToSpa } from "../../../../utils/htmlStuff";
 import { bufferedMouseLeave, makeElement } from "../../../../utils/utils";
 import Ph_Fab from "../fab";
+import { FabPreset, FunctionActions } from "../fabElementConfig";
 import Ph_FabElementEditPane from "../fabElementEditPane/fabElementEditPane";
 
 export type OnClickAction = string | (() => boolean | void);
@@ -10,7 +11,7 @@ export enum FabElementSize {
 }
 
 export default class Ph_FabElement extends HTMLElement {
-	icon: HTMLElement;
+	iconWrapper: HTMLElement;
 	editPane: Ph_FabElementEditPane;
 	angle: number;
 	distance: number;
@@ -49,7 +50,7 @@ export default class Ph_FabElement extends HTMLElement {
 				this.editPane.hide();
 			});
 			const moveButton = makeElement("button", { "class": "subFab shadow-diffuse" },
-				[nonDraggableImage(makeElement("img", { "src": "/img/drag.svg", "alt": "move", "draggable": "false" }) as HTMLImageElement)]);
+				[nonDraggableElement(makeElement("img", { "src": "/img/drag.svg", "alt": "move", "draggable": "false" }) as HTMLImageElement)]);
 			moveButton.addEventListener("mousedown", this.startDrag.bind(this));
 			this.onMouseMoveCallback = this.onMouseMove.bind(this);
 			this.onMouseUpCallback = this.endDrag.bind(this);
@@ -60,12 +61,12 @@ export default class Ph_FabElement extends HTMLElement {
 			this.append(this.editPane);
 		}
 
+		this.iconWrapper = makeElement("div", { "class": "iconWrapper" });
+		this.append(this.iconWrapper);
 		this.setAction(onClick);
 	}
 
 	onClickWrapper(onClick: OnClickAction) {
-		if (!this.icon.classList.contains("clickable"))
-			return;
 		let closeAfterClick = true;
 		if (typeof onClick === "function")
 			closeAfterClick = onClick() !== true;
@@ -83,21 +84,20 @@ export default class Ph_FabElement extends HTMLElement {
 		this.style.setProperty("--img", `url("${imgSrc}")`);
 	}
 
+	loadPreset(preset: FabPreset) {
+		this.setIcon(preset.icon.url);
+		this.setAction(preset.action.type === "url" ? preset.action.action : FunctionActions[preset.action.action])
+	}
+
 	setAction(action: OnClickAction) {
-		const oldIcon = this.icon;
-		this.icon = nonDraggableImage(makeElement(typeof action === "string" ? "a" : "button", { "class": "icon clickable", draggable: "false" })  as HTMLImageElement);
+		this.iconWrapper.innerText = "";
+		const actionElement = nonDraggableElement(makeElement(typeof action === "string" ? "a" : "button", { "class": "icon", draggable: "false" }));
+		this.iconWrapper.append(actionElement);
 		if (typeof action === "string") {
-			this.icon.setAttribute("href", action);
-			linksToSpa(this.icon);
+			actionElement.setAttribute("href", action);
+			linksToSpa(actionElement);
 		}
-		this.icon.addEventListener("click", () => this.onClickWrapper(action));
-		if (oldIcon) {
-			oldIcon.after(this.icon);
-			oldIcon.remove();
-		}
-		else {
-			this.append(this.icon);
-		}
+		actionElement.addEventListener("click", () => this.onClickWrapper(action));
 	}
 
 	startDrag(e: MouseEvent) {

@@ -3,6 +3,7 @@
  */
 
 import Ph_Toast, { Level } from "../components/misc/toast/toast";
+import { fakeSubreddits } from "./consts";
 
 /** */
 function _numberToShort(num): { n: number, s: string } {
@@ -454,4 +455,8 @@ export function bufferedMouseLeave(elem: HTMLElement, bufferMs: number, callback
 			timeout = null;
 		}
 	});
+}
+
+export function isFakeSubreddit(subreddit: string): boolean {
+	return (new RegExp(fakeSubreddits.join("|"), "i")).test(subreddit)
 }

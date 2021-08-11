@@ -1,7 +1,7 @@
 import { getImgurContent, ImgurContent, ImgurContentType } from "../../api/imgurApi";
 import { RedditApiData, RedditApiType } from "../../types/misc";
 import { mediaHostsWhiteList } from "../../utils/consts";
-import { nonDraggableImage } from "../../utils/htmlStatics";
+import { nonDraggableElement } from "../../utils/htmlStatics";
 import { linksToSpa } from "../../utils/htmlStuff";
 import {
 	attachOnFullscreenChangeListener,
@@ -278,7 +278,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		// settings dropdown
 		const settingsImg = document.createElement("img");
 		settingsImg.src = "/img/settings2.svg";
-		nonDraggableImage(settingsImg)
+		nonDraggableElement(settingsImg)
 		settingsImg.alt = "settings";
 		this.settingsDropDown = new Ph_DropDown(
 			[{

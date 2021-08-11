@@ -11,6 +11,7 @@ function displayChunk(chunk) {
 		|| /^\s*[\d.: ]+.{0,5}?Starting compilation in watch mode...\s*$/.test(chunk.toString())
 		|| /^\s*[\d.: ]+.{0,5}?Found 0 errors. Watching for file changes.\s*$/.test(chunk.toString())
 		|| /^\s*[\d.: ]+.{0,5}?Starting compilation in watch mode...\s*[\d.: ]+.{0,5}?Found 0 errors. Watching for file changes\s*$/.test(chunk.toString())
+		|| /^\s*[\d.: ]+.{0,5}?File change detected. Starting incremental compilation...\s*[\d.: ]+.{0,5}?Found 0 errors. Watching for file changes\s*$/.test(chunk.toString())
 		|| /^\s*[\d.: ]+.{0,5}?File change detected. Starting incremental compilation...\s*$/.test(chunk.toString()))
 		return;
 	process.stdout.write(chunk);

@@ -1,4 +1,4 @@
-import { nonDraggableImage } from "../../../utils/htmlStatics";
+import { nonDraggableElement } from "../../../utils/htmlStatics";
 import { deepClone, hasParams, isJsonEqual } from "../../../utils/utils";
 import Ph_DropDown from "../dropDown/dropDown";
 import Ph_DropDownArea from "../dropDown/dropDownArea/dropDownArea";
@@ -97,7 +97,7 @@ export default class Ph_ControlsBar extends HTMLElement {
 	static makeImageButton(imgSrc: string, padded = false): HTMLButtonElement {
 		const btn = document.createElement("button");
 		const img = document.createElement("img");
-		nonDraggableImage(img);
+		nonDraggableElement(img);
 		if (padded)
 			img.className = "padded";
 		img.alt = imgSrc;

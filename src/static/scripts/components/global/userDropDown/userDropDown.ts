@@ -1,10 +1,9 @@
 import ViewsStack from "../../../historyState/viewsStack";
 import { RedditApiType } from "../../../types/misc";
-import { fakeSubreddits } from "../../../utils/consts";
 import { ensurePageLoaded, thisUser } from "../../../utils/globals";
 import { escADQ } from "../../../utils/htmlStatics";
 import { elementWithClassInTree, isElementIn, linksToSpa } from "../../../utils/htmlStuff";
-import { hasHTML, numberToShort } from "../../../utils/utils";
+import { hasHTML, isFakeSubreddit, numberToShort } from "../../../utils/utils";
 import Ph_FeedLink from "../../link/feedLink/feedLink";
 import Ph_Header from "../header/header";
 
@@ -95,7 +94,7 @@ export default class Ph_UserDropDown extends HTMLElement {
 		window.addEventListener("ph-view-change", (e: CustomEvent) => {
 				let submitUrl: string;
 				const currentSubMatch: RegExpMatchArray = history.state.url.match(/\/r\/\w+/i);		// /r/sub
-				if (currentSubMatch && !fakeSubreddits.includes(currentSubMatch[0].substr(3)))
+				if (currentSubMatch && !isFakeSubreddit(currentSubMatch[0].substr(3)))
 					submitUrl = `${currentSubMatch}/submit`;
 				else
 					submitUrl = "/submit";

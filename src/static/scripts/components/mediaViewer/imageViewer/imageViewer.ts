@@ -1,4 +1,4 @@
-import { getLoadingIcon, nonDraggableImage } from "../../../utils/htmlStatics";
+import { getLoadingIcon, nonDraggableElement } from "../../../utils/htmlStatics";
 import { hasParams } from "../../../utils/utils";
 import { globalSettings, ImageLoadingPolicy, PhotonSettings } from "../../global/photonSettings/photonSettings";
 import { ControlsLayoutSlots } from "../../misc/controlsBar/controlsBar";
@@ -41,14 +41,14 @@ export default class Ph_ImageViewer extends Ph_PhotonBaseElement implements Medi
 		this.originalImage.className = "original";
 		this.originalImage.alt = initData.caption || this.url;
 		this.originalImage.onerror = this.makeOnImageError();
-		nonDraggableImage(this.originalImage);
+		nonDraggableElement(this.originalImage);
 		if (initData.previewUrl && globalSettings.imageLoadingPolicy !== ImageLoadingPolicy.alwaysOriginal) {
 			this.previewImage = document.createElement("img");
 			this.previewImage.className = "preview";
 			this.previewImage.src = initData.previewUrl
 			this.previewImage.alt = initData.caption || this.url;
 			this.previewImage.onerror = this.startLoadingOriginal.bind(this);
-			nonDraggableImage(this.previewImage);
+			nonDraggableElement(this.previewImage);
 			this.append(this.previewImage);
 			this.addEventListener("ph-entered-fullscreen", this.onFullscreenEnter.bind(this));
 			this.originalSrc = initData.originalUrl;
