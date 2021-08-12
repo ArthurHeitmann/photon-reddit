@@ -15,7 +15,7 @@ export default class FeedInfoFactory {
 	static getInfoButton(feedType: FeedType, feedUrl: string): HTMLElement {
 		const button = new Ph_PhotonBaseElement();
 		button.className = "showInfo";
-		button.append(makeElement("button", { "class": "transparentButtonAlt" }, [
+		button.append(makeElement("button", { class: "transparentButtonAlt" }, [
 			makeElement("img", { src: "/img/info.svg", draggable: "false", alt: "info" })
 		]));
 		button.setAttribute("data-feed-url", feedUrl);

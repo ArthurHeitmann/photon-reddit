@@ -66,7 +66,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 
 		// this is not a comment, this is a load more comments button
 		if (commentData.kind === "more") {
-			const loadMoreButton = makeElement("button", { "class": "loadMoreButton button light" }) as HTMLButtonElement;
+			const loadMoreButton = makeElement("button", { class: "loadMoreButton button light" }) as HTMLButtonElement;
 			this.append(loadMoreButton);
 
 			// continue thread button/link
@@ -127,14 +127,14 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 		// HTML elements
 
 		// actions bar
-		const actionBar = makeElement("div", { "class": "actions" });
+		const actionBar = makeElement("div", { class: "actions" });
 		this.appendChild(actionBar);
 		// vote up button
 		this.voteUpButton = new Ph_VoteButton(true);
 		this.voteUpButton.addEventListener("click", e => this.vote(VoteDirection.up));
 		actionBar.appendChild(this.voteUpButton);
 		// current votes
-		actionBar.append(this.currentUpvotes = makeElement("div", { "class": "upvotes" }));
+		actionBar.append(this.currentUpvotes = makeElement("div", { class: "upvotes" }));
 		// vote down button
 		this.voteDownButton = new Ph_VoteButton(false);
 		this.voteDownButton.addEventListener("click", e => this.vote(VoteDirection.down));
@@ -167,7 +167,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 		moreDropDown.toggleButton.classList.add("transparentButton");
 		actionBar.appendChild(moreDropDown);
 		// comment collapser
-		const commentCollapser = makeElement("div", { "class": "commentCollapser" }, [makeElement("div")]);
+		const commentCollapser = makeElement("div", { class: "commentCollapser" }, [makeElement("div")]);
 		commentCollapser.addEventListener("click", e => this.collapse(e));
 		actionBar.appendChild(commentCollapser);
 
@@ -180,32 +180,32 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 		else if (commentData.data["distinguished"] === "admin")
 			userAdditionClasses += " admin";
 
-		const mainPart = makeElement("div", { "class": "w100" }, [
-			makeElement("div", { "class": "header flex" }, [
-				commentData.data["stickied"] && makeElement("img", { "class": "pinned", src: "/img/pin.svg", alt: "pinned", draggable: "false" }),
-				makeElement("a", { href: `/user/${commentData.data["author"]}`, "class": `user${userAdditionClasses}` }, [
+		const mainPart = makeElement("div", { class: "w100" }, [
+			makeElement("div", { class: "header flex" }, [
+				commentData.data["stickied"] && makeElement("img", { class: "pinned", src: "/img/pin.svg", alt: "pinned", draggable: "false" }),
+				makeElement("a", { href: `/user/${commentData.data["author"]}`, class: `user${userAdditionClasses}` }, [
 					makeElement("span", null, `u/${commentData.data["author"]}`),
-					commentData.data["author_cakeday"] && makeElement("img", { src: "/img/cake.svg", "class": "cakeDay", alt: "cake day" })
+					commentData.data["author_cakeday"] && makeElement("img", { src: "/img/cake.svg", class: "cakeDay", alt: "cake day" })
 				]),
 				makeElement(
 					"span",
-					{ "class": "time", "data-tooltip": `${new Date(commentData.data["created_utc"] * 1000).toString()}` },
+					{ class: "time", "data-tooltip": `${new Date(commentData.data["created_utc"] * 1000).toString()}` },
 					timePassedSinceStr(commentData.data["created_utc"])
 				),
 				makeElement("span", null, "ago"),
 				commentData.data["edited"] && [
 					makeElement("span", null, "|"),
 					makeElement("span", null, "edited"),
-					makeElement("span", { "class": "time", "data-tooltip": `${new Date(commentData.data["edited"] * 1000).toString()}` }, timePassedSinceStr(commentData.data["edited"])),
+					makeElement("span", { class: "time", "data-tooltip": `${new Date(commentData.data["edited"] * 1000).toString()}` }, timePassedSinceStr(commentData.data["edited"])),
 					makeElement("span", null, "ago"),
 				],
 				isLocked && makeElement(
 					"span",
-					{ "class": "locked", "data-tooltip": lockedReason },
+					{ class: "locked", "data-tooltip": lockedReason },
 					[makeElement("img", { "src": "/img/locked.svg", alt: "locked" })]
 				)
 			]),
-			makeElement("div", { "class": "content" }, commentData.data["body_html"], true)
+			makeElement("div", { class: "content" }, commentData.data["body_html"], true)
 		]);
 
 		emojiFlagsToImages(mainPart);
@@ -219,7 +219,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 			.insertAdjacentElement("afterend", Ph_Flair.fromThingData(commentData.data, "author"));
 
 		// child comments
-		mainPart.appendChild(this.childComments = makeElement("div", { "class": "replies" }));
+		mainPart.appendChild(this.childComments = makeElement("div", { class: "replies" }));
 
 		// reply form
 		if (!isLocked) {

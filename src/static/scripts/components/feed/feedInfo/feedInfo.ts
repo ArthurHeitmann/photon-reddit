@@ -98,10 +98,10 @@ export default abstract class Ph_FeedInfo extends HTMLElement {
 	abstract displayInfo(): void;
 
 	protected makeSwitchableBar(entries: { title: string, content: HTMLElement }[]): HTMLElement {
-		const wrapper = makeElement("div", { "class": "switchableBar" });
-		const switcher = makeElement("div", { "class": "switcher" });
+		const wrapper = makeElement("div", { class: "switchableBar" });
+		const switcher = makeElement("div", { class: "switcher" });
 		wrapper.appendChild(switcher);
-		const content = makeElement("div", { "class": "content" });
+		const content = makeElement("div", { class: "content" });
 		wrapper.appendChild(content);
 		for (const entry of entries) {
 			const switchBtn = makeElement("button", null, entry.title);
@@ -118,7 +118,7 @@ export default abstract class Ph_FeedInfo extends HTMLElement {
 	}
 
 	protected makeRefreshButton(): HTMLElement {
-		const refreshButton = makeElement("button", { "class": "refreshButton transparentButtonAlt" },
+		const refreshButton = makeElement("button", { class: "refreshButton transparentButtonAlt" },
 			[makeElement("img", { src: "/img/refresh.svg", draggable: "false", alt: "refresh" })]);
 		refreshButton.addEventListener("click", () => this.loadInfo().then(this.displayInfo.bind(this)));
 		return refreshButton;

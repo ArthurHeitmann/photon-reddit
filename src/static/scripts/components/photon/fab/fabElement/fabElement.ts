@@ -39,7 +39,7 @@ export default class Ph_FabElement extends HTMLElement {
 
 		if (size === FabElementSize.normal) {
 			this.editPane = new Ph_FabElementEditPane(this);
-			const editButton = makeElement("button", { "class": "subFab shadow-diffuse", onclick: () => {
+			const editButton = makeElement("button", { class: "subFab shadow-diffuse", onclick: () => {
 				this.classList.add("editPaneOpen");
 				this.editPane.show();
 			}},
@@ -48,17 +48,17 @@ export default class Ph_FabElement extends HTMLElement {
 				this.classList.remove("editPaneOpen");
 				this.editPane.hide();
 			});
-			const moveButton = makeElement("button", { "class": "subFab shadow-diffuse", onclick: this.startDrag.bind(this) },
+			const moveButton = makeElement("button", { class: "subFab shadow-diffuse", onmousedown: this.startDrag.bind(this) },
 				[nonDraggableElement(makeElement("img", { "src": "/img/drag.svg", "alt": "move", "draggable": "false" }) as HTMLImageElement)]);
 			this.onMouseMoveCallback = this.onMouseMove.bind(this);
 			this.onMouseUpCallback = this.endDrag.bind(this);
-			const deleteButton = makeElement("button", { "class": "subFab shadow-diffuse", onclick: this.delete.bind(this) },
+			const deleteButton = makeElement("button", { class: "subFab shadow-diffuse", onclick: this.delete.bind(this) },
 				[makeElement("img", { "src": "/img/delete.svg", "alt": "delete" })]);
 			this.append(moveButton, deleteButton, editButton);
 			this.append(this.editPane);
 		}
 
-		this.iconWrapper = makeElement("div", { "class": "iconWrapper" });
+		this.iconWrapper = makeElement("div", { class: "iconWrapper" });
 		this.append(this.iconWrapper);
 		this.setAction(onClick);
 	}
@@ -90,7 +90,7 @@ export default class Ph_FabElement extends HTMLElement {
 		this.iconWrapper.innerText = "";
 		const actionElement = nonDraggableElement(makeElement(
 			typeof action === "string" ? "a" : "button",
-			{ "class": "icon", draggable: "false", onclick: () => this.onClickWrapper(action) }
+			{ class: "icon", draggable: "false", onclick: () => this.onClickWrapper(action) }
 		));
 		this.iconWrapper.append(actionElement);
 		if (typeof action === "string") {

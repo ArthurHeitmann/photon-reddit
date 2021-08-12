@@ -28,10 +28,6 @@
 	> .iconWrapper {
 		margin-left: auto;
 		background-color: vars.$background-el1;
-		background-image: var(--img);
-		background-size: contain;
-		background-origin: content-box;
-		background-repeat: no-repeat;
 		padding: .5rem;
 		width: 3rem;
 		height: 3rem;
@@ -44,10 +40,15 @@
 		cursor: pointer;
 		@extend %shadow-diffuse;
 
-		> * {
+		> :first-child {
 			width: 100%;
 			height: 100%;
+			border-radius: 50%;
 			display: block;
+			background-image: var(--img);
+			background-size: contain;
+			background-origin: content-box;
+			background-repeat: no-repeat;
 		}
 
 		&:hover {

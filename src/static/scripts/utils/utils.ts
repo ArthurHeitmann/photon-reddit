@@ -246,7 +246,7 @@ export const nameOf = <T>(name: keyof T) => name;
  * Creates an element kinda in jsx fashion
  *
  * @param tagName Tag name of the element (div, span, etc.)
- * @param attributes Set of attributes of the element (ex: { "class": "testClass", id: "testId" }
+ * @param attributes Set of attributes of the element (ex: { class: "testClass", id: "testId" }
  * @param inner if of type array --> children of this element; else innerText (unless @param useInnerHTML is true)
  * @param useInnerHTML (default false) if true --> string for @param inner will be used for innerHTML
  */

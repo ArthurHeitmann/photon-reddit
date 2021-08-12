@@ -157,7 +157,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			dropDownEntries.push({ label:
 				makeElement(
 					"a",
-					{ href: `${this.permalink.replace("comments", "duplicates")}`, "class": "noStyle" },
+					{ href: `${this.permalink.replace("comments", "duplicates")}`, class: "noStyle" },
 					`View ${postData.data["num_crossposts"]} Crossposts`
 				),
 				labelImgUrl: "/img/shuffle.svg"

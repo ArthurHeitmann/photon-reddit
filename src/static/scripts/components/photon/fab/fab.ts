@@ -29,15 +29,15 @@ export default class Ph_Fab extends HTMLElement {
 		this.classList.add("floatingActionButton");
 
 		this.append(makeElement("button", {
-			"class": "rootElement",
+			class: "rootElement",
 			onclick: () => {
 				this.show();
 				this.toggleEditing();
 			}
 		}, [
-			nonDraggableElement(makeElement("img", { "src": "/img/logo.png", "class": "bg", "draggable": "false" }) as HTMLImageElement),
-			nonDraggableElement(makeElement("img", { "src": "/img/edit.svg", "class": "edit start", "draggable": "false" }) as HTMLImageElement),
-			nonDraggableElement(makeElement("img", { "src": "/img/check.svg", "class": "edit end", "draggable": "false" }) as HTMLImageElement),
+			nonDraggableElement(makeElement("img", { "src": "/img/logo.png", class: "bg", "draggable": "false" }) as HTMLImageElement),
+			nonDraggableElement(makeElement("img", { "src": "/img/edit.svg", class: "edit start", "draggable": "false" }) as HTMLImageElement),
+			nonDraggableElement(makeElement("img", { "src": "/img/check.svg", class: "edit end", "draggable": "false" }) as HTMLImageElement),
 		]));
 
 		this.append(...this.fabElements = [

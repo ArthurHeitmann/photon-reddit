@@ -30,7 +30,7 @@ export default class Ph_VoteButton extends HTMLElement {
 
 		this.className = `voteButton ${isUpVote ? "up" : "down"}`;
 
-		this.append(makeElement("button", { "class": "transparentButtonAlt" }, [
+		this.append(makeElement("button", { class: "transparentButtonAlt" }, [
 			svgTemplate.children[0].cloneNode(true),
 			svgTemplate.children[1].cloneNode(true)
 		]))

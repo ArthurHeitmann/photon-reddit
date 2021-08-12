@@ -35,7 +35,7 @@ export default class Ph_CommentsFeed extends HTMLElement {
 	insertParentLink(link: string, displayText: string) {
 		const linkA = makeElement(
 			"a",
-			{ href: link, "class": "parentCommentsLink" },
+			{ href: link, class: "parentCommentsLink" },
 			displayText
 		);
 		linksToSpa(linkA);
