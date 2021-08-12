@@ -28,7 +28,6 @@
 	> .iconWrapper {
 		margin-left: auto;
 		background-color: vars.$background-el1;
-		padding: .5rem;
 		width: 3rem;
 		height: 3rem;
 		border-radius: 50%;
@@ -37,26 +36,38 @@
 		opacity: 0;
 		transition: all .25s ease, padding .1s ease, border .1s ease;
 		animation: popInFabElement 0.2s ease forwards;
-		cursor: pointer;
+		cursor: pointer;;
 		@extend %shadow-diffuse;
 
-		> :first-child {
+		> .icon {
 			width: 100%;
 			height: 100%;
 			border-radius: 50%;
-			display: block;
-			background-image: var(--img);
-			background-size: contain;
-			background-origin: content-box;
-			background-repeat: no-repeat;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+
+			&::after {
+				content: "";
+				width: 2rem;
+				height: 2rem;
+				transition: all .15s ease;
+				border-radius: 25%;
+				display: block;
+				background-size: cover;
+				background-origin: content-box;
+				background-repeat: no-repeat;
+				background-image: var(--img);
+			}
+
+			&:active::after {
+				width: 2.2rem;
+				height: 2.2rem;
+			}
 		}
 
 		&:hover {
 			background-color: vars.$background-el2;
-		}
-
-		&:active {
-			padding: .4rem;
 		}
 	}
 
@@ -67,10 +78,21 @@
 		> .iconWrapper {
 			width: 2rem;
 			height: 2rem;
-			padding: .25rem;
 
-			&:active {
-				padding: .15rem;
+			> .icon {
+				width: 100%;
+				height: 100%;
+				transform: scale(1.05);
+
+				&::after {
+					width: 1.5rem;
+					height: 1.5rem;
+				}
+
+				&:active::after {
+					width: 1.7rem;
+					height: 1.7rem;
+				}
 			}
 		}
 	}
@@ -138,17 +160,17 @@
 			transition-delay: 0s;
 
 			&:nth-of-type(1) {
-				$angle: 60 * math.div(math.$pi, 180);
+				$angle: 150 * math.div(math.$pi, 180);
 				transform: translateX(math.cos($angle) * $subFabDistance) translateY(math.sin($angle) * $subFabDistance) scale(1);
 			}
 
 			&:nth-of-type(2) {
-				$angle: 180 * math.div(math.$pi, 180);
+				$angle: 270 * math.div(math.$pi, 180);
 				transform: translateX(math.cos($angle) * $subFabDistance) translateY(math.sin($angle) * $subFabDistance) scale(1);
 			}
 
 			&:nth-of-type(3) {
-				$angle: 300 * math.div(math.$pi, 180);
+				$angle: 30 * math.div(math.$pi, 180);
 				transform: translateX(math.cos($angle) * $subFabDistance) translateY(math.sin($angle) * $subFabDistance) scale(1);
 			}
 		}

@@ -466,11 +466,11 @@ export function isFakeSubreddit(subreddit: string): boolean {
 }
 
 export function getSubredditIconUrl(subData: RedditApiData): string {
-	return subData["community_icon"] || subData["icon_img"];
+	return subData["community_icon"] || subData["icon_img"] || "/img/rSlash.svg";
 }
 
 export function getUserIconUrl(userData: RedditApiData): string {
-	return userData["subreddit"]?.["icon_img"] || userData["icon_img"];
+	return userData["subreddit"]?.["icon_img"] || userData["icon_img"] || "/img/uSlash.svg";
 }
 
 export function getMultiIconUrl(multiData: RedditApiData): string {

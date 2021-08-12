@@ -11,6 +11,7 @@ export enum FabElementSize {
 }
 
 export default class Ph_FabElement extends HTMLElement {
+	activePreset: FabPreset;
 	iconWrapper: HTMLElement;
 	editPane: Ph_FabElementEditPane;
 	angle: number;
@@ -26,7 +27,7 @@ export default class Ph_FabElement extends HTMLElement {
 	dragTargetEnterCallback: () => void;
 	dragTargetLeaveCallback: () => void;
 
-	constructor(imgSrc: string, onClick: OnClickAction, onRemoved: (elem: Ph_FabElement) => void, angle: number = 0, distance = 10, size: FabElementSize = FabElementSize.normal) {
+	constructor(onRemoved: (elem: Ph_FabElement) => void, imgSrc?: string, onClick?: OnClickAction, angle: number = 0, distance = 10, size: FabElementSize = FabElementSize.normal) {
 		super();
 
 		this.classList.add("fabElement");
@@ -73,7 +74,7 @@ export default class Ph_FabElement extends HTMLElement {
 
 	delete() {
 		this.remove();
-		this.onRemovedCallback(this);
+		this.onRemovedCallback?.(this);
 		this.onRemovedCallback = null;
 	}
 
@@ -82,6 +83,12 @@ export default class Ph_FabElement extends HTMLElement {
 	}
 
 	loadPreset(preset: FabPreset) {
+		if (!this.activePreset) {
+			this.activePreset = preset;
+			this.editPane.setActivePreset(preset);
+		}
+		else
+			this.activePreset = preset;
 		this.setIcon(preset.icon.url);
 		this.setAction(preset.action.type === "url" ? preset.action.action : FunctionActions[preset.action.action])
 	}
@@ -90,9 +97,10 @@ export default class Ph_FabElement extends HTMLElement {
 		this.iconWrapper.innerText = "";
 		const actionElement = nonDraggableElement(makeElement(
 			typeof action === "string" ? "a" : "button",
-			{ class: "icon", draggable: "false", onclick: () => this.onClickWrapper(action) }
+			{ class: "icon", draggable: "false" }
 		));
 		this.iconWrapper.append(actionElement);
+		this.iconWrapper.onclick = () => this.onClickWrapper(action);
 		if (typeof action === "string") {
 			actionElement.setAttribute("href", action);
 			linksToSpa(actionElement);

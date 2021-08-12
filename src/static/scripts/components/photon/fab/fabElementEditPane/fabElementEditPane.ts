@@ -1,82 +1,23 @@
 import { RedditApiType } from "../../../../types/misc";
+import { nonDraggableElement } from "../../../../utils/htmlStatics";
 import { elementWithClassInTree } from "../../../../utils/htmlStuff";
-import { getSubredditIconUrl, makeElement } from "../../../../utils/utils";
+import { deepClone, getSubredditIconUrl, isJsonEqual, makeElement } from "../../../../utils/utils";
 import Ph_SubredditSelector from "../../../misc/subredditSelector/subredditSelector";
+import Ph_Fab from "../fab";
 import Ph_FabElement from "../fabElement/fabElement";
-import { FabAction, FabIcon, FabPreset } from "../fabElementConfig";
+import {
+	defaultFabActions,
+	defaultFabIcons,
+	defaultFabPresets,
+	FabAction,
+	FabIcon,
+	FabPreset
+} from "../fabElementConfig";
 
 export default class Ph_FabElementEditPane extends HTMLElement {
-	actions: FabAction[] = [
-		{ type: "function", action: "", names: ["Nothing"] },
-		{ type: "url", action: "#", names: ["Custom"] },
-		{ type: "url", action: "/", names: ["Frontpage", "home", "start"] },
-		{ type: "url", action: "/r/all", names: ["r/all", "all"] },
-		{ type: "url", action: "/r/popular", names: ["r/popular", "popular"] },
-		{ type: "url", action: "/message/inbox", names: ["Inbox", "messages", "chat"] },
-		{ type: "function", action: "My Profile", names: ["My Profile", "my", "me", "profile", "user"] },
-		{ type: "function", action: "Submit", names: ["Post", "submit", "new", "write"] },
-		{ type: "url", action: "/message/compose", names: ["Compose Message", "message", "new", "compose", "chat"] },
-		{ type: "function", action: "Unload Pages", names: ["Unload Pages", "remove", "delete", "cross", "x", "pages"] },
-	];
-	icons: FabIcon[] = [
-		{ url: "/img/transparent.svg", names: ["Nothing", "empty", "base", "blank", "circle", "ring"] },
-		{ url: "/img/circle.svg", names: ["Nothing", "empty", "base", "blank", "circle", "ring"] },
-		{ url: "/img/bookOpen.svg", names: ["Frontpage", "book", "home", "start"] },
-		{ url: "/img/earth.svg", names: ["all", "earth"] },
-		{ url: "/img/trendUp.svg", names: ["popular", "arrow", "up"] },
-		{ url: "/img/envelope.svg", names: ["Inbox", "messages", "chat", "envelope"] },
-		{ url: "/img/user.svg", names: ["Profile", "my", "me", "profile", "user"] },
-		{ url: "/img/edit.svg", names: ["Submit", "write", "edit", "pen"] },
-		{ url: "/img/writeMessage.svg", names: ["Submit", "write", "edit", "pen", "message", "chat"] },
-		{ url: "/img/close.svg", names: ["Unload", "unload", "remove", "delete", "cross", "x", "pages"] },
-		{ url: "/img/18+.svg", names: ["18+", "nsfw"] },
-		{ url: "/img/award.svg", names: ["award", "gold"] },
-		{ url: "/img/bookmarkEmpty.svg", names: ["bookmark", "saved"] },
-		{ url: "/img/bookmarkFilled.svg", names: ["bookmark", "saved"] },
-		{ url: "/img/cake.svg", names: ["cake"] },
-		{ url: "/img/chat.svg", names: ["chat", "messages", "inbox"] },
-		{ url: "/img/circleFilled.svg", names: ["circle", "filled"] },
-		{ url: "/img/add.svg", names: ["add", "new"] },
-		{ url: "/img/comments.svg", names: ["comment", "thread"] },
-		{ url: "/img/commentEmpty.svg", names: ["comment", "thread"] },
-		{ url: "/img/delete.svg", names: ["delete", "remove", "trash"] },
-		{ url: "/img/error.svg", names: ["error", "cross", "failed"] },
-		{ url: "/img/fileImage.svg", names: ["image", "img", "picture"] },
-		{ url: "/img/fileVideo.svg", names: ["video", "movie"] },
-		{ url: "/img/filters.svg", names: ["filters"] },
-		{ url: "/img/hd.svg", names: ["hd"] },
-		{ url: "/img/history.svg", names: ["history", "time", "old"] },
-		{ url: "/img/hot.svg", names: ["hot", "fire", "flame"] },
-		{ url: "/img/info.svg", names: ["info", "about"] },
-		{ url: "/img/lightning.svg", names: ["lightning", "controversial"] },
-		{ url: "/img/locked.svg", names: ["locked", "archived"] },
-		{ url: "/img/logo.svg", names: ["logo", "home", "start"] },
-		{ url: "/img/new.svg", names: ["new", "fresh"] },
-		{ url: "/img/notification.svg", names: ["notification", "bell"] },
-		{ url: "/img/pin.svg", names: ["pinned"] },
-		{ url: "/img/qa.svg", names: ["qa", "q&a", "q & a", "questions", "answers"] },
-		{ url: "/img/rocket.svg", names: ["rocket", "best"] },
-		{ url: "/img/settings1.svg", names: ["settings", "options"] },
-		{ url: "/img/settings2.svg", names: ["settings", "options"] },
-		{ url: "/img/success.svg", names: ["success", "good", "confirmation"] },
-		{ url: "/img/swap.svg", names: ["swap", "switch", "arrows"] },
-		{ url: "/img/tag.svg", names: ["tags", "flairs"] },
-		{ url: "/img/text.svg", names: ["text", "letters"] },
-		{ url: "/img/top.svg", names: ["top"] },
-		{ url: "/img/warning.svg", names: ["warning"] },
-	];
-	presets: FabPreset[] = [
-		{ action: this.actions[0], icon: this.icons[0], presetName: "Nothing", names: ["Nothing", "empty", "blank"] },
-		{ action: this.actions[1], icon: this.icons[1], presetName: "Custom", names: ["Custom"] },
-		{ action: this.actions[2], icon: this.icons[2], presetName: "Frontpage", names: ["Frontpage", "home", "start"] },
-		{ action: this.actions[3], icon: this.icons[3], presetName: "r/all", names: ["all"] },
-		{ action: this.actions[4], icon: this.icons[4], presetName: "r/popular", names: ["popular"] },
-		{ action: this.actions[5], icon: this.icons[5], presetName: "Inbox", names: ["Inbox", "messages", "chat"] },
-		{ action: this.actions[6], icon: this.icons[6], presetName: "My Profile", names: ["My Profile", "my", "me", "profile", "user"] },
-		{ action: this.actions[7], icon: this.icons[7], presetName: "New Post", names: ["Post", "submit", "new", "write"] },
-		{ action: this.actions[8], icon: this.icons[8], presetName: "New Message", names: ["Compose Message", "message", "new", "compose", "chat"] },
-		{ action: this.actions[9], icon: this.icons[9], presetName: "Unload Pages", names: ["Unload", "remove", "delete", "cross", "x", "pages"] },
-	];
+	actions: FabAction[] = deepClone(defaultFabActions);
+	icons: FabIcon[] = deepClone(defaultFabIcons);
+	presets: FabPreset[] = deepClone(defaultFabPresets);
 	customPreset: FabPreset = this.presets[1];
 	customIconUrl = this.icons[1].url;
 	currentPreset: FabPreset = this.presets[0];
@@ -106,13 +47,13 @@ export default class Ph_FabElementEditPane extends HTMLElement {
 			makeElement("div", { class: "results presets" },
 				this.presets.map(preset => {
 					return makeElement("button", {
-						class: "result preset" + (this.currentPreset === preset ? " selected" : ""),
+						class: "result preset",
 						"data-tooltip": preset.presetName,
 						"data-name": preset.presetName,
 						"data-names": preset.names.join(","),
 						onclick: () => this.setActivePreset(preset)
 					}, [
-						makeElement("img", { src: preset.icon.url, alt: preset.names[0] }),
+						nonDraggableElement(makeElement("img", { src: preset.icon.url, alt: preset.names[0] })),
 						makeElement("div", { class: preset.presetName.length > 5 ? "small" : "" }, preset.presetName),
 					]);
 				})
@@ -137,7 +78,7 @@ export default class Ph_FabElementEditPane extends HTMLElement {
 			makeElement("div", { class: "results actions" },
 				this.actions.map(action => {
 					return makeElement("button", {
-						class: "result action" + (this.currentPreset.action === action ? " selected" : ""),
+						class: "result action",
 						"data-names": action.names.join(","),
 						"data-action": action.action,
 						onclick: () => this.setActiveAction(action)
@@ -166,12 +107,12 @@ export default class Ph_FabElementEditPane extends HTMLElement {
 			makeElement("div", { class: "results icons" },
 				this.icons.map(icon =>
 					makeElement("button", {
-						class: "result icon" + (this.currentPreset.icon === icon ? " selected" : ""),
+						class: "result icon",
 						"data-names": icon.names.join(","),
 						"data-url": icon.url,
 						onclick: () => this.setActiveIcon(icon)
 					}, [
-						makeElement("img", { "src": icon.url, alt: icon.names[0] })
+						nonDraggableElement(makeElement("img", { "src": icon.url, alt: icon.names[0] }))
 					])
 				)
 			)
@@ -186,8 +127,6 @@ export default class Ph_FabElementEditPane extends HTMLElement {
 			]),
 			presetsSection, actionSection, iconSection
 		);
-
-		setTimeout(() => this.setActivePreset(this.currentPreset), 0);
 	}
 
 	setActivePreset(newPreset: FabPreset) {
@@ -199,6 +138,7 @@ export default class Ph_FabElementEditPane extends HTMLElement {
 		this.setActiveAction(newPreset.action, false);
 		this.setActiveIcon(newPreset.icon, false);
 		this.controllingElement.loadPreset(newPreset);
+		Ph_Fab.getRoot(this)?.saveAllElementsToLS();
 	}
 
 	setActiveAction(newAction: FabAction, updatePreset = true) {
@@ -240,7 +180,7 @@ export default class Ph_FabElementEditPane extends HTMLElement {
 	}
 
 	findMatchingPreset(action: FabAction, icon: FabIcon): FabPreset {
-		return this.presets.find(preset => preset.action === action && preset.icon === icon);
+		return this.presets.find(preset => isJsonEqual(preset.action, action) && isJsonEqual(preset.icon, icon));
 	}
 
 	onSearchInput(e: InputEvent) {

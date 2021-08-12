@@ -66,7 +66,7 @@ export default class Ph_SubredditSelector extends HTMLElement {
 	}
 
 	private async onSubSelected(subName: string, subData: RedditApiType) {
-		if (subData.data["wls"] === null) {
+		if (subData.data["over18"] === null) {
 			new Ph_Toast(Level.error, "Error selecting subreddit", { groupId: "multi add sub", timeout: 4000 });
 			return;
 		}

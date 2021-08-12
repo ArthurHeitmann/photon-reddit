@@ -1,9 +1,10 @@
 import { nonDraggableElement } from "../../../utils/htmlStatics";
 import { elementWithClassInTree } from "../../../utils/htmlStuff";
-import { bufferedMouseLeave, makeElement } from "../../../utils/utils";
+import { bufferedMouseLeave, deepClone, makeElement } from "../../../utils/utils";
 import { PhotonSettings } from "../../global/photonSettings/photonSettings";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
 import Ph_FabElement, { FabElementSize } from "./fabElement/fabElement";
+import { defaultFabPresets, FabPreset } from "./fabElementConfig";
 
 interface LayerConfiguration {
 	distance: number;
@@ -40,22 +41,15 @@ export default class Ph_Fab extends HTMLElement {
 			nonDraggableElement(makeElement("img", { "src": "/img/check.svg", class: "edit end", "draggable": "false" }) as HTMLImageElement),
 		]));
 
-		this.append(...this.fabElements = [
-			// new Ph_FabElement("/img/envelope.svg", "/message/inbox"),
-			// new Ph_FabElement("/img/earth.svg", "/r/all"),
-			// new Ph_FabElement("/img/earth.svg", "/r/all"),
-			// new Ph_FabElement("/img/settings1.svg", () => true),
-		]);
-		this.addElement();
-		this.recalculatePositions();
-
-		const addElementButton = new Ph_FabElement("/img/add.svg", this.addElement.bind(this), this.onElementRemoved.bind(this),
-			-45, 3.75, FabElementSize.small);
+		const addElementButton = new Ph_FabElement(null, "/img/add.svg", this.addElement.bind(this), -45, 3.75, FabElementSize.small);
 		addElementButton.classList.add("editingOnlyVisible");
 		this.append(addElementButton);
 
 		this.addEventListener("mouseenter", this.show.bind(this));
 		bufferedMouseLeave(this, 400, this.hide.bind(this));
+
+		this.loadAllElementsFromLS();
+		this.saveAllElementsToLS();
 
 		window.addEventListener("ph-settings-changed", (e: CustomEvent) => {
 			const changed = e.detail as PhotonSettings;
@@ -70,13 +64,45 @@ export default class Ph_Fab extends HTMLElement {
 			new Ph_Toast(Level.warning, "Limit reached", { groupId: "fab limit reached", timeout: 2000 });
 			return;
 		}
-		const newElement = new Ph_FabElement("",
-			() => void new Ph_Toast(Level.info, "No action assigned", { timeout: 2000, groupId: "fab elem no action" }),
-			this.onElementRemoved.bind(this));
-		this.fabElements.push(newElement);
+		const newElement = new Ph_FabElement(this.onElementRemoved.bind(this));
 		this.append(newElement);
+		newElement.loadPreset(deepClone(defaultFabPresets[0]));
+		this.fabElements.push(newElement);
 		this.recalculatePositions();
+		this.saveAllElementsToLS();
 		return true;
+	}
+
+	saveAllElementsToLS() {
+		const allConfigs = this.fabElements.map(el => el.activePreset);
+		localStorage["fabConfig"] = JSON.stringify(allConfigs);
+	}
+
+	loadAllElementsFromLS(_isSecondAttempt = false) {
+		try {
+			let presets: FabPreset[];
+			try {
+				presets = JSON.parse(localStorage["fabConfig"]);
+			} catch {
+				presets = deepClone([
+					defaultFabPresets[5],
+					defaultFabPresets[6],
+					defaultFabPresets[2],
+				]);
+			}
+			for (const preset of presets) {
+				const fabElement = new Ph_FabElement(this.onElementRemoved.bind(this));
+				fabElement.loadPreset(preset);
+				this.fabElements.push(fabElement);
+				this.append(fabElement);
+			}
+			this.recalculatePositions();
+		} catch (e) {
+			if (_isSecondAttempt)
+				return;
+			localStorage.removeItem("presets");
+			this.loadAllElementsFromLS(true);
+		}
 	}
 
 	recalculatePositions() {
@@ -103,6 +129,7 @@ export default class Ph_Fab extends HTMLElement {
 		const elemIndex = this.fabElements.findIndex(e => e === elem);
 		this.fabElements.splice(elemIndex, 1);
 		this.recalculatePositions();
+		this.saveAllElementsToLS();
 	}
 
 	toggleEditing() {
@@ -137,6 +164,7 @@ export default class Ph_Fab extends HTMLElement {
 		}
 		this.fabElements.splice(index1, 1, elem2);
 		this.fabElements.splice(index2, 1, elem1);
+		this.saveAllElementsToLS();
 	}
 
 	setIsDragging(isDragging: boolean, dragged: Ph_FabElement) {
@@ -150,7 +178,7 @@ export default class Ph_Fab extends HTMLElement {
 		this.classList.toggle("remove", !isEnabled);
 	}
 
-	static getRoot(elem: Ph_FabElement): Ph_Fab {
+	static getRoot(elem: HTMLElement): Ph_Fab {
 		return elementWithClassInTree(elem, "floatingActionButton") as Ph_Fab;
 	}
 }
