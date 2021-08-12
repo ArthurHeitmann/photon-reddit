@@ -151,6 +151,17 @@
 		}
 	}
 
+	&.editing {
+		.fabElement.normal::before {
+			content: "";
+			position: absolute;
+			z-index: 1;
+			width: 100%;
+			height: 100%;
+			border-radius: 50%;
+		}
+	}
+
 	&.editing:not(.isDragging) .fabElement:hover, &.editing.isDragging .fabElement.draggable {
 		$subFabDistance: 2.75rem;
 
@@ -189,6 +200,7 @@
 			&.draggable {
 				z-index: 3;
 				pointer-events: none;
+
 				> .iconWrapper {
 					@extend %shadow-4;
 				}

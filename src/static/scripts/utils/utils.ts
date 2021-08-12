@@ -254,7 +254,7 @@ export const nameOf = <T>(name: keyof T) => name;
 export function makeElement<K extends keyof HTMLElementTagNameMap>(
 	tagName: K | string,
 	attributes?: Record<string, string | EventListener>,
-	inner?: (HTMLElement | Node | string | HTMLElement[])[] | string,
+	inner?: (HTMLElement | Node | string)[] | string,
 	useInnerHTML = false
 ): HTMLElement {
 	attributes = attributes || {};
@@ -267,7 +267,7 @@ export function makeElement<K extends keyof HTMLElementTagNameMap>(
 			elem.setAttribute(k, v as string);
 	}
 	if (inner instanceof Array)
-		elem.append(...inner.flat().filter(value => Boolean(value)));
+		elem.append(...inner.filter(value => Boolean(value)));
 	else if (!useInnerHTML)
 		elem.innerText = inner;
 	else
@@ -475,4 +475,12 @@ export function getUserIconUrl(userData: RedditApiData): string {
 
 export function getMultiIconUrl(multiData: RedditApiData): string {
 	return multiData["icon_url"];
+}
+
+export function clientXOfEvent(e: MouseEvent | TouchEvent) {
+	return e instanceof MouseEvent ? e.clientX : e.changedTouches[0].clientX;
+}
+
+export function clientYOfEvent(e: MouseEvent | TouchEvent) {
+	return e instanceof MouseEvent ? e.clientY : e.changedTouches[0].clientY;
 }

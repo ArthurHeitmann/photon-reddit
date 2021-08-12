@@ -1,6 +1,6 @@
 import { nonDraggableElement } from "../../../utils/htmlStatics";
 import { elementWithClassInTree } from "../../../utils/htmlStuff";
-import { bufferedMouseLeave, deepClone, makeElement } from "../../../utils/utils";
+import { bufferedMouseLeave, deepClone, makeElement, sleep } from "../../../utils/utils";
 import { PhotonSettings } from "../../global/photonSettings/photonSettings";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
 import Ph_FabElement, { FabElementSize } from "./fabElement/fabElement";
@@ -48,8 +48,7 @@ export default class Ph_Fab extends HTMLElement {
 		this.addEventListener("mouseenter", this.show.bind(this));
 		bufferedMouseLeave(this, 400, this.hide.bind(this));
 
-		this.loadAllElementsFromLS();
-		this.saveAllElementsToLS();
+		this.loadAllElementsFromLS().then(r => this.saveAllElementsToLS());
 
 		window.addEventListener("ph-settings-changed", (e: CustomEvent) => {
 			const changed = e.detail as PhotonSettings;
@@ -74,11 +73,13 @@ export default class Ph_Fab extends HTMLElement {
 	}
 
 	saveAllElementsToLS() {
-		const allConfigs = this.fabElements.map(el => el.activePreset);
+		const allConfigs = this.fabElements
+			.map(el => el.activePreset)
+			.filter(el => Boolean(el));
 		localStorage["fabConfig"] = JSON.stringify(allConfigs);
 	}
 
-	loadAllElementsFromLS(_isSecondAttempt = false) {
+	async loadAllElementsFromLS(_isSecondAttempt = false) {
 		try {
 			let presets: FabPreset[];
 			try {
@@ -95,13 +96,14 @@ export default class Ph_Fab extends HTMLElement {
 				fabElement.loadPreset(preset);
 				this.fabElements.push(fabElement);
 				this.append(fabElement);
+				await sleep(20)
 			}
 			this.recalculatePositions();
 		} catch (e) {
 			if (_isSecondAttempt)
 				return;
 			localStorage.removeItem("presets");
-			this.loadAllElementsFromLS(true);
+			await this.loadAllElementsFromLS(true);
 		}
 	}
 
@@ -169,9 +171,6 @@ export default class Ph_Fab extends HTMLElement {
 
 	setIsDragging(isDragging: boolean, dragged: Ph_FabElement) {
 		this.classList.toggle("isDragging", isDragging);
-		for (const fabElement of this.fabElements) {
-			fabElement.setIsDraggableTarget(isDragging, dragged);
-		}
 	}
 
 	setIsEnabled(isEnabled: boolean) {
