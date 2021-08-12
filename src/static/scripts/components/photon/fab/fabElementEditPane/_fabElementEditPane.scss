@@ -15,7 +15,7 @@
 	height: 15.5rem;
 	opacity: 0;
 	visibility: hidden;
-	transform: scale(0.75);
+	transform: scale(0.95);
 	transform-origin: bottom center;
 	transition: all .25s ease;
 	pointer-events: none;
@@ -84,8 +84,9 @@
 			background: vars.$background-el2;
 			border: 1px solid vars.$border-color;
 			padding: 0 .5rem;
+			position: relative;
 
-			button {
+			> button {
 				opacity: 0.5;
 				transition: opacity .25s ease;
 				margin-right: .25rem;
@@ -95,6 +96,7 @@
 
 				&.selected {
 					opacity: 1;
+					color: vars.$primary;
 				}
 			}
 

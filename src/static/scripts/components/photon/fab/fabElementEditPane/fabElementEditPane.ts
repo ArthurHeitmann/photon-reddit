@@ -1,5 +1,7 @@
+import { RedditApiType } from "../../../../types/misc";
 import { elementWithClassInTree } from "../../../../utils/htmlStuff";
-import { makeElement } from "../../../../utils/utils";
+import { getSubredditIconUrl, makeElement } from "../../../../utils/utils";
+import Ph_SubredditSelector from "../../../misc/subredditSelector/subredditSelector";
 import Ph_FabElement from "../fabElement/fabElement";
 import { FabAction, FabIcon, FabPreset } from "../fabElementConfig";
 
@@ -15,14 +17,14 @@ export default class Ph_FabElementEditPane extends HTMLElement {
 		{ type: "function", action: "Unload Pages", names: ["Unload", "remove", "delete", "cross", "x", "pages"] },
 	];
 	icons: FabIcon[] = [
-		{ url: "", names: ["Nothing", "empty", "base", "blank", "circle", "ring"] },
+		{ url: "/img/transparent.svg", names: ["Nothing", "empty", "base", "blank", "circle", "ring"] },
 		{ url: "/img/circle.svg", names: ["Nothing", "empty", "base", "blank", "circle", "ring"] },
 		{ url: "/img/bookOpen.svg", names: ["Frontpage", "book", "home", "start"] },
 		{ url: "/img/envelope.svg", names: ["Inbox", "messages", "chat", "envelope"] },
 		{ url: "/img/user.svg", names: ["Profile", "my", "me", "profile", "user"] },
 		{ url: "/img/edit.svg", names: ["Submit", "write", "edit", "pen"] },
 		{ url: "/img/writeMessage.svg", names: ["Submit", "write", "edit", "pen", "message", "chat"] },
-		{ url: "/img/close.svg", names: ["Unload", "remove", "delete", "cross", "x", "pages"] },
+		{ url: "/img/close.svg", names: ["Unload Pages", "unload", "remove", "delete", "cross", "x", "pages"] },
 	];
 	presets: FabPreset[] = [
 		{ action: this.actions[0], icon: this.icons[0], presetName: "Nothing", names: ["Nothing", "empty", "blank"] },
@@ -38,6 +40,9 @@ export default class Ph_FabElementEditPane extends HTMLElement {
 	customIconUrl = this.icons[1].url;
 	currentPreset: FabPreset = this.presets[0];
 	controllingElement: Ph_FabElement;
+	presetSubSelector: Ph_SubredditSelector;
+	actionSubSelector: Ph_SubredditSelector;
+	iconSubSelector: Ph_SubredditSelector;
 
 	constructor(controllingElement: Ph_FabElement) {
 		super();
@@ -52,8 +57,10 @@ export default class Ph_FabElementEditPane extends HTMLElement {
 		);
 		const presetsSection = makeElement("div", { class: "section selected" }, [
 			makeElement("div", { class: "inputWrapper" }, [
-				makeElement("button", { class: "subredditOnlySearch transparentButton" }, "r/"),
-				makeElement("input", { type: "text", placeholder: "Filter presets or find subreddits", oninput: this.onSearchInput.bind(this) })
+				makeElement("button", { class: "subredditOnlySearch transparentButton presets", onclick: this.toggleIsSubredditSearch.bind(this) }, "r/"),
+				makeElement("input", { type: "text", placeholder: "Filter presets or find subreddits",
+					class: "searchInput", oninput: this.onSearchInput.bind(this) }),
+				this.presetSubSelector = new Ph_SubredditSelector(true, false)
 			]),
 			makeElement("div", { class: "results presets" },
 				this.presets.map(preset => {
@@ -70,6 +77,7 @@ export default class Ph_FabElementEditPane extends HTMLElement {
 				})
 			)
 		]);
+		this.presetSubSelector.bind(presetsSection.$css(".searchInput")[0] as HTMLInputElement, true, this.onSubredditSelectedPresets.bind(this));
 		const actionSectionButton = makeElement(
 			"button",
 			{ onclick: () => this.selectSection(actionSectionButton, actionSection) },
@@ -77,8 +85,10 @@ export default class Ph_FabElementEditPane extends HTMLElement {
 		);
 		const actionSection = makeElement("div", { class: "section" }, [
 			makeElement("div", { class: "inputWrapper" }, [
-				makeElement("button", { class: "subredditOnlySearch transparentButton" }, "r/"),
-				makeElement("input", { type: "text", placeholder: "Filter actions or find subreddit urls", oninput: this.onSearchInput.bind(this) })
+				makeElement("button", { class: "subredditOnlySearch transparentButton actions", onclick: this.toggleIsSubredditSearch.bind(this) }, "r/"),
+				makeElement("input", { type: "text", placeholder: "Filter actions or find subreddit urls",
+					class: "searchInput", oninput: this.onSearchInput.bind(this) }),
+				this.actionSubSelector = new Ph_SubredditSelector(true, false)
 			]),
 			makeElement("div", { class: "inputWrapper" }, [
 				makeElement("input", { type: "text", placeholder: "Custom URL", class: "customUrl", oninput: this.onActionUrlInput.bind(this) })
@@ -96,6 +106,7 @@ export default class Ph_FabElementEditPane extends HTMLElement {
 				})
 			)
 		]);
+		this.actionSubSelector.bind(actionSection.$css(".searchInput")[0] as HTMLInputElement, true, this.onSubredditSelectedActions.bind(this));
 		const iconSectionButton = makeElement(
 			"button",
 			{ onclick: () => this.selectSection(iconSectionButton, iconSection) },
@@ -103,8 +114,10 @@ export default class Ph_FabElementEditPane extends HTMLElement {
 		);
 		const iconSection = makeElement("div", { class: "section" }, [
 			makeElement("div", { class: "inputWrapper" }, [
-				makeElement("button", { class: "subredditOnlySearch transparentButton" }, "r/"),
-				makeElement("input", { type: "text", placeholder: "Filter icons or find subreddit icons", oninput: this.onSearchInput.bind(this) })
+				makeElement("button", { class: "subredditOnlySearch transparentButton icons", onclick: this.toggleIsSubredditSearch.bind(this) }, "r/"),
+				makeElement("input", { type: "text", placeholder: "Filter icons or find subreddit icons",
+					class: "searchInput", oninput: this.onSearchInput.bind(this) }),
+				this.iconSubSelector = new Ph_SubredditSelector(true, false)
 			]),
 			makeElement("div", { class: "inputWrapper" }, [
 				makeElement("input", { type: "text", placeholder: "Custom URL", class: "iconUrl", oninput: this.onIconUrlInput.bind(this) })
@@ -122,6 +135,7 @@ export default class Ph_FabElementEditPane extends HTMLElement {
 				)
 			)
 		]);
+		this.iconSubSelector.bind(iconSection.$css(".searchInput")[0] as HTMLInputElement, true, this.onSubredditSelectedIcons.bind(this));
 
 		this.append(
 			makeElement("div", { class: "header" }, [
@@ -132,7 +146,7 @@ export default class Ph_FabElementEditPane extends HTMLElement {
 			presetsSection, actionSection, iconSection
 		);
 
-		setTimeout(() => this.controllingElement.loadPreset(this.currentPreset), 0);
+		setTimeout(() => this.setActivePreset(this.currentPreset), 0);
 	}
 
 	setActivePreset(newPreset: FabPreset) {
@@ -189,16 +203,20 @@ export default class Ph_FabElementEditPane extends HTMLElement {
 	}
 
 	onSearchInput(e: InputEvent) {
-		const thisSection = elementWithClassInTree(e.currentTarget as HTMLElement, "section");
-		const isSubredditOnlySearch = thisSection.$css(".inputWrapper .subredditOnlySearch")[0].classList.contains("selected");
-		if (isSubredditOnlySearch)
-			return;
-		const searchWords = (e.currentTarget as HTMLInputElement).value
+		const input = e.currentTarget as HTMLInputElement;
+		const thisSection = elementWithClassInTree(input as HTMLElement, "section");
+		const isSubSearchBtn = thisSection.$css(".inputWrapper .subredditOnlySearch")[0] as HTMLButtonElement;
+		if (input.value.startsWith("r/") && !isSubSearchBtn.classList.contains("selected")) {
+			isSubSearchBtn.click();
+			input.value = input.value.substr(2);
+		}
+		const isSubredditOnlySearch = isSubSearchBtn.classList.contains("selected");
+		const allButtons = thisSection.$cssAr(".results > .result");
+		const searchWords = input.value
 			.split(" ")
 			.filter(w => Boolean(w))
 			.map(w => w.toLowerCase());
-		const allButtons = thisSection.$cssAr(".results > .result");
-		if (searchWords.length === 0) {
+		if (isSubredditOnlySearch || searchWords.length === 0) {
 			allButtons.forEach(btn => btn.classList.remove("hide"));
 			return;
 		}
@@ -220,22 +238,56 @@ export default class Ph_FabElementEditPane extends HTMLElement {
 
 	onActionUrlInput(e: InputEvent) {
 		const actionText = (e.currentTarget as HTMLInputElement).value;
-		let matchingAction = this.actions.find(a => a.action === actionText);
+		this.setActionUrl(actionText);
+	}
+
+	setActionUrl(url: string) {
+		let matchingAction = this.actions.find(a => a.action === url);
 		if (!matchingAction) {
 			matchingAction = this.actions[1];
-			matchingAction.action = actionText;
+			matchingAction.action = url;
 		}
 		this.setActiveAction(matchingAction);
 	}
 
 	onIconUrlInput(e: InputEvent) {
 		const iconUrlText = (e.currentTarget as HTMLInputElement).value;
-		let matchingIcon = this.icons.find(i => i.url === iconUrlText);
+		this.setIconUrl(iconUrlText);
+	}
+
+	setIconUrl(url: string) {
+		if (!url || !/^(\/|https:\/\/)/.test(url))
+			return;
+		let matchingIcon = this.icons.find(i => i.url === url);
 		if (!matchingIcon) {
 			matchingIcon = this.icons[1];
-			matchingIcon.url = iconUrlText;
+			matchingIcon.url = url;
 		}
 		this.setActiveIcon(matchingIcon);
+	}
+
+	onSubredditSelectedPresets(subName: string, subData: RedditApiType) {
+		this.setActionUrl(`/r/${subName}`);
+		this.setIconUrl(getSubredditIconUrl(subData.data));
+	}
+
+	onSubredditSelectedActions(subName: string, subData: RedditApiType) {
+		this.setActionUrl(`/r/${subName}`);
+	}
+
+	onSubredditSelectedIcons(subName: string, subData: RedditApiType) {
+		this.setIconUrl(getSubredditIconUrl(subData.data));
+	}
+
+	toggleIsSubredditSearch(e: MouseEvent) {
+		const btn = e.currentTarget as HTMLButtonElement;
+		btn.classList.toggle("selected");
+		if (btn.classList.contains("presets"))
+			this.presetSubSelector.setIsEnabled(btn.classList.contains("selected"));
+		else if (btn.classList.contains("actions"))
+			this.actionSubSelector.setIsEnabled(btn.classList.contains("selected"));
+		else if (btn.classList.contains("icons"))
+			this.iconSubSelector.setIsEnabled(btn.classList.contains("selected"));
 	}
 
 	show() {

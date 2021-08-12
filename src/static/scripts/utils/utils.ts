@@ -3,6 +3,7 @@
  */
 
 import Ph_Toast, { Level } from "../components/misc/toast/toast";
+import { RedditApiData } from "../types/misc";
 import { fakeSubreddits } from "./consts";
 
 /** */
@@ -462,4 +463,16 @@ export function bufferedMouseLeave(elem: HTMLElement, bufferMs: number, callback
 
 export function isFakeSubreddit(subreddit: string): boolean {
 	return (new RegExp(fakeSubreddits.join("|"), "i")).test(subreddit)
+}
+
+export function getSubredditIconUrl(subData: RedditApiData): string {
+	return subData["community_icon"] || subData["icon_img"];
+}
+
+export function getUserIconUrl(userData: RedditApiData): string {
+	return userData["subreddit"]?.["icon_img"] || userData["icon_img"];
+}
+
+export function getMultiIconUrl(multiData: RedditApiData): string {
+	return multiData["icon_url"];
 }

@@ -1,6 +1,6 @@
 import { RedditApiType } from "../../../types/misc";
 import { linksToSpa } from "../../../utils/htmlStuff";
-import { hasParams } from "../../../utils/utils";
+import { getMultiIconUrl, getSubredditIconUrl, getUserIconUrl, hasParams } from "../../../utils/utils";
 
 export default class Ph_FeedLink extends HTMLElement {
 	constructor(feedData: RedditApiType | string, blurNsfw = false, isClickable = true) {
@@ -24,7 +24,7 @@ export default class Ph_FeedLink extends HTMLElement {
 				linkText.innerText = `r/${feedData.data["display_name"]}`;
 				if (linkWrapper instanceof HTMLAnchorElement)
 					linkWrapper.href = `/r/${feedData.data["display_name"]}`;
-				const subIconImg = feedData.data["community_icon"] || feedData.data["icon_img"];
+				const subIconImg = getSubredditIconUrl(feedData.data);
 				if (subIconImg)
 					imageWrapper.innerHTML = `<img src="${subIconImg}" alt="sub">`
 				else
@@ -38,7 +38,7 @@ export default class Ph_FeedLink extends HTMLElement {
 					linkText.innerText += " (suspended)";
 				if (linkWrapper instanceof HTMLAnchorElement)
 					linkWrapper.href = `/user/${feedData.data["name"]}`;
-				const userIconImg = feedData.data["subreddit"]?.["icon_img"] || feedData.data["icon_img"];
+				const userIconImg = getUserIconUrl(feedData.data);
 				if (userIconImg)
 					imageWrapper.innerHTML = `<img src="${userIconImg}" alt="sub">`
 				else
@@ -50,7 +50,7 @@ export default class Ph_FeedLink extends HTMLElement {
 				linkText.innerText = feedData.data["display_name"];
 				if (linkWrapper instanceof HTMLAnchorElement)
 					linkWrapper.href = feedData.data["path"];
-				const multiIconImg = feedData.data["icon_url"];
+				const multiIconImg = getMultiIconUrl(feedData.data);
 				if (multiIconImg)
 					imageWrapper.innerHTML = `<img src="${multiIconImg}" alt="sub">`
 				else
