@@ -1,6 +1,11 @@
-export const photonVersion = "0.6.1";		/// <change version script>
+export const photonVersion = "0.6.2";		/// <change version script>
 
 export const photonChangelog = {
+	"0.6.2": {
+		"New": [
+			"Added fully customizable FAB (floating action button, in the bottom left corner)",
+		]
+	},
 	"0.6.1": {
 		"New": [
 			"Reduced first time loading time (base website is ~200KB)",
