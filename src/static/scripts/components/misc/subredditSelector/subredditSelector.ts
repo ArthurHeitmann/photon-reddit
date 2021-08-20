@@ -81,17 +81,21 @@ export default class Ph_SubredditSelector extends HTMLElement {
 		this.classList.remove("loading");
 	}
 
-	private async onTextEnter(e: KeyboardEvent) {
+	private onTextEnter(e: KeyboardEvent) {
 		if (!this.isEnabled)
 			return;
 		if (!["Enter", "NumpadEnter"].includes(e.code) || !this.input.value)
 			return;
+		this.selectCurrent();
+	}
+
+	async selectCurrent() {
 		const subInfo = await getSubInfo(`/r/${this.input.value}`);
 		if (subInfo["error"]) {
 			new Ph_Toast(Level.error, "Couldn't find subreddit", { timeout: 2000 });
 			return;
 		}
-		this.onSubSelected(this.input.value, subInfo);
+		await this.onSubSelected(this.input.value, subInfo);
 	}
 
 	private onTextFocus() {

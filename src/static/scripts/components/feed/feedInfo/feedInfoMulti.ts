@@ -101,19 +101,14 @@ export default class Ph_FeedInfoMulti extends Ph_FeedInfo {
 			const addSubInput = makeElement("input", { type: "text", placeholder: "Subreddit" }) as HTMLInputElement;
 
 			const subredditSelector = new Ph_SubredditSelector(!this.loadedInfo.data.over_18);
-			subredditSelector.bind(addSubInput, true, async (subName: string) => {
-				await this.addSubToMulti(subName, this.feedUrl, true, addSubredditBar.parentElement);
+			subredditSelector.bind(addSubInput, true, async (subName: string, subData: RedditApiType) => {
+				await this.addSubToMulti(subData, this.feedUrl, true, addSubredditBar.parentElement);
 				this.checkMultiMaxSubCount();
 			});
 			addSubredditBar.appendChild(subredditSelector);
 
 			addSubredditBar.appendChild(addSubInput);
-			addSubButton.addEventListener("click", e => this.addSubToMulti(
-				addSubInput.value,
-				this.feedUrl,
-				true,
-				(e.currentTarget as HTMLElement).parentElement.parentElement)
-			);
+			addSubButton.addEventListener("click", () => subredditSelector.selectCurrent());
 
 			outElements.push(addSubredditBar);
 		}
@@ -143,7 +138,7 @@ export default class Ph_FeedInfoMulti extends Ph_FeedInfo {
 			removeSubButton.addEventListener("click",
 				async e => {
 					await this.removeSubFromMulti(
-						(e.currentTarget as HTMLElement).parentElement.$tag("a")[0].innerHTML,
+						((e.currentTarget as HTMLElement).parentElement.$tag("ph-feed-link")[0] as Ph_FeedLink).getName(),
 						this.feedUrl,
 						(e.currentTarget as HTMLElement).parentElement);
 					this.checkMultiMaxSubCount();
@@ -158,14 +153,14 @@ export default class Ph_FeedInfoMulti extends Ph_FeedInfo {
 
 	private async removeSubFromMulti(subName: string, multiPath: string, editSubBar: HTMLElement) {
 		subName = subName.replace(/^\/?r\//i, "");		// remove r/ prefix
-		if (!this.loadedInfo.data.subreddits.includes(subName)) {
+		if (!this.loadedInfo.data.subreddits.find(sub => sub.name === subName)) {
 			new Ph_Toast(Level.warning, `r/${escHTML(subName)} does not exist in ${escHTML(multiPath)}`, { timeout: 6000 });
 			return;
 		}
 		try {
 			await removeSubFromMulti(multiPath, subName);
 			editSubBar.remove();
-			this.loadedInfo.data.subreddits.splice(this.loadedInfo.data.subreddits.indexOf(subName), 1);
+			this.loadedInfo.data.subreddits.splice(this.loadedInfo.data.subreddits.findIndex(sub => sub.name === subName), 1);
 			this.saveInfo();
 		} catch (e) {
 			new Ph_Toast(Level.error, "Error removing sub from multi");
@@ -174,11 +169,9 @@ export default class Ph_FeedInfoMulti extends Ph_FeedInfo {
 		}
 	}
 
-	private async addSubToMulti(subName: string, multiPath: string, sourceIsMulti: boolean, subsList?: HTMLElement) {
-		subName = subName.replace(/^\/?r\//i, "");		// remove r/ prefix
-		if (subName === "")
-			return;
-		if (sourceIsMulti && this.loadedInfo.data.subreddits.includes(subName)) {
+	private async addSubToMulti(subData: RedditApiType, multiPath: string, sourceIsMulti: boolean, subsList?: HTMLElement) {
+		const subName = subData.data["display_name"];
+		if (sourceIsMulti && this.loadedInfo.data.subreddits.find(sub => sub.name === subName)) {
 			new Ph_Toast(Level.warning, `r/${escHTML(subName)} already exists in ${escHTML(multiPath)}`, { timeout: 6000 });
 			return;
 		}
@@ -191,8 +184,8 @@ export default class Ph_FeedInfoMulti extends Ph_FeedInfo {
 			if (!response["name"])
 				throw `Invalid add to multi response ${JSON.stringify(response)}`;
 			if (sourceIsMulti) {
-				this.loadedInfo.data.subreddits.push(response["name"]);
-				this.loadedInfo.data.subreddits.sort(stringSortComparer);
+				this.loadedInfo.data.subreddits.push({ data: subData.data, name: response["name"] });
+				this.loadedInfo.data.subreddits.sort((a, b) => stringSortComparer(a.name, b.name));
 				this.saveInfo();
 			}
 			else if (localStorage[multiPath.toLowerCase()]) {
@@ -202,8 +195,8 @@ export default class Ph_FeedInfoMulti extends Ph_FeedInfo {
 				localStorage[multiPath.toLowerCase()] = JSON.stringify(multiData);
 			}
 			if (subsList) {
-				const newSubIndex = this.loadedInfo.data.subreddits.indexOf(response["name"]);
-				subsList.children[newSubIndex + 1].insertAdjacentElement("afterend", this.makeRemoveSubBar(response["name"]));
+				const newSubIndex = this.loadedInfo.data.subreddits.findIndex(sub => sub.name === response["name"]);
+				subsList.children[newSubIndex + 1].insertAdjacentElement("afterend", this.makeRemoveSubBar(subData.data));
 				(subsList.$tag("input")[0] as HTMLInputElement).value = "";
 			}
 
