@@ -127,7 +127,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 
 					let dashUrl: string;
 					// gets videoId from https://v.redd.it/[videoId] or https://reddit.com/link/[postId]/video/[videoId]
-					const vReddItId = url.match(/(https:\/\/v\.redd\.it\/|https?:\/\/reddit\.com\/link\/\w+\/video\/)([^/?#]+)|/)[2];
+					const vReddItId = url.match(/(https:\/\/v\.redd\.it\/|https?:\/\/(?:www\.)?reddit\.com\/link\/\w+\/video\/)([^/?#]+)|/)[2];
 					const vReddItUrl = `https://v.redd.it/${vReddItId}`;
 					const redditVideoData = postData?.data["media"]?.["reddit_video"];
 					if (redditVideoData)
