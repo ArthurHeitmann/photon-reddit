@@ -194,7 +194,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 				return;
 			new Ph_Toast(
 				Level.warning,
-				"Empty feed. Try to load more?",
+				"Not enough posts visible. Try to load more?",
 				{ timeout: 2000, onConfirm: () => this.onScroll(undefined, true), groupId: "emptyFeed" }
 			);
 			return;
@@ -370,7 +370,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 				return;
 			new Ph_Toast(
 				Level.warning,
-				"Empty feed. Try to load more?",
+				"Not enough posts visible. Try to load more?",
 				{ onConfirm: () => this.onScroll(undefined, true), groupId: "emptyFeed" }
 			);
 		}, 1000);
