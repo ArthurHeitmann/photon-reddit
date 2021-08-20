@@ -14,6 +14,7 @@ import Ph_Header from "../header/header";
  */
 export default class Ph_UserDropDown extends HTMLElement {
 	unreadBadge: HTMLElement;
+	searchFilterInput: HTMLInputElement;
 
 	constructor() {
 		super();
@@ -24,6 +25,9 @@ export default class Ph_UserDropDown extends HTMLElement {
 		const dropDownButton = makeElement("button", { onclick: this.toggle.bind(this) }, "Actions");
 		this.append(dropDownButton);
 		const dropDownArea = makeElement("div", null, [
+			this.searchFilterInput = makeElement("input",
+				{ class: "filterSearch", placeholder: "Quick search", oninput: this.filterSearch.bind(this) }
+				) as HTMLInputElement,
 			this.makeActionBar(),
 			this.makeSubredditGroup([ "r/all", "r/popular" ], "Reddit Feeds")
 		]);
@@ -119,6 +123,20 @@ export default class Ph_UserDropDown extends HTMLElement {
 		return actions
 	}
 
+	filterSearch() {
+		const filterable = this.$classAr("feedLink");
+		const filterText = this.searchFilterInput.value;
+		if (/^\s*$/.test(filterText)) {
+			for (const link of filterable)
+				link.classList.remove("hide");
+			return;
+		}
+
+		const filterRegex = (new RegExp(filterText.replace(/\s+/g, "\\s*"), "i"));	// case insensitive, ignore whitespace
+		for (const link of filterable)
+			link.classList.toggle("hide", !filterRegex.test(link.innerText));
+	}
+
 	setUnreadCount(unreadCount: number) {
 		this.unreadBadge.innerText = numberToShort(unreadCount);
 		this.unreadBadge.classList.toggle("hide", unreadCount === 0)
@@ -130,14 +148,11 @@ export default class Ph_UserDropDown extends HTMLElement {
 
 	toggle() {
 		this.classList.toggle("expanded");
-		if (this.classList.contains("expanded"))
+		if (this.classList.contains("expanded")) {
 			(elementWithClassInTree(this.parentElement, "header") as Ph_Header)?.minimizeAll([this]);
+			setTimeout(() => this.searchFilterInput.focus(), 200);
+		}
 	}
-}
-
-interface SubGroupData {
-	path: string,
-	name: string,
 }
 
 customElements.define("ph-user-dropdown", Ph_UserDropDown);

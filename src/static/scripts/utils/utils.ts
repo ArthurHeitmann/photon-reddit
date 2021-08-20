@@ -484,3 +484,7 @@ export function clientXOfEvent(e: MouseEvent | TouchEvent) {
 export function clientYOfEvent(e: MouseEvent | TouchEvent) {
 	return e instanceof MouseEvent ? e.clientY : e.changedTouches[0].clientY;
 }
+
+export function escapeRegex(strToEscape: string) {
+	return strToEscape.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
