@@ -1,9 +1,8 @@
 import ViewsStack from "../../../historyState/viewsStack";
 import { RedditApiType } from "../../../types/misc";
 import { ensurePageLoaded, thisUser } from "../../../utils/globals";
-import { escADQ } from "../../../utils/htmlStatics";
-import { elementWithClassInTree, isElementIn, linksToSpa } from "../../../utils/htmlStuff";
-import { hasHTML, isFakeSubreddit, numberToShort } from "../../../utils/utils";
+import { elementWithClassInTree, isElementIn } from "../../../utils/htmlStuff";
+import { hasHTML, isFakeSubreddit, makeElement, numberToShort } from "../../../utils/utils";
 import Ph_FeedLink from "../../link/feedLink/feedLink";
 import Ph_Header from "../header/header";
 
@@ -14,7 +13,7 @@ import Ph_Header from "../header/header";
  *  - subscribed subreddits
  */
 export default class Ph_UserDropDown extends HTMLElement {
-	unreadBadge: HTMLDivElement;
+	unreadBadge: HTMLElement;
 
 	constructor() {
 		super();
@@ -22,13 +21,12 @@ export default class Ph_UserDropDown extends HTMLElement {
 
 		this.className = "userDropDown";
 
-		const dropDownButton = document.createElement("button");
-		dropDownButton.innerText = "Actions";
-		dropDownButton.addEventListener("click", this.toggle.bind(this));
+		const dropDownButton = makeElement("button", { onclick: this.toggle.bind(this) }, "Actions");
 		this.append(dropDownButton);
-		const dropDownArea = document.createElement("div");
-		dropDownArea.append(this.makeActionBar());
-		dropDownArea.append(this.makeSubredditGroup([ "r/all", "r/popular" ], "Reddit Feeds"));
+		const dropDownArea = makeElement("div", null, [
+			this.makeActionBar(),
+			this.makeSubredditGroup([ "r/all", "r/popular" ], "Reddit Feeds")
+		]);
 		this.append(dropDownArea);
 
 		window.addEventListener("click", e => {
@@ -48,33 +46,26 @@ export default class Ph_UserDropDown extends HTMLElement {
 	}
 
 	private makeSubredditGroup(feedsData: (RedditApiType | string)[], groupName: string): HTMLElement {
-		const group = document.createElement("div");
-		group.className = "subGroup separated";
-		group.innerHTML = `<div class="name">${groupName}</div>`;
-		feedsData.forEach(feedData => group.append(new Ph_FeedLink(feedData)));
-		linksToSpa(group);
-		return group;
+		return makeElement("div", { class: "subGroup separated" }, [
+			makeElement("div", { class: "name" }, groupName),
+			...feedsData.map(feedData => new Ph_FeedLink(feedData))
+		]);
 	}
 
 	private makeActionBar(): HTMLElement {
-		const actions = document.createElement("div");
-		actions.className = "actionBar separated";
+		const actions = makeElement("div", { class: "actionBar separated" });
 		function makeAction(imgSrc: string, tooltip: string, onClick: string | (() => void)): HTMLElement {
 			let item: HTMLElement;
-			if (typeof onClick === "string") {
-				item = document.createElement("a");
-				item.setAttribute("href", onClick);
-			}
-			else if (typeof onClick === "function") {
-				item = document.createElement("button");
-				item.addEventListener("click", onClick);
-			}
+			if (typeof onClick === "string")
+				item = makeElement("a", { href: onClick });
+			else if (typeof onClick === "function")
+				item = makeElement("button", { onclick: onClick });
 			else
 				throw "Wut?";
 			item.classList.add("item");
 			item.classList.add("transparentButtonAlt");
 			item.setAttribute("data-tooltip", tooltip);
-			item.innerHTML = `<img src="${escADQ(imgSrc)}" alt="${tooltip}">`
+			item.append(makeElement("img", { src: imgSrc, alt: tooltip }))
 			return item;
 		}
 		// current user page
@@ -107,8 +98,7 @@ export default class Ph_UserDropDown extends HTMLElement {
 			"Inbox",
 			"/message/inbox"
 		);
-		this.unreadBadge = document.createElement("div");
-		this.unreadBadge.className = "unreadBadge hide";
+		this.unreadBadge = makeElement("div", { class: "unreadBadge hide" });
 		inboxAction.append(this.unreadBadge);
 		actions.append(inboxAction);
 		// clear previous states
