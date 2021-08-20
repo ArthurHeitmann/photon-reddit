@@ -1,4 +1,5 @@
 @use "../../../style/vars";
+@use "../../../style/shadow";
 
 .mediaViewer {
 	position: relative;
@@ -23,11 +24,50 @@
 		}
 
 		.caption {
-			max-width: 60%;
-			max-height: vars.$controls-height;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			white-space: nowrap;
+			position: relative;
+			margin-right: .25rem;
+			@media (min-width: 850px) {
+				max-width: 45%;
+			}
+			@media (min-width: 625px) and (max-width: 850px) {
+				max-width: 33%;
+			}
+			@media (max-width: 624px) {
+				max-width: 3rem;
+			}
+
+			.scrollablePopup {
+				position: absolute;
+				max-height: 15rem;
+				padding: 1rem;
+				transform: translateY(-100%);
+				overflow-y: auto;
+				border-top-left-radius: 1rem;
+				border-top-right-radius: 1rem;
+				line-height: normal;
+				white-space: break-spaces;
+				background-color: vars.$background-el1;
+				border: 1px solid vars.$border-color;
+				user-select: text;
+				opacity: 0;
+				visibility: hidden;
+				transition: all .2s ease 0.4s;
+			}
+
+			.inlinePreview {
+				max-height: vars.$controls-height;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+				text-align: right;
+			}
+
+			&:hover {
+				.scrollablePopup {
+					opacity: 1;
+					visibility: visible;
+				}
+			}
 		}
 
 		.resetView {

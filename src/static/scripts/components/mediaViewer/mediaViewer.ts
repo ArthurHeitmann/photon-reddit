@@ -9,7 +9,8 @@ import {
 	exitFullscreen,
 	hasHTML,
 	hasParams,
-	isFullscreen
+	isFullscreen,
+	makeElement
 } from "../../utils/utils";
 import { globalSettings } from "../global/photonSettings/photonSettings";
 import Ph_ControlsBar from "../misc/controlsBar/controlsBar";
@@ -35,7 +36,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	fullscreenImage: Ph_SwitchingImage;
 	settingsDropDown: Ph_DropDown;
 	elementLink: HTMLAnchorElement;
-	elementCaption: HTMLDivElement;
+	elementCaption: HTMLElement;
 	currentIndexDisplay: HTMLDivElement;
 
 	static fromPostData_Image(postData: RedditApiType): Ph_MediaViewer {
@@ -258,8 +259,10 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		controlSlots.push(spacer);
 		controlSlots.push(this.controls.rightItemsSlot);
 		//caption
-		this.elementCaption = document.createElement("div");
-		this.elementCaption.className = "textOnly caption";
+		this.elementCaption = makeElement("div", { class: "caption" }, [
+			makeElement("div", { "class": "scrollablePopup" }),
+			makeElement("div", { "class": "inlinePreview textOnly" }),
+		]);
 		controlSlots.push(this.elementCaption);
 		// link
 		this.elementLink = document.createElement("a");
@@ -359,8 +362,8 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		if (this.mediaElements.length > 1)
 			this.currentIndexDisplay.innerText = `${this.currentIndex + 1}/${this.mediaElements.length}`;
 		// capation
-		this.elementCaption.innerText = newMedia.caption || "";
-		this.elementCaption.title = newMedia.caption || "";
+		(this.elementCaption.children[0] as HTMLElement).innerText = newMedia.caption || "";
+		(this.elementCaption.children[1] as HTMLElement).innerText = newMedia.caption || "";
 		// link
 		this.elementLink.href = newMedia.url;
 		const shortLinkMatches = newMedia.url.match(/[\w-_]+\.[\w-_]+(?=([/?#].*)?$)/);	// sub.en.domain.com?query --> domain.com
