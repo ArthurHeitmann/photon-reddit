@@ -17,6 +17,11 @@
  *  Incognito mode (from the settings):
  *   - url will only send "/i"
  *   - referer will be empty
+ *
+ *   ----------
+ *
+ * Independently of that every week the support for indexedDB and Service Workers is reported.
+ * (So that I know how many users don't support it. In case I want to do something with it in the future)
  */
 
 import { trackBrowserFeatures } from "../api/photonApi";
@@ -115,8 +120,10 @@ export function hasAnalyticsFileLoaded() {
 
 // track browser features
 
+const reportIntervalMs = 1000 * 60 * 60 * 24 * 7;	// new report every week
 window.addEventListener("load", () => {
-	if(localStorage["browserFeaturesTracked"] !== "true" && location.hostname !== "localhost")
+	let lastReportMs = parseInt(localStorage["lastReportMs"]);
+	if ((!lastReportMs || Date.now() - lastReportMs > reportIntervalMs) && location.hostname !== "localhost")
 		sendBrowserFeatures();
 });
 
@@ -127,5 +134,5 @@ async function sendBrowserFeatures() {
 		trackBrowserFeatures({ featureName: "indexedDB", isAvailable: idbSupported }),
 		trackBrowserFeatures({ featureName: "serviceWorkers", isAvailable: swSupported }),
 	]);
-	localStorage["browserFeaturesTracked"] = "true";
+	localStorage["lastReportMs"] = `${Date.now()}`;
 }
