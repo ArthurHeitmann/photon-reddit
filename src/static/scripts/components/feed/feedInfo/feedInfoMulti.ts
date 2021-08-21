@@ -1,16 +1,19 @@
-import { addSubToMulti, getMultiInfo, removeSubFromMulti } from "../../../api/redditApi";
+import { addSubToMulti, createOrUpdateMulti, getMultiInfo, removeSubFromMulti } from "../../../api/redditApi";
 import { RedditApiData, RedditApiType } from "../../../types/misc";
-import { StoredData } from "../../../utils/globals";
+import { StoredData, thisUser } from "../../../utils/globals";
 import { emojiFlagsToImages, escADQ, escHTML } from "../../../utils/htmlStatics";
 import { linksToSpa } from "../../../utils/htmlStuff";
 import { makeElement, numberToShort, stringSortComparer } from "../../../utils/utils";
 import Ph_FeedLink from "../../link/feedLink/feedLink";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown";
+import Ph_MultiCreateOrEdit from "../../misc/multiCreateOrEdit/multiCreateOrEdit";
 import Ph_SubredditSelector from "../../misc/subredditSelector/subredditSelector";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
 import Ph_FeedInfo from "./feedInfo";
 
 export default class Ph_FeedInfoMulti extends Ph_FeedInfo {
+	private editPane: Ph_MultiCreateOrEdit;
+
 	async loadInfo(): Promise<void> {
 		let feedAbout: RedditApiType;
 		try {
@@ -44,8 +47,21 @@ export default class Ph_FeedInfoMulti extends Ph_FeedInfo {
 			);
 		}
 		const overviewBar = makeElement("div", { class: "overviewBar" });
+		this.editPane?.remove();
+		if (this.loadedInfo.data["owner"] === thisUser.name) {
+			this.editPane = new Ph_MultiCreateOrEdit(`Edit ${this.loadedInfo.data["display_name"]}`, "Edit",
+				this.editMulti.bind(this),
+				{
+					name: this.loadedInfo.data["display_name"],
+					descriptionMd: this.loadedInfo.data["description_md"],
+					visibility: this.loadedInfo.data["visibility"]
+				}
+			);
+		}
 		const dropDown = new Ph_DropDown(
-			[],
+			[
+				this.editPane && { label: "Edit", labelImgUrl: "/img/edit.svg", onSelectCallback: () => this.editPane.show() }
+			],
 			this.getKebabImg(),
 			DirectionX.left,
 			DirectionY.bottom,
@@ -205,6 +221,24 @@ export default class Ph_FeedInfoMulti extends Ph_FeedInfo {
 			console.error("Error adding sub to multi");
 			console.error(subName);
 		}
+	}
+
+	private async editMulti(info) {
+		const response = await createOrUpdateMulti(this.feedUrl, {
+			display_name: info.name,
+			description_md: info.descriptionMd,
+			visibility: info.visibility
+		});
+		if ("error" in response) {
+			new Ph_Toast(Level.error, "Error editing multi", { timeout: 2500 });
+			return false;
+		}
+		if (response["reason"]) {
+			new Ph_Toast(Level.error, `${response["fields"][0]}: ${response["explanation"]}`, { timeout: 3500 });
+			return false;
+		}
+		this.loadInfo().then(this.displayInfo.bind(this));
+		return true;
 	}
 }
 

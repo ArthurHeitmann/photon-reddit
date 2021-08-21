@@ -14,8 +14,9 @@ export default class Ph_MarkdownForm extends HTMLElement {
 	/**
 	 * @param submitBtnText if empty no submit button
 	 * @param hasCancelBtn
+	 * @param placeholderText placeholder text in text field
 	 */
-	constructor(submitBtnText: string, hasCancelBtn: boolean) {
+	constructor(submitBtnText: string, hasCancelBtn: boolean, placeholderText: string = "") {
 		super();
 		if (!hasParams(arguments)) return;
 
@@ -26,6 +27,7 @@ export default class Ph_MarkdownForm extends HTMLElement {
 		this.append(textArea);
 		this.textField = document.createElement("textarea");
 		this.textField.className = "rawTextEditor";
+		this.textField.setAttribute("placeholder", placeholderText);
 		this.shadowTextField = this.textField.cloneNode(true) as HTMLTextAreaElement;
 		this.textField.contentEditable = "true";
 		this.textField.addEventListener("input", this.onTextInput.bind(this));
@@ -36,26 +38,28 @@ export default class Ph_MarkdownForm extends HTMLElement {
 		this.markdownPreview.className = "markdownPreview";
 		textArea.append(this.markdownPreview);
 
-		const buttonsWrapper = document.createElement("div");
-		buttonsWrapper.className = "buttonsWrapper";
-		this.appendChild(buttonsWrapper)
+		if (hasCancelBtn || submitBtnText) {
+			const buttonsWrapper = document.createElement("div");
+			buttonsWrapper.className = "buttonsWrapper";
+			this.appendChild(buttonsWrapper);
 
-		if (hasCancelBtn) {
-			const cancelBtn = document.createElement("button");
-			cancelBtn.className = "cancelBtn";
-			cancelBtn.innerText = "Cancel";
-			buttonsWrapper.appendChild(cancelBtn);
+			if (hasCancelBtn) {
+				const cancelBtn = document.createElement("button");
+				cancelBtn.className = "cancelBtn";
+				cancelBtn.innerText = "Cancel";
+				buttonsWrapper.appendChild(cancelBtn);
 
-			cancelBtn.addEventListener("click", () => this.dispatchEvent(new Event("ph-cancel")));
-		}
+				cancelBtn.addEventListener("click", () => this.dispatchEvent(new Event("ph-cancel")));
+			}
 
-		if (submitBtnText) {
-			this.submitCommentBtn = document.createElement("button");
-			buttonsWrapper.appendChild(this.submitCommentBtn);
-			this.submitCommentBtn.className = "submitBtn";
-			this.submitCommentBtn.innerText = submitBtnText;
+			if (submitBtnText) {
+				this.submitCommentBtn = document.createElement("button");
+				buttonsWrapper.appendChild(this.submitCommentBtn);
+				this.submitCommentBtn.className = "submitBtn";
+				this.submitCommentBtn.innerText = submitBtnText;
 
-			this.submitCommentBtn.addEventListener("click", () => this.dispatchEvent(new Event("ph-submit")));
+				this.submitCommentBtn.addEventListener("click", () => this.dispatchEvent(new Event("ph-submit")));
+			}
 		}
 
 		setTimeout(this.updateHeight.bind(this), 0);

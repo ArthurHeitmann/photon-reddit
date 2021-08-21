@@ -386,3 +386,18 @@ export async function deleteMessage(fullname: string) {
 
 	return isObjectEmpty(response);
 }
+
+export interface CreateOrUpdateModel {
+	description_md?: string,
+	display_name?: string,
+	subreddits?: { name: string }[],
+	visibility?: "private" | "public" | "hidden"
+}
+export async function createOrUpdateMulti(multiPath: string, model: CreateOrUpdateModel) {
+	return await redditApiRequest(
+		`/api/multi${multiPath}`,
+		[["model", JSON.stringify(model)]],
+		true,
+		{ method: "PUT" }
+	);
+}
