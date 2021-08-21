@@ -53,7 +53,7 @@ async function oauth2Request(pathAndQuery, params: string[][], options: RequestI
 		const response = await fetch(`https://oauth.reddit.com${ path }?${ parametersStr }`, fetchOptions);
 		const responseText = await response.text();
 		rateLimitCheck(response.headers);
-		return response ? JSON.parse(responseText) : {};
+		return responseText ? JSON.parse(responseText) : {};
 	} catch (e) {
 		// maybe the token has expired, try to refresh it
 		if (attempt < 1 && await checkTokenRefresh())
@@ -399,5 +399,13 @@ export async function createOrUpdateMulti(multiPath: string, model: CreateOrUpda
 		[["model", JSON.stringify(model)]],
 		true,
 		{ method: "PUT" }
+	);
+}
+
+export async function deleteMulti(multiPath: string) {
+	return await redditApiRequest(
+		`/api/multi${multiPath}`,
+		[], true,
+		{ method: "DELETE" }
 	);
 }

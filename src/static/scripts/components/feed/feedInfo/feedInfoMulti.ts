@@ -1,9 +1,15 @@
-import { addSubToMulti, createOrUpdateMulti, getMultiInfo, removeSubFromMulti } from "../../../api/redditApi";
+import {
+	addSubToMulti,
+	createOrUpdateMulti,
+	deleteMulti,
+	getMultiInfo,
+	removeSubFromMulti
+} from "../../../api/redditApi";
 import { RedditApiData, RedditApiType } from "../../../types/misc";
 import { StoredData, thisUser } from "../../../utils/globals";
 import { emojiFlagsToImages, escADQ, escHTML } from "../../../utils/htmlStatics";
 import { linksToSpa } from "../../../utils/htmlStuff";
-import { makeElement, numberToShort, stringSortComparer } from "../../../utils/utils";
+import { isObjectEmpty, makeElement, numberToShort, stringSortComparer } from "../../../utils/utils";
 import Ph_FeedLink from "../../link/feedLink/feedLink";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown";
 import Ph_MultiCreateOrEdit from "../../misc/multiCreateOrEdit/multiCreateOrEdit";
@@ -48,7 +54,8 @@ export default class Ph_FeedInfoMulti extends Ph_FeedInfo {
 		}
 		const overviewBar = makeElement("div", { class: "overviewBar" });
 		this.editPane?.remove();
-		if (this.loadedInfo.data["owner"] === thisUser.name) {
+		const isUserOwner = this.loadedInfo.data["owner"] === thisUser.name;
+		if (isUserOwner) {
 			this.editPane = new Ph_MultiCreateOrEdit(`Edit ${this.loadedInfo.data["display_name"]}`, "Edit",
 				this.editMulti.bind(this),
 				{
@@ -60,7 +67,8 @@ export default class Ph_FeedInfoMulti extends Ph_FeedInfo {
 		}
 		const dropDown = new Ph_DropDown(
 			[
-				this.editPane && { label: "Edit", labelImgUrl: "/img/edit.svg", onSelectCallback: () => this.editPane.show() }
+				isUserOwner && { label: "Edit", labelImgUrl: "/img/edit.svg", onSelectCallback: () => this.editPane.show() },
+				isUserOwner && { label: "Delete", labelImgUrl: "/img/delete.svg", onSelectCallback: this.deleteMulti.bind(this) }
 			],
 			this.getKebabImg(),
 			DirectionX.left,
@@ -239,6 +247,17 @@ export default class Ph_FeedInfoMulti extends Ph_FeedInfo {
 		}
 		this.loadInfo().then(this.displayInfo.bind(this));
 		return true;
+	}
+
+	private deleteMulti() {
+		new Ph_Toast(Level.warning, "Are you sure you want to delete this multireddit?", { onConfirm: async () => {
+			const response = await deleteMulti(this.feedUrl);
+			if (!isObjectEmpty(response)) {
+				new Ph_Toast(Level.error, "Something went wrong", { timeout: 2500 });
+				return;
+			}
+			new Ph_Toast(Level.success, "", { timeout: 3000 });
+		} });
 	}
 }
 
