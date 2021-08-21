@@ -1,6 +1,16 @@
-export const photonVersion = "0.6.2";		/// <change version script>
+export const photonVersion = "0.6.3";		/// <change version script>
 
 export const photonChangelog = {
+	"0.6.3": {
+		"New": [
+			"Quick Search subscribed subreddits",
+			"Create, edit, delete multireddits"
+		],
+		"Fixed": [
+			"Fixed adding/removing subreddits from multireddits",
+			"Many small fixes & changes"
+		]
+	},
 	"0.6.2": {
 		"New": [
 			"Added fully customizable FAB (floating action button, in the bottom left corner)",
