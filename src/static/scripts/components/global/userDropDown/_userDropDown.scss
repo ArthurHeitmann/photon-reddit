@@ -132,6 +132,28 @@
 					display: block;
 				}
 			}
+
+			.newMulti {
+				height: 2rem;
+				display: flex;
+				align-items: center;
+
+				img {
+					width: 1.65rem;
+					height: 1.65rem;
+					margin-right: .5rem;
+				}
+
+				div {
+					white-space: nowrap;
+					transition: all .25s ease;
+				}
+
+				&:hover div {
+					color: vars.$primary;
+					filter: brightness(1.25);
+				}
+			}
 		}
 	}
 

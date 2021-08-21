@@ -1,9 +1,13 @@
+import { createOrUpdateMulti } from "../../../api/redditApi";
+import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager";
 import ViewsStack from "../../../historyState/viewsStack";
 import { RedditApiType } from "../../../types/misc";
 import { ensurePageLoaded, thisUser } from "../../../utils/globals";
 import { elementWithClassInTree, isElementIn } from "../../../utils/htmlStuff";
 import { hasHTML, isFakeSubreddit, makeElement, numberToShort } from "../../../utils/utils";
 import Ph_FeedLink from "../../link/feedLink/feedLink";
+import Ph_MultiCreateOrEdit, { MultiBasicInfo } from "../../misc/multiCreateOrEdit/multiCreateOrEdit";
+import Ph_Toast, { Level } from "../../misc/toast/toast";
 import Ph_Header from "../header/header";
 
 /**
@@ -35,12 +39,22 @@ export default class Ph_UserDropDown extends HTMLElement {
 
 		window.addEventListener("click", e => {
 			if (!isElementIn(this, e.target as HTMLElement))
-				this.minimize();
+	-			this.minimize();
 		});
+		const createMultiPane = new Ph_MultiCreateOrEdit("Create new multireddit", "Create", this.createNewMultireddit.bind(this));
+		const newMultiBtn = makeElement("button", { class: "newMulti", onclick: () => {
+				this.toggle();
+				createMultiPane.show();
+			}
+		}, [
+			makeElement("img", { src: "/img/add.svg", alt: "add" }),
+			makeElement("div", null, "New Multireddit")
+		]);
 		ensurePageLoaded().then(() => {
 			dropDownArea.append(this.makeSubredditGroup(
 				thisUser.multiredditsData,
-				"Multireddits"
+				"Multireddits",
+				newMultiBtn
 			));
 			dropDownArea.append(this.makeSubredditGroup(
 				thisUser.subredditsData,
@@ -49,10 +63,11 @@ export default class Ph_UserDropDown extends HTMLElement {
 		});
 	}
 
-	private makeSubredditGroup(feedsData: (RedditApiType | string)[], groupName: string): HTMLElement {
+	private makeSubredditGroup(feedsData: (RedditApiType | string)[], groupName: string, ...additionChildren: Element[]): HTMLElement {
 		return makeElement("div", { class: "subGroup separated" }, [
 			makeElement("div", { class: "name" }, groupName),
-			...feedsData.map(feedData => new Ph_FeedLink(feedData))
+			...feedsData.map(feedData => new Ph_FeedLink(feedData)),
+			...additionChildren
 		]);
 	}
 
@@ -135,6 +150,33 @@ export default class Ph_UserDropDown extends HTMLElement {
 		const filterRegex = (new RegExp(filterText.replace(/\s+/g, "\\s*"), "i"));	// case insensitive, ignore whitespace
 		for (const link of filterable)
 			link.classList.toggle("hide", !filterRegex.test(link.innerText));
+	}
+
+	private async createNewMultireddit(info: MultiBasicInfo): Promise<boolean> {
+		const multiUrlName = info.name.toLowerCase()
+			.replace(/[^ _a-z0-9]/g, "")
+			.replace(/ /g, "_")
+			.replace(/_+/g, "_");
+		if (multiUrlName.length < 2) {
+			new Ph_Toast(Level.error, "Name must include at least 2 alphanumeric characters");
+			return false;
+		}
+		const multiPath = `/user/${thisUser.name}/m/${multiUrlName}`;
+		const response = await createOrUpdateMulti(multiPath, {
+			display_name: info.name,
+			description_md: info.descriptionMd,
+			visibility: info.visibility
+		});
+		if ("error" in response) {
+			new Ph_Toast(Level.error, "Error editing multi", { timeout: 2500 });
+			return false;
+		}
+		if (response["reason"]) {
+			new Ph_Toast(Level.error, `${response["fields"][0]}: ${response["explanation"]}`, { timeout: 3500 });
+			return false;
+		}
+		pushLinkToHistoryComb(multiPath);
+		return true;
 	}
 
 	setUnreadCount(unreadCount: number) {
