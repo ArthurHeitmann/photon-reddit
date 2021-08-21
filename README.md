@@ -1,6 +1,6 @@
 # Photon Reddit ![LOGO](src/static/img/appIcons/favicon-32x32.png)
 
-[![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/)
+[![GPLv3 License](https://img.shields.io/badge/License-GPL_v3-5181ed.svg?style=for-the-badge)](https://opensource.org/licenses/)
 
 **Just replace [reddit.com/...](reddit.com) with [photon-reddit.com/...](https://photon-reddit.com) to get started!**
 
