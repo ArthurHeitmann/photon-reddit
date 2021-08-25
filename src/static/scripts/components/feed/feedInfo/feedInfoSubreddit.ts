@@ -5,8 +5,7 @@ import {
 	getSubModerators,
 	getSubRules,
 	getSubUserFlairs,
-	setUserFlair,
-	subscribe
+	setUserFlair
 } from "../../../api/redditApi";
 import { RedditApiType } from "../../../types/misc";
 import { isLoggedIn, StoredData, thisUser } from "../../../utils/globals";
@@ -98,19 +97,19 @@ export default class Ph_FeedInfoSubreddit extends Ph_FeedInfo {
 		overviewBar.appendChild(subActionsWrapper);
 		const subscribeButton = document.createElement("button");
 		subscribeButton.className = "subscribeButton button";
-		subscribeButton.innerText = this.loadedInfo.data["user_is_subscriber"] ? "Unsubscribe" : "Subscribe";
+		subscribeButton.innerText = thisUser.subreddits.isSubscribedTo(this.loadedInfo.data["display_name"]) ? "Unsubscribe" : "Subscribe";
 		subscribeButton.addEventListener("click", async () => {
-			this.loadedInfo.data["user_is_subscriber"] = !this.loadedInfo.data["user_is_subscriber"];
-			subscribeButton.innerText = this.loadedInfo.data["user_is_subscriber"] ? "Unsubscribe" : "Subscribe";
-			if (await subscribe(this.loadedInfo.data["name"], this.loadedInfo.data["user_is_subscriber"])) {
+			const isCurrentlySubscribed = thisUser.subreddits.isSubscribedTo(this.loadedInfo.data["display_name"]);
+			subscribeButton.innerText = !isCurrentlySubscribed ? "Unsubscribe" : "Subscribe";
+			if (await thisUser.subreddits.setIsSubscribed(this.loadedInfo.data["name"], !isCurrentlySubscribed)) {
+				this.loadedInfo.data["user_is_subscriber"] = !isCurrentlySubscribed;
 				new Ph_Toast(Level.success, "", { timeout: 2000 });
 			}
 			else {
-				this.loadedInfo.data["user_is_subscriber"] = !this.loadedInfo.data["user_is_subscriber"];
-				subscribeButton.innerText = this.loadedInfo.data["user_is_subscriber"] ? "Unsubscribe" : "Subscribe";
+				subscribeButton.innerText = thisUser.subreddits.isSubscribedTo(this.loadedInfo.data["display_name"]) ? "Unsubscribe" : "Subscribe";
+				this.loadedInfo.data["user_is_subscriber"] = isCurrentlySubscribed;
 				new Ph_Toast(Level.error, `Error subscribing to subreddit`, { timeout: 2000 });
 			}
-
 		});
 		subActionsWrapper.appendChild(subscribeButton);
 		const dropDownEntries: DropDownEntryParam[] = [];

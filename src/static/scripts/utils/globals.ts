@@ -9,11 +9,12 @@
  *  - manage seen posts
  */
 
-import { getMyMultis, getMySubs, redditApiRequest } from "../api/redditApi";
+import { getMyMultis, redditApiRequest } from "../api/redditApi";
 import Ph_UserDropDown from "../components/global/userDropDown/userDropDown";
 import { RedditApiType } from "../types/misc";
 import { $class } from "./htmlStatics";
-import { nameOf, stringSortComparer } from "./utils";
+import { SubredditManager } from "./subredditManager";
+import { nameOf } from "./utils";
 
 export let isLoggedIn: boolean = false;
 
@@ -36,18 +37,17 @@ export type MultiReddit = typeof _MultiReddit;
 /** Data about the currently logged in user */
 export class User {
 	name: string;
-	subreddits: string[] = [];
-	subredditsData: RedditApiType[] = [];
+	subreddits = new SubredditManager();
 	multireddits: MultiReddit[] = [];
 	multiredditsData: RedditApiType[] = [];
 	private inboxUnreadIds: Set<string> = new Set();
-	private static refreshEveryNMs = 1000 * 60 * 5;			// 5m
+	static refreshEveryNMs = 1000 * 60 * 5;			// 5m
 
 	/** fetch data from reddit and set properties */
 	async fetch() {
-		// get user data, subscribed subreddits, multireddits
+		// get subscribed subreddits & multireddits
 		await Promise.all([
-			this.tryLoadFromLocalStorage(nameOf<User>("subreddits"), "subreddits", this.fetchSubs.bind(this)),
+			this.subreddits.loadSubreddits(),
 			this.tryLoadFromLocalStorage(nameOf<User>("multireddits"), "multis", this.fetchMultis.bind(this)),
 		]);
 	}
@@ -72,27 +72,6 @@ export class User {
 			return false;
 		thisUser.name = userData["name"] || "";
 		return true;
-	}
-
-	private async fetchSubs() {
-		const subs: RedditApiType = await getMySubs(100);
-		while(subs.data.after !== null) {
-			const tmpSubs: RedditApiType = await getMySubs(100, subs.data.after);
-			subs.data.children.push(...tmpSubs.data.children);
-			subs.data.after = tmpSubs.data.after;
-		}
-		this.subreddits = subs.data.children.map(subData => subData.data["display_name_prefixed"]).sort(stringSortComparer);
-		this.subredditsData = subs.data.children.sort(
-			(a, b) => stringSortComparer(a.data["display_name"], b.data["display_name"]));
-
-		localStorage.subreddits = JSON.stringify(<StoredData> {
-			lastUpdatedMsUTC: Date.now(),
-			data: this.subreddits
-		});
-		localStorage.subredditsData = JSON.stringify(<StoredData> {
-			lastUpdatedMsUTC: Date.now(),
-			data: this.subredditsData
-		});
 	}
 
 	private async fetchMultis() {

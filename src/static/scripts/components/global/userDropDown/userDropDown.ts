@@ -4,6 +4,7 @@ import ViewsStack from "../../../historyState/viewsStack";
 import { RedditApiType } from "../../../types/misc";
 import { ensurePageLoaded, thisUser } from "../../../utils/globals";
 import { elementWithClassInTree, isElementIn } from "../../../utils/htmlStuff";
+import { SubscriptionChangeEvent } from "../../../utils/subredditManager";
 import { hasHTML, isFakeSubreddit, makeElement, numberToShort } from "../../../utils/utils";
 import Ph_FeedLink from "../../link/feedLink/feedLink";
 import Ph_MultiCreateOrEdit, { MultiBasicInfo } from "../../misc/multiCreateOrEdit/multiCreateOrEdit";
@@ -19,6 +20,7 @@ import Ph_Header from "../header/header";
 export default class Ph_UserDropDown extends HTMLElement {
 	unreadBadge: HTMLElement;
 	searchFilterInput: HTMLInputElement;
+	subredditsList: HTMLElement;
 
 	constructor() {
 		super();
@@ -56,11 +58,12 @@ export default class Ph_UserDropDown extends HTMLElement {
 				"Multireddits",
 				newMultiBtn
 			));
-			dropDownArea.append(this.makeSubredditGroup(
-				thisUser.subredditsData,
+			dropDownArea.append(this.subredditsList = this.makeSubredditGroup(
+				thisUser.subreddits.rawData,
 				"Subscribed"
 			));
 		});
+		thisUser.subreddits.listenForSubscriptionChanges(this.onSubscriptionChanged.bind(this));
 	}
 
 	private makeSubredditGroup(feedsData: (RedditApiType | string)[], groupName: string, ...additionChildren: Element[]): HTMLElement {
@@ -179,6 +182,15 @@ export default class Ph_UserDropDown extends HTMLElement {
 		return true;
 	}
 
+	private onSubscriptionChanged(e: SubscriptionChangeEvent) {
+		if (e.isUserSubscribed) {
+			this.subredditsList.children[e.index].after(new Ph_FeedLink(e.subreddit));
+		}
+		else {
+			this.subredditsList.children[e.index + 1].remove();
+		}
+	}
+
 	setUnreadCount(unreadCount: number) {
 		this.unreadBadge.innerText = numberToShort(unreadCount);
 		this.unreadBadge.classList.toggle("hide", unreadCount === 0)
@@ -192,7 +204,7 @@ export default class Ph_UserDropDown extends HTMLElement {
 		this.classList.toggle("expanded");
 		if (this.classList.contains("expanded")) {
 			(elementWithClassInTree(this.parentElement, "header") as Ph_Header)?.minimizeAll([this]);
-			setTimeout(() => this.searchFilterInput.focus(), 200);
+			setTimeout(() => this.searchFilterInput.focus({ preventScroll: true }), 200);
 		}
 	}
 }

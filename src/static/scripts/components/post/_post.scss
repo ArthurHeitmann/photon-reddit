@@ -314,7 +314,7 @@
 		> div {
 			position: absolute;
 			color: vars.$background;
-			transform: translateY(-.2rem);
+			transform: translateY(-.15rem);
 			font-weight: 700;
 
 			&.medium {
@@ -324,7 +324,7 @@
 
 			&.small {
 				font-size: .6em;
-				transform: translateY(-.15rem);
+				transform: translateY(-.2rem);
 			}
 		}
 	}

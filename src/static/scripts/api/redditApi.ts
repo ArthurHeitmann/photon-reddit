@@ -160,6 +160,10 @@ export async function comment(thing: FullName, text: string): Promise<{
 	], true, { method: "POST" });
 }
 
+export async function redditInfo(fullName: string): Promise<RedditApiType> {
+	return (await redditApiRequest("/api/info", [["id", fullName]], false)).data.children[0];
+}
+
 export async function edit(votable: Votable, bodyMd: string) {
 	return await redditApiRequest("/api/editusertext", [
 		["api_type", "json"],
