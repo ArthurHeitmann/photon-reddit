@@ -48,6 +48,7 @@
 				white-space: break-spaces;
 				background-color: vars.$background-el1;
 				border: 1px solid vars.$border-color;
+				border-bottom: none;
 				user-select: text;
 				opacity: 0;
 				visibility: hidden;

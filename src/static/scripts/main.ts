@@ -4,7 +4,6 @@
  * This file gets loaded from index.html and imports all other files
  */
 
-import { subscribe } from "./api/redditApi";
 import { AuthState, checkAuthOnPageLoad, checkTokenRefresh } from "./auth/auth";
 import { checkOrCompleteLoginRedirect, initiateLogin } from "./auth/loginHandler";
 import Ph_Header from "./components/global/header/header";
@@ -43,11 +42,11 @@ async function init(): Promise<void> {
 		thisUserFetch = thisUser.fetch()
 			.then(() => {
 				if (localStorage["loginRecommendationFlag"] !== "set" && !thisUser.subreddits.isSubscribedTo(loginSubredditName)) {
-					localStorage["loginRecommendationFlag"] = "set";
 					new Ph_Toast(Level.info, `Do you want to subscribe to r/${loginSubredditName}?`, {
-						onConfirm: () => subscribe(loginSubredditFullName, true)
+						onConfirm: () => thisUser.subreddits.setIsSubscribed(loginSubredditFullName, true)
 					});
 				}
+				localStorage["loginRecommendationFlag"] = "set";
 			})
 			.catch(() => {
 				showInitErrorPage();
