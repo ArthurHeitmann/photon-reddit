@@ -63,7 +63,7 @@ export default class Ph_UserDropDown extends HTMLElement {
 				"Subscribed"
 			));
 		});
-		thisUser.subreddits.listenForSubscriptionChanges(this.onSubscriptionChanged.bind(this));
+		thisUser.subreddits.listenForChanges(this.onSubscriptionChanged.bind(this));
 	}
 
 	private makeSubredditGroup(feedsData: (RedditApiType | string)[], groupName: string, ...additionChildren: Element[]): HTMLElement {

@@ -47,7 +47,7 @@ export class User {
 	async fetch() {
 		// get subscribed subreddits & multireddits
 		await Promise.all([
-			this.subreddits.loadSubreddits(),
+			this.subreddits.load(),
 			this.tryLoadFromLocalStorage(nameOf<User>("multireddits"), "multis", this.fetchMultis.bind(this)),
 		]);
 	}

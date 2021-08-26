@@ -1,6 +1,7 @@
 import { getMySubs, redditInfo, subscribe } from "../api/redditApi";
 import { RedditApiType } from "../types/misc";
 import { StoredData, User } from "./globals";
+import { UserSubscriptions } from "./UserSubscriptions";
 import { stringSortComparer } from "./utils";
 
 export interface SubscriptionChangeEvent {
@@ -8,16 +9,13 @@ export interface SubscriptionChangeEvent {
 	isUserSubscribed: boolean,
 	index: number
 }
-export type OnSubscriptionChangeCallback = (e: SubscriptionChangeEvent) => void;
 
-export class SubredditManager {
-	private subreddits: RedditApiType[] = [];
-	private changeSubscribers: OnSubscriptionChangeCallback[] = [];
+export class SubredditManager extends UserSubscriptions<RedditApiType, SubscriptionChangeEvent> {
 
-	async loadSubreddits() {
+	async load() {
 		try {
 			const storedData: StoredData = JSON.parse(localStorage["subreddits"]);
-			this.subreddits = storedData.data;
+			this.userContent = storedData.data;
 			if (Date.now() - storedData.lastUpdatedMsUTC > User.refreshEveryNMs)
 				await this.fetchSubreddits();
 		} catch (e) {
@@ -33,12 +31,12 @@ export class SubredditManager {
 			subs.data.after = tmpSubs.data.after;
 		}
 
-		this.subreddits = subs.data.children.sort(SubredditManager.subredditsSort);
+		this.userContent = subs.data.children.sort(SubredditManager.subredditsSort);
 		this.cacheSubreddits();
 	}
 
 	isSubscribedTo(subreddit: string): boolean {
-		return this.subreddits.findIndex(sub => sub.data["display_name"] === subreddit) !== -1;
+		return this.userContent.findIndex(sub => sub.data["display_name"] === subreddit) !== -1;
 	}
 
 	/** @return success */
@@ -50,49 +48,27 @@ export class SubredditManager {
 			const subInfo = await redditInfo(subredditFullName);
 			if (!subInfo)
 				return false;
-			this.subreddits.push(subInfo);
-			this.subreddits.sort(SubredditManager.subredditsSort);
-			const currentSubIndex = this.subreddits.findIndex(sub => sub.data["name"] === subredditFullName);
-			this.dispatchSubscriptionChange(subInfo, true, currentSubIndex);
+			this.userContent.push(subInfo);
+			this.userContent.sort(SubredditManager.subredditsSort);
+			const currentSubIndex = this.userContent.findIndex(sub => sub.data["name"] === subredditFullName);
+			this.dispatchChange({ subreddit: subInfo, isUserSubscribed: true, index: currentSubIndex });
 		}
 		else {
-			const currentSubIndex = this.subreddits.findIndex(sub => sub.data["name"] === subredditFullName);
+			const currentSubIndex = this.userContent.findIndex(sub => sub.data["name"] === subredditFullName);
 			if (currentSubIndex === -1)
 				return false;
-			const subredditData = this.subreddits[currentSubIndex];
-			this.subreddits.splice(currentSubIndex, 1);
-			this.dispatchSubscriptionChange(subredditData, false, currentSubIndex);
+			const subredditData = this.userContent[currentSubIndex];
+			this.userContent.splice(currentSubIndex, 1);
+			this.dispatchChange({ subreddit: subredditData, isUserSubscribed: false, index: currentSubIndex });
 		}
 		this.cacheSubreddits();
 		return true;
 	}
 
-	listenForSubscriptionChanges(handler: OnSubscriptionChangeCallback) {
-		this.changeSubscribers.push(handler);
-	}
-
-	disconnectListener(handler: OnSubscriptionChangeCallback) {
-		const index = this.changeSubscribers.findIndex(listener => listener === handler);
-		if (index !== -1)
-			this.changeSubscribers.splice(index, 1);
-	}
-
-	private dispatchSubscriptionChange(subreddit: RedditApiType, isUserSubscribed: boolean, index: number) {
-		const event: SubscriptionChangeEvent = {
-			subreddit, isUserSubscribed, index
-		};
-		for (const handler of this.changeSubscribers)
-			handler(event);
-	}
-
-	get rawData(): RedditApiType[] {
-		return this.subreddits;
-	}
-
 	private cacheSubreddits() {
 		localStorage.subreddits = JSON.stringify(<StoredData> {
 			lastUpdatedMsUTC: Date.now(),
-			data: this.subreddits
+			data: this.userContent
 		});
 	}
 
