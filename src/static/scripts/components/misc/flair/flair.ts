@@ -1,27 +1,7 @@
-import { RedditApiData } from "../../../types/misc";
+import { FlairApiData, FlairData, RedditApiData } from "../../../types/redditTypes";
 import { emojiFlagsToImages } from "../../../utils/htmlStatics";
 import { hasParams } from "../../../utils/utils";
 import Ph_Toast, { Level } from "../toast/toast";
-
-export interface FlairData {
-	type: string,
-	backgroundColor?: string,
-	textColor?: string,
-	richText?: {}[],
-	text?: string,
-	isEditable?: boolean,
-	id?: string
-}
-
-export interface FlairApiData {
-	background_color: string,
-	id: string,
-	richtext: object[],
-	text: string,
-	text_color: string,
-	text_editable: boolean,
-	type: string
-}
 
 /**
  * A reddit flair (for example user or post related)
@@ -56,25 +36,25 @@ export default class Ph_Flair extends HTMLElement {
 
 		if (data.type === "richtext") {
 			for (const flairPart of data.richText) {
-				switch (flairPart["e"]) {
+				switch (flairPart.e) {
 					case "text":
 						const text = document.createElement("span");
 						text.className = "flairText";
-						text.innerText = flairPart["t"];
+						text.innerText = flairPart.t;
 						this.flairContent.append(text);
 						break;
 					case "emoji":
 						const flairImgWrapper = document.createElement("span");
-						flairImgWrapper.setAttribute("data-tooltip", flairPart["a"]);
+						flairImgWrapper.setAttribute("data-tooltip", flairPart.a);
 						flairImgWrapper.className = "flairImg";
 						const flairImg = document.createElement("img");
 						flairImgWrapper.append(flairImg);
-						flairImg.src = flairPart["u"];
+						flairImg.src = flairPart.u;
 						flairImg.alt = "flairImg";
 						this.flairContent.append(flairImgWrapper);
 						break;
 					default:
-						this.flairContent.append(`Unknown Flair ${flairPart["e"]}`);
+						this.flairContent.append(`Unknown Flair ${flairPart.e}`);
 						console.error("Unknown flair part");
 						console.error(flairPart);
 						break;

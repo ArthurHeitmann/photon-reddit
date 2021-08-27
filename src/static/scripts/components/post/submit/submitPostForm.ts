@@ -1,5 +1,6 @@
 import { getSubFlairs, getSubInfo, redditApiRequest } from "../../../api/redditApi";
 import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager";
+import { FlairApiData, SubredditDetails } from "../../../types/redditTypes";
 import { thisUser } from "../../../utils/globals";
 import { emojiFlagsToImages } from "../../../utils/htmlStatics";
 import { linksToSpa } from "../../../utils/htmlStuff";
@@ -8,7 +9,7 @@ import { FeedType } from "../../feed/feedInfo/feedInfo";
 import FeedInfoFactory from "../../feed/feedInfo/feedInfoFactory";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown";
 import { DropDownActionData, DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry";
-import Ph_Flair, { FlairApiData } from "../../misc/flair/flair";
+import Ph_Flair from "../../misc/flair/flair";
 import Ph_MarkdownForm from "../../misc/markdownForm/markdownForm";
 import Ph_SubredditSelector from "../../misc/subredditSelector/subredditSelector";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
@@ -337,16 +338,16 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 			this.subInfoButton.innerText = "";
 			this.subInfoButton.append(FeedInfoFactory.getInfoButton(FeedType.subreddit, community));
 			await FeedInfoFactory.loadedInfos[community].feedInfo.forceLoad();
-			const subData = FeedInfoFactory.loadedInfos[community].feedInfo.loadedInfo.data;
+			const subData = FeedInfoFactory.loadedInfos[community].feedInfo.loadedInfo.data as SubredditDetails;
 			// submit button text
-			this.textSubmitText = subData["submit_text_label"] || "Submit";
-			this.linkSubmitText = subData["submit_link_label"] || "Submit";
+			this.textSubmitText = subData.submit_text_label || "Submit";
+			this.linkSubmitText = subData.submit_link_label || "Submit";
 			// allowed submission types
-			if (subData["submission_type"] === "any")
+			if (subData.submission_type === "any")
 				this.setAllowedTypes([ SubmitPostType.text, SubmitPostType.link ]);
-			else if (subData["submission_type"] === "self")
+			else if (subData.submission_type === "self")
 				this.setAllowedTypes([ SubmitPostType.text ]);
-			else if (subData["submission_type"] === "link")
+			else if (subData.submission_type === "link")
 				this.setAllowedTypes([ SubmitPostType.link ]);
 			else {
 				console.error("Invalid submission type for ");
@@ -354,8 +355,8 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 				new Ph_Toast(Level.error, "Couldn't get submission type");
 				throw "Invalid submission type";
 			}
-			this.imagesAllowed = subData["allow_images"];
-			this.videosAllowed = subData["allow_videos"];
+			this.imagesAllowed = subData.allow_images;
+			this.videosAllowed = subData.allow_videos;
 			// flair selection
 			const flairs: FlairApiData[] = await getSubFlairs(community);
 			this.flairSelectorWrapper.innerText = "";
@@ -378,10 +379,10 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 				));
 			}
 			// nsfw & spoiler
-			this.forceNsfw = subData["over18"];
+			this.forceNsfw = subData.over18;
 			if (this.forceNsfw && !this.isNsfw)
 				this.nsfwButton.click();
-			this.isSpoilerAllowed = subData["spoilers_enabled"];
+			this.isSpoilerAllowed = subData.spoilers_enabled;
 			if (!this.isSpoilerAllowed && this.isSpoiler)
 				this.spoilerButton.click();
 

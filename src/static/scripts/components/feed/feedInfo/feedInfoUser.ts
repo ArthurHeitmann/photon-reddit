@@ -1,19 +1,23 @@
 import { getSubInfo, getUserMultis } from "../../../api/redditApi";
-import { RedditApiType } from "../../../types/misc";
+import { RedditMultiObj, RedditUserInfo, RedditUserObj } from "../../../types/redditTypes";
 import { escADQ, escHTML } from "../../../utils/htmlStatics";
 import { linksToSpa } from "../../../utils/htmlStuff";
-import { makeElement, numberToShort } from "../../../utils/utils";
+import { getUserIconUrl, makeElement, numberToShort } from "../../../utils/utils";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
 import Ph_FeedInfo from "./feedInfo";
 
-export default class Ph_FeedInfoUser extends Ph_FeedInfo {
+interface AllUserInfo extends RedditUserInfo {
+	multis: RedditMultiObj[]
+}
+
+export default class Ph_FeedInfoUser extends Ph_FeedInfo<AllUserInfo> {
 	async loadInfo(): Promise<void> {
-		let feedAbout: RedditApiType;
-		let multis: RedditApiType[];
+		let feedAbout: RedditUserObj;
+		let multis: RedditMultiObj[];
 		try {
 			feedAbout = await getSubInfo(this.feedUrl);
-			if (feedAbout["error"] || !(feedAbout["kind"] && feedAbout["data"]))
+			if (feedAbout["error"] || !(feedAbout.kind && feedAbout.data))
 				throw `Invalid about response ${JSON.stringify(feedAbout)}`;
 			multis = await getUserMultis(this.feedUrl.match(/(?:u|user)\/([^/?#]*)/i)[1]);	// /u/username --> username
 			if (multis["error"])
@@ -23,8 +27,10 @@ export default class Ph_FeedInfoUser extends Ph_FeedInfo {
 			console.error(`Error getting user info for ${this.feedUrl}`);
 			console.error(e);
 		}
-		this.loadedInfo.data = feedAbout.data;
-		this.loadedInfo.data.multis = multis;
+		this.loadedInfo.data = {
+			...feedAbout.data,
+			multis: multis
+		}
 		this.loadedInfo.lastUpdatedMsUTC = Date.now();
 		this.saveInfo();
 	}
@@ -34,14 +40,14 @@ export default class Ph_FeedInfoUser extends Ph_FeedInfo {
 
 		this.appendChild(this.makeRefreshButton());
 
-		const bannerUrl = this.loadedInfo.data["subreddit"]["banner_img"];
+		const bannerUrl = this.loadedInfo.data.subreddit.banner_img;
 		if (bannerUrl)
-			this.makeBannerImage(bannerUrl, this, this.loadedInfo.data["subreddit"]["banner_background_color"] || undefined);
+			this.makeBannerImage(bannerUrl, this, this.loadedInfo.data.subreddit.banner_background_color || undefined);
 
 		const headerBar = document.createElement("div");
 		headerBar.className = "headerBar";
 		this.appendChild(headerBar);
-		const iconUrl = this.loadedInfo.data["subreddit"]["icon_img"] || this.loadedInfo.data["icon_img"];
+		const iconUrl = getUserIconUrl(this.loadedInfo.data);
 		if (iconUrl) {
 			const profileImg = document.createElement("img");
 			profileImg.src = iconUrl;
@@ -65,26 +71,26 @@ export default class Ph_FeedInfoUser extends Ph_FeedInfo {
 		))
 			.$class("dropDownButton")[0].classList.add("transparentButtonAlt");
 		overviewBar.insertAdjacentHTML("beforeend", `
-			<div data-tooltip="${this.loadedInfo.data["total_karma"]}">
-				Karma: ${numberToShort(this.loadedInfo.data["total_karma"])}
+			<div data-tooltip="${this.loadedInfo.data.total_karma}">
+				Karma: ${numberToShort(this.loadedInfo.data.total_karma)}
 			</div>
-			<div data-tooltip="${this.loadedInfo.data["link_karma"]}">
-				Link Karma: ${numberToShort(this.loadedInfo.data["link_karma"])}
+			<div data-tooltip="${this.loadedInfo.data.link_karma}">
+				Link Karma: ${numberToShort(this.loadedInfo.data.link_karma)}
 			</div>
-			<div data-tooltip="${this.loadedInfo.data["comment_karma"]}">
-				Comment Karma: ${numberToShort(this.loadedInfo.data["comment_karma"])}
+			<div data-tooltip="${this.loadedInfo.data.comment_karma}">
+				Comment Karma: ${numberToShort(this.loadedInfo.data.comment_karma)}
 			</div>
 		`);
 		headerBar.appendChild(overviewBar);
 		const title = document.createElement("h1");
 		title.className = "title";
-		title.innerText = this.loadedInfo.data["subreddit"]["title"] || this.loadedInfo.data["name"];
+		title.innerText = this.loadedInfo.data.subreddit.title || this.loadedInfo.data.name;
 		this.appendChild(title);
 
 		const publicDescription = document.createElement("div");
-		publicDescription.innerText = this.loadedInfo.data["subreddit"]["public_description"];
+		publicDescription.innerText = this.loadedInfo.data.subreddit.public_description;
 		const miscText = document.createElement("div");
-		const createdDate = new Date(this.loadedInfo.data["created_utc"] * 1000);
+		const createdDate = new Date(this.loadedInfo.data.created_utc * 1000);
 		miscText.innerHTML = `
 			<div data-tooltip="${createdDate.toString()}">Created: ${createdDate.toDateString()}</div>
 		`;

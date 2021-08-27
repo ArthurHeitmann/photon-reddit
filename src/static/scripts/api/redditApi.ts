@@ -4,9 +4,17 @@
 
 import { checkTokenRefresh } from "../auth/auth";
 import { initiateLogin } from "../auth/loginHandler";
-import Ph_Flair, { FlairApiData } from "../components/misc/flair/flair";
+import Ph_Flair from "../components/misc/flair/flair";
 import Ph_Toast, { Level } from "../components/misc/toast/toast";
-import { RedditApiType } from "../types/misc";
+import {
+	FlairApiData,
+	RedditApiObj,
+	RedditJsonApiResponse,
+	RedditListingObj,
+	RedditMultiObj,
+	RedditSubredditObj,
+	RedditUserObj
+} from "../types/redditTypes";
 import Votable, { FullName } from "../types/votable";
 import { isLoggedIn, thisUser, } from "../utils/globals";
 import { isObjectEmpty, splitPathQuery, throttle } from "../utils/utils";
@@ -145,14 +153,7 @@ export async function save(votable: Votable): Promise<boolean> {
 	}
 }
 
-export async function comment(thing: FullName, text: string): Promise<{
-	json: {
-		data: {
-			things: RedditApiType[]
-		},
-		errors: any[][]
-	}
-}> {
+export async function comment(thing: FullName, text: string): Promise<RedditJsonApiResponse> {
 	return await redditApiRequest("/api/comment", [
 		["api_type", "json"],
 		["text", text],
@@ -160,7 +161,7 @@ export async function comment(thing: FullName, text: string): Promise<{
 	], true, { method: "POST" });
 }
 
-export async function redditInfo(fullName: string): Promise<RedditApiType> {
+export async function redditInfo(fullName: string): Promise<RedditApiObj> {
 	return (await redditApiRequest("/api/info", [["id", fullName]], false)).data.children[0];
 }
 
@@ -181,11 +182,11 @@ export async function searchSubredditNames(query: string) {
 	return await redditApiRequest("/api/search_reddit_names", [["query", query]], false);
 }
 
-export async function searchSubreddits(query: string, limit = 5): Promise<RedditApiType> {
+export async function searchSubreddits(query: string, limit = 5): Promise<RedditListingObj<RedditSubredditObj>> {
 	return await redditApiRequest("/subreddits/search", [["q", query], ["limit", limit.toString()]], false);
 }
 
-export async function searchUser(query: string, limit = 5): Promise<RedditApiType> {
+export async function searchUser(query: string, limit = 5): Promise<RedditListingObj<RedditUserObj>> {
 	return await redditApiRequest("/users/search", [["q", query], ["limit", limit.toString()]], false);
 }
 
@@ -206,7 +207,7 @@ export async function subscribe(subredditFullName: string, shouldSubscribe: bool
 	}
 }
 
-export async function loadMoreComments(children: string[], postFullName: string, sort: string, id: string): Promise<RedditApiType[]> {
+export async function loadMoreComments(children: string[], postFullName: string, sort: string, id: string): Promise<RedditJsonApiResponse> {
 	return  await redditApiRequest("/api/morechildren", [
 		["api_type", "json"],
 		["children", children.join(",")],
@@ -217,15 +218,15 @@ export async function loadMoreComments(children: string[], postFullName: string,
 	], false, {method: "POST"});
 }
 
-export async function getMultiInfo(multiPath: string) {
+export async function getMultiInfo(multiPath: string): Promise<RedditMultiObj> {
 	return await redditApiRequest(`/api/multi${multiPath}`, [["expand_srs", "1"]], false);
 }
 
-export async function getUserMultis(userName: string) {
+export async function getUserMultis(userName: string): Promise<RedditMultiObj[]> {
 	return await redditApiRequest(`/api/multi/user/${userName}`, [], false);
 }
 
-export async function getMyMultis() {
+export async function getMyMultis(): Promise<RedditMultiObj[]> {
 	return await redditApiRequest("/api/multi/mine", [], true);
 }
 
@@ -300,7 +301,7 @@ export async function editCommentOrPost(newText: string, thingFullName: string) 
 	);
 }
 
-export async function getMySubs(limit: number, after?: string) {
+export async function getMySubs(limit: number, after?: string): Promise<RedditListingObj<RedditSubredditObj>> {
 	const params = [["limit", limit.toString()]];
 	if (after)
 		params.push(["after", after]);

@@ -1,16 +1,4 @@
 
-export interface RedditApiType {
-	kind: string,
-	data: RedditApiData
-}
-
-export interface RedditApiData {
-	dist?: number,
-	children?: RedditApiType[],
-	before?: string,
-	after?: string,
-	[other: string]: any
-}
 
 export interface SVGAnimationElement extends SVGElement {
 	beginElement(): void;

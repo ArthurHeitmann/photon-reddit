@@ -13,7 +13,7 @@ export enum FeedType {
 	messages = "messages",
 	misc = "misc",
 }
-interface StoredFeedInfo extends StoredData {
+interface StoredFeedInfo<T> extends StoredData<T> {
 	feedType: FeedType;
 }
 
@@ -22,10 +22,10 @@ interface StoredFeedInfo extends StoredData {
  *
  * Should be created, opened, ... with FeedInfoFactory.getInfoButton()
  */
-export default abstract class Ph_FeedInfo extends HTMLElement {
+export default abstract class Ph_FeedInfo<StoredData> extends HTMLElement {
 	/** has data been loaded (from reddit) & is it being displayed */
 	hasLoaded: boolean = false;
-	loadedInfo: StoredFeedInfo;
+	loadedInfo: StoredFeedInfo<StoredData>;
 	/** path for the feed, example: "/r/askreddit" */
 	feedUrl: string;
 	multiSubManager: HTMLDivElement;
@@ -172,7 +172,7 @@ export default abstract class Ph_FeedInfo extends HTMLElement {
 			this.addToDOM();
 
 		$cssAr(".feedInfo:not(.remove)")
-			.forEach((e: Ph_FeedInfo) => e !== this && e.hide())
+			.forEach((e: Ph_FeedInfo<StoredData>) => e !== this && e.hide())
 		this.classList.remove("remove");
 		($class("header")[0] as Ph_Header).hide();
 		setTimeout(() => window.addEventListener("click", this.focusLossHideRef), 0);

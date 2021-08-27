@@ -12,7 +12,7 @@ import Ph_About from "../components/photon/about/about";
 import Ph_PostCrossposts from "../components/post/postCrossposts/postCrossPosts";
 import PostDoubleLink from "../components/post/postDoubleLink/postDoubleLink";
 import Ph_SubmitPostForm from "../components/post/submit/submitPostForm";
-import Ph_PostAndComments from "../components/postAndComments/postAndComments";
+import Ph_PostAndComments, { PostCommentsListings } from "../components/postAndComments/postAndComments";
 import Ph_CommentsViewStateLoader from "../components/viewState/commentsViewStateLoader/commentsViewStateLoader";
 import { Ph_ViewState } from "../components/viewState/viewState";
 import Ph_ViewStateLoader from "../components/viewState/viewStateLoader/viewStateLoader";
@@ -135,19 +135,19 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 	}
 	// result is a posts comments or post crosspost list
 	else if (requestData instanceof Array) {		// --> [0]: post [1]: comments/posts
-		if (requestData[1]["data"]["children"][0]?.["kind"] === "t3")
+		if (requestData[1].data.children[0]?.kind === "t3")
 			stateLoader.finishWith(new Ph_PostCrossposts(requestData));
 		else
-			stateLoader.finishWith(new Ph_PostAndComments(requestData));
-		newTabTitle = `${requestData[0]["data"]["children"][0]["data"]["title"]} - Photon`;
+			stateLoader.finishWith(new Ph_PostAndComments(requestData as PostCommentsListings));
+		newTabTitle = `${requestData[0].data.children[0].data.title} - Photon`;
 	}
 		// result is some sort of generic feed
-	else if (requestData["kind"] === "Listing") {
+	else if (requestData.kind === "Listing") {
 		stateLoader.finishWith(new Ph_UniversalFeed(requestData, path + query));
 		newTabTitle = `${(path.length > 3) ? path.slice(1) : "Home"} - Photon`;
 	}
 	// result is a wiki page
-	else if (requestData["kind"] === "wikipage") {
+	else if (requestData.kind === "wikipage") {
 		stateLoader.finishWith(new Ph_Wiki(requestData));
 		newTabTitle = `${path.match(/r\/[^/?#]+/i)[0]} Wiki - Photon`;
 	}

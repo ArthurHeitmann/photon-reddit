@@ -1,4 +1,5 @@
-import { RedditApiType, SortCommentsOrder } from "../../../types/misc";
+import { SortCommentsOrder } from "../../../types/misc";
+import { RedditCommentObj, RedditListingObj } from "../../../types/redditTypes";
 import { linksToSpa } from "../../../utils/htmlStuff";
 import { extractQuery, hasParams, makeElement } from "../../../utils/utils";
 import Ph_Comment from "../../comment/comment";
@@ -11,7 +12,7 @@ import Ph_Post from "../../post/post";
 export default class Ph_CommentsFeed extends HTMLElement {
 	sort: SortCommentsOrder;
 
-	constructor(comments: RedditApiType, post: Ph_Post, suggestedSort: SortCommentsOrder | null) {
+	constructor(comments: RedditListingObj<RedditCommentObj>, post: Ph_Post, suggestedSort: SortCommentsOrder | string | null) {
 		super();
 		if (!hasParams(arguments)) return;
 

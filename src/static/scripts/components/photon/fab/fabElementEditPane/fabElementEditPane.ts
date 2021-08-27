@@ -1,4 +1,4 @@
-import { RedditApiType } from "../../../../types/misc";
+import { RedditSubredditObj } from "../../../../types/redditTypes";
 import { nonDraggableElement } from "../../../../utils/htmlStatics";
 import { elementWithClassInTree } from "../../../../utils/htmlStuff";
 import { deepClone, getSubredditIconUrl, isJsonEqual, makeElement } from "../../../../utils/utils";
@@ -247,16 +247,16 @@ export default class Ph_FabElementEditPane extends HTMLElement {
 		this.setActiveIcon(matchingIcon);
 	}
 
-	onSubredditSelectedPresets(subName: string, subData: RedditApiType) {
+	onSubredditSelectedPresets(subName: string, subData: RedditSubredditObj) {
 		this.setActionUrl(`/r/${subName}`);
 		this.setIconUrl(getSubredditIconUrl(subData.data));
 	}
 
-	onSubredditSelectedActions(subName: string, subData: RedditApiType) {
+	onSubredditSelectedActions(subName: string, subData: RedditSubredditObj) {
 		this.setActionUrl(`/r/${subName}`);
 	}
 
-	onSubredditSelectedIcons(subName: string, subData: RedditApiType) {
+	onSubredditSelectedIcons(subName: string, subData: RedditSubredditObj) {
 		this.setIconUrl(getSubredditIconUrl(subData.data));
 	}
 

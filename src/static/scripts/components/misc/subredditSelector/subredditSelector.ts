@@ -1,12 +1,12 @@
 import { getSubInfo, searchSubreddits } from "../../../api/redditApi";
-import { RedditApiType } from "../../../types/misc";
+import { RedditSubredditObj, SubredditDetails } from "../../../types/redditTypes";
 import { isElementIn } from "../../../utils/htmlStuff";
 import { throttle } from "../../../utils/utils";
 import Ph_FeedLink from "../../link/feedLink/feedLink";
 import Ph_Toast, { Level } from "../toast/toast";
 import BlurEvent = JQuery.BlurEvent;
 
-export type OnSubSelectCallbackSignature = (subName: string, subData: RedditApiType) => Promise<void> | void;
+export type OnSubSelectCallbackSignature = (subName: string, subData: RedditSubredditObj) => Promise<void> | void;
 
 /**
  * Binds to a text field. When text is entered into that field a pop up will appear,
@@ -57,7 +57,7 @@ export default class Ph_SubredditSelector extends HTMLElement {
 			subs.data.children.forEach(sub => {
 				const selectSubBtn = new Ph_FeedLink(sub, this.blurNsfw, false);
 				this.appendChild(selectSubBtn);
-				selectSubBtn.addEventListener("click", () => this.onSubSelected(sub.data["display_name"], sub));
+				selectSubBtn.addEventListener("click", () => this.onSubSelected(sub.data.display_name, sub));
 			});
 		} else {
 			this.classList.add("remove");
@@ -65,8 +65,8 @@ export default class Ph_SubredditSelector extends HTMLElement {
 		}
 	}
 
-	private async onSubSelected(subName: string, subData: RedditApiType) {
-		if (subData.data["over18"] === null) {
+	private async onSubSelected(subName: string, subData: RedditSubredditObj) {
+		if ((subData.data as SubredditDetails).over18 === null) {
 			new Ph_Toast(Level.error, "Error selecting subreddit", { groupId: "multi add sub", timeout: 4000 });
 			return;
 		}

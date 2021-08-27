@@ -7,12 +7,19 @@ import {
 	VoteDirection,
 	voteDirectionFromLikes
 } from "../../api/redditApi";
-import { RedditApiType } from "../../types/misc";
+import { RedditCommentObj, RedditListingObj, RedditMessageObj, RedditMoreCommentsObj } from "../../types/redditTypes";
 import Votable from "../../types/votable";
 import { thisUser } from "../../utils/globals";
 import { emojiFlagsToImages } from "../../utils/htmlStatics";
 import { elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff";
-import { hasParams, isObjectEmpty, makeElement, numberToShort, timePassedSinceStr } from "../../utils/utils";
+import {
+	hasParams,
+	isObjectEmpty,
+	makeElement,
+	numberToShort,
+	timePassedSince,
+	timePassedSinceStr
+} from "../../utils/utils";
 import Ph_CommentsFeed from "../feed/commentsFeed/commentsFeed";
 import Ph_Readable from "../feed/feedItem/readable/readable";
 import Ph_AwardsInfo from "../misc/awardsInfo/awardsInfo";
@@ -50,13 +57,13 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 	 * @param isInFeed true --> child of Ph_UniversalFeed, false --> child of Ph_PostAndComments|Ph_CommentsFeed
 	 * @param post parent post if available should be supplied (needed to load possible child comments)
 	 */
-	constructor(commentData: RedditApiType, isChild: boolean, isInFeed: boolean, post?: Ph_Post) {
+	constructor(commentData: RedditCommentObj | RedditMoreCommentsObj | RedditMessageObj, isChild: boolean, isInFeed: boolean, post?: Ph_Post) {
 		super(
-			commentData?.data["name"],
+			commentData?.data.name,
 			commentData?.data["permalink"] ? commentData?.data["permalink"] + "?context=3" : commentData?.data["context"],
 			isInFeed,
 			commentData ? "first_message" in commentData.data : false,
-			!commentData?.data["new"]
+			!Boolean(commentData?.data["new"])
 		);
 		if (!hasParams(arguments)) return;
 
@@ -70,17 +77,17 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 			this.append(loadMoreButton);
 
 			// continue thread button/link
-			if (commentData.data["children"].length === 0) {
-				loadMoreButton.append(makeElement("a", { href: `${post.permalink}${commentData.data["parent_id"].slice(3)}` }, "Continue thread"));
+			if (commentData.data.children.length === 0) {
+				loadMoreButton.append(makeElement("a", { href: `${post.permalink}${commentData.data.parent_id.slice(3)}` }, "Continue thread"));
 				linksToSpa(loadMoreButton);
 			}
 			// load n more comments button
 			else {
 				this.postFullName = post.fullName;
-				const moreId = commentData.data["name"];
-				const loadMoreBtnText: string = `Load more (${commentData.data["count"]})`;
+				const moreId = commentData.data.name;
+				const loadMoreBtnText: string = `Load more (${commentData.data.count})`;
 				loadMoreButton.innerText = loadMoreBtnText;
-				let nextChildren = commentData.data["children"] as unknown as string[];
+				let nextChildren = commentData.data.children;
 				loadMoreButton.addEventListener("click", async () => {
 					loadMoreButton.disabled = true;
 					loadMoreButton.innerHTML = `<img src="/img/loading.svg" alt="loading">`;
@@ -109,18 +116,18 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 		}
 
 		// set this properties
-		this.bodyMarkdown = commentData.data["body"];
+		this.bodyMarkdown = commentData.data.body;
 
-		this.fullName = commentData.data["name"];
-		this.currentVoteDirection = voteDirectionFromLikes(commentData.data["likes"]);
-		this.totalVotes = parseInt(commentData.data["ups"] || 0) + -parseInt(this.currentVoteDirection);
-		this.isSaved = commentData.data["saved"];
+		this.fullName = commentData.data.name;
+		this.currentVoteDirection = voteDirectionFromLikes(commentData.data.likes);
+		this.totalVotes = parseInt(commentData.data["ups"] ?? 0) + -parseInt(this.currentVoteDirection);
+		this.isSaved = "saved" in commentData.data ? commentData.data.saved : false;
 
 		// if this is currently a root comment with a parent id (so not actually the root), create button to view parent comments
-		if (!isInFeed && !isChild && commentData.data["parent_id"] && commentData.data["parent_id"].slice(0, 3) === "t1_") {
+		if (!isInFeed && !isChild && commentData.data.parent_id && commentData.data.parent_id.slice(0, 3) === "t1_") {
 			setTimeout(() =>
 				(elementWithClassInTree(this.parentElement, "commentsFeed") as Ph_CommentsFeed)
-					.insertParentLink(`${post.permalink}${commentData.data["parent_id"].slice(3)}?context=3`, "Load parent comment")
+					.insertParentLink(`${post.permalink}${commentData.data.parent_id.slice(3)}?context=3`, "Load parent comment")
 				, 0)
 		}
 
@@ -141,12 +148,12 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 		actionBar.appendChild(this.voteDownButton);
 		this.setVotesState(this.currentVoteDirection);
 		// additional actions drop down
-		const isLocked = commentData.data["locked"] || commentData.data["archived"];
+		const isLocked = commentData.data["locked"] || commentData.data["archived"] || false;
 		const lockedReason = commentData.data["locked"] ? "Locked" : "Archived";
 		let dropDownParams: DropDownEntryParam[] = [];
 		if (!isLocked)
 			dropDownParams.push({ label: "Reply", labelImgUrl: "/img/commentEmpty.svg", onSelectCallback: this.showReplyForm.bind(this) });
-		if (commentData.data["author"] === thisUser.name) {
+		if (commentData.data.author === thisUser.name) {
 			this.setupEditForm();
 			dropDownParams.push({ label: "Edit", labelImgUrl: "/img/edit.svg", onSelectCallback: this.editStart.bind(this) });
 			dropDownParams.push({ label: "Delete", labelImgUrl: "/img/delete.svg", onSelectCallback: this.deletePrompt.bind(this) });
@@ -175,22 +182,22 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 		let userAdditionClasses = "";
 		if (commentData.data["is_submitter"])
 			userAdditionClasses += " op";
-		if (commentData.data["distinguished"] === "moderator")
+		if (commentData.data.distinguished === "moderator")
 			userAdditionClasses += " mod";
-		else if (commentData.data["distinguished"] === "admin")
+		else if (commentData.data.distinguished === "admin")
 			userAdditionClasses += " admin";
 
 		const mainPart = makeElement("div", { class: "w100" }, [
 			makeElement("div", { class: "header flex" }, [
 				commentData.data["stickied"] && makeElement("img", { class: "pinned", src: "/img/pin.svg", alt: "pinned", draggable: "false" }),
-				makeElement("a", { href: `/user/${commentData.data["author"]}`, class: `user${userAdditionClasses}` }, [
-					makeElement("span", null, `u/${commentData.data["author"]}`),
+				makeElement("a", { href: `/user/${commentData.data.author}`, class: `user${userAdditionClasses}` }, [
+					makeElement("span", null, `u/${commentData.data.author}`),
 					commentData.data["author_cakeday"] && makeElement("img", { src: "/img/cake.svg", class: "cakeDay", alt: "cake day" })
 				]),
 				makeElement(
 					"span",
-					{ class: "time", "data-tooltip": `${new Date(commentData.data["created_utc"] * 1000).toString()}` },
-					timePassedSinceStr(commentData.data["created_utc"])
+					{ class: "time", "data-tooltip": `${new Date(commentData.data.created_utc * 1000).toString()}` },
+					timePassedSince(commentData.data.created_utc)
 				),
 				makeElement("span", null, "ago"),
 					...(commentData.data["edited"] ? [
@@ -205,7 +212,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 					[makeElement("img", { "src": "/img/locked.svg", alt: "locked" })]
 				)
 			]),
-			makeElement("div", { class: "content" }, commentData.data["body_html"], true)
+			makeElement("div", { class: "content" }, commentData.data.body_html, true)
 		]);
 
 		emojiFlagsToImages(mainPart);
@@ -235,8 +242,8 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 			this.childComments.appendChild(this.replyForm);
 		}
 
-		if (commentData.data["replies"] && commentData.data["replies"]["data"]["children"]) {
-			for (const comment of commentData.data["replies"]["data"]["children"]) {
+		if (commentData.data.replies && commentData.data.replies.data.children) {
+			for (const comment of commentData.data.replies.data.children) {
 				this.childComments.appendChild(new Ph_Comment(comment, true, false, post));
 			}
 		}
@@ -258,7 +265,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 		this.classList.add("isReplying");
 	}
 
-	async loadMoreComments(children: string[], id: string): Promise<RedditApiType[]> {
+	async loadMoreComments(children: string[], id: string): Promise<RedditCommentObj[]> {
 		const childData = await loadMoreComments(
 			children,
 			this.postFullName,
@@ -268,30 +275,30 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 
 		// reddit returns here just an array of all comments, regardless whether they are parents/children of each other
 		// therefore we have to assemble the comment tree with all the relations ourselves -_-
-		let commentTree: RedditApiType[] = [];
-		for (const comment of childData["json"]["data"]["things"] as RedditApiType[]) {
+		let commentTree: RedditCommentObj[] = [];
+		for (const comment of childData.json.data.things) {
 			if (!this.tryAttachToCommentTree(commentTree, comment))
-				commentTree.push(comment);
+				commentTree.push(comment as RedditCommentObj);
 		}
 
 		return commentTree;
 	}
 
-	private tryAttachToCommentTree(tree: RedditApiType[], commentData): boolean {
+	private tryAttachToCommentTree(tree: RedditCommentObj[], commentData): boolean {
 		for (const elem of tree) {
-			if (elem.data["name"] === commentData.data["parent_id"]) {
-				if (!elem.data["replies"] || elem.data["replies"]["kind"] !== "Listing") {
-					elem.data["replies"] = <RedditApiType> {
+			if (elem.data.name === commentData.data["parent_id"]) {
+				if (!elem.data.replies || elem.data.replies.kind !== "Listing") {
+					elem.data.replies = <RedditListingObj<RedditCommentObj>> {
 						kind: "Listing",
 						data: {
 							children: []
 						}
 					};
 				}
-				elem.data["replies"]["data"]["children"].push(commentData);
+				elem.data.replies.data.children.push(commentData);
 				return true;
-			} else if (elem.data["replies"] && elem.data["replies"]["kind"] === "Listing") {
-				if (this.tryAttachToCommentTree(elem.data["replies"]["data"]["children"], commentData)) {
+			} else if (elem.data.replies && elem.data.replies.kind === "Listing") {
+				if (this.tryAttachToCommentTree(elem.data.replies.data.children as RedditCommentObj[], commentData)) {
 					return true;
 				}
 			}

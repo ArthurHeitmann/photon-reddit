@@ -1,9 +1,10 @@
 import ViewsStack from "../../../historyState/viewsStack";
-import { HistoryState, RedditApiType } from "../../../types/misc";
+import { HistoryState } from "../../../types/misc";
+import { RedditApiObj } from "../../../types/redditTypes";
 import { hasParams } from "../../../utils/utils";
 import Ph_Post from "../../post/post";
 import PostDoubleLink from "../../post/postDoubleLink/postDoubleLink";
-import Ph_PostAndComments from "../../postAndComments/postAndComments";
+import Ph_PostAndComments, { PostCommentsListings } from "../../postAndComments/postAndComments";
 import { Ph_ViewState } from "../viewState";
 
 /**
@@ -28,8 +29,8 @@ export default class Ph_CommentsViewStateLoader extends Ph_ViewState {
 		this.appendChild(this.postAndComments);
 	}
 
-	finishWith(postAndCommentsData: RedditApiType[]) {
-		this.postAndComments.initWithData(postAndCommentsData);
+	finishWith(postAndCommentsData: RedditApiObj[]) {
+		this.postAndComments.initWithData(postAndCommentsData as PostCommentsListings);
 	}
 
 	error() {

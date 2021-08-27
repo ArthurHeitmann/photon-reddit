@@ -11,7 +11,7 @@ export function clearAllOldData() {
 	for (const localStorageKey in localStorage) {
 		if (!/^\/(r|u|user)\/[^/]+/.test(localStorageKey))		// skip if not feed info, must be /r/..., /u/..., /user/...
 			continue;
-		let feedInfo: StoredData;
+		let feedInfo: StoredData<any>;
 		try {
 			feedInfo = JSON.parse(localStorage[localStorageKey]);
 		}

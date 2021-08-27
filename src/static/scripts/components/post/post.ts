@@ -13,7 +13,7 @@ import {
 } from "../../api/redditApi";
 import { pushLinkToHistoryComb, PushType } from "../../historyState/historyStateManager";
 import ViewsStack from "../../historyState/viewsStack";
-import { RedditApiData, RedditApiType } from "../../types/misc";
+import { FlairApiData, RedditApiObj, RedditListingObj, RedditPostObj } from "../../types/redditTypes";
 import Votable from "../../types/votable";
 import { hasPostsBeenSeen, markPostAsSeen, thisUser } from "../../utils/globals";
 import { emojiFlagsToImages, escADQ, escHTML, getLoadingIcon } from "../../utils/htmlStatics";
@@ -25,15 +25,14 @@ import {
 	isObjectEmpty,
 	makeElement,
 	numberToShort as numberToShort,
-	numberToShortStr,
-	timePassedSinceStr
+	timePassedSince
 } from "../../utils/utils";
 import Ph_FeedItem from "../feed/feedItem/feedItem";
 import { globalSettings, NsfwPolicy, PhotonSettings } from "../global/photonSettings/photonSettings";
 import Ph_AwardsInfo from "../misc/awardsInfo/awardsInfo";
 import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown";
 import Ph_DropDownEntry, { DropDownActionData, DropDownEntryParam } from "../misc/dropDown/dropDownEntry/dropDownEntry";
-import Ph_Flair, { FlairApiData } from "../misc/flair/flair";
+import Ph_Flair from "../misc/flair/flair";
 import Ph_Toast, { Level } from "../misc/toast/toast";
 import Ph_VoteButton from "../misc/voteButton/voteButton";
 import Ph_PostBody from "./postBody/postBody";
@@ -69,25 +68,25 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 	haveFlairsLoaded = false;
 	postFlair: Ph_Flair;
 
-	constructor(postData: RedditApiType, isInFeed: boolean, feedUrl?: string) {
-		super(postData?.data["name"], postData?.data["permalink"], isInFeed);
+	constructor(postData: RedditPostObj, isInFeed: boolean, feedUrl?: string) {
+		super(postData?.data.name, postData?.data.permalink, isInFeed);
 		if (!hasParams(arguments)) return;
 
 		if (postData.kind !== "t3")
 			throw "Invalid comment data type";
 
-		this.fullName = postData.data["name"];
-		this.currentVoteDirection = voteDirectionFromLikes(postData.data["likes"]);
-		this.totalVotes = parseInt(postData.data["ups"]) + -parseInt(this.currentVoteDirection);
-		this.isSaved = postData.data["saved"];
-		this.url = postData.data["url"];
+		this.fullName = postData.data.name;
+		this.currentVoteDirection = voteDirectionFromLikes(postData.data.likes);
+		this.totalVotes = postData.data.ups + -parseInt(this.currentVoteDirection);
+		this.isSaved = postData.data.saved;
+		this.url = postData.data.url;
 		this.feedUrl = feedUrl;
-		this.permalink = postData.data["permalink"];
-		this.postTitle = postData.data["title"];
-		this.isPinned = postData.data["stickied"];
-		this.sendReplies = postData.data["send_replies"];
-		this.isNsfw = postData.data["over_18"];
-		this.isSpoiler = postData.data["spoiler"];
+		this.permalink = postData.data.permalink;
+		this.postTitle = postData.data.title;
+		this.isPinned = postData.data.stickied;
+		this.sendReplies = postData.data.send_replies;
+		this.isNsfw = postData.data.over_18;
+		this.isSpoiler = postData.data.spoiler;
 		this.wasInitiallySeen = hasPostsBeenSeen(this.fullName);
 		this.classList.add("post");
 
@@ -138,9 +137,9 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			] }
 		];
 		this.postFlair = Ph_Flair.fromThingData(postData.data, "link");
-		if (thisUser && thisUser.name === postData.data["author"]) {
+		if (thisUser && thisUser.name === postData.data.author) {
 			const editEntries: DropDownEntryParam[] = [];
-			if (postData.data["is_self"])
+			if (postData.data.is_self)
 				editEntries.push({ label: "Edit Text", labelImgUrl: "/img/text.svg", onSelectCallback: this.editPost.bind(this) });
 			editEntries.push({ label: this.isNsfw ? "Unmark NSFW" : "Mark NSFW", labelImgUrl: "/img/18+.svg", onSelectCallback: this.toggleNsfw.bind(this) });
 			editEntries.push({ label: this.isSpoiler ? "Unmark Spoiler" : "Mark Spoiler", labelImgUrl: "/img/warning.svg", onSelectCallback: this.toggleSpoiler.bind(this) });
@@ -153,12 +152,12 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			dropDownEntries.push({ label: "Edit", labelImgUrl: "/img/edit.svg", nestedEntries: editEntries });
 			dropDownEntries.push({ label: "Delete", labelImgUrl: "/img/delete.svg", onSelectCallback: this.deletePostPrompt.bind(this) });
 		}
-		if (postData.data["num_crossposts"] > 0) {
+		if (postData.data.num_crossposts > 0) {
 			dropDownEntries.push({ label:
 				makeElement(
 					"a",
 					{ href: `${this.permalink.replace("comments", "duplicates")}`, class: "noStyle" },
-					`View ${postData.data["num_crossposts"]} Crossposts`
+					`View ${postData.data.num_crossposts} Crossposts`
 				),
 				labelImgUrl: "/img/shuffle.svg"
 			});
@@ -170,8 +169,8 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		const commentsLink = document.createElement("a");
 		commentsLink.className = "commentsLink transparentButtonAlt";
 		commentsLink.href = this.permalink;
-		commentsLink.setAttribute("data-tooltip", postData.data["num_comments"]);
-		const numbOfComments = numberToShortStr(postData.data["num_comments"]);
+		commentsLink.setAttribute("data-tooltip", postData.data.num_comments.toString());
+		const numbOfComments = numberToShort(postData.data.num_comments);
 		let commentsSizeClass = "";
 		if (numbOfComments.length > 3) {
 			commentsSizeClass = " small";
@@ -185,13 +184,13 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		`;
 		actionWrapper.append(commentsLink);
 
-		this.isLocked = postData.data["locked"] || postData.data["archived"];
-		const lockedReason = postData.data["locked"] ? "Locked" : "Archived";
+		this.isLocked = postData.data.locked || postData.data.archived;
+		const lockedReason = postData.data.locked ? "Locked" : "Archived";
 		let userAdditionClasses = "";
-		if (postData.data["distinguished"] === "moderator") {
+		if (postData.data.distinguished === "moderator") {
 			userAdditionClasses += " mod";
 		}
-		else if (postData.data["distinguished"] === "admin") {
+		else if (postData.data.distinguished === "admin") {
 			userAdditionClasses += " admin";
 		}
 		const mainPart = document.createElement("div");
@@ -201,19 +200,19 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 				<div class="top flex">
 					${ this.isPinned ? `<img class="pinned" src="/img/pin.svg" alt="pinned" draggable="false">` : "" }
 					<span>Posted in</span>
-					<a href="/${escADQ(postData.data["subreddit_name_prefixed"])}" class="subreddit">
-						<span>${escHTML(postData.data["subreddit_name_prefixed"])}</span>
+					<a href="/${escADQ(postData.data.subreddit_name_prefixed)}" class="subreddit">
+						<span>${escHTML(postData.data.subreddit_name_prefixed)}</span>
 					</a>
 					<span>by</span>
-					<a href="/user/${escADQ(postData.data["author"])}" class="user${userAdditionClasses}">
-						<span>u/${escHTML(postData.data["author"])}</span>
-						${ postData.data["author_cakeday"] ? `<img src="/img/cake.svg" class="cakeDay" alt="cake day">` : "" }
+					<a href="/user/${escADQ(postData.data.author)}" class="user${userAdditionClasses}">
+						<span>u/${escHTML(postData.data.author)}</span>
+						${ postData.data.author_cakeday ? `<img src="/img/cake.svg" class="cakeDay" alt="cake day">` : "" }
 					</a>
-					<span class="time" data-tooltip="${new Date(postData.data["created_utc"] * 1000).toString()}">${timePassedSinceStr(postData.data["created_utc"])}</span>
+					<span class="time" data-tooltip="${new Date(postData.data.created_utc * 1000).toString()}">${timePassedSince(postData.data.created_utc)}</span>
 					<span>ago</span>
-					${ postData.data["edited"]
+					${ postData.data.edited
 					? `	<span>|</span><span>edited</span> 
-						<span class="time" data-tooltip="${new Date(postData.data["edited"] * 1000).toString()}">${timePassedSinceStr(postData.data["edited"])}</span>
+						<span class="time" data-tooltip="${new Date(postData.data.edited * 1000).toString()}">${timePassedSince(postData.data.edited)}</span>
 						<span>ago</span>`
 					: ""
 					}
@@ -230,47 +229,47 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			</div>
 		`;
 		emojiFlagsToImages(mainPart);
-		if (postData.data["all_awardings"] && postData.data["all_awardings"].length > 0)
-			mainPart.$class("flairWrapper")[0].insertAdjacentElement("beforebegin", new Ph_AwardsInfo(postData.data["all_awardings"]));
-		if (postData.data["crosspost_parent_list"]?.length > 0) {
-			const crosspostData: RedditApiData = postData.data["crosspost_parent_list"][0];
+		if (postData.data.all_awardings && postData.data.all_awardings.length > 0)
+			mainPart.$class("flairWrapper")[0].insertAdjacentElement("beforebegin", new Ph_AwardsInfo(postData.data.all_awardings));
+		if (postData.data.crosspost_parent_list?.length > 0) {
+			const crosspostData = postData.data.crosspost_parent_list[0];
 			const miniPost = document.createElement("div");
 			miniPost.className = "miniPost";
 			miniPost.innerHTML = `
-				<a href="${escADQ(crosspostData["permalink"])}" class="miniBackgroundLink"></a>
+				<a href="${escADQ(crosspostData.permalink)}" class="miniBackgroundLink"></a>
 				<div class="postSummary">
 					<div class="leftItems">
 						<div>
 							<img src="/img/downArrow.svg" class="votesImg" alt="votes">
-							<span>${numberToShort(crosspostData["ups"])}</span>
+							<span>${numberToShort(crosspostData.ups)}</span>
 						</div>
 						<div>
 							<img src="/img/comments.svg" class="commentsImg" alt="comments">
-							<span>${numberToShort(crosspostData["num_comments"])}</span>
+							<span>${numberToShort(crosspostData.num_comments)}</span>
 						</div>
 						
 					</div>
 					<div>
 						<div class="info">
 							<span>Crossposted from</span>
-							<a href="/${escADQ(crosspostData["subreddit_name_prefixed"])}" class="subreddit">
-								<span>${escHTML(crosspostData["subreddit_name_prefixed"])}</span>
+							<a href="/${escADQ(crosspostData.subreddit_name_prefixed)}" class="subreddit">
+								<span>${escHTML(crosspostData.subreddit_name_prefixed)}</span>
 							</a>
 							<span>by</span>
-							<a href="/user/${escADQ(crosspostData["author"])}" class="user">
-								<span>u/${escHTML(crosspostData["author"])}</span>
-								${ crosspostData["author_cakeday"] ? `<img src="/img/cake.svg" class="cakeDay" alt="cake day">` : "" }
+							<a href="/user/${escADQ(crosspostData.author)}" class="user">
+								<span>u/${escHTML(crosspostData.author)}</span>
+								${ crosspostData.author_cakeday ? `<img src="/img/cake.svg" class="cakeDay" alt="cake day">` : "" }
 							</a>
-							<span class="time" data-tooltip="${new Date(crosspostData["created_utc"] * 1000).toString()}">${timePassedSinceStr(crosspostData["created_utc"])}</span>
+							<span class="time" data-tooltip="${new Date(crosspostData.created_utc * 1000).toString()}">${timePassedSince(crosspostData.created_utc)}</span>
 							<span>ago</span>
-							${ crosspostData["edited"]
+							${ crosspostData.edited
 								? `	<span>|</span><span>edited</span> 
-									<span class="time" data-tooltip="${new Date(crosspostData["edited"] * 1000).toString()}">${timePassedSinceStr(crosspostData["edited"])}</span>
+									<span class="time" data-tooltip="${new Date(crosspostData.edited * 1000).toString()}">${timePassedSince(crosspostData.edited)}</span>
 									<span>ago</span>`
 								: ""
 							}
 						</div>
-						<div class="title">${emojiFlagsToImages(escHTML(crosspostData["title"]))}</div>
+						<div class="title">${emojiFlagsToImages(escHTML(crosspostData.title))}</div>
 					</div>
 				</div>
 			`;
@@ -316,12 +315,12 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			this.addEventListener("ph-almost-visible", () => this.initPostBody(postData), { once: true });
 	}
 
-	private initPostBody(postData: RedditApiType) {
+	private initPostBody(postData: RedditPostObj) {
 		try {
 			this.postBody.init(postData);
 		}
 		catch (e) {
-			console.error(`Error making post for ${postData.data["permalink"]}`);
+			console.error(`Error making post for ${postData.data.permalink}`);
 			console.error(e);
 			new Ph_Toast(Level.error, "Error making post");
 		}
@@ -598,7 +597,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			return;
 		}
 
-		const newPostData: RedditApiType[] = await redditApiRequest(this.permalink, [["limit", "1"]], true);
+		const newPostData: RedditListingObj<RedditApiObj>[] = await redditApiRequest(this.permalink, [["limit", "1"]], true);
 		const postData = newPostData[0].data.children[0].data;
 		const newFlair = Ph_Flair.fromThingData(postData, "link");
 		this.postFlair.insertAdjacentElement("afterend", newFlair);

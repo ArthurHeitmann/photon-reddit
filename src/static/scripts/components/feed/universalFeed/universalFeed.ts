@@ -1,6 +1,13 @@
 import { redditApiRequest } from "../../../api/redditApi";
 import ViewsStack from "../../../historyState/viewsStack";
-import { RedditApiType } from "../../../types/misc";
+import {
+	RedditApiObj,
+	RedditCommentObj,
+	RedditListingObj,
+	RedditMessageObj,
+	RedditPostData,
+	RedditPostObj
+} from "../../../types/redditTypes";
 import { fakeSubreddits } from "../../../utils/consts";
 import { escHTML, getLoadingIcon } from "../../../utils/htmlStatics";
 import { elementWithClassInTree } from "../../../utils/htmlStuff";
@@ -45,7 +52,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 	private currentlyVisibleItemScrollTop: number;
 	private lastWindowSize = [window.innerWidth, window.innerHeight]
 
-	constructor(posts: RedditApiType, requestUrl: string) {
+	constructor(posts: RedditListingObj<RedditApiObj>, requestUrl: string) {
 		super();
 		if (!hasParams(arguments)) return;
 
@@ -65,8 +72,8 @@ export default class Ph_UniversalFeed extends HTMLElement {
 		const observer = new MutationObserver((mutationsList: MutationRecord[], observer) => {
 			for (const mutation of mutationsList) {
 				for (const addedNode of mutation.addedNodes as NodeListOf<Ph_FeedItem>) {
-					if (addedNode["itemId"]) {
-						this.absoluteFirst = addedNode["itemId"];
+					if (addedNode.itemId) {
+						this.absoluteFirst = addedNode.itemId;
 						this.currentlyVisibleItem = addedNode;
 						this.currentlyVisibleItemScrollTop = addedNode.getBoundingClientRect().top;
 						observer.disconnect();
@@ -145,7 +152,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 		data.setButtonLabel(getLoadingIcon());
 		this.requestUrl = this.requestUrl.replace(/^(\/message)\/[^/#?]*/i, `$1/${section}`);	// /message/<old> --> /message/<new>
 		try {
-			const sectionItems: RedditApiType = await redditApiRequest(
+			const sectionItems: RedditListingObj<RedditMessageObj> = await redditApiRequest(
 				this.requestUrl,
 				[],
 				false
@@ -163,25 +170,25 @@ export default class Ph_UniversalFeed extends HTMLElement {
 		}
 	}
 
-	makeFeedItem(itemData: RedditApiType, totalItemCount: number): HTMLElement {
+	makeFeedItem(itemData: RedditApiObj, totalItemCount: number): HTMLElement {
 		switch (itemData.kind) {
 			case "t3":
-				const post = new Ph_Post(itemData, true, this.requestUrl);
+				const post = new Ph_Post(itemData as RedditPostObj, true, this.requestUrl);
 				if (!this.allPostFullNames.includes(post.fullName))
 					this.allPostFullNames.push(post.fullName);
 				return post;
 			case "t1":
-				return new Ph_Comment(itemData, false, true);
+				return new Ph_Comment(itemData as RedditCommentObj, false, true);
 			case "t4":
-				return new Ph_Message(itemData, totalItemCount !== 1);
+				return new Ph_Message(itemData as RedditMessageObj, totalItemCount !== 1);
 			default:
 				new Ph_Toast(Level.error, `Unknown feed item "${escHTML(itemData.kind)}"`);
 				throw `What is this feed item? ${JSON.stringify(itemData, null, 4)}`;
 		}
 	}
 
-	shouldAddFeedItem(itemData: RedditApiType): boolean {
-		return itemData.kind !== "t3" || !this.allPostFullNames.includes(itemData.data["name"]);
+	shouldAddFeedItem(itemData: RedditApiObj): boolean {
+		return itemData.kind !== "t3" || !this.allPostFullNames.includes((itemData.data as RedditPostData).name);
 	}
 
 	/**
@@ -292,7 +299,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			param = ["after",  this.afterData];
 		else
 			param = ["before", this.beforeData];
-		const posts: RedditApiType = await redditApiRequest(this.requestUrl, [param], false);
+		const posts: RedditListingObj<RedditApiObj> = await redditApiRequest(this.requestUrl, [param], false);
 
 		if (await waitForFullScreenExit())
 			await sleep(100);
@@ -337,7 +344,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 		this.checkIfFeedEmpty();
 	}
 
-	replaceChildren(posts: RedditApiType[], beforeData: string, afterData: string) {
+	replaceChildren(posts: RedditApiObj[], beforeData: string, afterData: string) {
 		this.innerText = "";
 		this.allPostFullNames = [];
 		this.beforeData = beforeData;

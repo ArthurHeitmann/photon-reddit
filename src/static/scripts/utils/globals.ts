@@ -11,7 +11,7 @@
 
 import { getMyMultis, redditApiRequest } from "../api/redditApi";
 import Ph_UserDropDown from "../components/global/userDropDown/userDropDown";
-import { RedditApiType } from "../types/misc";
+import { RedditMultiObj, RedditUserInfo } from "../types/redditTypes";
 import { $class } from "./htmlStatics";
 import { SubredditManager } from "./subredditManager";
 import { nameOf } from "./utils";
@@ -22,8 +22,8 @@ export function setIsLoggedIn(newIsLoggedIn: boolean): boolean {
 	return isLoggedIn = newIsLoggedIn;
 }
 
-export interface StoredData {
-	data: any,
+export interface StoredData<T> {
+	data: T,
 	lastUpdatedMsUTC: number
 }
 
@@ -39,7 +39,7 @@ export class User {
 	name: string;
 	subreddits = new SubredditManager();
 	multireddits: MultiReddit[] = [];
-	multiredditsData: RedditApiType[] = [];
+	multiredditsData: RedditMultiObj[] = [];
 	private inboxUnreadIds: Set<string> = new Set();
 	static refreshEveryNMs = 1000 * 60 * 5;			// 5m
 
@@ -54,8 +54,8 @@ export class User {
 
 	private async tryLoadFromLocalStorage(userProp: string, lsProp, onFails: () => Promise<void>) {
 		try {
-			const storedShort: StoredData = JSON.parse(localStorage[lsProp]);
-			const storedData: StoredData = JSON.parse(localStorage[lsProp + "Data"]);
+			const storedShort: StoredData<any> = JSON.parse(localStorage[lsProp]);
+			const storedData: StoredData<any> = JSON.parse(localStorage[lsProp + "Data"]);
 			this[userProp] = storedShort.data;
 			this[userProp + "Data"] = storedData.data;
 			if (Date.now() - storedShort.lastUpdatedMsUTC > User.refreshEveryNMs)
@@ -67,15 +67,15 @@ export class User {
 
 	/** fetched by auth.ts to verify that the access token is valid */
 	async fetchUser(): Promise<boolean> {
-		const userData = await redditApiRequest("/api/v1/me", [], false);
+		const userData: RedditUserInfo = await redditApiRequest("/api/v1/me", [], false);
 		if ("error" in userData)
 			return false;
-		thisUser.name = userData["name"] || "";
+		thisUser.name = userData.name || "";
 		return true;
 	}
 
 	private async fetchMultis() {
-		const multis = await getMyMultis() as RedditApiType[];
+		const multis = await getMyMultis();
 		this.multiredditsData = multis;
 		this.multireddits = <MultiReddit[]> multis
 				.map(multi => multi.data)																// simplify, by only using the data property
@@ -83,11 +83,11 @@ export class User {
 				.map(multi => multi.filter(entries => Object.keys(_MultiReddit).includes(entries[0])))	// remove all entries that are not part of MultiReddit
 				.map(filteredEntries => Object.fromEntries(filteredEntries))							// join again
 
-		localStorage.multis = JSON.stringify(<StoredData> {
+		localStorage.multis = JSON.stringify(<StoredData<MultiReddit[]>> {
 			lastUpdatedMsUTC: Date.now(),
 			data: this.multireddits
 		});
-		localStorage.multisData = JSON.stringify(<StoredData> {
+		localStorage.multisData = JSON.stringify(<StoredData<RedditMultiObj[]>> {
 			lastUpdatedMsUTC: Date.now(),
 			data: this.multiredditsData
 		});

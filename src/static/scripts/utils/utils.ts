@@ -3,7 +3,7 @@
  */
 
 import Ph_Toast, { Level } from "../components/misc/toast/toast";
-import { RedditApiData } from "../types/misc";
+import { RedditMultiInfo, RedditUserInfo, SubredditInfoBase } from "../types/redditTypes";
 import { fakeSubreddits } from "./consts";
 
 /** */
@@ -465,16 +465,16 @@ export function isFakeSubreddit(subreddit: string): boolean {
 	return (new RegExp(fakeSubreddits.join("|"), "i")).test(subreddit)
 }
 
-export function getSubredditIconUrl(subData: RedditApiData): string {
-	return subData["community_icon"] || subData["icon_img"] || "/img/rSlash.svg";
+export function getSubredditIconUrl(subData: SubredditInfoBase): string {
+	return subData.community_icon || subData.icon_img || "/img/rSlash.svg";
 }
 
-export function getUserIconUrl(userData: RedditApiData): string {
-	return userData["subreddit"]?.["icon_img"] || userData["icon_img"] || "/img/uSlash.svg";
+export function getUserIconUrl(userData: RedditUserInfo): string {
+	return userData.subreddit.icon_img || userData.icon_img || "/img/uSlash.svg";
 }
 
-export function getMultiIconUrl(multiData: RedditApiData): string {
-	return multiData["icon_url"];
+export function getMultiIconUrl(multiData: RedditMultiInfo): string {
+	return multiData.icon_url;
 }
 
 export function clientXOfEvent(e: MouseEvent | TouchEvent) {

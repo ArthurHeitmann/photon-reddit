@@ -1,4 +1,4 @@
-import { RedditApiType } from "../../types/misc";
+import { RedditWikiObj } from "../../types/redditTypes";
 import { emojiFlagsToImages } from "../../utils/htmlStatics";
 import { elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff";
 import { hasParams } from "../../utils/utils";
@@ -10,13 +10,13 @@ import { Ph_ViewState } from "../viewState/viewState";
  * A simple wiki page
  */
 export default class Ph_Wiki extends HTMLElement {
-	constructor(wikiData: RedditApiType) {
+	constructor(wikiData: RedditWikiObj) {
 		super();
 		if (!hasParams(arguments)) return;
 
 		this.className = "wiki";
 
-		this.innerHTML = wikiData.data["content_html"];
+		this.innerHTML = wikiData.data.content_html;
 		emojiFlagsToImages(this);
 		linksToSpa(this, true);
 	}

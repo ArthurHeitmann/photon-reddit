@@ -3,12 +3,12 @@ import ViewsStack from "../../../historyState/viewsStack";
 import {
 	NonSortableUserSections,
 	PostSorting,
-	RedditApiType,
 	SortPostsOrder,
 	SortPostsTimeFrame,
 	SortUserPostsOrder,
 	UserSection
 } from "../../../types/misc";
+import { RedditApiObj, RedditListingObj } from "../../../types/redditTypes";
 import { isLoggedIn, thisUser } from "../../../utils/globals";
 import { getLoadingIcon } from "../../../utils/htmlStatics";
 import { extractPath, extractQuery, hasParams, splitPathQuery } from "../../../utils/utils";
@@ -151,7 +151,7 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 		const paramsStr = params.toString();
 		const newUrl = path + (paramsStr ? `?${paramsStr}` : "");
 		this.feed.requestUrl = newUrl;
-		const request: RedditApiType = await redditApiRequest(newUrl, [], false);
+		const request: RedditListingObj<RedditApiObj> = await redditApiRequest(newUrl, [], false);
 		if (request["error"]) {
 			new Ph_Toast(Level.error, "Error making request to reddit");
 			throw `Error making sort request: ${JSON.stringify(request)}`;
@@ -169,7 +169,7 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 		const isSortable = !NonSortableUserSections.includes(section);
 		this.feed.requestUrl = `/user/${userName}/${section}${isSortable ? query : ""}`;
 		try {
-			const sectionItems: RedditApiType = await redditApiRequest(
+			const sectionItems: RedditListingObj<RedditApiObj> = await redditApiRequest(
 				this.feed.requestUrl,
 				[],
 				false

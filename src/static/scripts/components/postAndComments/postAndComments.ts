@@ -1,6 +1,7 @@
 import { redditApiRequest } from "../../api/redditApi";
 import ViewsStack from "../../historyState/viewsStack";
-import { RedditApiType, SortCommentsOrder, SortCommentsOrderNamed } from "../../types/misc";
+import { SortCommentsOrder, SortCommentsOrderNamed } from "../../types/misc";
+import { RedditCommentObj, RedditListingObj, RedditPostObj } from "../../types/redditTypes";
 import { getLoadingIcon } from "../../utils/htmlStatics";
 import { elementWithClassInTree } from "../../utils/htmlStuff";
 import { extractPath, extractQuery, hasHTML, hasParams } from "../../utils/utils";
@@ -15,6 +16,8 @@ import Ph_Toast, { Level } from "../misc/toast/toast";
 import Ph_Post from "../post/post";
 import { Ph_ViewState } from "../viewState/viewState";
 
+export type PostCommentsListings = [RedditListingObj<RedditPostObj>, RedditListingObj<RedditCommentObj>];
+
 /**
  * A Ph_Post & Ph_CommentsFeed; Also sets user, & sub info + sorter in the header
  */
@@ -28,7 +31,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 	areHeaderElementsSet = false;
 	firstTimeConnected = false;
 
-	constructor(data: RedditApiType[], postHint?: { post: Ph_Post, subredditPrefixed: string, userPrefixed: string }) {
+	constructor(data: PostCommentsListings, postHint?: { post: Ph_Post, subredditPrefixed: string, userPrefixed: string }) {
 		super();
 		if (!hasParams(arguments)) return;
 
@@ -39,8 +42,8 @@ export default class Ph_PostAndComments extends HTMLElement {
 			this.userPrefixed = postHint.userPrefixed;
 		}
 		else {
-			this.subredditPrefixed = data[0].data.children[0].data["subreddit_name_prefixed"];
-			this.userPrefixed = `u/${data[0].data.children[0].data["author"]}`;
+			this.subredditPrefixed = data[0].data.children[0].data.subreddit_name_prefixed;
+			this.userPrefixed = `u/${data[0].data.children[0].data.author}`;
 		}
 
 		// post
@@ -64,7 +67,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 			this.append(this.tmpLoadingIcon = getLoadingIcon())
 	}
 
-	initWithData(data: RedditApiType[]) {
+	initWithData(data: PostCommentsListings) {
 		if (!hasParams(arguments)) return;
 
 		// write comment form
@@ -77,7 +80,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 		}
 
 		// comments
-		this.comments = new Ph_CommentsFeed(data[1], this.post, data[0].data.children[0].data["suggested_sort"]);
+		this.comments = new Ph_CommentsFeed(data[1], this.post, data[0].data.children[0].data.suggested_sort);
 		this.append(this.comments);
 
 		// highlighted comment
@@ -162,7 +165,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 
 		try {
 			const newUrl = `${path}?${params.toString()}`;
-			const newComments: RedditApiType[] = await redditApiRequest(newUrl, [], false);
+			const newComments: PostCommentsListings = await redditApiRequest(newUrl, [], false);
 			if (newComments["error"])
 				throw `Sorting error (${JSON.stringify(newComments, null, 4)})`;
 

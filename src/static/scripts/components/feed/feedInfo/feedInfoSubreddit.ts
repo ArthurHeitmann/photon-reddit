@@ -7,55 +7,47 @@ import {
 	getSubUserFlairs,
 	setUserFlair
 } from "../../../api/redditApi";
-import { RedditApiType } from "../../../types/misc";
+import {
+	FlairApiData,
+	RedditSubredditObj,
+	SubredditDetails,
+	SubredditModerator,
+	SubredditRule
+} from "../../../types/redditTypes";
 import { isLoggedIn, StoredData, thisUser } from "../../../utils/globals";
 import { emojiFlagsToImages, escADQ, escHTML } from "../../../utils/htmlStatics";
 import { linksToSpa } from "../../../utils/htmlStuff";
-import { makeElement, numberToShort } from "../../../utils/utils";
+import { getSubredditIconUrl, makeElement, numberToShort } from "../../../utils/utils";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown";
 import { DropDownActionData, DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry";
-import Ph_Flair, { FlairApiData } from "../../misc/flair/flair";
+import Ph_Flair from "../../misc/flair/flair";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
 import Ph_FeedInfo from "./feedInfo";
 
-interface SubredditRule {
-	kind: string,
-	description: string,
-	short_name: string,
-	violation_reason: string
-	created_utc: number,
-	priority: number,
-	description_html: string
+interface AllSubData extends SubredditDetails {
+	rules: SubredditRule[],
+	mods: SubredditModerator[],
+	flairs: FlairApiData[]
 }
 
-interface SubredditModerator {
-	name: string,
-	author_flair_text: string,
-	mod_permissions: string[],
-	date: number,
-	rel_id: string,
-	id: string,
-	author_flair_css_class: string
-}
-
-export default class Ph_FeedInfoSubreddit extends Ph_FeedInfo {
+export default class Ph_FeedInfoSubreddit extends Ph_FeedInfo<AllSubData> {
 	 async loadInfo() {
-		let feedAbout: RedditApiType;
+		let feedAbout: RedditSubredditObj;
 		let rules: SubredditRule[];
 		let mods: SubredditModerator[];
 		let flairs: FlairApiData[] = [];
 		try {
 			feedAbout = await getSubInfo(this.feedUrl);
-			if (feedAbout["error"] || !(feedAbout["kind"] && feedAbout["data"]))
+			if (feedAbout["error"] || !(feedAbout.kind && feedAbout.data))
 				throw `Invalid about response ${JSON.stringify(feedAbout)}`;
 			const tmpRules = await getSubRules(this.feedUrl);
-			if (tmpRules["error"] || !tmpRules["rules"])
+			if (tmpRules["error"] || !tmpRules.rules)
 				throw `Invalid rules response ${JSON.stringify(tmpRules)}`;
-			rules = tmpRules["rules"];
+			rules = tmpRules.rules;
 			let tmpMods = await getSubModerators(this.feedUrl);
-			if (tmpMods["error"] || !(tmpMods["kind"] === "UserList" && tmpMods["data"]))
+			if (tmpMods["error"] || !(tmpMods.kind === "UserList" && tmpMods.data))
 				tmpMods = { data: { children: [] } };
-			mods = tmpMods["data"]["children"];
+			mods = tmpMods.data.children;
 			if (isLoggedIn)
 				flairs = await getSubUserFlairs(this.feedUrl);
 		} catch (e) {
@@ -63,10 +55,12 @@ export default class Ph_FeedInfoSubreddit extends Ph_FeedInfo {
 			console.error(`Error getting subreddit info for ${this.feedUrl}`);
 			console.error(e);
 		}
-		this.loadedInfo.data = feedAbout.data;
-		this.loadedInfo.data.rules = rules;
-		this.loadedInfo.data.mods = mods;
-		this.loadedInfo.data.flairs = flairs;
+		this.loadedInfo.data = {
+			...feedAbout.data as SubredditDetails,
+			rules: rules,
+			mods: mods,
+			flairs: flairs,
+		};
 		this.loadedInfo.lastUpdatedMsUTC = Date.now();
 		this.saveInfo();
 	}
@@ -76,13 +70,13 @@ export default class Ph_FeedInfoSubreddit extends Ph_FeedInfo {
 
 		this.appendChild(this.makeRefreshButton());
 
-		const bannerUrl = this.loadedInfo.data["banner_img"] || this.loadedInfo.data["banner_background_image"];
-		const bannerBgColor = this.loadedInfo.data["banner_background_color"] || this.loadedInfo.data["key_color"] || this.loadedInfo.data["primary_color"] || "#35b5e7";
+		const bannerUrl = this.loadedInfo.data.banner_img || this.loadedInfo.data.banner_background_image;
+		const bannerBgColor = this.loadedInfo.data.banner_background_color || this.loadedInfo.data.key_color || this.loadedInfo.data.primary_color || "#35b5e7";
 		this.makeBannerImage(bannerUrl, this, bannerBgColor);
 		const headerBar = document.createElement("div");
 		headerBar.className = "headerBar";
 		this.appendChild(headerBar);
-		const iconUrl = this.loadedInfo.data["community_icon"] || this.loadedInfo.data["icon_img"];
+		const iconUrl = getSubredditIconUrl(this.loadedInfo.data);
 		if (iconUrl) {
 			const profileImg = document.createElement("img");
 			profileImg.src = iconUrl;
@@ -97,17 +91,17 @@ export default class Ph_FeedInfoSubreddit extends Ph_FeedInfo {
 		overviewBar.appendChild(subActionsWrapper);
 		const subscribeButton = document.createElement("button");
 		subscribeButton.className = "subscribeButton button";
-		subscribeButton.innerText = thisUser.subreddits.isSubscribedTo(this.loadedInfo.data["display_name"]) ? "Unsubscribe" : "Subscribe";
+		subscribeButton.innerText = thisUser.subreddits.isSubscribedTo(this.loadedInfo.data.display_name) ? "Unsubscribe" : "Subscribe";
 		subscribeButton.addEventListener("click", async () => {
-			const isCurrentlySubscribed = thisUser.subreddits.isSubscribedTo(this.loadedInfo.data["display_name"]);
+			const isCurrentlySubscribed = thisUser.subreddits.isSubscribedTo(this.loadedInfo.data.display_name);
 			subscribeButton.innerText = !isCurrentlySubscribed ? "Unsubscribe" : "Subscribe";
-			if (await thisUser.subreddits.setIsSubscribed(this.loadedInfo.data["name"], !isCurrentlySubscribed)) {
-				this.loadedInfo.data["user_is_subscriber"] = !isCurrentlySubscribed;
+			if (await thisUser.subreddits.setIsSubscribed(this.loadedInfo.data.name, !isCurrentlySubscribed)) {
+				this.loadedInfo.data.user_is_subscriber = !isCurrentlySubscribed;
 				new Ph_Toast(Level.success, "", { timeout: 2000 });
 			}
 			else {
-				subscribeButton.innerText = thisUser.subreddits.isSubscribedTo(this.loadedInfo.data["display_name"]) ? "Unsubscribe" : "Subscribe";
-				this.loadedInfo.data["user_is_subscriber"] = isCurrentlySubscribed;
+				subscribeButton.innerText = thisUser.subreddits.isSubscribedTo(this.loadedInfo.data.display_name) ? "Unsubscribe" : "Subscribe";
+				this.loadedInfo.data.user_is_subscriber = isCurrentlySubscribed;
 				new Ph_Toast(Level.error, `Error subscribing to subreddit`, { timeout: 2000 });
 			}
 		});
@@ -133,13 +127,13 @@ export default class Ph_FeedInfoSubreddit extends Ph_FeedInfo {
 								new Ph_Toast(Level.error, escHTML(response["explanation"]), { timeout: 6000 });
 								return;
 							}
-							else if (!response["name"] || response["error"]) {
+							else if (!response.name || response["error"]) {
 								new Ph_Toast(Level.error, "Error Adding Sub to Multi", { timeout: 6000 });
 								return;
 							}
 							if (localStorage[multiPath.toLowerCase()]) {
 								// force reload on next load
-								const multiData: StoredData = JSON.parse(localStorage[multiPath.toLowerCase()]);
+								const multiData: StoredData<AllSubData> = JSON.parse(localStorage[multiPath.toLowerCase()]);
 								multiData.lastUpdatedMsUTC = 1;
 								localStorage[multiPath.toLowerCase()] = JSON.stringify(multiData);
 							}
@@ -150,11 +144,11 @@ export default class Ph_FeedInfoSubreddit extends Ph_FeedInfo {
 		}
 		if (this.loadedInfo.data.flairs.length > 0) {
 			dropDownEntries.push({
-				label: this.loadedInfo.data["user_flair_template_id"] ? Ph_Flair.fromThingData(this.loadedInfo.data, "user") : "Select User Flair",
+				label: this.loadedInfo.data.user_flair_template_id ? Ph_Flair.fromThingData(this.loadedInfo.data, "user") : "Select User Flair",
 				labelImgUrl: "/img/tag.svg",
 				nestedEntries:
-					[{ label: "No FLair", value: null, onSelectCallback: this.setSubFlair.bind(this) }].concat(
-						this.loadedInfo.data["flairs"].map((flair: FlairApiData) => {
+					[<DropDownEntryParam> { label: "No FLair", value: null, onSelectCallback: this.setSubFlair.bind(this) }].concat(
+						this.loadedInfo.data.flairs.map((flair: FlairApiData) => {
 							const flairElem = Ph_Flair.fromFlairApi(flair);
 							return <DropDownEntryParam> {
 								label: flairElem,
@@ -173,32 +167,32 @@ export default class Ph_FeedInfoSubreddit extends Ph_FeedInfo {
 		))
 			.$class("dropDownButton")[0].classList.add("transparentButtonAlt");
 		overviewBar.insertAdjacentHTML("beforeend", `
-			<div data-tooltip="${this.loadedInfo.data["subscribers"]}">
-				Subscribers: ${numberToShort(this.loadedInfo.data["subscribers"])}
+			<div data-tooltip="${this.loadedInfo.data.subscribers}">
+				Subscribers: ${numberToShort(this.loadedInfo.data.subscribers)}
 			</div>
-			<div data-tooltip="${this.loadedInfo.data["active_user_count"]}">
-				Online: ${numberToShort(this.loadedInfo.data["active_user_count"])} &nbsp — &nbsp; 
-				${(this.loadedInfo.data["active_user_count"] / this.loadedInfo.data["subscribers"] * 100).toFixed(1)} %
+			<div data-tooltip="${this.loadedInfo.data.active_user_count}">
+				Online: ${numberToShort(this.loadedInfo.data.active_user_count)} &nbsp — &nbsp; 
+				${(this.loadedInfo.data.active_user_count / this.loadedInfo.data.subscribers * 100).toFixed(1)} %
 			</div>
 		`);
 		headerBar.appendChild(overviewBar);
 		const title = document.createElement("h1");
 		title.className = "title";
-		title.innerText = this.loadedInfo.data["title"] || this.loadedInfo.data["display_name"];
+		title.innerText = this.loadedInfo.data.title || this.loadedInfo.data.display_name;
 		this.appendChild(title);
 
 		const description = document.createElement("div");
-		description.innerHTML = this.loadedInfo.data["description_html"];
+		description.innerHTML = this.loadedInfo.data.description_html;
 		emojiFlagsToImages(description);
 		const publicDescription = document.createElement("div");
-		publicDescription.innerHTML = this.loadedInfo.data["public_description_html"];
+		publicDescription.innerHTML = this.loadedInfo.data.public_description_html;
 		emojiFlagsToImages(publicDescription);
 		linksToSpa(publicDescription);
 		const rules = document.createElement("div");
 		rules.append(...this.makeRules());
 		linksToSpa(rules);
 		const miscText = document.createElement("div");
-		const createdDate = new Date(this.loadedInfo.data["created_utc"] * 1000);
+		const createdDate = new Date(this.loadedInfo.data.created_utc * 1000);
 		miscText.innerHTML = `
 			<div data-tooltip="${createdDate.toString()}">Created: ${createdDate.toDateString()}</div>
 			<div>Moderators:</div>

@@ -1,6 +1,7 @@
 import { redditApiRequest } from "../../../api/redditApi";
 import ViewsStack from "../../../historyState/viewsStack";
-import { RedditApiType, SortPostsTimeFrame, SortSearchOrder } from "../../../types/misc";
+import { SortPostsTimeFrame, SortSearchOrder } from "../../../types/misc";
+import { RedditApiObj, RedditListingObj } from "../../../types/redditTypes";
 import { getLoadingIcon } from "../../../utils/htmlStatics";
 import { extractQuery, hasParams, splitPathQuery } from "../../../utils/utils";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown";
@@ -80,7 +81,7 @@ export default class Ph_SearchFeedSorter extends HTMLElement {
 		const newUrl = path + (paramsStr ? `?${paramsStr}` : "");
 		ViewsStack.changeCurrentUrl(newUrl);
 		this.feed.requestUrl = newUrl;
-		const request: RedditApiType = await redditApiRequest(newUrl, [], false);
+		const request: RedditListingObj<RedditApiObj> = await redditApiRequest(newUrl, [], false);
 		if (request["error"]) {
 			new Ph_Toast(Level.error, "Error making request to reddit");
 			throw `Error making sort request: ${JSON.stringify(request)}`;

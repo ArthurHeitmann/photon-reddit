@@ -1,9 +1,9 @@
 import { comment, deleteMessage } from "../../api/redditApi";
-import { RedditApiType } from "../../types/misc";
+import { RedditMessageObj } from "../../types/redditTypes";
 import { thisUser } from "../../utils/globals";
 import { emojiFlagsToImages, escADQ, escHTML } from "../../utils/htmlStatics";
 import { linksToSpa } from "../../utils/htmlStuff";
-import { hasParams, timePassedSinceStr } from "../../utils/utils";
+import { hasParams, timePassedSince } from "../../utils/utils";
 import Ph_Readable from "../feed/feedItem/readable/readable";
 import Ph_MarkdownForm from "../misc/markdownForm/markdownForm";
 import Ph_Toast, { Level } from "../misc/toast/toast";
@@ -16,9 +16,9 @@ export default class Ph_Message extends Ph_Readable {
 	/** If in a message thread, this is the most recent message that wasn't sent by the current user */
 	lastMessageFromOther: Ph_Message;
 
-	constructor(messageData: RedditApiType, isInFeed: boolean, isReply: boolean = false) {
-		super(messageData.data["name"], isInFeed ? `/message/messages/${messageData.data["id"]}` : null, !isReply,
-			messageData.data["dest"] === thisUser.name, !messageData.data["new"]);
+	constructor(messageData: RedditMessageObj, isInFeed: boolean, isReply: boolean = false) {
+		super(messageData.data.name, isInFeed ? `/message/messages/${messageData.data.id}` : null, !isReply,
+			messageData.data.dest === thisUser.name, !messageData.data.new);
 		if (!hasParams(arguments)) return;
 
 		this.fullName = this.itemId;
@@ -31,53 +31,53 @@ export default class Ph_Message extends Ph_Readable {
 		}
 
 		let userAdditionClasses = "";
-		if (messageData.data["distinguished"] === "moderator") {
+		if (messageData.data.distinguished === "moderator") {
 			userAdditionClasses += " mod";
-		} else if (messageData.data["distinguished"] === "admin") {
+		} else if (messageData.data.distinguished === "admin") {
 			userAdditionClasses += " admin";
 		}
 		const mainPart = document.createElement("div");
 		this.append(mainPart);
 		mainPart.classList.add("w100");
 		mainPart.innerHTML = `
-			<h3 class="subjectLine">${escHTML(messageData.data["subject"])}</h3>
+			<h3 class="subjectLine">${escHTML(messageData.data.subject)}</h3>
 			<div class="header flex">
 				${
-				messageData.data["author"]
+				messageData.data.author
 					? `	<span>from</span>
-						<a href="/user/${escADQ(messageData.data["author"])}" class="user${userAdditionClasses}">
-							<span>u/${messageData.data["author"]}</span>
+						<a href="/user/${escADQ(messageData.data.author)}" class="user${userAdditionClasses}">
+							<span>u/${messageData.data.author}</span>
 						</a>`
 					: ""
 				}
 				${
-				messageData.data["subreddit"]
+				messageData.data.subreddit
 					? `	<span>in</span>
-						<a href="/r/${escADQ(messageData.data["subreddit"])}" class="user${userAdditionClasses}">
-							<span>r/${messageData.data["subreddit"]}</span>
+						<a href="/r/${escADQ(messageData.data.subreddit)}" class="user${userAdditionClasses}">
+							<span>r/${messageData.data.subreddit}</span>
 						</a>`
 					: ""
 				}
 				${
-				messageData.data["dest"]
+				messageData.data.dest
 					? `	<span>to</span>
-						<a href="/user/${escADQ(messageData.data["dest"])}" class="user">
-							<span>u/${messageData.data["dest"]}</span>
+						<a href="/user/${escADQ(messageData.data.dest)}" class="user">
+							<span>u/${messageData.data.dest}</span>
 						</a>`
 					: ""
 				}
-				<span class="time" data-tooltip="${new Date(messageData.data["created_utc"] * 1000).toString()}">
-					${timePassedSinceStr(messageData.data["created_utc"])}
+				<span class="time" data-tooltip="${new Date(messageData.data.created_utc * 1000).toString()}">
+					${timePassedSince(messageData.data.created_utc)}
 				</span>
 				<span>ago</span>
 				${
-				messageData.data["replies"] && isInFeed
-				? `<a class="replies" href="${escADQ(this.link)}">${messageData.data["replies"]["data"]["children"].length} replies</a>`
+				messageData.data.replies && isInFeed
+				? `<a class="replies" href="${escADQ(this.link)}">${messageData.data.replies.data.children.length} replies</a>`
 				: ""
 				}
 			</div>
 			<div class="content">
-				${messageData.data["body_html"]}
+				${messageData.data.body_html}
 			</div>
 		`;
 		emojiFlagsToImages(mainPart);
@@ -89,12 +89,12 @@ export default class Ph_Message extends Ph_Readable {
 		});
 		this.lastMessageFromOther = this;
 		if (!isInFeed) {
-			if (messageData.data["replies"]) {
-				for (const reply of messageData.data["replies"]["data"]["children"]) {
+			if (messageData.data.replies) {
+				for (const reply of messageData.data.replies.data.children) {
 					mainPart.append(document.createElement("hr"));
 					const message = new Ph_Message(reply, false, true);
 					mainPart.append(message);
-					if (reply.data["author"] !== thisUser.name)
+					if (reply.data.author !== thisUser.name)
 						this.lastMessageFromOther = message;
 				}
 			}
@@ -117,10 +117,10 @@ export default class Ph_Message extends Ph_Readable {
 						return;
 					}
 					replyForm.insertAdjacentElement("beforebegin", document.createElement("hr"));
-					const newMessageData = response.json.data.things[0];
+					const newMessageData = response.json.data.things[0] as RedditMessageObj;
 					const message = new Ph_Message(newMessageData, false, true);
 					replyForm.insertAdjacentElement("beforebegin", message);
-					if (newMessageData.data["author"] !== thisUser.name)
+					if (newMessageData.data.author !== thisUser.name)
 						this.lastMessageFromOther = message;
 					replyForm.textField.value = "";
 					replyForm.onTextInput();

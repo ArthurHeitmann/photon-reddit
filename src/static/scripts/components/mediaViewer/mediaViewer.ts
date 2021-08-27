@@ -1,5 +1,5 @@
 import { getImgurContent, ImgurContent, ImgurContentType } from "../../api/imgurApi";
-import { RedditApiData, RedditApiType } from "../../types/misc";
+import { RedditPostData, RedditPostObj } from "../../types/redditTypes";
 import { mediaHostsWhiteList } from "../../utils/consts";
 import { nonDraggableElement } from "../../utils/htmlStatics";
 import { linksToSpa } from "../../utils/htmlStuff";
@@ -39,16 +39,16 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	elementCaption: HTMLElement;
 	currentIndexDisplay: HTMLDivElement;
 
-	static fromPostData_Image(postData: RedditApiType): Ph_MediaViewer {
-		if (postData.data["preview"] && postData.data["preview"]["images"][0]["resolutions"].length) {
-			const previews: any[] = postData.data["preview"]["images"][0]["resolutions"];
+	static fromPostData_Image(postData: RedditPostObj): Ph_MediaViewer {
+		if (postData.data.preview && postData.data.preview.images[0].resolutions.length) {
+			const previews = postData.data.preview.images[0].resolutions;
 			return new Ph_MediaViewer([new Ph_ImageViewer({
-				originalUrl: postData.data["url"],
-				previewUrl: previews[previews.length - 1]["url"]
+				originalUrl: postData.data.url,
+				previewUrl: previews[previews.length - 1].url
 			})]);
 		}
 		else {
-			return Ph_MediaViewer.fromUrl_Image(postData.data["url"]);
+			return Ph_MediaViewer.fromUrl_Image(postData.data.url);
 		}
 	}
 
@@ -58,7 +58,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		})]);
 	}
 
-	static fromPostData_Video(postData: RedditApiType): Ph_MediaViewer {
+	static fromPostData_Video(postData: RedditPostObj): Ph_MediaViewer {
 		const mediaViewer = new Ph_MediaViewer();
 		const video = Ph_VideoPlayer.fromPostData({ postData })
 		mediaViewer.init([ video]);
@@ -72,41 +72,41 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		return mediaViewer;
 	}
 
-	static fromPostData_RedditGallery(postData: RedditApiType): Ph_MediaViewer {
+	static fromPostData_RedditGallery(postData: RedditPostObj): Ph_MediaViewer {
 		const mediaElements: MediaElement[] = [];
-		const items: {}[] = postData.data["gallery_data"]["items"];
+		const items = postData.data.gallery_data.items;
 		for (const item of items) {
-			const itemData = postData.data["media_metadata"][item["media_id"]];
-			if (itemData["status"] === "failed") {
+			const itemData = postData.data.media_metadata[item.media_id];
+			if (itemData.status === "failed") {
 				new Ph_Toast(Level.warning, "Couldn't load a gallery image");
 				continue;
 			}
-			switch (itemData["e"]) {
+			switch (itemData.e) {
 				case "Image":
-					const previews: {}[] = itemData["p"];
+					const previews = itemData.p;
 					mediaElements.push(new Ph_ImageViewer({
-						originalUrl: itemData["s"]["u"],
-						previewUrl: previews.length > 0 && previews[previews.length - 1]["u"] || undefined,
-						caption: item["caption"] || "",
-						displayUrl: item["outbound_url"]
+						originalUrl: itemData.s.u,
+						previewUrl: previews.length > 0 && previews[previews.length - 1].u || undefined,
+						caption: item.caption || "",
+						displayUrl: item.outbound_url
 					}))
 					break;
 				case "AnimatedImage":
-					const videoPlayer = new Ph_VideoPlayer(item["outbound_url"] || postData.data["url"]);
+					const videoPlayer = new Ph_VideoPlayer(item.outbound_url || postData.data.url);
 					mediaElements.push(videoPlayer);
-					if ("mp4" in itemData["s"]) {
+					if ("mp4" in itemData.s) {
 						videoPlayer.init(new Ph_SimpleVideo([{
-							src: itemData["s"]["mp4"],
+							src: itemData.s.mp4,
 							type: "video/mp4"
 						}]));
 					}
 					else {
-						videoPlayer.init(new Ph_GifVideo(itemData["s"]["gif"]));
+						videoPlayer.init(new Ph_GifVideo(itemData.s.gif));
 					}
 					break;
 				default:
-					console.warn(`Unknown gallery item type ${itemData["e"]}`, itemData);
-					new Ph_Toast(Level.warning, `Unknown gallery item type ${itemData["e"]}`)
+					console.warn(`Unknown gallery item type ${itemData.e}`, itemData);
+					new Ph_Toast(Level.warning, `Unknown gallery item type ${itemData.e}`)
 			}
 		}
 
@@ -158,12 +158,12 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		return videoPlayer;
 	}
 
-	static isPostVideo(postData: RedditApiData): boolean {
-		if (Ph_MediaViewer.isUrlVideo(postData["url"]))
+	static isPostVideo(postData: RedditPostData): boolean {
+		if (Ph_MediaViewer.isUrlVideo(postData.url))
 			return true
-		else if (/https?:\/\/clips.twitch.tv\/[\w-]+/.test(postData["url"]) && postData["media"])
+		else if (/https?:\/\/clips.twitch.tv\/[\w-]+/.test(postData.url) && postData.media)
 			return true;
-		else if (postData["post_hint"] == "hosted:video")
+		else if (postData.post_hint == "hosted:video")
 			return true;
 		return false
 	}
@@ -181,9 +181,9 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		).test(url);
 	}
 
-	static isPostImage(postData: RedditApiData): boolean {
-		return postData["post_hint"] == "image" ||
-			Ph_MediaViewer.isUrlImage(postData["url"])
+	static isPostImage(postData: RedditPostData): boolean {
+		return postData.post_hint == "image" ||
+			Ph_MediaViewer.isUrlImage(postData.url)
 	}
 
 	static isUrlImage(url: string): boolean {

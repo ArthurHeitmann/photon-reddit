@@ -5,7 +5,13 @@ import {
 	getMultiInfo,
 	removeSubFromMulti
 } from "../../../api/redditApi";
-import { RedditApiData, RedditApiType } from "../../../types/misc";
+import {
+	RedditMultiInfo,
+	RedditMultiObj,
+	RedditSubredditObj,
+	SubredditExpanded,
+	SubredditInfoBase
+} from "../../../types/redditTypes";
 import { StoredData, thisUser } from "../../../utils/globals";
 import { emojiFlagsToImages, escADQ, escHTML } from "../../../utils/htmlStatics";
 import { linksToSpa } from "../../../utils/htmlStuff";
@@ -17,22 +23,21 @@ import Ph_SubredditSelector from "../../misc/subredditSelector/subredditSelector
 import Ph_Toast, { Level } from "../../misc/toast/toast";
 import Ph_FeedInfo from "./feedInfo";
 
-export default class Ph_FeedInfoMulti extends Ph_FeedInfo {
+export default class Ph_FeedInfoMulti extends Ph_FeedInfo<RedditMultiInfo> {
 	private editPane: Ph_MultiCreateOrEdit;
 
 	async loadInfo(): Promise<void> {
-		let feedAbout: RedditApiType;
+		let feedAbout: RedditMultiObj
 		try {
 			feedAbout = await getMultiInfo(this.feedUrl);
-			if (feedAbout["error"] || !(feedAbout["kind"] && feedAbout["data"]))
+			if (feedAbout["error"] || !(feedAbout.kind && feedAbout.data))
 				throw `Invalid about response ${JSON.stringify(feedAbout)}`;
 		} catch (e) {
 			new Ph_Toast(Level.error, "Error getting multi info");
 			console.error(`Error getting user info for ${this.feedUrl}`);
 			console.error(e);
 		}
-		feedAbout.data["subreddits"] = feedAbout.data["subreddits"];
-		feedAbout.data["subreddits"].sort((a, b) => stringSortComparer(a.name, b.name));
+		feedAbout.data.subreddits.sort((a, b) => stringSortComparer(a.name, b.name));
 		this.loadedInfo.data = feedAbout.data;
 		this.loadedInfo.lastUpdatedMsUTC = Date.now();
 		this.saveInfo();
@@ -45,7 +50,7 @@ export default class Ph_FeedInfoMulti extends Ph_FeedInfo {
 
 		const headerBar = makeElement("div", { class: "headerBar" });
 		this.append(headerBar);
-		const iconUrl = this.loadedInfo.data["icon_url"];
+		const iconUrl = this.loadedInfo.data.icon_url;
 		if (iconUrl) {
 			headerBar.append(makeElement(
 				"img",
@@ -54,14 +59,14 @@ export default class Ph_FeedInfoMulti extends Ph_FeedInfo {
 		}
 		const overviewBar = makeElement("div", { class: "overviewBar" });
 		this.editPane?.remove();
-		const isUserOwner = this.loadedInfo.data["owner"] === thisUser.name;
+		const isUserOwner = this.loadedInfo.data.owner === thisUser.name;
 		if (isUserOwner) {
-			this.editPane = new Ph_MultiCreateOrEdit(`Edit ${this.loadedInfo.data["display_name"]}`, "Edit",
+			this.editPane = new Ph_MultiCreateOrEdit(`Edit ${this.loadedInfo.data.display_name}`, "Edit",
 				this.editMulti.bind(this),
 				{
-					name: this.loadedInfo.data["display_name"],
-					descriptionMd: this.loadedInfo.data["description_md"],
-					visibility: this.loadedInfo.data["visibility"]
+					name: this.loadedInfo.data.display_name,
+					descriptionMd: this.loadedInfo.data.description_md,
+					visibility: this.loadedInfo.data.visibility
 				}
 			);
 		}
@@ -81,23 +86,23 @@ export default class Ph_FeedInfoMulti extends Ph_FeedInfo {
 			{ class: "subActionsWrapper" },
 			[dropDown]));
 
-		const createdDate = new Date(this.loadedInfo.data["created_utc"] * 1000);
+		const createdDate = new Date(this.loadedInfo.data.created_utc * 1000);
 		overviewBar.insertAdjacentHTML("beforeend", `
-			<div data-tooltip="${this.loadedInfo.data["num_subscribers"]}">
-				Subscribers: ${numberToShort(this.loadedInfo.data["num_subscribers"])}
+			<div data-tooltip="${this.loadedInfo.data.num_subscribers}">
+				Subscribers: ${numberToShort(this.loadedInfo.data.num_subscribers)}
 			</div>
 			<div data-tooltip="${createdDate.toString()}">
 				Created: ${createdDate.toDateString()}
 			</div>
 			<div>
-				By: <a href="/user/${escADQ(this.loadedInfo.data["owner"])}">u/${escHTML(this.loadedInfo.data["owner"])}</a>
+				By: <a href="/user/${escADQ(this.loadedInfo.data.owner)}">u/${escHTML(this.loadedInfo.data.owner)}</a>
 			</div>
 		`);
 		headerBar.appendChild(overviewBar);
-		this.appendChild(makeElement("h1", { class: "title" }, this.loadedInfo.data["display_name"]));
+		this.appendChild(makeElement("h1", { class: "title" }, this.loadedInfo.data.display_name));
 
 		const description = makeElement("div", null,
-			this.loadedInfo.data["description_html"], true);
+			this.loadedInfo.data.description_html, true);
 		emojiFlagsToImages(description);
 		this.multiSubManager = document.createElement("div");
 		this.multiSubManager.append(...this.makeMultiSubManager());
@@ -116,7 +121,7 @@ export default class Ph_FeedInfoMulti extends Ph_FeedInfo {
 		const subCounter = makeElement("div", { class: "multiSubCounter" }, "xx/100");
 		outElements.push(subCounter);
 
-		if (this.loadedInfo.data["can_edit"]) {
+		if (this.loadedInfo.data.can_edit) {
 			const addSubredditBar = makeElement("div", { class: "editableSub addSub" });
 
 			const addSubButton = makeElement("button", { class: "addSub transparentButtonAlt" });
@@ -125,7 +130,7 @@ export default class Ph_FeedInfoMulti extends Ph_FeedInfo {
 			const addSubInput = makeElement("input", { type: "text", placeholder: "Subreddit" }) as HTMLInputElement;
 
 			const subredditSelector = new Ph_SubredditSelector(!this.loadedInfo.data.over_18);
-			subredditSelector.bind(addSubInput, true, async (subName: string, subData: RedditApiType) => {
+			subredditSelector.bind(addSubInput, true, async (subName: string, subData: RedditSubredditObj) => {
 				await this.addSubToMulti(subData, this.feedUrl, true, addSubredditBar.parentElement);
 				this.checkMultiMaxSubCount();
 			});
@@ -154,9 +159,9 @@ export default class Ph_FeedInfoMulti extends Ph_FeedInfo {
 		this.multiSubManager.$class("multiSubCounter")[0].innerHTML = `${currentSubCount}/100`;
 	}
 
-	private makeRemoveSubBar(sub: RedditApiData) {
+	private makeRemoveSubBar(sub: SubredditInfoBase) {
 		const removeSubredditBar = makeElement("div", { class: "editableSub" });
-		if (this.loadedInfo.data["can_edit"]) {
+		if (this.loadedInfo.data.can_edit) {
 			const removeSubButton = makeElement("button", { class: "removeSub transparentButtonAlt" });
 			removeSubredditBar.appendChild(removeSubButton);
 			removeSubButton.addEventListener("click",
@@ -193,8 +198,8 @@ export default class Ph_FeedInfoMulti extends Ph_FeedInfo {
 		}
 	}
 
-	private async addSubToMulti(subData: RedditApiType, multiPath: string, sourceIsMulti: boolean, subsList?: HTMLElement) {
-		const subName = subData.data["display_name"];
+	private async addSubToMulti(subData: RedditSubredditObj, multiPath: string, sourceIsMulti: boolean, subsList?: HTMLElement) {
+		const subName = subData.data.display_name;
 		if (sourceIsMulti && this.loadedInfo.data.subreddits.find(sub => sub.name === subName)) {
 			new Ph_Toast(Level.warning, `r/${escHTML(subName)} already exists in ${escHTML(multiPath)}`, { timeout: 6000 });
 			return;
@@ -208,13 +213,13 @@ export default class Ph_FeedInfoMulti extends Ph_FeedInfo {
 			if (!response["name"])
 				throw `Invalid add to multi response ${JSON.stringify(response)}`;
 			if (sourceIsMulti) {
-				this.loadedInfo.data.subreddits.push({ data: subData.data, name: response["name"] });
+				this.loadedInfo.data.subreddits.push({ data: subData.data as SubredditExpanded, name: response["name"] });
 				this.loadedInfo.data.subreddits.sort((a, b) => stringSortComparer(a.name, b.name));
 				this.saveInfo();
 			}
 			else if (localStorage[multiPath.toLowerCase()]) {
 				// force reload on next load
-				const multiData: StoredData = JSON.parse(localStorage[multiPath.toLowerCase()]);
+				const multiData: StoredData<RedditMultiInfo> = JSON.parse(localStorage[multiPath.toLowerCase()]);
 				multiData.lastUpdatedMsUTC = 1;
 				localStorage[multiPath.toLowerCase()] = JSON.stringify(multiData);
 			}

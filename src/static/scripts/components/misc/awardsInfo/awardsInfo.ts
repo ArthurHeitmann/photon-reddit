@@ -1,16 +1,17 @@
 /**
  * An expandable list with awards (of a post or comment) + individual award info
  */
+import { RedditAward } from "../../../types/redditTypes";
 import { hasParams, numberToShort } from "../../../utils/utils";
 
 export default class Ph_AwardsInfo extends HTMLElement {
-	awardsData: AwardsData[];
+	awardsData: RedditAward[];
 	toggleTimeout = null;
 	expandedView: HTMLElement;
 	awardInfo: HTMLElement;
 	awardsList: HTMLElement;
 
-	constructor(data: AwardsData[]) {
+	constructor(data: RedditAward[]) {
 		super();
 		if (!hasParams(arguments)) return;
 
@@ -106,44 +107,3 @@ export default class Ph_AwardsInfo extends HTMLElement {
 }
 
 customElements.define("ph-awards-info", Ph_AwardsInfo);
-
-export interface AwardsData {
-	giver_coin_reward: number,
-	subreddit_id: string,
-	is_new: boolean,
-	days_of_drip_extension: number,
-	coin_price: number,
-	id: string,
-	penny_donate: number,
-	coin_reward: number,
-	icon_url: string,
-	days_of_premium: number,
-	icon_height: number,
-	tiers_by_requird_awardings,
-	resized_icons: {
-		url: string,
-		width: number,
-		height: number
-	}[],
-	icon_width: number,
-	static_icon_width: number,
-	start_date,
-	is_enabled: boolean,
-	awardings_required_to_grant_benefits,
-	description: string,
-	end_date,
-	subreddit_coin_reward: number,
-	count: number,
-	static_icon_height: number,
-	name: string,
-	resized_static_icons: {
-		url: string,
-		width: number,
-		height: number
-	}[],
-	icon_format,
-	award_sub_type: string,
-	penny_price: number,
-	award_type: string,
-	static_icon_url: string
-}

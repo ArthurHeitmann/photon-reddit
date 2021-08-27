@@ -1,7 +1,7 @@
 import { getGfycatMp4SrcFromUrl, GfycatDomain } from "../../../api/gfycatApi";
 import { youtubeDlUrl } from "../../../api/photonApi";
 import { getStreamableUrl } from "../../../api/streamableApi";
-import { RedditApiType } from "../../../types/misc";
+import { RedditPostObj } from "../../../types/redditTypes";
 import { $tagAr, escHTML } from "../../../utils/htmlStatics";
 import { classInElementTree, isElementIn } from "../../../utils/htmlStuff";
 import { getFullscreenElement, hasParams, isFullscreen, isJsonEqual, secondsToVideoTime } from "../../../utils/utils";
@@ -38,11 +38,11 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 	static isVideoPlayAllowed = false;
 
 	/** Creates a video player from a reddit post (with a video link) */
-	static fromPostData({ postData, url }: { postData?: RedditApiType, url?: string }): Ph_VideoPlayer {
+	static fromPostData({ postData, url }: { postData?: RedditPostObj, url?: string }): Ph_VideoPlayer {
 		if (!(postData || url))
 			throw "either postData or url is needed";
 		if (postData)
-			url = postData.data["url"];
+			url = postData.data.url;
 
 		const videoOut = new Ph_VideoPlayer(url);
 
@@ -72,14 +72,14 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 			case "gfycat.com":
 				// gfycats paths are case sensitive, but the urls usually are all lower case
 				// however in the media oembed property there is a correctly capitalized path
-				if (postData && postData.data["media"]) {
+				if (postData?.data.media) {
 					let capitalizedPath;
-					if (/^https?:\/\/thumbs\.gfycat\.com\/./.test(postData.data["media"]["oembed"]["thumbnail_url"])) {
-						capitalizedPath = postData.data["media"]["oembed"]["thumbnail_url"].match(/^https?:\/\/thumbs\.gfycat\.com\/(\w+)/)[1];
-					} else if (/^https?:\/\/i.embed.ly\/./.test(postData.data["media"]["oembed"]["thumbnail_url"])) {
-						capitalizedPath = postData.data["media"]["oembed"]["thumbnail_url"].match(/thumbs\.gfycat\.com%2F(\w+)/)[1];
+					if (/^https?:\/\/thumbs\.gfycat\.com\/./.test(postData.data.media.oembed.thumbnail_url)) {
+						capitalizedPath = postData.data.media.oembed.thumbnail_url.match(/^https?:\/\/thumbs\.gfycat\.com\/(\w+)/)[1];
+					} else if (/^https?:\/\/i.embed.ly\/./.test(postData.data.media.oembed.thumbnail_url)) {
+						capitalizedPath = postData.data.media.oembed.thumbnail_url.match(/thumbs\.gfycat\.com%2F(\w+)/)[1];
 					} else {
-						throw `Invalid gfycat oembed link ${postData.data["media"]["oembed"]["thumbnail_url"]}`;
+						throw `Invalid gfycat oembed link ${postData.data.media.oembed.thumbnail_url}`;
 					}
 					videoOut.init(new Ph_SimpleVideo([
 						{src: `https://giant.gfycat.com/${capitalizedPath}.mp4`, type: "video/mp4", label: "Default"},
@@ -129,11 +129,11 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 					// gets videoId from https://v.redd.it/[videoId] or https://reddit.com/link/[postId]/video/[videoId]
 					const vReddItId = url.match(/(https:\/\/v\.redd\.it\/|https?:\/\/(?:www\.)?reddit\.com\/link\/\w+\/video\/)([^/?#]+)|/)[2];
 					const vReddItUrl = `https://v.redd.it/${vReddItId}`;
-					const redditVideoData = postData?.data["media"]?.["reddit_video"];
+					const redditVideoData = postData?.data.media?.reddit_video;
 					if (redditVideoData)
-						redditVideoData["fallback_url"] = redditVideoData["fallback_url"].replace(/\?.*/, "")
-					if (postData && postData.data["media"] && redditVideoData)
-						dashUrl = redditVideoData["dash_url"];
+						redditVideoData.fallback_url = redditVideoData.fallback_url.replace(/\?.*/, "")
+					if (postData && postData.data.media && redditVideoData)
+						dashUrl = redditVideoData.dash_url;
 					else
 						dashUrl = `${vReddItUrl}/DASHPlaylist.mpd`;
 
@@ -156,10 +156,10 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 							}));
 						if (redditVideoData) {
 							const fallbackSrc = <SourceData> {
-								src: redditVideoData["fallback_url"],
+								src: redditVideoData.fallback_url,
 								type: "video/mp4",
-								label: `${redditVideoData["height"]}p`,
-								lowerQualityAlternative: Math.abs(600 - redditVideoData["height"]) < 180	// true if approximately 720p or 480p
+								label: `${redditVideoData.height}p`,
+								lowerQualityAlternative: Math.abs(600 - redditVideoData.height) < 180	// true if approximately 720p or 480p
 							};
 							if (!isJsonEqual(fallbackSrc, videoSources[0])) {
 								videoSources.splice(0, 0, fallbackSrc);
@@ -182,9 +182,9 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				break;
 			case "i.redd.it":
 				// from i.reddit only gifs come; try to get the mp4 preview
-				if (postData && postData.data["preview"] && postData.data["preview"]["images"][0]["variants"]["mp4"]) {
+				if (postData && postData.data.preview && postData.data.preview.images[0].variants.mp4) {
 					videoOut.init(new Ph_SimpleVideo([{
-						src: postData.data["preview"]["images"][0]["variants"]["mp4"]["source"]["url"],
+						src: postData.data.preview.images[0].variants.mp4.source.url,
 						type: "video/mp4"
 					}]));
 				}
@@ -194,10 +194,10 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 			case "clips.twitch.tv":
 				// try to get mp4 url from oembed data
 				let twitchMp4Found = false;
-				if (postData && postData.data["media"] && postData.data["media"]["oembed"]) {
+				if (postData && postData.data.media && postData.data.media.oembed) {
 					// if present the thumbnail url looks like 	https://clips-media-assets2.twitch.tv/AT-cm|1155435256-social-preview.jpg
 					// the mp4 url is 							https://clips-media-assets2.twitch.tv/AT-cm|1155435256.mp4
-					const twitchUrlMatches = postData.data["media"]["oembed"]["thumbnail_url"].match(/(.*)-social-preview.jpg$/);
+					const twitchUrlMatches = postData.data.media.oembed.thumbnail_url.match(/(.*)-social-preview.jpg$/);
 					if (twitchUrlMatches && twitchUrlMatches.length == 2) {
 						videoOut.init(new Ph_SimpleVideo([{src: twitchUrlMatches[1] + ".mp4", type: "video/mp4"}]));
 						twitchMp4Found = true;
@@ -206,7 +206,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				// if not suitable oembed data use youtube-dl
 				if (!twitchMp4Found) {
 					youtubeDlUrl(url).then(async clip => {
-						if ("error" in clip || !clip["url"]) {
+						if ("error" in clip || !clip.url) {
 							new Ph_Toast(Level.error, "Error getting Twitch clip");
 							videoOut.init(null);
 							return;

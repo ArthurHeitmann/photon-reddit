@@ -1,5 +1,5 @@
 import { redditApiRequest, setMessageReadStatus } from "../../../api/redditApi";
-import { RedditApiType } from "../../../types/misc";
+import { RedditCommentObj, RedditListingObj, RedditMessageObj } from "../../../types/redditTypes";
 import { ensurePageLoaded, isLoggedIn, thisUser } from "../../../utils/globals";
 import { $css, escADQ, escHTML } from "../../../utils/htmlStatics";
 import { linksToSpa } from "../../../utils/htmlStuff";
@@ -14,19 +14,19 @@ export default class Ph_MessageNotification extends HTMLElement {
 	isRequestInProgress = false;
 	isClosing = false;
 
-	constructor(newMessages: RedditApiType[]) {
+	constructor(newMessages: (RedditMessageObj | RedditCommentObj)[]) {
 		super();
 		if (!hasParams(arguments)) return;
 
 		this.classList.add("messageNotification");
 		this.classList.add("shadow-4");
 
-		if (newMessages.length === 1 && newMessages[0].data["author"]) {
+		if (newMessages.length === 1 && newMessages[0].data.author) {
 			const messageLink = newMessages[0].kind == "t1"
 				? newMessages[0].data["context"]
-				: `/message/messages/${newMessages[0].data["id"]}`;
+				: `/message/messages/${newMessages[0].data.id}`;
 			this.innerHTML = `
-				<a href="${escADQ(messageLink)}">New message from u/${escHTML(newMessages[0].data["author"])}</a>
+				<a href="${escADQ(messageLink)}">New message from u/${escHTML(newMessages[0].data.author)}</a>
 			`;
 		}
 		else {
@@ -35,7 +35,7 @@ export default class Ph_MessageNotification extends HTMLElement {
 			`;
 		}
 		this.insertAdjacentHTML("beforeend", `<button class="markRead transparentButtonAlt"</button>`);
-		const newIds = newMessages.map(msg => msg.data["name"]);
+		const newIds = newMessages.map(msg => msg.data.name);
 		this.$class("markRead")[0].addEventListener("click", () => this.markRead(newIds));
 		this.insertAdjacentHTML("beforeend", `<button class="close transparentButtonAlt"><img src="/img/close.svg" alt="close"></button>`);
 		this.$class("close")[0].addEventListener("click", this.close.bind(this));
@@ -78,7 +78,7 @@ export default class Ph_MessageNotification extends HTMLElement {
 
 	static async checkForNewMessages() {
 		const unreadMessagesData = await redditApiRequest(`/message/unread`,
-			[], true) as RedditApiType;
+			[], true) as RedditListingObj<RedditMessageObj>;
 		const unreadMessages = unreadMessagesData.data.children;
 
 		thisUser.setInboxIdsUnreadState(unreadMessages.map(msg => msg.data.name), true);

@@ -9,7 +9,7 @@ import Ph_FeedInfoUser from "./feedInfoUser";
 
 export default class FeedInfoFactory {
 	/** All feed infos that are currently loaded */
-	static loadedInfos: { [feedUrl: string]: { feedInfo: Ph_FeedInfo, references: number } } = {};
+	static loadedInfos: { [feedUrl: string]: { feedInfo: Ph_FeedInfo<any>, references: number } } = {};
 
 	/** Returns a button element that will open/close a feed info; preferred way for creating a feed info */
 	static getInfoButton(feedType: FeedType, feedUrl: string): HTMLElement {
@@ -31,7 +31,7 @@ export default class FeedInfoFactory {
 		return button;
 	}
 
-	static getOrMake(feedUrl: string, feedType: FeedType): { feedInfo: Ph_FeedInfo, references: number } {
+	static getOrMake(feedUrl: string, feedType: FeedType): { feedInfo: Ph_FeedInfo<any>, references: number } {
 		let info = FeedInfoFactory.loadedInfos[feedUrl]
 		if (!info)
 			FeedInfoFactory.loadedInfos[feedUrl] = info = { feedInfo: FeedInfoFactory.make(feedUrl, feedType), references: 0 };
@@ -40,7 +40,7 @@ export default class FeedInfoFactory {
 		return info;
 	}
 
-	static make(feedUrl: string, feedType: FeedType): Ph_FeedInfo {
+	static make(feedUrl: string, feedType: FeedType): Ph_FeedInfo<any> {
 		switch (feedType) {
 		case FeedType.subreddit:
 			return new Ph_FeedInfoSubreddit(feedUrl, feedType);

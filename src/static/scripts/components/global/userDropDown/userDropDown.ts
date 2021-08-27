@@ -1,7 +1,7 @@
 import { createOrUpdateMulti } from "../../../api/redditApi";
 import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager";
 import ViewsStack from "../../../historyState/viewsStack";
-import { RedditApiType } from "../../../types/misc";
+import { RedditApiObj, RedditSubredditObj } from "../../../types/redditTypes";
 import { ensurePageLoaded, thisUser } from "../../../utils/globals";
 import { elementWithClassInTree, isElementIn } from "../../../utils/htmlStuff";
 import { SubscriptionChangeEvent } from "../../../utils/subredditManager";
@@ -66,10 +66,10 @@ export default class Ph_UserDropDown extends HTMLElement {
 		thisUser.subreddits.listenForChanges(this.onSubscriptionChanged.bind(this));
 	}
 
-	private makeSubredditGroup(feedsData: (RedditApiType | string)[], groupName: string, ...additionChildren: Element[]): HTMLElement {
+	private makeSubredditGroup(feedsData: (RedditApiObj | string)[], groupName: string, ...additionChildren: Element[]): HTMLElement {
 		return makeElement("div", { class: "subGroup separated" }, [
 			makeElement("div", { class: "name" }, groupName),
-			...feedsData.map(feedData => new Ph_FeedLink(feedData)),
+			...feedsData.map(feedData => new Ph_FeedLink(feedData as RedditSubredditObj)),
 			...additionChildren
 		]);
 	}
@@ -184,7 +184,7 @@ export default class Ph_UserDropDown extends HTMLElement {
 
 	private onSubscriptionChanged(e: SubscriptionChangeEvent) {
 		if (e.isUserSubscribed) {
-			this.subredditsList.children[e.index].after(new Ph_FeedLink(e.subreddit));
+			this.subredditsList.children[e.index].after(new Ph_FeedLink(e.subreddit as RedditSubredditObj));
 		}
 		else {
 			this.subredditsList.children[e.index + 1].remove();

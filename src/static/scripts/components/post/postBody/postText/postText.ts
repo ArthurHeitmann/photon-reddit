@@ -1,5 +1,5 @@
 import { editCommentOrPost } from "../../../../api/redditApi";
-import { RedditApiData } from "../../../../types/misc";
+import { RedditPostData } from "../../../../types/redditTypes";
 import { emojiFlagsToImages, escHTML } from "../../../../utils/htmlStatics";
 import { elementWithClassInTree, linksToSpa } from "../../../../utils/htmlStuff";
 import { hasParams } from "../../../../utils/utils";
@@ -18,13 +18,13 @@ export default class Ph_PostText extends HTMLElement {
 	editForm: Ph_MarkdownForm;
 	postFullName: string;
 
-	constructor(postData: RedditApiData) {
+	constructor(postData: RedditPostData) {
 		super();
 		if (!hasParams(arguments)) return;
 
-		const bodyHtml = postData["selftext_html"] || "";
-		const bodyMarkDown = postData["selftext"] || "";
-		const postFullName = postData["name"];
+		const bodyHtml = postData.selftext_html || "";
+		const bodyMarkDown = postData.selftext || "";
+		const postFullName = postData.name;
 
 		this.className = "postText";
 		this.markdown = bodyMarkDown;
@@ -58,7 +58,7 @@ export default class Ph_PostText extends HTMLElement {
 		this.editForm.addEventListener("ph-cancel", this.endEditing.bind(this));
 		this.appendChild(this.editForm);
 
-		if (postData["poll_data"]) {
+		if (postData.poll_data) {
 			let links = this.$tagAr("a");
 			links = links.filter(link => link.innerText === "View Poll");
 			links[links.length - 1].remove();

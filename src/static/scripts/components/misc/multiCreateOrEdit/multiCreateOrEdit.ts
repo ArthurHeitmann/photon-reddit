@@ -5,7 +5,7 @@ import Ph_ModalPane from "../modalPane/modalPane";
 export interface MultiBasicInfo {
 	name: string,
 	descriptionMd: string,
-	visibility: "public" | "private"
+	visibility: "private" | "public" | "hidden"
 }
 /** @return if true: close modal window; else keep it open */
 export type OnMultiSubmitCallback = (info: MultiBasicInfo) => boolean | Promise<boolean>;
@@ -13,7 +13,7 @@ export type OnMultiSubmitCallback = (info: MultiBasicInfo) => boolean | Promise<
 export default class Ph_MultiCreateOrEdit extends Ph_ModalPane {
 	private nameInput: HTMLInputElement;
 	private descriptionInput: Ph_MarkdownForm;
-	private multiVisibility: "public" | "private";
+	private multiVisibility: "private" | "public" | "hidden";
 	private onSubmitCallback: OnMultiSubmitCallback;
 	private submitBtn: HTMLButtonElement;
 

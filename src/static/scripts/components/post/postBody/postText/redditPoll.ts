@@ -1,4 +1,4 @@
-import { RedditApiData } from "../../../../types/misc";
+import { RedditPostData } from "../../../../types/redditTypes";
 import { escHTML } from "../../../../utils/htmlStatics";
 import { hasParams, numberToShort, timePassedSince, timePeriodReadable } from "../../../../utils/utils";
 
@@ -14,22 +14,21 @@ interface PollData {
 }
 
 export default class Ph_RedditPoll extends HTMLElement {
-	 constructor(postData: RedditApiData) {
+	 constructor(postData: RedditPostData) {
 		 super();
 		 if (!hasParams(arguments)) return;
-
-		 const pollData = postData["poll_data"] as PollData;
 
 		 this.classList.add("redditPoll");
 
 		 const infoBar = document.createElement("div");
 		 infoBar.className = "infoBar";
-		 infoBar.insertAdjacentHTML("beforeend", `<div data-tooltip="${pollData.total_vote_count}">${numberToShort(pollData.total_vote_count)} ${pollData.total_vote_count !== 1 ? "Votes" : "Vote"}</div>`);
-		 const timeDiff = pollData.voting_end_timestamp - Date.now();
-		 infoBar.insertAdjacentHTML("beforeend", `<div data-tooltip="${(new Date(pollData.voting_end_timestamp)).toString()}">${
+		 infoBar.insertAdjacentHTML("beforeend", `<div data-tooltip="${postData.poll_data.total_vote_count}">`
+			 +`${numberToShort(postData.poll_data.total_vote_count)} ${postData.poll_data.total_vote_count !== 1 ? "Votes" : "Vote"}</div>`);
+		 const timeDiff = postData.poll_data.voting_end_timestamp - Date.now();
+		 infoBar.insertAdjacentHTML("beforeend", `<div data-tooltip="${(new Date(postData.poll_data.voting_end_timestamp)).toString()}">${
 			 timeDiff > 0
 				 ? `Voting ends in ${timePeriodReadable(timeDiff / 1000)}`
-				 : `Voting ended ${timePassedSince(pollData.voting_end_timestamp / 1000)} ago`
+				 : `Voting ended ${timePassedSince(postData.poll_data.voting_end_timestamp / 1000)} ago`
 		 }</div>`);
 		 this.append(infoBar);
 
@@ -37,13 +36,13 @@ export default class Ph_RedditPoll extends HTMLElement {
 		 bars.className = "bars";
 		 this.append(bars);
 
-		 for (const option of pollData.options) {
+		 for (const option of postData.poll_data.options) {
 			 const bar = document.createElement("div");
 			 const votesVisible = option.vote_count !== undefined ;
 			 let percentage = 0;
 			 if (votesVisible)
-				 percentage = (option.vote_count / pollData.total_vote_count * 100);
-			 if (pollData.user_selection === option.id)
+				 percentage = (option.vote_count / postData.poll_data.total_vote_count * 100);
+			 if (postData.poll_data.user_selection === option.id)
 				 bar.classList.add("myVote");
 			 bar.style.setProperty("--percentage", percentage.toString())
 			 bar.innerHTML = `
@@ -57,11 +56,11 @@ export default class Ph_RedditPoll extends HTMLElement {
 			 bars.append(bar);
 		 }
 
-		 if (timeDiff > 0 && !pollData.user_selection) {
+		 if (timeDiff > 0 && !postData.poll_data.user_selection) {
 			 const voteLink = document.createElement("a");
 			 voteLink.setAttribute("excludeLinkFromSpa", "");
 			 voteLink.innerText = "Vote on reddit.com";
-			 voteLink.href = `https://www.reddit.com/poll/${postData["id"]}`;
+			 voteLink.href = `https://www.reddit.com/poll/${postData.id}`;
 			 this.append(voteLink);
 		 }
 	 }

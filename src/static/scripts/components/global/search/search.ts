@@ -1,7 +1,8 @@
 import { getSubFlairs, searchSubreddits, searchUser } from "../../../api/redditApi";
 import { pushLinkToHistoryComb, pushLinkToHistorySep } from "../../../historyState/historyStateManager";
 import { ViewChangeData } from "../../../historyState/viewsStack";
-import { RedditApiType, SortPostsTimeFrame, SortSearchOrder } from "../../../types/misc";
+import { SortPostsTimeFrame, SortSearchOrder } from "../../../types/misc";
+import { RedditApiObj, RedditListingObj, RedditSubredditObj } from "../../../types/redditTypes";
 import { isLoggedIn } from "../../../utils/globals";
 import { escADQ, getLoadingIcon } from "../../../utils/htmlStatics";
 import { elementWithClassInTree, isElementIn } from "../../../utils/htmlStuff";
@@ -270,7 +271,7 @@ export default class Ph_Search extends HTMLElement {
 
 		this.resultsWrapper.classList.add("loading");
 		// TODO take NSFW preferences into consideration
-		let result: RedditApiType;
+		let result: RedditListingObj<RedditApiObj>;
 		try {
 			if (this.searchPrefix === "/r/") {
 				result = await searchSubreddits(this.searchBar.value, 10);
@@ -298,7 +299,7 @@ export default class Ph_Search extends HTMLElement {
 		this.resultsWrapper.innerText = "";
 		for (const entry of result.data.children) {
 			try {
-				this.resultsWrapper.append(new Ph_FeedLink(entry, true));
+				this.resultsWrapper.append(new Ph_FeedLink(entry as RedditSubredditObj, true));
 			}
 			catch (e) {
 				console.error("Error making search result entry");

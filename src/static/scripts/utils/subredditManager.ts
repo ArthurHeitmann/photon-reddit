@@ -1,20 +1,20 @@
 import { getMySubs, redditInfo, subscribe } from "../api/redditApi";
-import { RedditApiType } from "../types/misc";
+import { RedditApiObj, RedditSubredditObj } from "../types/redditTypes";
 import { StoredData, User } from "./globals";
 import { UserSubscriptions } from "./UserSubscriptions";
 import { stringSortComparer } from "./utils";
 
 export interface SubscriptionChangeEvent {
-	subreddit: RedditApiType,
+	subreddit: RedditApiObj,
 	isUserSubscribed: boolean,
 	index: number
 }
 
-export class SubredditManager extends UserSubscriptions<RedditApiType, SubscriptionChangeEvent> {
+export class SubredditManager extends UserSubscriptions<RedditSubredditObj, SubscriptionChangeEvent> {
 
 	async load() {
 		try {
-			const storedData: StoredData = JSON.parse(localStorage["subreddits"]);
+			const storedData: StoredData<RedditSubredditObj[]> = JSON.parse(localStorage.subreddits);
 			this.userContent = storedData.data;
 			if (Date.now() - storedData.lastUpdatedMsUTC > User.refreshEveryNMs)
 				await this.fetchSubreddits();
@@ -24,9 +24,9 @@ export class SubredditManager extends UserSubscriptions<RedditApiType, Subscript
 	}
 
 	private async fetchSubreddits() {
-		const subs: RedditApiType = await getMySubs(100);
+		const subs = await getMySubs(100);
 		while(subs.data.after !== null) {
-			const tmpSubs: RedditApiType = await getMySubs(100, subs.data.after);
+			const tmpSubs = await getMySubs(100, subs.data.after);
 			subs.data.children.push(...tmpSubs.data.children);
 			subs.data.after = tmpSubs.data.after;
 		}
@@ -36,7 +36,7 @@ export class SubredditManager extends UserSubscriptions<RedditApiType, Subscript
 	}
 
 	isSubscribedTo(subreddit: string): boolean {
-		return this.userContent.findIndex(sub => sub.data["display_name"] === subreddit) !== -1;
+		return this.userContent.findIndex(sub => sub.data.display_name === subreddit) !== -1;
 	}
 
 	/** @return success */
@@ -45,16 +45,16 @@ export class SubredditManager extends UserSubscriptions<RedditApiType, Subscript
 		if (!r)
 			return false;
 		if (isSubscribed) {
-			const subInfo = await redditInfo(subredditFullName);
+			const subInfo = await redditInfo(subredditFullName) as RedditSubredditObj;
 			if (!subInfo)
 				return false;
 			this.userContent.push(subInfo);
 			this.userContent.sort(SubredditManager.subredditsSort);
-			const currentSubIndex = this.userContent.findIndex(sub => sub.data["name"] === subredditFullName);
+			const currentSubIndex = this.userContent.findIndex(sub => sub.data.name === subredditFullName);
 			this.dispatchChange({ subreddit: subInfo, isUserSubscribed: true, index: currentSubIndex });
 		}
 		else {
-			const currentSubIndex = this.userContent.findIndex(sub => sub.data["name"] === subredditFullName);
+			const currentSubIndex = this.userContent.findIndex(sub => sub.data.name === subredditFullName);
 			if (currentSubIndex === -1)
 				return false;
 			const subredditData = this.userContent[currentSubIndex];
@@ -66,13 +66,13 @@ export class SubredditManager extends UserSubscriptions<RedditApiType, Subscript
 	}
 
 	private cacheSubreddits() {
-		localStorage.subreddits = JSON.stringify(<StoredData> {
+		localStorage.subreddits = JSON.stringify(<StoredData<RedditSubredditObj[]>> {
 			lastUpdatedMsUTC: Date.now(),
 			data: this.userContent
 		});
 	}
 
 	private static subredditsSort(a, b) {
-		return stringSortComparer(a.data["display_name"], b.data["display_name"]);
+		return stringSortComparer(a.data.display_name, b.data.display_name);
 	}
 }
