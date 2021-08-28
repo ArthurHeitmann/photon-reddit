@@ -111,7 +111,10 @@ function loadClientId(id?: string) {
 		clientId = clientData.id;
 	}
 }
-init();
+
+try {
+	init();
+} catch {}
 
 export function hasAnalyticsFileLoaded() {
 	return Boolean(clientId);
