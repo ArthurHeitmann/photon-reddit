@@ -1,9 +1,8 @@
 /**
  * Clears cached data in the localstorage occasionally
  */
-
-import { saveSeenPosts, seenPosts, StoredData, unmarkPostAsSeen } from "../../../utils/globals";
-import { globalSettings } from "../../global/photonSettings/photonSettings";
+import { globalSettings } from "../components/global/photonSettings/photonSettings";
+import { saveSeenPosts, seenPosts, StoredData, unmarkPostAsSeen } from "./globals";
 
 export function clearAllOldData() {
 	const now = Date.now();
@@ -51,5 +50,18 @@ export function clearAllOldData() {
 
 	saveSeenPosts(false);
 
+	// remove data from old versions
+	localStorage.removeItem("browserFeaturesTracked");
+	localStorage.removeItem("multisData");
+	localStorage.removeItem("queuedHosts");
+	localStorage.removeItem("subreddits");
+	localStorage.removeItem("subredditsData");
+
 	console.log(`Cache cleaner took ${Date.now() - now}ms, removed ${removedCachedInfos} cached feed infos and ${removedSeen} seen posts`);
 }
+
+// wait 10 seconds to avoid additional lag
+setTimeout(() => {
+		clearAllOldData();
+		setInterval(() => clearAllOldData(), 1000 * 60 * 60);		// clear cache every 60 minutes
+}, 10 * 1000);

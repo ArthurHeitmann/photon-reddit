@@ -4,7 +4,6 @@ import { tagInElementTree } from "../../../utils/htmlStuff";
 import { hasParams, makeElement } from "../../../utils/utils";
 import Ph_Header from "../../global/header/header";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
-import { clearAllOldData } from "./feedInfoCleanup";
 
 export enum FeedType {
 	subreddit = "subreddit",
@@ -194,10 +193,3 @@ export default abstract class Ph_FeedInfo<StoredData> extends HTMLElement {
 		return img;
 	}
 }
-
-// wait 10 seconds to avoid additional lag
-setTimeout(() => {
-		clearAllOldData();
-		setInterval(() => clearAllOldData(), 1000 * 60 * 60);		// clear cache every 60 minutes
-	}
-, 10 * 1000);
