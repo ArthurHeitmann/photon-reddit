@@ -215,7 +215,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 							[{ src: clip.url, type: "video/mp4" }]
 							), true
 						);
-					})
+					}).catch(() => videoOut.init(null))
 				}
 				break;
 			case "redgifs.com":
@@ -233,7 +233,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 			case "streamable.com":
 				getStreamableUrl(url).then(sources => {
 					videoOut.init(new Ph_SimpleVideo(sources), true)
-				});
+				}).catch(() => videoOut.init(null));
 				break;
 			default:
 				// some other .mp4 or .gif file

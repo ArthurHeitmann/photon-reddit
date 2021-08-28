@@ -57,7 +57,7 @@ export function clearAllOldData() {
 	localStorage.removeItem("subreddits");
 	localStorage.removeItem("subredditsData");
 
-	console.log(`Cache cleaner took ${Date.now() - now}ms, removed ${removedCachedInfos} cached feed infos and ${removedSeen} seen posts`);
+	console.log(`LocalStorage cleaner took ${Date.now() - now}ms, removed ${removedCachedInfos} cached feed infos and ${removedSeen} seen posts`);
 }
 
 // wait 10 seconds to avoid additional lag
