@@ -12,7 +12,7 @@ export interface SubsChangeEvent {
 export class SubredditManager extends UserSubscriptions<RedditSubredditObj, SubsChangeEvent> {
 
 	async load() {
-		const cached = this.loadUserContentFromLs("subreddits");
+		const cached = this.loadUserContentFromLs("subs");
 		if (cached === null)
 			await this.fetchSubreddits();
 	}
@@ -55,7 +55,7 @@ export class SubredditManager extends UserSubscriptions<RedditSubredditObj, Subs
 			this.userContent.splice(currentSubIndex, 1);
 			this.dispatchChange({ subreddit: subredditData, isUserSubscribed: false, index: currentSubIndex });
 		}
-		this.cacheUserContentLs("subreddits", false);
+		this.cacheUserContentLs("subs", false);
 		return true;
 	}
 
