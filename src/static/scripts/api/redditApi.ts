@@ -407,10 +407,11 @@ export async function createOrUpdateMulti(multiPath: string, model: CreateOrUpda
 	);
 }
 
-export async function deleteMulti(multiPath: string) {
-	return await redditApiRequest(
+export async function deleteMulti(multiPath: string): Promise<boolean> {
+	const res = await redditApiRequest(
 		`/api/multi${multiPath}`,
 		[], true,
 		{ method: "DELETE" }
 	);
+	return isObjectEmpty(res);
 }

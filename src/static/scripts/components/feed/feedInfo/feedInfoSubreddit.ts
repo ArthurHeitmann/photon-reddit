@@ -109,14 +109,14 @@ export default class Ph_FeedInfoSubreddit extends Ph_FeedInfo<AllSubData> {
 		const dropDownEntries: DropDownEntryParam[] = [];
 		dropDownEntries.push({label:makeElement("a", { href: this.feedUrl }, "Visit"), labelImgUrl: "/img/rightArrow.svg"});
 		dropDownEntries.push({label: makeElement("a", { href: `${this.feedUrl}/submit` }, "Submit Post"), labelImgUrl: "/img/edit.svg"});
-		if (thisUser.multireddits.length > 0) {
+		if (thisUser.multireddits.rawData.length > 0) {
 			dropDownEntries.push({
 				label: "Add to Multireddit",
 				labelImgUrl: "/img/add.svg",
 				nestedEntries:
-					thisUser.multireddits.map(multi => ({
-						label: multi.display_name,
-						value: multi.path,
+					thisUser.multireddits.rawData.map(multi => ({
+						label: multi.data.display_name,
+						value: multi.data.path,
 						onSelectCallback: async (data: DropDownActionData) => {
 							const multiPath = data.valueChain[1].replace(/\/?$/g, "")		// remove potential trailing /
 							const response = await addSubToMulti(

@@ -13,6 +13,7 @@ import { getMultiIconUrl, getSubredditIconUrl, getUserIconUrl, hasParams } from 
 
 export default class Ph_FeedLink extends HTMLElement {
 	private name: string;
+	private url: string;
 
 	constructor(feedData: RedditSubredditObj | RedditUserObj | RedditMultiObj | string, blurNsfw = false, isClickable = true) {
 		super();
@@ -33,6 +34,7 @@ export default class Ph_FeedLink extends HTMLElement {
 			switch (feedData.kind) {
 			case "t5":	// subreddit
 				this.name = feedData.data.display_name;
+				this.url = feedData.data.url;
 				linkText.innerText = `r/${feedData.data.display_name}`;
 				if (linkWrapper instanceof HTMLAnchorElement)
 					linkWrapper.href = `/r/${feedData.data.display_name}`;
@@ -45,7 +47,8 @@ export default class Ph_FeedLink extends HTMLElement {
 				this.classList.add("subreddit");
 				break;
 			case "t2":	// user
-				this.name = feedData.data.name
+				this.name = feedData.data.name;
+				this.url = feedData.data.subreddit.url;
 				linkText.innerText = `u/${feedData.data.name}`;
 				if (feedData.data.is_suspended === true)
 					linkText.innerText += " (suspended)";
@@ -61,6 +64,7 @@ export default class Ph_FeedLink extends HTMLElement {
 				break;
 			case "LabeledMulti":	// multireddit
 				this.name = feedData.data.display_name;
+				this.url = feedData.data.path;
 				linkText.innerText = feedData.data.display_name;
 				if (linkWrapper instanceof HTMLAnchorElement)
 					linkWrapper.href = feedData.data.path;
@@ -94,6 +98,10 @@ export default class Ph_FeedLink extends HTMLElement {
 
 	getName() {
 		return this.name;
+	}
+
+	getUrl(): string {
+		return this.url;
 	}
 }
 

@@ -1,26 +1,20 @@
 import { getMySubs, redditInfo, subscribe } from "../api/redditApi";
-import { RedditApiObj, RedditSubredditObj } from "../types/redditTypes";
-import { StoredData, User } from "./globals";
+import { RedditSubredditObj } from "../types/redditTypes";
 import { UserSubscriptions } from "./UserSubscriptions";
 import { stringSortComparer } from "./utils";
 
-export interface SubscriptionChangeEvent {
-	subreddit: RedditApiObj,
+export interface SubsChangeEvent {
+	subreddit: RedditSubredditObj,
 	isUserSubscribed: boolean,
 	index: number
 }
 
-export class SubredditManager extends UserSubscriptions<RedditSubredditObj, SubscriptionChangeEvent> {
+export class SubredditManager extends UserSubscriptions<RedditSubredditObj, SubsChangeEvent> {
 
 	async load() {
-		try {
-			const storedData: StoredData<RedditSubredditObj[]> = JSON.parse(localStorage.subreddits);
-			this.userContent = storedData.data;
-			if (Date.now() - storedData.lastUpdatedMsUTC > User.refreshEveryNMs)
-				await this.fetchSubreddits();
-		} catch (e) {
+		const cached = this.loadUserContentFromLs("subreddits");
+		if (cached === null)
 			await this.fetchSubreddits();
-		}
 	}
 
 	private async fetchSubreddits() {
@@ -32,7 +26,7 @@ export class SubredditManager extends UserSubscriptions<RedditSubredditObj, Subs
 		}
 
 		this.userContent = subs.data.children.sort(SubredditManager.subredditsSort);
-		this.cacheSubreddits();
+		this.cacheUserContentLs("subreddits", true);
 	}
 
 	isSubscribedTo(subreddit: string): boolean {
@@ -61,15 +55,8 @@ export class SubredditManager extends UserSubscriptions<RedditSubredditObj, Subs
 			this.userContent.splice(currentSubIndex, 1);
 			this.dispatchChange({ subreddit: subredditData, isUserSubscribed: false, index: currentSubIndex });
 		}
-		this.cacheSubreddits();
+		this.cacheUserContentLs("subreddits", false);
 		return true;
-	}
-
-	private cacheSubreddits() {
-		localStorage.subreddits = JSON.stringify(<StoredData<RedditSubredditObj[]>> {
-			lastUpdatedMsUTC: Date.now(),
-			data: this.userContent
-		});
 	}
 
 	private static subredditsSort(a, b) {

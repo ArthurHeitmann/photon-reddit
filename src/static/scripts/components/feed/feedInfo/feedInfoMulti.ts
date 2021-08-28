@@ -1,10 +1,4 @@
-import {
-	addSubToMulti,
-	createOrUpdateMulti,
-	deleteMulti,
-	getMultiInfo,
-	removeSubFromMulti
-} from "../../../api/redditApi";
+import { addSubToMulti, getMultiInfo, removeSubFromMulti } from "../../../api/redditApi";
 import {
 	RedditMultiInfo,
 	RedditMultiObj,
@@ -15,7 +9,9 @@ import {
 import { StoredData, thisUser } from "../../../utils/globals";
 import { emojiFlagsToImages, escADQ, escHTML } from "../../../utils/htmlStatics";
 import { linksToSpa } from "../../../utils/htmlStuff";
-import { isObjectEmpty, makeElement, numberToShort, stringSortComparer } from "../../../utils/utils";
+import { MultiChangeType, MultisChangeEvent } from "../../../utils/MultiManager";
+import { OnSubscriptionChangeCallback } from "../../../utils/UserSubscriptions";
+import { makeElement, numberToShort, stringSortComparer } from "../../../utils/utils";
 import Ph_FeedLink from "../../link/feedLink/feedLink";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown";
 import Ph_MultiCreateOrEdit from "../../misc/multiCreateOrEdit/multiCreateOrEdit";
@@ -25,6 +21,7 @@ import Ph_FeedInfo from "./feedInfo";
 
 export default class Ph_FeedInfoMulti extends Ph_FeedInfo<RedditMultiInfo> {
 	private editPane: Ph_MultiCreateOrEdit;
+	private multisChangedCallback: OnSubscriptionChangeCallback<MultisChangeEvent>;
 
 	async loadInfo(): Promise<void> {
 		let feedAbout: RedditMultiObj
@@ -237,32 +234,49 @@ export default class Ph_FeedInfoMulti extends Ph_FeedInfo<RedditMultiInfo> {
 	}
 
 	private async editMulti(info) {
-		const response = await createOrUpdateMulti(this.feedUrl, {
+		return await thisUser.multireddits.createOrUpdateMulti(this.feedUrl, true, {
 			display_name: info.name,
 			description_md: info.descriptionMd,
 			visibility: info.visibility
 		});
-		if ("error" in response) {
-			new Ph_Toast(Level.error, "Error editing multi", { timeout: 2500 });
-			return false;
-		}
-		if (response["reason"]) {
-			new Ph_Toast(Level.error, `${response["fields"][0]}: ${response["explanation"]}`, { timeout: 3500 });
-			return false;
-		}
-		this.loadInfo().then(this.displayInfo.bind(this));
-		return true;
 	}
 
 	private deleteMulti() {
 		new Ph_Toast(Level.warning, "Are you sure you want to delete this multireddit?", { onConfirm: async () => {
-			const response = await deleteMulti(this.feedUrl);
-			if (!isObjectEmpty(response)) {
+			const response = await thisUser.multireddits.createOrUpdateMulti(this.feedUrl, false);
+			if (!response) {
 				new Ph_Toast(Level.error, "Something went wrong", { timeout: 2500 });
 				return;
 			}
 			new Ph_Toast(Level.success, "", { timeout: 3000 });
 		} });
+	}
+
+	connectedCallback() {
+		setTimeout(() => {
+			if(!this.multisChangedCallback)
+				this.multisChangedCallback = this.onMultisChanged.bind(this);
+			thisUser.multireddits.listenForChanges(this.multisChangedCallback);
+		}, 0);
+	}
+
+	disconnectedCallback() {
+		setTimeout(() => {
+			thisUser.multireddits.disconnectListener(this.multisChangedCallback);
+		}, 0);
+	}
+
+	private onMultisChanged(e: MultisChangeEvent) {
+		if (e.multi.data.path.toLowerCase() !== this.feedUrl.toLowerCase())
+			return;
+		switch (e.changeType) {
+		case MultiChangeType.edited:
+			this.loadInfo().then(() => this.displayInfo());
+			break;
+		case MultiChangeType.deleted:
+			(this.$css("h1.title")[0] as HTMLElement).innerText += " (deleted)";
+			break;
+		}
 	}
 }
 

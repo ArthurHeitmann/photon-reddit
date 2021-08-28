@@ -9,12 +9,12 @@
  *  - manage seen posts
  */
 
-import { getMyMultis, redditApiRequest } from "../api/redditApi";
+import { redditApiRequest } from "../api/redditApi";
 import Ph_UserDropDown from "../components/global/userDropDown/userDropDown";
-import { RedditMultiObj, RedditUserInfo } from "../types/redditTypes";
+import { RedditUserInfo } from "../types/redditTypes";
 import { $class } from "./htmlStatics";
+import { MultiManager } from "./MultiManager";
 import { SubredditManager } from "./subredditManager";
-import { nameOf } from "./utils";
 
 export let isLoggedIn: boolean = false;
 
@@ -38,8 +38,7 @@ export type MultiReddit = typeof _MultiReddit;
 export class User {
 	name: string;
 	subreddits = new SubredditManager();
-	multireddits: MultiReddit[] = [];
-	multiredditsData: RedditMultiObj[] = [];
+	multireddits = new MultiManager();
 	private inboxUnreadIds: Set<string> = new Set();
 	static refreshEveryNMs = 1000 * 60 * 5;			// 5m
 
@@ -48,21 +47,8 @@ export class User {
 		// get subscribed subreddits & multireddits
 		await Promise.all([
 			this.subreddits.load(),
-			this.tryLoadFromLocalStorage(nameOf<User>("multireddits"), "multis", this.fetchMultis.bind(this)),
+			this.multireddits.load(),
 		]);
-	}
-
-	private async tryLoadFromLocalStorage(userProp: string, lsProp, onFails: () => Promise<void>) {
-		try {
-			const storedShort: StoredData<any> = JSON.parse(localStorage[lsProp]);
-			const storedData: StoredData<any> = JSON.parse(localStorage[lsProp + "Data"]);
-			this[userProp] = storedShort.data;
-			this[userProp + "Data"] = storedData.data;
-			if (Date.now() - storedShort.lastUpdatedMsUTC > User.refreshEveryNMs)
-				await onFails();
-		} catch (e) {
-			await onFails();
-		}
 	}
 
 	/** fetched by auth.ts to verify that the access token is valid */
@@ -72,25 +58,6 @@ export class User {
 			return false;
 		thisUser.name = userData.name || "";
 		return true;
-	}
-
-	private async fetchMultis() {
-		const multis = await getMyMultis();
-		this.multiredditsData = multis;
-		this.multireddits = <MultiReddit[]> multis
-				.map(multi => multi.data)																// simplify, by only using the data property
-				.map(multi => Object.entries(multi))													// split
-				.map(multi => multi.filter(entries => Object.keys(_MultiReddit).includes(entries[0])))	// remove all entries that are not part of MultiReddit
-				.map(filteredEntries => Object.fromEntries(filteredEntries))							// join again
-
-		localStorage.multis = JSON.stringify(<StoredData<MultiReddit[]>> {
-			lastUpdatedMsUTC: Date.now(),
-			data: this.multireddits
-		});
-		localStorage.multisData = JSON.stringify(<StoredData<RedditMultiObj[]>> {
-			lastUpdatedMsUTC: Date.now(),
-			data: this.multiredditsData
-		});
 	}
 
 	setInboxIdsUnreadState(inboxItemIds: string[], isUnread: boolean): void {

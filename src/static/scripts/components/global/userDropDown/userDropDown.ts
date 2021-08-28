@@ -1,10 +1,10 @@
-import { createOrUpdateMulti } from "../../../api/redditApi";
 import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager";
 import ViewsStack from "../../../historyState/viewsStack";
 import { RedditApiObj, RedditSubredditObj } from "../../../types/redditTypes";
 import { ensurePageLoaded, thisUser } from "../../../utils/globals";
 import { elementWithClassInTree, isElementIn } from "../../../utils/htmlStuff";
-import { SubscriptionChangeEvent } from "../../../utils/subredditManager";
+import { MultiChangeType, MultisChangeEvent } from "../../../utils/MultiManager";
+import { SubsChangeEvent } from "../../../utils/subredditManager";
 import { hasHTML, isFakeSubreddit, makeElement, numberToShort } from "../../../utils/utils";
 import Ph_FeedLink from "../../link/feedLink/feedLink";
 import Ph_MultiCreateOrEdit, { MultiBasicInfo } from "../../misc/multiCreateOrEdit/multiCreateOrEdit";
@@ -21,6 +21,7 @@ export default class Ph_UserDropDown extends HTMLElement {
 	unreadBadge: HTMLElement;
 	searchFilterInput: HTMLInputElement;
 	subredditsList: HTMLElement;
+	multisList: HTMLElement;
 
 	constructor() {
 		super();
@@ -53,8 +54,8 @@ export default class Ph_UserDropDown extends HTMLElement {
 			makeElement("div", null, "New Multireddit")
 		]);
 		ensurePageLoaded().then(() => {
-			dropDownArea.append(this.makeSubredditGroup(
-				thisUser.multiredditsData,
+			dropDownArea.append(this.multisList = this.makeSubredditGroup(
+				thisUser.multireddits.rawData,
 				"Multireddits",
 				newMultiBtn
 			));
@@ -64,6 +65,7 @@ export default class Ph_UserDropDown extends HTMLElement {
 			));
 		});
 		thisUser.subreddits.listenForChanges(this.onSubscriptionChanged.bind(this));
+		thisUser.multireddits.listenForChanges(this.onMultisChanged.bind(this));
 	}
 
 	private makeSubredditGroup(feedsData: (RedditApiObj | string)[], groupName: string, ...additionChildren: Element[]): HTMLElement {
@@ -165,29 +167,44 @@ export default class Ph_UserDropDown extends HTMLElement {
 			return false;
 		}
 		const multiPath = `/user/${thisUser.name}/m/${multiUrlName}`;
-		const response = await createOrUpdateMulti(multiPath, {
+		const response = await thisUser.multireddits.createOrUpdateMulti(multiPath, true, {
 			display_name: info.name,
 			description_md: info.descriptionMd,
 			visibility: info.visibility
 		});
-		if ("error" in response) {
-			new Ph_Toast(Level.error, "Error editing multi", { timeout: 2500 });
+		if (!response)
 			return false;
-		}
-		if (response["reason"]) {
-			new Ph_Toast(Level.error, `${response["fields"][0]}: ${response["explanation"]}`, { timeout: 3500 });
-			return false;
-		}
 		pushLinkToHistoryComb(multiPath);
 		return true;
 	}
 
-	private onSubscriptionChanged(e: SubscriptionChangeEvent) {
+	private onSubscriptionChanged(e: SubsChangeEvent) {
 		if (e.isUserSubscribed) {
 			this.subredditsList.children[e.index].after(new Ph_FeedLink(e.subreddit as RedditSubredditObj));
 		}
 		else {
 			this.subredditsList.children[e.index + 1].remove();
+		}
+	}
+
+	private onMultisChanged(e: MultisChangeEvent) {
+		switch (e.changeType) {
+			case MultiChangeType.created:
+				this.multisList.lastElementChild.before(new Ph_FeedLink(e.multi));
+				break;
+			case MultiChangeType.edited: {
+				const currentMultis = this.multisList.$classAr("feedLink") as Ph_FeedLink[];
+				const multiIndex = currentMultis.findIndex(link => link.getUrl() === e.multi.data.path);
+				currentMultis[multiIndex].after(new Ph_FeedLink(e.multi));
+				currentMultis[multiIndex].remove();
+				break;
+			}
+			case MultiChangeType.deleted: {
+				const currentMultis = this.multisList.$classAr("feedLink") as Ph_FeedLink[];
+				const multiIndex = currentMultis.findIndex(link => link.getUrl() === e.multi.data.path);
+				currentMultis[multiIndex].remove();
+				break;
+			}
 		}
 	}
 
