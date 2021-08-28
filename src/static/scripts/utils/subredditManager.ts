@@ -26,7 +26,7 @@ export class SubredditManager extends UserSubscriptions<RedditSubredditObj, Subs
 		}
 
 		this.userContent = subs.data.children.sort(SubredditManager.subredditsSort);
-		this.cacheUserContentLs("subreddits", true);
+		this.cacheUserContentLs("subs", true);
 	}
 
 	isSubscribedTo(subreddit: string): boolean {

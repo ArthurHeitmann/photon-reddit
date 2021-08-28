@@ -23,8 +23,12 @@ export abstract class UserSubscriptions<ContentType, EventData> {
 	}
 
 	protected dispatchChange(event: EventData) {
-		for (const handler of this.changeSubscribers)
-			handler(event);
+		for (const handler of this.changeSubscribers) {
+			try {
+				handler(event);
+			}
+			catch {}
+		}
 	}
 
 	protected cacheUserContentLs(localstorageKey: string, useCurrentTime: boolean) {
