@@ -48,10 +48,11 @@ export default class Ph_FeedLink extends HTMLElement {
 				break;
 			case "t2":	// user
 				this.name = feedData.data.name;
-				this.url = feedData.data.subreddit.url;
 				linkText.innerText = `u/${feedData.data.name}`;
 				if (feedData.data.is_suspended === true)
 					linkText.innerText += " (suspended)";
+				else
+					this.url = feedData.data.subreddit.url;
 				if (linkWrapper instanceof HTMLAnchorElement)
 					linkWrapper.href = `/user/${feedData.data.name}`;
 				const userIconImg = getUserIconUrl(feedData.data as RedditUserInfo);

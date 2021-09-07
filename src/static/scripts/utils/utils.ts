@@ -7,13 +7,13 @@ import { RedditMultiInfo, RedditUserInfo, SubredditInfoBase } from "../types/red
 import { fakeSubreddits } from "./consts";
 
 /** */
-function _numberToShort(num): { n: number, s: string } {
+function _numberToShort(num: number): { n: number, s?: string } {
 	switch (Math.abs(num).toString().length) {
 		case 0:
 		case 1:
 		case 2:
 		case 3:
-			return num.toString();
+			return { n: num };
 		case 4:
 			return { n: floorTo(num / 1000, 2), s: "k"};
 		case 5:
@@ -470,7 +470,7 @@ export function getSubredditIconUrl(subData: SubredditInfoBase): string {
 }
 
 export function getUserIconUrl(userData: RedditUserInfo): string {
-	return userData.subreddit.icon_img || userData.icon_img || "/img/uSlash.svg";
+	return userData?.subreddit?.icon_img || userData?.icon_img || "/img/uSlash.svg";
 }
 
 export function getMultiIconUrl(multiData: RedditMultiInfo): string {
