@@ -1,84 +1,181 @@
 @use "../../../../style/vars";
+@use "../../../../style/shadow";
 
 .photonSettings {
-	--width: min(90vw, 60rem);
-	--height: 80vh;
+	--width: min(95vw, 40rem) !important;
+	--height: 80vh !important;
+
+	> div {
+		padding: 0 !important;
+		@extend %shadow-longer;
+	}
 
 	.modalContent {
 		overflow: initial !important;
 		display: flex;
-		flex-direction: column;
+		$sidebar-width: 11rem;
+		$sidebar-min-width: 3.5rem;
+
 		
 		.save.button {
 			background: vars.$background;
 		}
 
-		> .mainWrapper {
+		.sectionsSelection {
 			display: flex;
-			flex-grow: 1;
-			will-change: transform;
-			height: calc(100% - 3rem);
+			flex-direction: column;
+			width: $sidebar-width;
+			background: vars.$switcher-bg;
+			height: 100%;
+			overflow-y: auto;
+			border-top-left-radius: vars.$border-radius;
+			border-bottom-left-radius: vars.$border-radius;
+			transition: all 0.1s ease;
+			position: absolute;
 
-			> .previewArea {
-				padding-right: 1rem;
-				margin-right: 1rem;
-				position: relative;
-				flex-grow: 1;
+			.sectionButton {
+				display: flex;
+				align-items: center;
+				padding: 1rem;
+				gap: 1rem;
+				transition: all .25s;
 
-				&::after {
-					content: "";
-					position: absolute;
-					top: 0;
-					right: 0;
-					width: 1px;
-					height: 100%;
-					background: vars.$divider-color;
-				}
-			}
-
-			> .optionsArea {
-				width: min(80vw, 25rem);
-				overflow: auto;
-
-				> .inputGroup, > .inputWrapper {
-					margin: .75rem .25rem .75rem 0;
-				}
-
-				.inputGroup {
-					cursor: default;
-
-					> div:not(:first-child) {
-						margin-left: 1rem;
+				&.hamburger {
+					@media (min-width: 800px) {
+						display: none;
 					}
 				}
 
-				.inputWrapper {
-					display: flex;
-					justify-content: space-between;
-					align-items: center;
+				&.selected {
+					background: vars.$switcher-bg-selected;
+				}
 
-					> input + label {
-						margin-right: .5rem;
-					}
+				&:hover:not(.selected) {
+					background: vars.$switcher-bg-hover;
+				}
 
-					> input[type=text], input[type=number] {
-						width: 4rem;
-						text-align: right;
-						border-bottom: 1px solid vars.$divider-color;
-						transition: border-bottom-color .25s ease;
+				&:active:not(.selected) {
+					background: vars.$switcher-bg-active;
+				}
 
-						&:focus {
-							border-bottom: 1px solid vars.$primary;
-						}
-					}
+				.icon {
+					height: 1.5rem;
+				}
+
+				.name {
+
 				}
 			}
 		}
+
+		.sections {
+			padding: 1.75rem;
+			height: 100%;
+			margin-left: $sidebar-width;
+			background-image: linear-gradient(to right, #00000054 0, transparent 1.5rem);
+			transition: all 0.1s ease;
+
+			.section {
+				overflow-y: auto;
+
+				&:not(.selected) {
+					display: none;
+				}
+			}
+		}
+
+		//> .mainWrapper {
+		//	display: flex;
+		//	flex-grow: 1;
+		//	will-change: transform;
+		//	height: calc(100% - 3rem);
+		//
+		//	> .previewArea {
+		//		padding-right: 1rem;
+		//		margin-right: 1rem;
+		//		position: relative;
+		//		flex-grow: 1;
+		//
+		//		&::after {
+		//			content: "";
+		//			position: absolute;
+		//			top: 0;
+		//			right: 0;
+		//			width: 1px;
+		//			height: 100%;
+		//			background: vars.$divider-color;
+		//		}
+		//	}
+		//
+		//	> .optionsArea {
+		//		width: min(80vw, 25rem);
+		//		overflow: auto;
+		//
+		//		> .inputGroup, > .inputWrapper {
+		//			margin: .75rem .25rem .75rem 0;
+		//		}
+		//
+		//		.inputGroup {
+		//			cursor: default;
+		//
+		//			> div:not(:first-child) {
+		//				margin-left: 1rem;
+		//			}
+		//		}
+		//
+		//		.inputWrapper {
+		//			display: flex;
+		//			justify-content: space-between;
+		//			align-items: center;
+		//
+		//			> input + label {
+		//				margin-right: .5rem;
+		//			}
+		//
+		//			> input[type=text], input[type=number] {
+		//				width: 4rem;
+		//				text-align: right;
+		//				border-bottom: 1px solid vars.$divider-color;
+		//				transition: border-bottom-color .25s ease;
+		//
+		//				&:focus {
+		//					border-bottom: 1px solid vars.$primary;
+		//				}
+		//			}
+		//		}
+		//	}
+		//}
 
 		> .bottomBar {
 			display: flex;
 			justify-content: flex-end;
 			padding-top: .5rem;
+		}
+
+
+
+		@media (max-width: 800px) {
+			&:not(.toggle) {
+				.sectionsSelection {
+					width: $sidebar-min-width;
+
+					.sectionButton {
+						.name {
+							display: none;
+						}
+					}
+				}
+			}
+
+			.sections {
+				margin-left: $sidebar-min-width;
+			}
+
+			&.toggle {
+				.sections {
+					background-position-x: $sidebar-width - $sidebar-min-width;
+				}
+			}
 		}
 	}
 }
