@@ -35,7 +35,7 @@
 			transition: all 0.1s ease;
 			position: absolute;
 
-			.sectionButton {
+			.sectionEntry {
 				display: flex;
 				align-items: center;
 				padding: 1rem;
@@ -45,6 +45,19 @@
 				&.hamburger {
 					@media (min-width: 800px) {
 						display: none;
+					}
+				}
+
+				&.search {
+					gap: .4rem;
+					padding-right: 0.5rem;
+					background: none !important;
+
+					input {
+						border-bottom: 1px solid vars.$input-element-bg;
+						//border-radius: 0.5rem;
+						padding: .25rem .5rem;
+						width: 100%;
 					}
 				}
 
@@ -84,6 +97,7 @@
 				display: flex;
 				flex-direction: column;
 				min-height: 100%;
+				max-height: 100%;
 
 				&:not(.selected) {
 					display: none;
@@ -98,7 +112,7 @@
 					flex-direction: column;
 					gap: .1rem;
 					border: 1px solid transparent;
-					transition: border .2s ease;
+					transition: border .25s ease;
 					padding: .5rem 0;
 
 					.mainRow {
@@ -210,7 +224,7 @@
 							align-self: center;
 
 							img {
-								transition: .2s ease;
+								transition: .25s ease;
 								width: 1.5rem;
 								height: 1.5rem;
 								opacity: 0;
@@ -238,7 +252,7 @@
 				.sectionsSelection {
 					width: $sidebar-min-width;
 
-					.sectionButton {
+					.sectionEntry {
 						.name {
 							display: none;
 						}

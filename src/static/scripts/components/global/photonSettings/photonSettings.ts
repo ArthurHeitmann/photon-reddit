@@ -92,18 +92,13 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 		ensurePageLoaded().then(() => this.init());
 	}
 
-	init() {
-		this.populateSettings();
-		window.addEventListener("storage", this.onLocalstorageChange.bind(this));
-	}
-
-	private populateSettings() {
+	private init() {
 		const sections: { [name: string]: HTMLElement } = {};
 		for (const section of this.sectionsConfig) {
 			sections[section.name] = makeElement("div", { class: "section" }, [
 				makeElement("div", { class: "sectionName" }, section.name),
 				...section.settings.map(
-					setting => setting.makeElement(this.onSettingChange.bind(this))
+					setting => setting.getElement(this.onSettingChange.bind(this))
 				)
 			]);
 		}
@@ -112,21 +107,30 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 		this.content.append(
 			makeElement("div", { class: "sectionsSelection" },[
 				makeElement("button", {
-					class: "sectionButton hamburger",
+					class: "sectionEntry hamburger",
 					onclick: () => this.content.classList.toggle("toggle")
 				}, [
 					makeElement("img", { class: "icon", src: "/img/hamburger.svg" }),
 					makeElement("div", { class: "name" }, "")
 				]),
+				makeElement("div", { class: "sectionEntry search" }, [
+					makeElement("img", { class: "icon", src: "/img/search.svg" }),
+					makeElement("input", {
+						type: "text",
+						placeholder: "Filter...",
+						class: "name",
+						oninput: this.onSearchInput.bind(this)
+					})
+				]),
 				...this.sectionsConfig.map(
 					(section, index) => makeElement("button", {
-						class: `sectionButton${index === 0 ? " selected" : ""}`,
+						class: `sectionEntry${index === 0 ? " selected" : ""}`,
 						onclick: e => {
 							const btn = e.currentTarget as HTMLElement;
 							this.content.classList.remove("toggle");
 							if (btn.classList.contains("selected"))
 								return;
-							this.$css(".sectionButton.selected")[0]?.classList.remove("selected");
+							this.$css(".sectionEntry.selected")[0]?.classList.remove("selected");
 							btn.classList.add("selected");
 							this.$css(".section.selected")[0]?.classList.remove("selected");
 							sections[section.name].classList.add("selected");
@@ -141,6 +145,8 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 				section => sections[section.name]
 			))
 		);
+
+		window.addEventListener("storage", this.onLocalstorageChange.bind(this));
 	}
 
 	private onSettingChange(source: SettingConfig, newVal: any) {
@@ -183,6 +189,27 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 		window.dispatchEvent(new CustomEvent("ph-settings-changed", { detail: deepClone(this.temporarySettings) }));
 		this.temporarySettings = {};
 		localStorage.settings = JSON.stringify(globalSettings);
+	}
+
+	private onSearchInput(e: InputEvent) {
+		const searchText = (e.currentTarget as HTMLInputElement).value.toLowerCase();
+		const keepSectionNames = new Set<string>();
+		for (const section of this.sectionsConfig) {
+			for (const setting of section.settings) {
+				if (!searchText || setting.name.toLowerCase().includes(searchText) || setting.description.toLowerCase().includes(searchText)) {
+					setting.getElement().classList.remove("hide");
+					keepSectionNames.add(section.name);
+				}
+				else
+					setting.getElement().classList.add("hide");
+			}
+		}
+		for (const section of this.$cssAr("button.sectionEntry:not(.hamburger)")) {
+			section.classList.toggle("hide",
+				!keepSectionNames.has((section.$class("name")[0] as HTMLElement).innerText))
+		}
+		if (!this.content.classList.contains("toggle"))
+			(this.$css("button.sectionEntry:not(.hide)")[0] as HTMLElement)?.click();
 	}
 
 	toggle() {

@@ -20,8 +20,9 @@ export abstract class SettingConfig {
 	name: string;
 	description: string;
 	settingKey: keyof PhotonSettings;
+	protected element: HTMLElement;
 	abstract type: SettingType;
-	abstract makeElement(onValueChange: (source: SettingConfig, newVal: any) => void): HTMLElement;
+	protected abstract makeElement(onValueChange: (source: SettingConfig, newVal: any) => void): HTMLElement;
 	abstract updateState(newVal);
 	abstract validateValue(newValue): ValidatorReturn;
 
@@ -29,6 +30,10 @@ export abstract class SettingConfig {
 		this.settingKey = settingKey;
 		this.name = name;
 		this.description = description;
+	}
+
+	getElement(onValueChange?: (source: SettingConfig, newVal?: any) => void): HTMLElement {
+		return this.element ?? (this.element = this.makeElement(onValueChange));
 	}
 }
 
@@ -237,7 +242,6 @@ export class MultiOptionSetting extends SettingConfig {
 
 export class HTMLElementSetting extends SettingConfig {
 	type: SettingType;
-	private element: HTMLElement
 
 	constructor(element: HTMLElement) {
 		super(null, "", "");
