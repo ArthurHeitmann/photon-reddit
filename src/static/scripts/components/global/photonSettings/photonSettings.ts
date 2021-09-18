@@ -39,7 +39,7 @@ export interface PhotonSettings {
 }
 
 // default config
-export let globalSettings: PhotonSettings = {
+export const defaultSettings: PhotonSettings = {
 	imageLoadingPolicy: ImageLoadingPolicy.originalInFs,
 	loadInlineMedia: false,
 	firstShowControlBar: true,
@@ -57,6 +57,8 @@ export let globalSettings: PhotonSettings = {
 	tooltipsVisible: true,
 	messageCheckIntervalMs: 30 * 1000,
 };
+
+export let globalSettings: PhotonSettings = deepClone(defaultSettings);
 
 /** Stores and manages global settings */
 export default class Ph_PhotonSettings extends Ph_ModalPane {

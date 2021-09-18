@@ -2,7 +2,7 @@
 @use "../../../../style/shadow";
 
 .photonSettings {
-	--width: min(95vw, 40rem) !important;
+	--width: min(95vw, 50rem) !important;
 	--height: 65vh !important;
 
 	> div {
@@ -16,7 +16,7 @@
 		$sidebar-width: 11rem;
 		$sidebar-min-width: 3.5rem;
 
-		
+
 		.save.button {
 			background: vars.$background;
 		}
@@ -79,10 +79,11 @@
 			transition: all 0.1s ease;
 
 			.section {
+				overflow-x: hidden;
 				overflow-y: auto;
 				display: flex;
 				flex-direction: column;
-				gap: 1rem;
+				min-height: 100%;
 
 				&:not(.selected) {
 					display: none;
@@ -96,6 +97,9 @@
 					display: flex;
 					flex-direction: column;
 					gap: .1rem;
+					border: 1px solid transparent;
+					transition: border .2s ease;
+					padding: .5rem 0;
 
 					.mainRow {
 						width: 100%;
@@ -188,12 +192,41 @@
 
 					.bottomRow {
 						width: 100%;
+						display: flex;
+						justify-content: space-between;
 
 						.description {
 							font-size: 0.8rem;
 							font-weight: 400;
+							max-width: calc(100% - 2rem);
+						}
+
+						.resetButton {
+							width: 1.5rem;
+							height: 1.5rem;
+							background-size: cover;
+							--dim: 1.75rem;
+							margin-right: 0.1rem;
+							align-self: center;
+
+							img {
+								transition: .2s ease;
+								width: 1.5rem;
+								height: 1.5rem;
+								opacity: 0;
+							}
 						}
 					}
+
+					&:hover {
+						border-top-color: vars.$border-color;
+						border-bottom-color: vars.$border-color;
+
+						.resetButton img {
+							opacity: 0.5;
+						}
+					}
+
 				}
 
 

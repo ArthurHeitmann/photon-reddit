@@ -188,11 +188,13 @@ input.checkbox {
 			transition: opacity .25s ease;
 		}
 
-		&:hover, &:focus {
-			&::before {
-				opacity: .333;
-			}
-		}
+	}
+
+}
+
+label:is(:hover, :focus) + input.checkbox + label, input.checkbox + label:is(:hover, :focus) {
+	&::before {
+		opacity: .333;
 	}
 }
 

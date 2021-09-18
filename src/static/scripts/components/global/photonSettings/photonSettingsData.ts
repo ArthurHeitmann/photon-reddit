@@ -1,5 +1,5 @@
 import { editableTimeStrToMs, makeElement, timeMsToEditableTimeStr } from "../../../utils/utils";
-import { globalSettings, ImageLoadingPolicy, NsfwPolicy, PhotonSettings } from "./photonSettings";
+import { defaultSettings, globalSettings, ImageLoadingPolicy, NsfwPolicy, PhotonSettings } from "./photonSettings";
 
 export interface SettingsSection {
 	name: string,
@@ -54,7 +54,11 @@ export class BooleanSetting extends SettingConfig {
 				makeElement("label", { for: `${this.settingKey}Setting` }),
 			]),
 			makeElement("div", { class: "bottomRow" }, [
-				makeElement("div", { class: "description" }, this.description)
+				makeElement("div", { class: "description" }, this.description),
+				makeElement("button", {
+					class: "resetButton transparentButtonAlt",
+					onclick: () => onValueChange(this, defaultSettings[this.settingKey])
+				}, [makeElement("img", { src: "/img/reset.svg" })])
 			])
 		]);
 	}
@@ -109,7 +113,11 @@ export class NumberSetting extends SettingConfig {
 				}) as HTMLInputElement,
 			]),
 			makeElement("div", { class: "bottomRow" }, [
-				makeElement("div", { class: "description" }, this.description)
+				makeElement("div", { class: "description" }, this.description),
+				makeElement("button", {
+					class: "resetButton transparentButtonAlt",
+					onclick: () => onValueChange(this, defaultSettings[this.settingKey])
+				}, [makeElement("img", { src: "/img/reset.svg" })])
 			])
 		]);
 	}
@@ -158,7 +166,11 @@ export class TimeSetting extends SettingConfig {
 				}) as HTMLInputElement,
 			]),
 			makeElement("div", { class: "bottomRow" }, [
-				makeElement("div", { class: "description" }, this.description)
+				makeElement("div", { class: "description" }, this.description),
+				makeElement("button", {
+					class: "resetButton transparentButtonAlt",
+					onclick: () => onValueChange(this, defaultSettings[this.settingKey])
+				}, [makeElement("img", { src: "/img/reset.svg" })])
 			])
 		]);
 	}
@@ -205,7 +217,11 @@ export class MultiOptionSetting extends SettingConfig {
 				))
 			]),
 			makeElement("div", { class: "bottomRow" }, [
-				makeElement("div", { class: "description" }, this.description)
+				makeElement("div", { class: "description" }, this.description),
+				makeElement("button", {
+					class: "resetButton transparentButtonAlt",
+					onclick: () => onValueChange(this, defaultSettings[this.settingKey])
+				}, [makeElement("img", { src: "/img/reset.svg" })])
 			])
 		]);
 	}
