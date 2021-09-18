@@ -354,7 +354,7 @@ export function timeMsToEditableTimeStr(timeMs: number): string {
 	return out;
 }
 
-export function editableTimeStrToMs(editableStr: string): number {
+export function editableTimeStrToMs(editableStr: string, throwAndDisplayError = true): number | string {
 	try {
 		if (editableStr === "0")
 			return 0;
@@ -385,8 +385,12 @@ export function editableTimeStrToMs(editableStr: string): number {
 
 		return timeMs;
 	} catch (e) {
-		new Ph_Toast(Level.error, e.message);
-		throw e;
+		if (throwAndDisplayError) {
+			new Ph_Toast(Level.error, e.message);
+			throw e;
+		}
+		else
+			return "Invalid time format (example: 1y 7 months 1day 30s";
 	}
 }
 

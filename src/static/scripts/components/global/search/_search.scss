@@ -1,4 +1,5 @@
 @use "../../../../style/vars";
+@use "../../../../style/shadow";
 
 .search {
 	display: flex;
@@ -77,6 +78,8 @@
 		opacity: 0;
 		visibility: hidden;
 		transition: all .25s ease;
+		@extend %shadow-sharp;
+		--shadow-color: rgb(0 0 0 / 40%);
 
 		> .resultsWrapper {
 			position: relative;

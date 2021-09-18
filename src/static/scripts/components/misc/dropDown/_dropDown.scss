@@ -84,7 +84,7 @@
 			transform-origin: top center;
 			will-change: transform;
 			transition: all .25s ease;
-			@extend %shadow-5;
+			@extend %shadow-4;
 
 			&.show {
 				transform: scale(1);

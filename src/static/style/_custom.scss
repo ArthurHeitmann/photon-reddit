@@ -163,14 +163,16 @@ input.checkbox {
 
 	+ label {
 		display: inline-block;
-		width: 1em;
-		min-width: 1em;
-		height: 1em;
+		width: var(--size);
+		min-width: var(--size);
+		height: var(--size);
 		box-sizing: border-box;
 		background: vars.$input-element-bg;
 		position: relative;
 		cursor: pointer;
 		transition: background-color .25s ease;
+		--size: 1em;
+		border-radius: 0.25rem;
 
 		&::before {
 			content: "";
