@@ -1,4 +1,3 @@
-import { ensurePageLoaded } from "../../../utils/globals";
 import { escHTML } from "../../../utils/htmlStatics";
 import "../../../utils/htmlStuff";
 import { deepClone, isJsonEqual, isObjectEmpty, makeElement } from "../../../utils/utils";
@@ -50,7 +49,7 @@ export const defaultSettings: PhotonSettings = {
 	nsfwPolicy: NsfwPolicy.covered,
 	markSeenPosts: true,
 	hideSeenPosts: false,
-	clearFeedCacheAfterMs: 1000 * 60 * 60 * 24,
+	clearFeedCacheAfterMs: 1000 * 60 * 60 * 2,
 	clearSeenPostAfterMs: 1000 * 60 * 60 * 24 * 365,
 	enableFab: true,
 	isIncognitoEnabled: false,
@@ -89,7 +88,7 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 	}
 
 	connectedCallback() {
-		ensurePageLoaded().then(() => this.init());
+		this.init();
 	}
 
 	private init() {
@@ -208,8 +207,8 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 			section.classList.toggle("hide",
 				!keepSectionNames.has((section.$class("name")[0] as HTMLElement).innerText))
 		}
-		if (!this.content.classList.contains("toggle"))
-			(this.$css("button.sectionEntry:not(.hide)")[0] as HTMLElement)?.click();
+		if (window.matchMedia("(min-width: 800px)").matches)
+			(this.$css("button.sectionEntry:not(.hide, .hamburger)")[0] as HTMLElement)?.click();
 	}
 
 	toggle() {

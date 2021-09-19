@@ -11,7 +11,7 @@
 	--primary-var: 240, 128, 128;
 	--primary-contrast: #e65d5d;
 	--image-height-limited: 70vh;
-	--border-color: rgb(128 128 128 / 13%);
+	--border-color: rgb(128 128 128 / 14%);
 }
 
 /** default background color */
@@ -45,6 +45,7 @@ $widthM: min(50rem, calc(100vw - 6rem));
 $widthL: min(60rem, calc(100vw - 6rem));
 $link-color: #7da3f9;
 $border-color: var(--border-color);
+$border-heavy-color: rgb(128 128 128 / 22%);
 $image-height-limited: var(--image-height-limited);
 $switcher-bg: $background-el2;
 $switcher-bg-hover: #333333;

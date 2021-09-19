@@ -1,4 +1,9 @@
+import { logOut } from "../../../auth/loginHandler";
+import { clearSeenPosts } from "../../../utils/globals";
 import { editableTimeStrToMs, makeElement, timeMsToEditableTimeStr } from "../../../utils/utils";
+import { photonWebVersion } from "../../../utils/version";
+import Ph_Toast, { Level } from "../../misc/toast/toast";
+import Ph_Changelog from "../../photon/changelog/changelog";
 import { defaultSettings, globalSettings, ImageLoadingPolicy, NsfwPolicy, PhotonSettings } from "./photonSettings";
 
 export interface SettingsSection {
@@ -264,14 +269,14 @@ export const getSettingsSections = () => <SettingsSection[]> [
 		name: "Post",
 		iconUrl: "/img/post.svg",
 		settings: [
-			new BooleanSetting("markSeenPosts", "Mark seen posts", "Mark posts you have scrolled past. Seen posts are only stored in your browser"),
-			new BooleanSetting("hideSeenPosts", "Hide seen posts", "Hide posts marked as seen (above option). When viewing a user all posts are always visible"),
-			new TimeSetting({ allowRange: [1, Number.MAX_SAFE_INTEGER] }, "clearSeenPostAfterMs", "Store seen posts for", "TODO"),
+			new BooleanSetting("markSeenPosts", "Mark seen posts", "Mark posts you have scrolled past. Seen posts are only stored in your browser."),
+			new BooleanSetting("hideSeenPosts", "Hide seen posts", "Hide posts marked as seen (above option). When viewing a user all posts are always visible."),
+			new TimeSetting({ allowRange: [1, Number.MAX_SAFE_INTEGER] }, "clearSeenPostAfterMs", "Store seen posts for", "Seen posts are stored for this time duration (format examples: 1y 13d, 6months 3 days, 1hour)."),
 			new MultiOptionSetting([
 				{ text: "Hide NSFW", value: NsfwPolicy.never },
 				{ text: "Blur NSFW", value: NsfwPolicy.covered },
 				{ text: "Show NSFW", value: NsfwPolicy.always },
-			], "nsfwPolicy", "NSFW post visibility", "TODO")
+			], "nsfwPolicy", "NSFW post visibility", "NSFW post visibility when viewing in feed. 1. Completely hidden 2. Blur + Warning on post 3. Normal visibility")
 		]
 	},
 	{
@@ -283,7 +288,7 @@ export const getSettingsSections = () => <SettingsSection[]> [
 					{ text: "Only previews", value: ImageLoadingPolicy.alwaysPreview },
 					{ text: "Original in fullscreen", value: ImageLoadingPolicy.originalInFs },
 					{ text: "Always originals", value: ImageLoadingPolicy.alwaysOriginal },
-				], "imageLoadingPolicy", "Image Previews", "Decide whether images in posts are loaded in max resolution or preview quality"
+				], "imageLoadingPolicy", "Image previews", "Decide whether images in posts are loaded in max resolution or preview quality"
 			),
 			new NumberSetting({ allowRange: [0, Number.MAX_SAFE_INTEGER] }, "imageLimitedHeight", "Max image height", "Set the maximum image height in % of screen height. Set height to \"0\" to disable height limits.")
 		]
@@ -292,28 +297,34 @@ export const getSettingsSections = () => <SettingsSection[]> [
 		name: "Videos",
 		iconUrl: "/img/fileVideo.svg",
 		settings: [
-			new BooleanSetting("preferHigherVideoQuality", "Prefer higher video quality", "TODO"),
-			new BooleanSetting("autoplayVideos", "Autoplay videos", "TODO"),
-			new BooleanSetting("globalVideoVolume", "Sync video volume", "TODO"),
+			new BooleanSetting("preferHigherVideoQuality", "Prefer higher video quality", "On: Use max resolution Off: Use lower resolution (if available) (360p, 480p)"),
+			new BooleanSetting("autoplayVideos", "Autoplay videos", "Play videos when they are on screen."),
+			new BooleanSetting("globalVideoVolume", "Sync video volume", "When changing volume on video, sync volume to all other videos."),
 		]
 	},
 	{
 		name: "General UI",
 		iconUrl: "/img/settings2.svg",
 		settings: [
-			new BooleanSetting("loadInlineMedia", "Load inline media", "TODO"),
-			new BooleanSetting("firstShowControlBar", "Initially show bottom bar for images & videos", "TODO"),
-			new BooleanSetting("enableFab", "Enable FAB", "TODO"),
-			new BooleanSetting("tooltipsVisible", "Show tooltips", "TODO"),
+			new BooleanSetting("loadInlineMedia", "Expand media previews", "Expand previews for links with media (e.g. imgur.com/..., reddit.com/.../.png)."),
+			new BooleanSetting("firstShowControlBar", "Initially show bottom bar", "Initially show or hide controls bar on the bottom of images and videos."),
+			new BooleanSetting("enableFab", "Enable FAB", "Enable Floating Action Button (bottom left corner)."),
+			new BooleanSetting("tooltipsVisible", "Show tooltips", "Toggle tooltips when hovering some UI elements."),
 		]
 	},
 	{
 		name: "Other",
 		iconUrl: "/img/circle.svg",
 		settings: [
-			new BooleanSetting("isIncognitoEnabled", "Incognito Mode", "TODO"),
-			new TimeSetting({ allowRange: [1, Number.MAX_SAFE_INTEGER] }, "clearFeedCacheAfterMs", "Subreddit Info cache duration", "TODO"),
-			new TimeSetting({ allowRange: [1000 * 10, Number.MAX_SAFE_INTEGER], allowList: [0] }, "messageCheckIntervalMs", "New messages checking interval", "TODO"),
+			new BooleanSetting("isIncognitoEnabled", "Incognito mode", "Randomize the tab title & url."),
+			new TimeSetting({ allowRange: [1, Number.MAX_SAFE_INTEGER] }, "clearFeedCacheAfterMs", "Subreddit info cache duration", ""),
+			new TimeSetting({ allowRange: [1000 * 10, Number.MAX_SAFE_INTEGER], allowList: [0] }, "messageCheckIntervalMs", "New messages checking interval", "Use \"0\" to disable. Min intervall is 10s. Message polling is only done while website is open."),
+			new HTMLElementSetting(makeElement("div", null, [
+				makeElement("button", { class: "mla button", onclick: clearSeenPosts }, "Clear seen posts"),
+				makeElement("button", { class: "mla button", onclick: () => Ph_Changelog.show() }, "Show Changelog"),
+				makeElement("button", { class: "mla button", onclick: () => new Ph_Toast(Level.warning, "Are you sure you want to log out?", { onConfirm: logOut }) }, "Log out"),
+				makeElement("div", null, `v${photonWebVersion}`)
+			])),
 		]
 	},
 ];

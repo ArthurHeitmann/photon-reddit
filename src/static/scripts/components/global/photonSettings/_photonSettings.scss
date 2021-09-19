@@ -130,7 +130,7 @@
 						}
 
 						input:where([type=number], [type=text]) {
-							border-bottom: 1px solid vars.$background-el2;
+							border-bottom: 1px solid vars.$border-heavy-color;
 							text-align: right;
 							transition: all .25s ease;
 

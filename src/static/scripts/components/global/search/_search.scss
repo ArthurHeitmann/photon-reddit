@@ -7,7 +7,7 @@ ph-search {
 	position: relative;
 	z-index: 1;
 	background: vars.$background-el1;
-	border: 1px solid vars.$border-color;
+	border: 1px solid vars.$border-heavy-color;
 	border-radius: 1.3rem;
 	width: 20rem;
 	@media (orientation: portrait) {

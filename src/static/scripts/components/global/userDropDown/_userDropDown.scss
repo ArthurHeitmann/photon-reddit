@@ -6,7 +6,6 @@
 
 	> * {
 		background: vars.$background-el1;
-		border: 1px solid vars.$border-color;
 		border-radius: 1.3rem;
 	}
 
@@ -29,6 +28,7 @@
 	> button {
 		height: 2.6rem;
 		padding: 0 3.3rem 0 1rem;
+		border: 1px solid vars.$border-heavy-color;
 		min-width: 10rem;
 		@media (orientation: portrait) {
 			min-width: 7rem;
@@ -64,6 +64,7 @@
 		transition: all .25s ease;
 		@extend %shadow-sharp;
 		--shadow-color: rgb(0 0 0 / 40%);
+		border: 1px solid vars.$border-color;
 
 		> .actionBar {
 			display: flex;

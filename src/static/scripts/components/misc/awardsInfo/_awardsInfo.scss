@@ -55,6 +55,7 @@
 				grid-template-columns: 1fr 1fr 1fr;
 				max-height: ($awardsTileSeize + 1rem) * 3 + 2rem;
 				overflow-y: auto;
+				overflow-x: hidden;
 				padding: 1rem;
 
 				.award {

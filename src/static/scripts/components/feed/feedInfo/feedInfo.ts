@@ -3,6 +3,7 @@ import { $class, $cssAr, escHTML } from "../../../utils/htmlStatics";
 import { tagInElementTree } from "../../../utils/htmlStuff";
 import { hasParams, makeElement } from "../../../utils/utils";
 import Ph_Header from "../../global/header/header";
+import { globalSettings } from "../../global/photonSettings/photonSettings";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
 
 export enum FeedType {
@@ -30,8 +31,6 @@ export default abstract class Ph_FeedInfo<StoredData> extends HTMLElement {
 	multiSubManager: HTMLDivElement;
 	focusLossHideRef: (e: MouseEvent) => void;
 	hideRef: () => void;
-	/** after this time cached data in the localstorage should be invalidated */
-	static refreshEveryNMs = 2 * 60 * 60 * 1000;		// 2 hours
 	static supportedFeedTypes: FeedType[] = [FeedType.subreddit, FeedType.user, FeedType.multireddit];
 
 	/** Should not be called directly only from Ph_FeedInfo.make() */
@@ -81,7 +80,7 @@ export default abstract class Ph_FeedInfo<StoredData> extends HTMLElement {
 			console.error(`Corrupted feed info for ${this.feedUrl} (${JSON.stringify(this.loadedInfo)})`);
 			throw "Corrupted feed info";
 		}
-		if (!isValid || this.loadedInfo.lastUpdatedMsUTC + Ph_FeedInfo.refreshEveryNMs < Date.now()) {
+		if (!isValid || this.loadedInfo.lastUpdatedMsUTC + globalSettings.clearFeedCacheAfterMs < Date.now()) {
 			this.classList.add("loading");
 			// get it
 			await this.loadInfo();
