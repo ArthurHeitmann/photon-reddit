@@ -105,7 +105,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 			{ label: SortCommentsOrderNamed.old,	 		value: SortCommentsOrder.old, 			labelImgUrl: "/img/history.svg", onSelectCallback: this.handleSort.bind(this) },
 			{ label: SortCommentsOrderNamed.qa,	 			value: SortCommentsOrder.qa, 			labelImgUrl: "/img/qa.svg", onSelectCallback: this.handleSort.bind(this) },
 			{ label: SortCommentsOrderNamed.random,	 		value: SortCommentsOrder.random, 		labelImgUrl: "/img/shuffle.svg", onSelectCallback: this.handleSort.bind(this) },
-		], curSort ? `Sort - ${SortCommentsOrderNamed[curSort]}` : "Sort - Default", DirectionX.right, DirectionY.bottom, false);
+		], curSort && SortCommentsOrderNamed[curSort] ? `Sort - ${SortCommentsOrderNamed[curSort]}` : "Sort - Default", DirectionX.right, DirectionY.bottom, false);
 		this.sorter.classList.add("commentsSorter");
 
 		this.tmpLoadingIcon?.remove();
