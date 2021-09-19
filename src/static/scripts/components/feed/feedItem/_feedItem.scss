@@ -73,6 +73,14 @@
 		height: 1rem;
 		margin-left: -0.3rem;
 	}
+
+	.controversial {
+		height: 1.25rem;
+		width: 1rem;
+		margin-left: -0.5rem;
+		background-image: url("/img/cross.svg");
+		background-size: cover;
+	}
 }
 
 .feedItem {
