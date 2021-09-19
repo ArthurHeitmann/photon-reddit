@@ -80,7 +80,8 @@ describe("Basic Navigation", () => {
 
 		// open settings and changelog
 		cy.get("ph-header .showSettingsButton").click();
-		cy.get("ph-photon-settings button").contains("View Changelog")
+		cy.get("ph-photon-settings .sectionEntry").contains("Other").click();
+		cy.get("ph-photon-settings button").contains("Show Changelog")
 			.scrollIntoView()
 			.click();
 		cy.get("ph-changelog").contains(/^v\d+\.\d+\.\d+/);
