@@ -1,6 +1,19 @@
-export const photonVersion = "0.6.4";		/// <change version script>
+export const photonVersion = "0.6.5";		/// <change version script>
 
 export const photonChangelog = {
+	"0.6.5": {
+		"New": [
+			"Reworked Settings:",
+			"Completely new UI",
+			"Auto saving",
+			"Auto sync between tabs",
+			"Search through settings"
+		],
+		"Fixed": [
+			"Fixed some searches displaying errors for suspended users",
+			"Small fixes"
+		]
+	},
 	"0.6.4": {
 		"Fixed": [
 			"Improved UI consistency when (un)subscribing to/from subreddits and creating/editing/deleting multireddits",
