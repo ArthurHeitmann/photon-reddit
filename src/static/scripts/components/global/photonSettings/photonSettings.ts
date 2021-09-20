@@ -1,9 +1,12 @@
+import { getUserPreferences, updateUserPreferences } from "../../../api/redditApi";
+import { RedditPreferences } from "../../../types/redditTypes";
+import { ensurePageLoaded } from "../../../utils/globals";
 import { escHTML } from "../../../utils/htmlStatics";
 import "../../../utils/htmlStuff";
 import { deepClone, isJsonEqual, isObjectEmpty, makeElement } from "../../../utils/utils";
 import Ph_ModalPane from "../../misc/modalPane/modalPane";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
-import { getSettingsSections, SettingConfig } from "./photonSettingsData";
+import { getSettingsSections, SettingConfig, SettingsApi } from "./photonSettingsData";
 import "./styleSettingsListener";
 
 export enum ImageLoadingPolicy {
@@ -58,6 +61,7 @@ export const defaultSettings: PhotonSettings = {
 };
 
 export let globalSettings: PhotonSettings = deepClone(defaultSettings);
+export let globalRedditPreferences: RedditPreferences;
 
 /** Stores and manages global settings */
 export default class Ph_PhotonSettings extends Ph_ModalPane {
@@ -85,13 +89,13 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 			};
 		}
 		localStorage.settings = JSON.stringify(globalSettings);
+
+		ensurePageLoaded().then(() => this.init());
 	}
 
-	connectedCallback() {
-		this.init();
-	}
+	private async init() {
+		globalRedditPreferences = await getUserPreferences();
 
-	private init() {
 		const sections: { [name: string]: HTMLElement } = {};
 		for (const section of this.sectionsConfig) {
 			sections[section.name] = makeElement("div", { class: "section" }, [
@@ -149,6 +153,17 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 	}
 
 	private onSettingChange(source: SettingConfig, newVal: any) {
+		switch (source.settingsType) {
+		case SettingsApi.Photon:
+			this.onPhotonSettingChange(source, newVal);
+			break;
+		case SettingsApi.Reddit:
+			this.onRedditPreferenceChange(source, newVal);
+			break;
+		}
+	}
+
+	private onPhotonSettingChange(source: SettingConfig, newVal: any) {
 		const validatorReturn = source.validateValue(newVal);
 		if (!validatorReturn.isValid) {
 			new Ph_Toast(Level.error, escHTML(validatorReturn.error));
@@ -158,6 +173,18 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 		source.updateState(newVal);
 		this.temporarySettings[source.settingKey as string] = newVal;
 		this.applyTemporarySettings();
+	}
+
+	private async onRedditPreferenceChange(source: SettingConfig, newVal: any) {
+		const validatorReturn = source.validateValue(newVal);
+		if (!validatorReturn.isValid) {
+			new Ph_Toast(Level.error, escHTML(validatorReturn.error));
+			return;
+		}
+		source.updateState(newVal);
+		const newPrefs: RedditPreferences = {};
+		newPrefs[source.settingKey] = newVal;
+		await updateUserPreferences(newPrefs);
 	}
 
 	private onLocalstorageChange(e: StorageEvent) {

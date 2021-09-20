@@ -162,7 +162,6 @@
 						.options {
 							display: flex;
 							width: 100%;
-							height: 2.5rem;
 							margin: .5rem 0;
 
 							button {
@@ -170,6 +169,8 @@
 								transition: all .25s ease;
 								flex-grow: 1;
 								border: 1px solid transparent;
+								min-height: 2.5rem;
+								line-break: anywhere;
 
 								&.selected {
 									background: vars.$primary-contrast;
@@ -207,7 +208,6 @@
 					.bottomRow {
 						width: 100%;
 						display: flex;
-						justify-content: space-between;
 
 						.description {
 							font-size: 0.8rem;
@@ -222,6 +222,7 @@
 							--dim: 1.75rem;
 							margin-right: 0.1rem;
 							align-self: center;
+							margin-left: auto;
 
 							img {
 								transition: .25s ease;

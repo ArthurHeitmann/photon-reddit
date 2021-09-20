@@ -12,6 +12,7 @@ import {
 	RedditJsonApiResponse,
 	RedditListingObj,
 	RedditMultiObj,
+	RedditPreferences,
 	RedditSubredditObj,
 	RedditUserObj
 } from "../types/redditTypes";
@@ -27,7 +28,7 @@ import { isObjectEmpty, splitPathQuery, throttle } from "../utils/utils";
  * @param requiresLogin
  * @param options
  */
-export async function redditApiRequest(pathAndQuery, params: string[][], requiresLogin: boolean, options: RequestInit = {}) {
+export async function redditApiRequest(pathAndQuery, params: string[][] | any, requiresLogin: boolean, options: RequestInit = {}) {
 	if (requiresLogin && !isLoggedIn) {
 		new Ph_Toast(Level.error, "Not logged in! Do you want to log in with Reddit?", { onConfirm: () => initiateLogin(), groupId: "not logged in" });
 		throw "This feature requires to be logged in";
@@ -37,28 +38,32 @@ export async function redditApiRequest(pathAndQuery, params: string[][], require
 }
 
 /** Makes a request to reddit with an an access token */
-async function oauth2Request(pathAndQuery, params: string[][], options: RequestInit, attempt = 0) {
+async function oauth2Request(pathAndQuery, params: string[][] | any, options: RequestInit, attempt = 0) {
 	pathAndQuery = fixUrl(pathAndQuery);
 	const [path, query] = splitPathQuery(pathAndQuery);
 
-	const parameters = new URLSearchParams(query);
-	for (const param of params)
-		parameters.append(param[0], param[1]);
-	parameters.append("raw_json", "1");
-	const fetchOptions: RequestInit = {
+	let fetchOptions: RequestInit = {
 		...options,
-		headers: new Headers ({
+		headers: new Headers({
 			Authorization: getAuthHeader(),
 		}),
 	};
-	let parametersStr = parameters.toString();
+	let parameters: URLSearchParams;
+	let useUrlParams = false;
+	if (params instanceof Array) {
+		parameters = new URLSearchParams(query);
+		useUrlParams = true;
+		for (const param of params) {
+			parameters.append(param[0], param[1]);
+		}
+		parameters.append("raw_json", "1");
+	}
 	if (fetchOptions.method && fetchOptions.method.toUpperCase() !== "GET") {
-		fetchOptions.body = parameters;
-		parametersStr = "";
+		fetchOptions.body = parameters ?? params;
 	}
 
 	try {
-		const response = await fetch(`https://oauth.reddit.com${ path }?${ parametersStr }`, fetchOptions);
+		const response = await fetch(`https://oauth.reddit.com${ path }?${ useUrlParams ? parameters.toString() : "" }`, fetchOptions);
 		const responseText = await response.text();
 		rateLimitCheck(response.headers);
 		return responseText ? JSON.parse(responseText) : {};
@@ -414,4 +419,17 @@ export async function deleteMulti(multiPath: string): Promise<boolean> {
 		{ method: "DELETE" }
 	);
 	return isObjectEmpty(res);
+}
+
+export async function getUserPreferences(): Promise<RedditPreferences> {
+	return await redditApiRequest("/api/v1/me/prefs", [], true);
+}
+
+export async function updateUserPreferences(newPrefs: RedditPreferences) {
+	await redditApiRequest("/api/v1/me/prefs", JSON.stringify(newPrefs), true, {
+		method: "PATCH",
+		headers: {
+			"content-type": "application/json"
+		},
+	})
 }
