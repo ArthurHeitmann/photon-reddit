@@ -6,43 +6,6 @@ body {
 	background-color: vars.$background;
 }
 
-[data-tooltip] {
-	position: relative;
-
-	&::after {
-		content: attr(data-tooltip);
-		font-size: .8rem;
-		position: absolute;
-		top: 0;
-		left: 0;
-		z-index: 10000;
-		transform: translateX(-50%) translateY(-85%) scale(.5);
-		width: max-content;
-		line-height: normal;
-		margin-top: -0.2rem;
-		margin-left: 50%;
-		border-radius: .5rem;
-		padding: .3rem .5rem;
-		background: vars.$tooltip-bg;
-		color: vars.$text-color;
-		opacity: 0;
-		visibility: hidden;
-		transition: all .15s ease;
-		transition-delay: .15s;
-	}
-
-	&:hover::after {
-		opacity: 1;
-		visibility: visible;
-		transform: translateX(-50%) translateY(-100%) scale(1);
-		transition-delay: 1s;
-	}
-}
-
-.disableTooltips [data-tooltip]::after {
-	display: none;
-}
-
 #mainWrapper {
 	position: relative;
 	margin: auto;

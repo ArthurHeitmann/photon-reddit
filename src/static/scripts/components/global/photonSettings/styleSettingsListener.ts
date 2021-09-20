@@ -4,7 +4,6 @@ import { globalSettings, PhotonSettings } from "./photonSettings";
 window.addEventListener("ph-settings-changed", (e: CustomEvent) => handleSettings(e.detail));
 
 function handleSettings(settings: PhotonSettings) {
-	setClassOnBody("disableTooltips", settings.tooltipsVisible, true);
 	if (settings.imageLimitedHeight !== undefined) {
 		document.documentElement.style.setProperty("--image-height-limited",
 			settings.imageLimitedHeight > 0 ?`${settings.imageLimitedHeight}vh` : "unset");

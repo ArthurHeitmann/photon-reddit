@@ -67,6 +67,7 @@ export class BooleanSetting extends SettingConfig {
 				makeElement("div", { class: "description" }, this.description),
 				makeElement("button", {
 					class: "resetButton transparentButtonAlt",
+					"data-tooltip": "Default",
 					onclick: () => onValueChange(this, defaultSettings[this.settingKey])
 				}, [makeElement("img", { src: "/img/reset.svg" })])
 			])
@@ -126,6 +127,7 @@ export class NumberSetting extends SettingConfig {
 				makeElement("div", { class: "description" }, this.description),
 				makeElement("button", {
 					class: "resetButton transparentButtonAlt",
+					"data-tooltip": "Default",
 					onclick: () => onValueChange(this, defaultSettings[this.settingKey])
 				}, [makeElement("img", { src: "/img/reset.svg" })])
 			])
@@ -179,6 +181,7 @@ export class TimeSetting extends SettingConfig {
 				makeElement("div", { class: "description" }, this.description),
 				makeElement("button", {
 					class: "resetButton transparentButtonAlt",
+					"data-tooltip": "Default",
 					onclick: () => onValueChange(this, defaultSettings[this.settingKey])
 				}, [makeElement("img", { src: "/img/reset.svg" })])
 			])
@@ -230,6 +233,7 @@ export class MultiOptionSetting extends SettingConfig {
 				makeElement("div", { class: "description" }, this.description),
 				makeElement("button", {
 					class: "resetButton transparentButtonAlt",
+					"data-tooltip": "Default",
 					onclick: () => onValueChange(this, defaultSettings[this.settingKey])
 				}, [makeElement("img", { src: "/img/reset.svg" })])
 			])

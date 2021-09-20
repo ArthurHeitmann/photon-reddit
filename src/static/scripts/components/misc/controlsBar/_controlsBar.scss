@@ -56,14 +56,6 @@
 			.accessibilitySpacer {
 				transform: scaleY(2);
 			}
-
-			&[data-tooltip]::after {
-				transform: translateX(-50%) translateY(-100%) scaleY(0.33333);
-			}
-		}
-
-		&[data-tooltip]::after {
-			transition-duration: .25s;
 		}
 
 		> .progress {

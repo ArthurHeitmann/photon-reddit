@@ -72,18 +72,6 @@
 			align-items: center;
 			flex-wrap: wrap;
 
-			[data-tooltip] {
-				&::after {
-					top: unset;
-					bottom: 0;
-					transform: translateX(-50%) translateY(85%) scale(.5);
-				}
-
-				&:hover::after {
-					transform: translateX(-50%) translateY(100%) scale(1);
-				}
-			}
-
 			.item {
 				--dim: 2rem;
 

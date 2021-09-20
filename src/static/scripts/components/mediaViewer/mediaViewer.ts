@@ -275,7 +275,6 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		const resetViewBtn = Ph_ControlsBar.makeImageButton("/img/reset.svg");
 		resetViewBtn.classList.add("resetView");
 		resetViewBtn.classList.add("evenSmaller");
-		resetViewBtn.setAttribute("data-tooltip", "Reset View (R)");
 		resetViewBtn.addEventListener("click", () => this.draggableWrapper.reset());
 		controlSlots.push(resetViewBtn);
 		// settings dropdown
