@@ -168,6 +168,12 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		return false
 	}
 
+	static isUrlMedia(url: string): boolean {
+		return Ph_MediaViewer.isUrlVideo(url)
+			|| Ph_MediaViewer.isUrlImgur(url)
+			|| Ph_MediaViewer.isUrlImage(url);
+	}
+
 	static isUrlVideo(url: string): boolean {
 		return Ph_MediaViewer.isUrlOnWhiteList(url) && new RegExp(
 			"^((https?://(i|m)?\.?imgur\\.com\/[\\w-]+.(gifv|mp4))|" +		// imgur

@@ -147,18 +147,14 @@
 }
 
 .inlineMediaViewer {
-	> button {
+	&::after {
+		content: "";
 		width: 1rem;
 		height: 1rem;
-		position: relative;
-
-		img {
-			position: absolute;
-			top: 50%;
-			left: 50%;
-			transform: translateX(-50%) translateY(-80%) rotate(90deg);
-			height: 1.25rem;
-		}
+		display: inline-block;
+		background: url("/img/arrowFilled.svg");
+		background-size: contain;
+		transform: rotate(90deg);
 	}
 
 	+ .mediaViewer {
@@ -177,13 +173,12 @@
 	&.isExpanded {
 		vertical-align: top;
 
-		> button img {
-			transform: translateX(-50%) translateY(-80%) rotate(-90deg);
+		&::after {
+			transform: rotate(-90deg);
 		}
 
 		+ .mediaViewer {
 			display: inline-block;
-
 		}
 	}
 }

@@ -96,33 +96,22 @@ export function _linksToInlineMedia(elem: HTMLElement) {
 	for (const link of links) {
 		if (link.hasAttribute("excludeLinkFromMedia") || link.classList.contains("inlineMediaViewer"))
 			continue;
-
-		const mediaViewer = Ph_MediaViewer.fromUrl(link.href)
-		if (!mediaViewer)
+		if (!Ph_MediaViewer.isUrlMedia(link.href))
 			continue;
 
 		link.classList.add("inlineMediaViewer");
-		link.classList.toggle("isExpanded", !globalSettings.loadInlineMedia);
-
-		const initial = document.createElement("span");
-		if (link.innerText === "" && link.$tag("img").length > 0)
-			link.innerText = link.href;
-		initial.innerHTML = link.innerHTML;
-		link.innerHTML = "";
-		link.appendChild(initial);
-
-		const expandButton = document.createElement("button");
-		expandButton.innerHTML = `<img src="/img/arrowFilled.svg" alt="expand">`;
-		link.onclick = e => {
-			(e.currentTarget as HTMLElement).classList.toggle("isExpanded");
-			return Boolean(e.ctrlKey);
-		};
-		link.click();
-		link.appendChild(expandButton);
-
-		link.insertAdjacentElement("afterend", mediaViewer);
-		setTimeout(() => mediaViewer.controls.hideControls(), 0);
-
+		link.onclick = (e: MouseEvent) => {
+			const link = e.currentTarget as HTMLAnchorElement;
+			if (!(link.nextElementSibling instanceof Ph_MediaViewer)) {
+				const mediaViewer = Ph_MediaViewer.fromUrl(link.href);
+				link.after(mediaViewer);
+				setTimeout(() => mediaViewer.controls.hideControls(), 0);
+			}
+			link.classList.toggle("isExpanded");
+			return Boolean(e.ctrlKey)
+		}
+		if (globalSettings.loadInlineMedia)
+			link.click();
 		link.setAttribute("excludeLinkFromSpa", "")
 	}
 }
@@ -131,6 +120,8 @@ window.addEventListener("ph-settings-changed", (e: CustomEvent) => {
 	const changed = e.detail as PhotonSettings;
 	if (!("loadInlineMedia" in changed))
 		return;
-	$classAr("inlineMediaViewer")
-		.forEach(a => a.classList.toggle("isExpanded", changed.loadInlineMedia));
+	for (const a of $classAr("inlineMediaViewer")) {
+		if (a.classList.contains("isExpanded") !== changed.loadInlineMedia)
+			a.click();
+	}
 });
