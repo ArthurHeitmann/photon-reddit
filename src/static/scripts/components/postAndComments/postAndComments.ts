@@ -170,11 +170,10 @@ export default class Ph_PostAndComments extends HTMLElement {
 				throw `Sorting error (${JSON.stringify(newComments, null, 4)})`;
 
 			this.comments.innerText = "";
-
-			for (const comment of newComments[1].data.children) {
+			for (const comment of newComments[1].data.children)
 				this.comments.append(new Ph_Comment(comment, false, false, this.post));
-			}
 
+			document.scrollingElement.scrollBy(0, this.comments.getBoundingClientRect().top);
 			ViewsStack.changeCurrentUrl(newUrl);
 			data.setButtonLabel(`Sort - ${sorting}`);
 		}
