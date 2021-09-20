@@ -10,11 +10,21 @@
 	<link rel='stylesheet' type='text/css' href='/style/main.css' media="none" onload="this.media='all'">
 </head>
 <body>
-<h1>Looks like you don't have an internet connection</h1>
-<h2>Have you tried turning it off and on again?</h2>
-<h6>If other websites are working, the Photon server might be down.</h6>
+<h1>Couldn't reach Photon Server</h1>
+<h2>Is your internet working?</h2>
+<h2>Otherwise the server might be down.</h2>
+<p>You can try to load a cached version. <button
+		id="loadCached"
+		style="background: #e65d5d; padding: .25rem .5rem; border-radius: 0.4rem"
+	>Load Cached</button></p>
 <script>
 	setInterval(() => location.reload(), 15 * 1000);
+
+	document.getElementById("loadCached").onclick = () => {
+		const params = new URLSearchParams(location.search);
+		params.set("useCachedIndexHtml", "");
+		location.search = params.toString();
+	}
 </script>
 </body>
 </html>

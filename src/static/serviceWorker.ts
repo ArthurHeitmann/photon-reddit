@@ -17,6 +17,7 @@ const typesToCache: CacheDescription[] = [
 	{ hostname: "api.redgifs.com", path: "/" },
 ];
 const forceCacheFiles = [
+	"/index.html",
 	"/offline.html",
 	"/style/main.css",
 	"/img/appIcons/favicon-16x16.png",
@@ -78,6 +79,12 @@ self.addEventListener("fetch", (event: FetchEvent) => {
 			}
 
 			if(!response || response.status !== 200) {
+				if (event.request.url.includes("useCachedIndexHtml")) {				// load index.html from cache even if offline
+					const cache = await caches.open(CACHE_NAME);
+					const keys = await cache.keys();
+					const offlineRequest = keys.find(request => request.url.endsWith("/index.html"));
+					return await cache.match(offlineRequest);
+				}
 				if (isDocument && (!response || response.type === "basic")) {		// if document and connection problem --> offline page
 					const cache = await caches.open(CACHE_NAME);
 					const keys = await cache.keys();
