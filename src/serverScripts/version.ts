@@ -1,6 +1,19 @@
-export const photonVersion = "0.6.5";		/// <change version script>
+export const photonVersion = "0.6.6";		/// <change version script>
 
 export const photonChangelog = {
+	"0.6.6": {
+		"New": [
+			"Added some Reddit Preferences to the settings",
+			"Added dagger † to controversial comments",
+			"When the photon servers are down, there is now an option to load a cached version of the website"
+		],
+		"Fixed": [
+			"Inline media links are now only loaded on demand",
+			"Reworked tooltips display (should now always be visible)",
+			"Fixed displayed sort order for comments",
+			"When changing comments sorting, now auto scrolls back to the top"
+		]
+	},
 	"0.6.5": {
 		"New": [
 			"Reworked Settings:",
