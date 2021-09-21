@@ -67,7 +67,7 @@ export let globalRedditPreferences: RedditPreferences;
 export default class Ph_PhotonSettings extends Ph_ModalPane {
 	/** unsaved settings are stored here */
 	temporarySettings: PhotonSettings = {};
-	sectionsConfig = getSettingsSections();
+	sectionsConfig;
 
 	constructor() {
 		super();
@@ -94,6 +94,7 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 	}
 
 	private async init() {
+		this.sectionsConfig = getSettingsSections();
 		globalRedditPreferences = isLoggedIn ? await getUserPreferences(): {};
 
 		const sections: { [name: string]: HTMLElement } = {};
