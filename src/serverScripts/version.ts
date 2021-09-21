@@ -1,6 +1,11 @@
-export const photonVersion = "0.6.6";		/// <change version script>
+export const photonVersion = "0.6.7";		/// <change version script>
 
 export const photonChangelog = {
+	"0.6.7": {
+		"Fixed": [
+			"Fixed reddit preferences not showing"
+		]
+	},
 	"0.6.6": {
 		"New": [
 			"Added some Reddit Preferences to the settings",
