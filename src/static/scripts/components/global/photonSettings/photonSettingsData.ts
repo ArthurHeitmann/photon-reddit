@@ -1,6 +1,6 @@
 import { logOut } from "../../../auth/loginHandler";
 import { RedditPreferences } from "../../../types/redditTypes";
-import { clearSeenPosts } from "../../../utils/globals";
+import { clearSeenPosts, isLoggedIn } from "../../../utils/globals";
 import { editableTimeStrToMs, makeElement, timeMsToEditableTimeStr } from "../../../utils/utils";
 import { photonWebVersion } from "../../../utils/version";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
@@ -349,24 +349,29 @@ export const getSettingsSections = (): SettingsSection[] => [
 				makeElement("span", null, "Here are your Reddit Preferences from "),
 				makeElement("a", { href: "https://old.reddit.com/prefs", target: "_blank", excludeLinkFromSpa: "" }, "https://old.reddit.com/prefs")
 			])),
-			new MultiOptionSetting([
-				{ text: "Confidence", value: "confidence" },
-				{ text: "Top", value: "top" },
-				{ text: "New", value: "new" },
-				{ text: "Controversial", value: "controversial" },
-				{ text: "Old", value: "old" },
-				{ text: "Random", value: "random" },
-				{ text: "Q & A", value: "qa" },
-				{ text: "Live", value: "live" },
-			], "default_comment_sort", "Default Comment Sort", "", SettingsApi.Reddit),
-			new BooleanSetting("enable_followers", "Enable Followers", "Allow people to follow you.", SettingsApi.Reddit),
-			new BooleanSetting("hide_from_robots", "Hide Profile from Search Engines", "Hide your profile from search results (like Google, Bing, DuckDuckGo, ...)", SettingsApi.Reddit),
-			new BooleanSetting("ignore_suggested_sort", "Ignore Suggested Sort", "Ignore suggested sort set by subreddit moderators.", SettingsApi.Reddit),
-			new NumberSetting({ allowRange: [1, 500] }, "num_comments", "Number of Comments", "Number of comments to load when viewing a post.", SettingsApi.Reddit),
-			new NumberSetting({ allowRange: [1, 100] }, "numsites", "Number of loaded Posts", "Number of posts loaded when viewing a subreddit or scrolling.", SettingsApi.Reddit),
-			new BooleanSetting("over_18", "Over 18", "Enable to show NSFW posts", SettingsApi.Reddit),
-			new BooleanSetting("search_include_over_18", "Include NSFW results in searches", "", SettingsApi.Reddit),
-			new BooleanSetting("show_presence", "Show Online Status", "Other people can see if you are online.", SettingsApi.Reddit),
+			...(
+				isLoggedIn ? [
+						new MultiOptionSetting([
+							{ text: "Confidence", value: "confidence" },
+							{ text: "Top", value: "top" },
+							{ text: "New", value: "new" },
+							{ text: "Controversial", value: "controversial" },
+							{ text: "Old", value: "old" },
+							{ text: "Random", value: "random" },
+							{ text: "Q & A", value: "qa" },
+							{ text: "Live", value: "live" },
+						], "default_comment_sort", "Default Comment Sort", "", SettingsApi.Reddit),
+						new BooleanSetting("enable_followers", "Enable Followers", "Allow people to follow you.", SettingsApi.Reddit),
+						new BooleanSetting("hide_from_robots", "Hide Profile from Search Engines", "Hide your profile from search results (like Google, Bing, DuckDuckGo, ...)", SettingsApi.Reddit),
+						new BooleanSetting("ignore_suggested_sort", "Ignore Suggested Sort", "Ignore suggested sort set by subreddit moderators.", SettingsApi.Reddit),
+						new NumberSetting({ allowRange: [1, 500] }, "num_comments", "Number of Comments", "Number of comments to load when viewing a post.", SettingsApi.Reddit),
+						new NumberSetting({ allowRange: [1, 100] }, "numsites", "Number of loaded Posts", "Number of posts loaded when viewing a subreddit or scrolling.", SettingsApi.Reddit),
+						new BooleanSetting("over_18", "Over 18", "Enable to show NSFW posts", SettingsApi.Reddit),
+						new BooleanSetting("search_include_over_18", "Include NSFW results in searches", "", SettingsApi.Reddit),
+						new BooleanSetting("show_presence", "Show Online Status", "Other people can see if you are online.", SettingsApi.Reddit)
+					]
+				: [new HTMLElementSetting(makeElement("p", null, "Log in to see your Reddit Preferences"))]
+			),
 
 		]
 	},

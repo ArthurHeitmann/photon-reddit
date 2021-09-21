@@ -1,6 +1,6 @@
 import { getUserPreferences, updateUserPreferences } from "../../../api/redditApi";
 import { RedditPreferences } from "../../../types/redditTypes";
-import { ensurePageLoaded } from "../../../utils/globals";
+import { ensurePageLoaded, isLoggedIn } from "../../../utils/globals";
 import { escHTML } from "../../../utils/htmlStatics";
 import "../../../utils/htmlStuff";
 import { deepClone, isJsonEqual, isObjectEmpty, makeElement } from "../../../utils/utils";
@@ -94,7 +94,7 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 	}
 
 	private async init() {
-		globalRedditPreferences = await getUserPreferences();
+		globalRedditPreferences = isLoggedIn ? await getUserPreferences(): {};
 
 		const sections: { [name: string]: HTMLElement } = {};
 		for (const section of this.sectionsConfig) {
