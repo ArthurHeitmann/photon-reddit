@@ -8,6 +8,7 @@ import { ensurePageLoaded, hasHTML, isFakeSubreddit, makeElement, numberToShort 
 import Ph_FeedLink from "../../link/feedLink/feedLink";
 import Ph_MultiCreateOrEdit, { MultiBasicInfo } from "../../misc/multiCreateOrEdit/multiCreateOrEdit";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
+import Users from "../../multiUser/userManagement";
 import Ph_Header from "../header/header";
 
 /**
@@ -54,17 +55,17 @@ export default class Ph_UserDropDown extends HTMLElement {
 		]);
 		ensurePageLoaded().then(() => {
 			dropDownArea.append(this.multisList = this.makeSubredditGroup(
-				thisUser.multireddits.rawData,
+				Users.current.multireddits.rawData,
 				"Multireddits",
 				newMultiBtn
 			));
 			dropDownArea.append(this.subredditsList = this.makeSubredditGroup(
-				thisUser.subreddits.rawData,
+				Users.current.subreddits.rawData,
 				"Subscribed"
 			));
 		});
-		thisUser.subreddits.listenForChanges(this.onSubscriptionChanged.bind(this));
-		thisUser.multireddits.listenForChanges(this.onMultisChanged.bind(this));
+		Users.current.subreddits.listenForChanges(this.onSubscriptionChanged.bind(this));
+		Users.current.multireddits.listenForChanges(this.onMultisChanged.bind(this));
 	}
 
 	private makeSubredditGroup(feedsData: (RedditApiObj | string)[], groupName: string, ...additionChildren: Element[]): HTMLElement {
@@ -97,7 +98,7 @@ export default class Ph_UserDropDown extends HTMLElement {
 			"My Profile",
 			"/"
 		) as HTMLAnchorElement;
-		ensurePageLoaded().then(() => userPage.href = `/user/${thisUser.name}`);
+		ensurePageLoaded().then(() => userPage.href = `/user/${Users.current.name}`);
 		actions.append(userPage);
 		// create post
 		const postAction = makeAction(
@@ -165,8 +166,8 @@ export default class Ph_UserDropDown extends HTMLElement {
 			new Ph_Toast(Level.error, "Name must include at least 2 alphanumeric characters");
 			return false;
 		}
-		const multiPath = `/user/${thisUser.name}/m/${multiUrlName}`;
-		const response = await thisUser.multireddits.createOrUpdateMulti(multiPath, true, {
+		const multiPath = `/user/${Users.current.name}/m/${multiUrlName}`;
+		const response = await Users.current.multireddits.createOrUpdateMulti(multiPath, true, {
 			display_name: info.name,
 			description_md: info.descriptionMd,
 			visibility: info.visibility

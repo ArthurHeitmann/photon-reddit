@@ -186,7 +186,7 @@ export default class Ph_Header extends HTMLElement {
 		this.isPinned = !this.isPinned;
 		this.classList.toggle("pinned", this.isPinned);
 		(e.currentTarget as HTMLElement).classList.toggle("pinned", this.isPinned);
-		localStorage["isHeaderPinned"] = this.isPinned.toString();
+		Users.global.set(["isHeaderPinned"], this.isPinned);
 		if (this.isPinned) {
 			for (const anim of this.headerPinnedBeginAnimations)
 				(anim as SVGAnimateElement).beginElement();

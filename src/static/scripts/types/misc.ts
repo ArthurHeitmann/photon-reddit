@@ -8,6 +8,11 @@ export interface SVGAnimateElement extends SVGAnimationElement {
 
 }
 
+export interface StoredData<T> {
+	data: T,
+	lastUpdatedMsUTC: number
+}
+
 export interface HistoryState {
 	title: string,
 	index: number,

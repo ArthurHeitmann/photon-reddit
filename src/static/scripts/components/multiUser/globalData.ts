@@ -5,8 +5,10 @@ import { FabPreset, initialDefaultFabPresets } from "../photon/fab/fabElementCon
 import DataAccessor from "./dataAccessor";
 import { setInStorage, wasDbUpgraded } from "./storageWrapper";
 
+const globalUserName = "#global";
+
 export default class GlobalUserData extends DataAccessor<_GlobalData> {
-	protected key: string = "#global";
+	protected key: string = globalUserName;
 	protected default: _GlobalData = {
 		analytics: {
 			clientId: null,
@@ -33,7 +35,7 @@ export default class GlobalUserData extends DataAccessor<_GlobalData> {
 			this.tryMigrateFromLsToLoaded(["fabConfig"], ["fabConfig"]);
 			this.tryMigrateFromLsToLoaded(["firefoxPrivateModeCheck"], ["firefoxPrivateCheckCompleted"]);
 			this.tryMigrateFromLsToLoaded(["firstTimeFlag"], ["isFirstTimeVisit"], val => val !== "set");
-			this.tryMigrateFromLsToLoaded(["hasCompletedTutorial"], ["hasAcknowledgedTutorial"], val => val === "set");
+			this.tryMigrateFromLsToLoaded(["hasCompletedTutorial"], ["hasAcknowledgedTutorial"]);
 			this.tryMigrateFromLsToLoaded(["isHeaderPinned"], ["isHeaderPinned"]);
 			this.tryMigrateFromLsToLoaded(["seenPosts"], ["seenPosts"]);
 			this.tryMigrateFromLsToLoaded(["settings"], ["photonSettings"]);

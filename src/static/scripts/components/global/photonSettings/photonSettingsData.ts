@@ -374,6 +374,7 @@ export const getSettingsSections = (): SettingsSection[] => [
 		settings: [
 			new BooleanSetting("isIncognitoEnabled", "Incognito mode", "Randomize the tab title & url.", SettingsApi.Photon),
 			new TimeSetting({ allowRange: [1, Number.MAX_SAFE_INTEGER] }, "clearFeedCacheAfterMs", "Subreddit info cache duration", "", SettingsApi.Photon),
+			new TimeSetting({ allowRange: [1, Number.MAX_SAFE_INTEGER] }, "userShortCacheTTLMs", "Short Cache Duration", "For your subscriptions", SettingsApi.Photon),
 			new TimeSetting({ allowRange: [1000 * 10, Number.MAX_SAFE_INTEGER], allowList: [0] }, "messageCheckIntervalMs", "New messages checking interval", "Use \"0\" to disable. Min intervall is 10s. Message polling is only done while website is open.", SettingsApi.Photon),
 			new HTMLElementSetting(makeElement("div", null, [
 				makeElement("button", { class: "mla button", onclick: () => Users.current.clearSeenPosts() }, "Clear seen posts"),

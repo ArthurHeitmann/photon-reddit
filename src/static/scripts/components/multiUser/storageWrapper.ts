@@ -92,6 +92,17 @@ function getAllKeysInDb(prefix: string): Promise<string[]> {
 	});
 }
 
+function deleteKeyFromDb(key: string): Promise<void> {
+	return new Promise(async (resolve, reject) => {
+		const db = await openDb();
+		const transaction = db.transaction(objectStoreName, "readwrite");
+		const objectStore = transaction.objectStore(objectStoreName);
+		const deleteRequest = objectStore.delete(key);
+		deleteRequest.onsuccess = () => resolve();
+		deleteRequest.onerror = e => reject(e);
+	});
+}
+
 function getFromLs(...keyPath: string[]): any {
 	let value = JSON.parse(localStorage.getItem(keyPath[0]));
 	for (let i = 1; i < keyPath.length; i++)
@@ -118,6 +129,9 @@ function getAllKeysInLs(prefix: string): string[] {
 		.keys(localStorage)
 		.filter(key => key.startsWith(prefix));
 }
+function deleteKeyFromLs(key: string): void {
+	localStorage.removeItem(key);
+}
 
 export async function getFromStorage(...keyPath: string[]): Promise<any> {
 	if (await supportsIndexedDB())
@@ -138,4 +152,11 @@ export async function getAllKeysInStorage(key: string = ""): Promise<string[]> {
 		return await getAllKeysInDb(key);
 	else
 		return getAllKeysInLs(key);
+}
+
+export async function deleteKey(key: string): Promise<void> {
+	if (await supportsIndexedDB())
+		await deleteKeyFromDb(key);
+	else
+		deleteKeyFromLs(key);
 }

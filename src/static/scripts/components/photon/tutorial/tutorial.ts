@@ -10,6 +10,7 @@ import {
 import { hasHTML } from "../../../utils/utils";
 import Ph_Header from "../../global/header/header";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
+import Users from "../../multiUser/userManagement";
 
 interface TutorialStep {
 	highlightElementSelector: string | null,
@@ -350,7 +351,7 @@ export default class Ph_Tutorial extends HTMLElement {
 		this.tryEndAction();
 		enableMainScroll();
 		enableMainPointerEvents();
-		localStorage["hasCompletedTutorial"] = "true";
+		Users.global.set(["hasAcknowledgedTutorial"], true);
 		const header = $class("header")[0] as Ph_Header;
 		if (header.isPinned)
 			header.isPinned = false;
@@ -358,11 +359,11 @@ export default class Ph_Tutorial extends HTMLElement {
 	}
 
 	static checkForTutorial() {
-		if (localStorage["hasCompletedTutorial"] === "true")
+		if (Users.global.d.hasAcknowledgedTutorial)
 			return;
 		new Ph_Toast(Level.info, "Hello! Would you like to take a quick tour?", {
 			onConfirm: () => new Ph_Tutorial(),
-			onCancel: () => localStorage["hasCompletedTutorial"] = "true"
+			onCancel: () => Users.global.set(["hasAcknowledgedTutorial"], true)
 		})
 	}
 }

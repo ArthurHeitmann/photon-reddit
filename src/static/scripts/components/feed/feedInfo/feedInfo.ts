@@ -1,8 +1,10 @@
+import { StoredData } from "../../../types/misc";
 import { $class, $cssAr, escHTML } from "../../../utils/htmlStatics";
 import { tagInElementTree } from "../../../utils/htmlStuff";
 import { hasParams, makeElement } from "../../../utils/utils";
 import Ph_Header from "../../global/header/header";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
+import Users from "../../multiUser/userManagement";
 
 export enum FeedType {
 	subreddit = "subreddit",
@@ -11,7 +13,7 @@ export enum FeedType {
 	messages = "messages",
 	misc = "misc",
 }
-interface StoredFeedInfo<T> extends StoredData<T> {
+export interface StoredFeedInfo<T> extends StoredData<T> {
 	feedType: FeedType;
 }
 
@@ -46,13 +48,7 @@ export default abstract class Ph_FeedInfo<StoredData> extends HTMLElement {
 		this.hideRef = this.hide.bind(this);
 		this.className = "feedInfo remove";
 
-		const storedInfo = localStorage[feedUrl.toLowerCase()];
-		if (storedInfo) {
-			try {
-				this.loadedInfo = JSON.parse(storedInfo);
-			}
-			catch {}
-		}
+		this.loadedInfo = Users.current.d.caches.feedInfos[feedUrl.toLowerCase()];
 		if (!this.loadedInfo) {
 			this.loadedInfo = {
 				data: null,
@@ -78,7 +74,7 @@ export default abstract class Ph_FeedInfo<StoredData> extends HTMLElement {
 			console.error(`Corrupted feed info for ${this.feedUrl} (${JSON.stringify(this.loadedInfo)})`);
 			throw "Corrupted feed info";
 		}
-		if (!isValid || this.loadedInfo.lastUpdatedMsUTC + globalSettings.clearFeedCacheAfterMs < Date.now()) {
+		if (!isValid || this.loadedInfo.lastUpdatedMsUTC + Users.current.d.photonSettings.clearFeedCacheAfterMs < Date.now()) {
 			this.classList.add("loading");
 			// get it
 			await this.loadInfo();
@@ -141,14 +137,14 @@ export default abstract class Ph_FeedInfo<StoredData> extends HTMLElement {
 			await this.getOrUpdateInfo();
 	}
 
-	/** caches feed info to localstorage */
+	/** caches feed info to storage */
 	saveInfo() {
-		localStorage.setItem(this.feedUrl.toLowerCase(), JSON.stringify(this.loadedInfo));
+		Users.current.set(["caches", "feedInfos", this.feedUrl.toLowerCase()], this.loadedInfo);
 	}
 
-	/** removes a cached feed info from localstorage */
+	/** removes a cached feed info from storage */
 	removeInfo() {
-		localStorage.removeItem(this.feedUrl.toLowerCase());
+		Users.current.remove("caches", "feedInfos", this.feedUrl.toLowerCase())
 	}
 
 	isLoadedInfoValid(): boolean {

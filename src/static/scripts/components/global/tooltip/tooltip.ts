@@ -1,4 +1,5 @@
 import { clamp } from "../../../utils/utils";
+import Users from "../../multiUser/userManagement";
 
 interface ElementHover {
 	element: Element,
@@ -70,20 +71,20 @@ export default class Ph_Tooltips extends HTMLElement {
 	}
 
 	private getNewHovered(allNewHovered: Element[]): Element[] {
-		return globalSettings.tooltipsVisible ? allNewHovered
+		return Users.current.d.photonSettings.tooltipsVisible ? allNewHovered
 			.filter(elem => this.allHovered
 				.findIndex(hovered => hovered.element === elem) === -1
 			) : [];
 	}
 
 	private getSameHovered(allNewHovered: Element[]): ElementHover[] {
-		return globalSettings.tooltipsVisible ? this.allHovered
+		return Users.current.d.photonSettings.tooltipsVisible ? this.allHovered
 			.filter(hovered => allNewHovered
 				.findIndex(elem => hovered.element === elem) !== -1) : [];
 	}
 
 	private getDeadHovered(allNewHovered: Element[]): ElementHover[] {
-		return globalSettings.tooltipsVisible ? this.allHovered
+		return Users.current.d.photonSettings.tooltipsVisible ? this.allHovered
 			.filter(hovered => allNewHovered
 				.findIndex(elem => hovered.element === elem) === -1) : this.allHovered;
 	}
@@ -120,7 +121,7 @@ class Ph_Tooltip extends HTMLElement {
 	}
 }
 
-window.addEventListener("load", () => document.body.append(new Ph_Tooltips()));
+Users.ensureDataHasLoaded().then(() => document.body.append(new Ph_Tooltips()));
 
 customElements.define("ph-tooltip", Ph_Tooltip);
 customElements.define("ph-tooltips", Ph_Tooltips);

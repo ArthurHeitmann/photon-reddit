@@ -10,6 +10,7 @@ import { DropDownActionData } from "../../misc/dropDown/dropDownEntry/dropDownEn
 import Ph_ProgressBar from "../../misc/progressBar/progressBar";
 import Ph_SwitchingImage from "../../misc/switchableImage/switchableImage";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
+import Users from "../../multiUser/userManagement";
 import Ph_PhotonBaseElement from "../../photon/photonBaseElement/photonBaseElement";
 import { MediaElement } from "../mediaElement";
 import Ph_GifVideo from "./gifVideo/gifVideo";
@@ -286,7 +287,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				if (!Ph_VideoPlayer.isVideoPlayAllowed)
 					return;
 				if (
-					globalSettings.autoplayVideos &&
+					Users.current.d.photonSettings.autoplayVideos &&
 					entries[0].intersectionRatio > .4 &&
 					isFullscreen() === (getFullscreenElement() === this) &&
 					!classInElementTree(this.parentElement, "covered")
@@ -487,7 +488,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 
 	setVolume(newVolume: number, broadcastChange = true) {
 		this.video.setVolume(newVolume);
-		if (!broadcastChange || !globalSettings.globalVideoVolume)
+		if (!broadcastChange || !Users.current.d.photonSettings.globalVideoVolume)
 			return;
 		Ph_VideoPlayer.globalVolume = newVolume;
 		Ph_VideoPlayer.globalIsMuted = newVolume === 0;
@@ -500,7 +501,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 			return;
 		}
 		const newMuted = this.video.toggleMute();
-		if (!globalSettings.globalVideoVolume)
+		if (!Users.current.d.photonSettings.globalVideoVolume)
 			return;
 		Ph_VideoPlayer.globalIsMuted = newMuted;
 		$tagAr("ph-video-player").forEach((player: Ph_VideoPlayer) => player.toggleMuted(false, newMuted));

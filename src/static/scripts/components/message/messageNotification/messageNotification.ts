@@ -6,6 +6,7 @@ import { ensurePageLoaded, hasParams, numberToShort } from "../../../utils/utils
 import Ph_Readable from "../../feed/feedItem/readable/readable";
 import { PhotonSettings } from "../../global/photonSettings/photonSettings";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
+import Users from "../../multiUser/userManagement";
 
 export default class Ph_MessageNotification extends HTMLElement {
 	static previousUnreadMessages = 0;
@@ -67,7 +68,7 @@ export default class Ph_MessageNotification extends HTMLElement {
 			return;
 		}
 
-		thisUser.setInboxIdsUnreadState(messageFullNames, false);
+		Users.current.setInboxIdsUnreadState(messageFullNames, false);
 		for (const msg of messageFullNames) {
 			$css(`.readable[data-id="${msg}"]`)
 				.forEach((readable: Ph_Readable) => readable.setIsRead(true));
@@ -80,7 +81,7 @@ export default class Ph_MessageNotification extends HTMLElement {
 			[], true) as RedditListingObj<RedditMessageObj>;
 		const unreadMessages = unreadMessagesData.data.children;
 
-		thisUser.setInboxIdsUnreadState(unreadMessages.map(msg => msg.data.name), true);
+		Users.current.setInboxIdsUnreadState(unreadMessages.map(msg => msg.data.name), true);
 
 		if (unreadMessages.length < Ph_MessageNotification.previousUnreadMessages)
 			Ph_MessageNotification.previousUnreadMessages = unreadMessages.length;
@@ -102,11 +103,11 @@ export default class Ph_MessageNotification extends HTMLElement {
 
 let messageCheckInterval = null;
 ensurePageLoaded().then( () => {
-	if (!isLoggedIn)
+	if (!Users.current.d.auth.isLoggedIn)
 		return;
 	Ph_MessageNotification.checkForNewMessages();
-	if (globalSettings.messageCheckIntervalMs > 0)
-		messageCheckInterval = setInterval(Ph_MessageNotification.checkForNewMessages, globalSettings.messageCheckIntervalMs);
+	if (Users.current.d.photonSettings.messageCheckIntervalMs > 0)
+		messageCheckInterval = setInterval(Ph_MessageNotification.checkForNewMessages, Users.current.d.photonSettings.messageCheckIntervalMs);
 });
 window.addEventListener("ph-settings-changed", (e: CustomEvent) => {
 	const changed = e.detail as PhotonSettings;
@@ -115,7 +116,7 @@ window.addEventListener("ph-settings-changed", (e: CustomEvent) => {
 	if (messageCheckInterval !== null)
 		clearInterval(messageCheckInterval);
 	if (changed.messageCheckIntervalMs > 0)
-		messageCheckInterval = setInterval(Ph_MessageNotification.checkForNewMessages, globalSettings.messageCheckIntervalMs);
+		messageCheckInterval = setInterval(Ph_MessageNotification.checkForNewMessages, Users.current.d.photonSettings.messageCheckIntervalMs);
 })
 
 customElements.define("ph-message-notification", Ph_MessageNotification);

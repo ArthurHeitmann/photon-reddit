@@ -1,4 +1,4 @@
-import { getFromStorage, setInStorage } from "./storageWrapper";
+import { deleteKey, getFromStorage, setInStorage } from "./storageWrapper";
 
 export default abstract class DataAccessor<T> {
 	protected abstract key: string;
@@ -6,7 +6,10 @@ export default abstract class DataAccessor<T> {
 	protected loaded: T;
 
 	async init(): Promise<this> {
-		const storedData = await getFromStorage(this.key);
+		let storedData: any;
+		try {
+			storedData = await getFromStorage(this.key);
+		} catch {}
 		if (!storedData) {
 			this.loaded = this.default;
 			await setInStorage(this.default, this.key);
@@ -17,32 +20,38 @@ export default abstract class DataAccessor<T> {
 		return this;
 	}
 
-	// TODO is needed?
-	// get<k0 extends keyof T>(...keys: [k0]): Promise<T[k0]>;
-	// get<k0 extends keyof T, k1 extends keyof T[k0]>(...keys: [k0, k1]): Promise<T[k0][k1]>;
-	// get<k0 extends keyof T, k1 extends keyof T[k0], k2 extends keyof T[k0][k1]>(...keys: [k0, k1]): Promise<T[k0][k1][k2]>;
-	// async get(...keys: string[]): Promise<any | undefined> {
-	// 	try {
-	// 		return await getFromStorage(this.key, ...keys);
-	// 	} catch (e) {
-	// 		return undefined;
-	// 	}
-	// }
-
-	/** Only to be used in a read only way */
+	/** Get all stored data. Only to be used in a read only way */
 	get d(): Readonly<T> {
 		return this.loaded;
 	}
 
 	set<k0 extends keyof T>(keys: [k0], value: T[k0]): Promise<void>;
 	set<k0 extends keyof T, k1 extends keyof T[k0]>(keys: [k0, k1], value: T[k0][k1]): Promise<void>;
-	set<k0 extends keyof T, k1 extends keyof T[k0], k2 extends keyof T[k0][k1]>(keys: [k0, k1], value: T[k0][k1][k2]): Promise<void>;
+	set<k0 extends keyof T, k1 extends keyof T[k0], k2 extends keyof T[k0][k1]>(keys: [k0, k1, k2], value: T[k0][k1][k2]): Promise<void>;
+	set<k0 extends keyof T, k1 extends keyof T[k0], k2 extends keyof T[k0][k1], k3 extends keyof T[k0][k1][k2]>(keys: [k0, k1, k2, k3], value: T[k0][k1][k2][k3]): Promise<void>;
 	async set(keys: string[], value: any): Promise<void> {
 		await setInStorage(value, this.key, ...keys);
 		let loadedTarget = this.loaded;
 		for (let i = 0; i < keys.length - 1; i++)
 			loadedTarget = loadedTarget[keys[i]];
 		loadedTarget[keys[keys.length - 1]] = value;
+	}
+
+	remove<k0 extends keyof T>(...keys: [k0]): Promise<T[k0]>;
+	remove<k0 extends keyof T, k1 extends keyof T[k0]>(...keys: [k0, k1]): Promise<T[k0][k1]>;
+	remove<k0 extends keyof T, k1 extends keyof T[k0], k2 extends keyof T[k0][k1]>(...keys: [k0, k1, k2]): Promise<T[k0][k1][k2]>;
+	async remove(...keys: string[]): Promise<any | undefined> {
+		let loadedTarget = this.loaded;
+		for (let i = 0; i < keys.length - 1; i++)
+			loadedTarget = loadedTarget[keys[i]];
+		delete loadedTarget[keys[keys.length - 1]];
+		await setInStorage(this.loaded, this.key);
+	}
+
+	protected async changeKey(newKey: string) {
+		await deleteKey(this.key);
+		await setInStorage(this.loaded, newKey);
+		this.key = newKey;
 	}
 
 	protected tryMigrateFromLsToLoaded(lsKeys: string[], loadedKeys: string[], transformer = val => val) {
@@ -62,6 +71,8 @@ export default abstract class DataAccessor<T> {
 				for (let i = 0; i < loadedKeys.length - 1; i++)
 					target = target[loadedKeys[i]];
 				target[loadedKeys[loadedKeys.length - 1]] = transformer(lsVal);
+				// localStorage[`_${lsKeys[0]}`] = localStorage[lsKeys[0]];
+				// TODO remove old key
 			}
 		}
 		catch {}

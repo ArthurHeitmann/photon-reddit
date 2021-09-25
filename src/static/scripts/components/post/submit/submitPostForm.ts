@@ -12,6 +12,7 @@ import Ph_Flair from "../../misc/flair/flair";
 import Ph_MarkdownForm from "../../misc/markdownForm/markdownForm";
 import Ph_SubredditSelector from "../../misc/subredditSelector/subredditSelector";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
+import Users from "../../multiUser/userManagement";
 
 enum SubmitPostType {
 	text = "Text",
@@ -308,7 +309,7 @@ export default class Ph_SubmitPostForm extends HTMLElement {
 			return;
 		}
 		// user posts can only be submitted to self
-		else if (/^(u|user)\//i.test(community) && community.match(/^(?:u|user)\/(\w+)/i)[1] !== thisUser.name) {
+		else if (/^(u|user)\//i.test(community) && community.match(/^(?:u|user)\/(\w+)/i)[1] !== Users.current.name) {
 			new Ph_Toast(Level.error, `You can only submit posts on your profile`, {timeout: 3500});
 			return;
 		}

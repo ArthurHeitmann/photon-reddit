@@ -1,5 +1,6 @@
 import { escADQ } from "../../../../utils/htmlStatics";
 import { clamp, hasParams, urlWithHttps } from "../../../../utils/utils";
+import Users from "../../../multiUser/userManagement";
 import Ph_VideoWrapper, { BasicVideoData, SourceData, VideoTrackInfo } from "../videoWrapper";
 
 /**
@@ -32,7 +33,7 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 		this.video = document.createElement("video");
 		this.video.setAttribute("loop", "");
 		const qualityPreferenceSortedSources: SourceData[] =
-			globalSettings.preferHigherVideoQuality
+			Users.current.d.photonSettings.preferHigherVideoQuality
 				? videoSources
 				: videoSources.filter(src => src.lowerQualityAlternative)
 				  .concat(videoSources.filter(src => !src.lowerQualityAlternative));

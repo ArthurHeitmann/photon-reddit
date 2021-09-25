@@ -1,5 +1,6 @@
 import { escADQ } from "../../../../utils/htmlStatics";
 import { clamp, hasParams, urlWithHttps } from "../../../../utils/utils";
+import Users from "../../../multiUser/userManagement";
 import Ph_VideoWrapper, { BasicVideoData, SourceData, VideoTrackInfo } from "../videoWrapper";
 
 /**
@@ -31,7 +32,7 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 		if (sourcesArray.length === 0)
 			this.insertAdjacentHTML("afterbegin", `<p>No video</p>`);
 		const qualityPreferenceSortedSources: SourceData[] =
-			globalSettings.preferHigherVideoQuality
+			Users.current.d.photonSettings.preferHigherVideoQuality
 				? sourcesArray
 				: sourcesArray.filter(src => src.lowerQualityAlternative)
 					.concat(sourcesArray.filter(src => !src.lowerQualityAlternative));

@@ -1,3 +1,6 @@
+import { QuickCaches } from "../components/multiUser/userData";
+import Users from "../components/multiUser/userManagement";
+import { StoredData } from "../types/misc";
 
 export type OnSubscriptionChangeCallback<EventType> = (e: EventType) => void;
 export abstract class UserSubscriptions<ContentType, EventData> {
@@ -30,18 +33,18 @@ export abstract class UserSubscriptions<ContentType, EventData> {
 		}
 	}
 
-	protected cacheUserContentLs(localstorageKey: string, useCurrentTime: boolean) {
-		localStorage[localstorageKey] = JSON.stringify(<StoredData<ContentType[]>> {
+	protected cacheUserContentLs(storageKey: keyof QuickCaches, useCurrentTime: boolean) {
+		Users.current.set(["caches", storageKey], {
 			lastUpdatedMsUTC: useCurrentTime ? Date.now() : this.lastTimeDataUpdatedMs,
 			data: this.userContent
 		});
 	}
 
-	protected loadUserContentFromLs(localstorageKey: string): ContentType[] | null {
+	protected loadUserContentFromLs(storageKey: keyof QuickCaches): ContentType[] | null {
 		try {
-			const storedData: StoredData<ContentType[]> = JSON.parse(localStorage[localstorageKey]);
+			const storedData: StoredData<ContentType[]> = Users.current.d.caches[storageKey];
 			this.userContent = storedData.data;
-			if (Date.now() - storedData.lastUpdatedMsUTC > User.refreshEveryNMs)
+			if (Date.now() - storedData.lastUpdatedMsUTC > Users.current.d.photonSettings.userShortCacheTTLMs)
 				return null;
 		} catch (e) {
 			return null;

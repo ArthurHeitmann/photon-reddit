@@ -14,6 +14,7 @@ import { extractPath, extractQuery, hasParams, splitPathQuery } from "../../../u
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown";
 import { DropDownActionData, DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
+import Users from "../../multiUser/userManagement";
 import { FeedType } from "../feedInfo/feedInfo";
 import Ph_UniversalFeed from "../universalFeed/universalFeed";
 
@@ -41,7 +42,7 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 				{ label: "Comments", value: UserSection.comments, onSelectCallback: this.setUserSection.bind(this) },
 				{ label: "Gilded", value: UserSection.gilded, onSelectCallback: this.setUserSection.bind(this) },
 			];
-			if (new RegExp(`/${thisUser.name}$`, "i").test(baseUrl)) {
+			if (new RegExp(`/${Users.current.name}$`, "i").test(baseUrl)) {
 				userSections.push(...[
 					{ label: "Upvoted", value: UserSection.upvoted, onSelectCallback: this.setUserSection.bind(this) },
 					{ label: "Downvoted", value: UserSection.downvoted, onSelectCallback: this.setUserSection.bind(this) },
@@ -65,7 +66,8 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 		let dropDownParams: DropDownEntryParam[];
 		if (feedType !== FeedType.user) {
 			dropDownParams = [
-				isLoggedIn && pathWithoutSort === "/" && { label: "Best", labelImgUrl: "/img/rocket.svg", value: SortPostsOrder.best, onSelectCallback: this.handleSortSelect.bind(this) },
+				Users.current.d.auth.isLoggedIn && pathWithoutSort === "/" &&
+					{ label: "Best", labelImgUrl: "/img/rocket.svg", value: SortPostsOrder.best, onSelectCallback: this.handleSortSelect.bind(this) },
 				{ label: "Hot", labelImgUrl: "/img/hot.svg", value: SortPostsOrder.hot, onSelectCallback: this.handleSortSelect.bind(this) },
 				{ label: "Top", labelImgUrl: "/img/top.svg", value: SortPostsOrder.top, nestedEntries: [
 						{ label: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.handleSortSelect.bind(this) },

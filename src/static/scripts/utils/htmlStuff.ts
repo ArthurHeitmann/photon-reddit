@@ -4,7 +4,9 @@
  * Might import other files
  */
 
+import { PhotonSettings } from "../components/global/photonSettings/photonSettings";
 import Ph_MediaViewer from "../components/mediaViewer/mediaViewer";
+import Users from "../components/multiUser/userManagement";
 import { pushLinkToHistoryComb } from "../historyState/historyStateManager";
 import { $classAr } from "./htmlStatics";
 
@@ -109,7 +111,7 @@ export function _linksToInlineMedia(elem: HTMLElement) {
 			link.classList.toggle("isExpanded");
 			return Boolean(e.ctrlKey)
 		}
-		if (globalSettings.loadInlineMedia)
+		if (Users.current.d.photonSettings.loadInlineMedia)
 			link.click();
 		link.setAttribute("excludeLinkFromSpa", "")
 	}

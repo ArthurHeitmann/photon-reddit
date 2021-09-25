@@ -3,8 +3,9 @@ import { elementWithClassInTree } from "../../../utils/htmlStuff";
 import { bufferedMouseLeave, deepClone, makeElement, sleep } from "../../../utils/utils";
 import { PhotonSettings } from "../../global/photonSettings/photonSettings";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
+import Users from "../../multiUser/userManagement";
 import Ph_FabElement, { FabElementSize } from "./fabElement/fabElement";
-import { defaultFabPresets, FabPreset } from "./fabElementConfig";
+import { defaultFabPresets, initialDefaultFabPresets } from "./fabElementConfig";
 
 interface LayerConfiguration {
 	distance: number;
@@ -48,7 +49,7 @@ export default class Ph_Fab extends HTMLElement {
 		this.addEventListener("mouseenter", this.show.bind(this));
 		bufferedMouseLeave(this, 400, this.hide.bind(this));
 
-		this.loadAllElementsFromLS().then(r => this.saveAllElementsToLS());
+		this.loadAllElementsFromLS().then(r => this.saveAllElements());
 
 		window.addEventListener("ph-settings-changed", (e: CustomEvent) => {
 			const changed = e.detail as PhotonSettings;
@@ -68,29 +69,20 @@ export default class Ph_Fab extends HTMLElement {
 		newElement.loadPreset(deepClone(defaultFabPresets[0]));
 		this.fabElements.push(newElement);
 		this.recalculatePositions();
-		this.saveAllElementsToLS();
+		this.saveAllElements();
 		return true;
 	}
 
-	saveAllElementsToLS() {
+	saveAllElements() {
 		const allConfigs = this.fabElements
 			.map(el => el.activePreset)
 			.filter(el => Boolean(el));
-		localStorage["fabConfig"] = JSON.stringify(allConfigs);
+		Users.current.set(["fabConfig"], allConfigs);
 	}
 
 	async loadAllElementsFromLS(_isSecondAttempt = false) {
 		try {
-			let presets: FabPreset[];
-			try {
-				presets = JSON.parse(localStorage["fabConfig"]);
-			} catch {
-				presets = deepClone([
-					defaultFabPresets[5],
-					defaultFabPresets[6],
-					defaultFabPresets[2],
-				]);
-			}
+			const presets = Users.current.d.fabConfig;
 			for (const preset of presets) {
 				const fabElement = new Ph_FabElement(this.onElementRemoved.bind(this));
 				fabElement.loadPreset(preset);
@@ -102,7 +94,7 @@ export default class Ph_Fab extends HTMLElement {
 		} catch (e) {
 			if (_isSecondAttempt)
 				return;
-			localStorage.removeItem("presets");
+			await Users.current.set(["fabConfig"], deepClone(initialDefaultFabPresets));
 			await this.loadAllElementsFromLS(true);
 		}
 	}
@@ -131,7 +123,7 @@ export default class Ph_Fab extends HTMLElement {
 		const elemIndex = this.fabElements.findIndex(e => e === elem);
 		this.fabElements.splice(elemIndex, 1);
 		this.recalculatePositions();
-		this.saveAllElementsToLS();
+		this.saveAllElements();
 	}
 
 	toggleEditing() {
@@ -166,7 +158,7 @@ export default class Ph_Fab extends HTMLElement {
 		}
 		this.fabElements.splice(index1, 1, elem2);
 		this.fabElements.splice(index2, 1, elem1);
-		this.saveAllElementsToLS();
+		this.saveAllElements();
 	}
 
 	setIsDragging(isDragging: boolean, dragged: Ph_FabElement) {
@@ -184,4 +176,4 @@ export default class Ph_Fab extends HTMLElement {
 
 customElements.define("ph-fab", Ph_Fab);
 
-window.addEventListener("load", () => document.body.append(new Ph_Fab()));
+Users.ensureDataHasLoaded().then(() => document.body.append(new Ph_Fab()));

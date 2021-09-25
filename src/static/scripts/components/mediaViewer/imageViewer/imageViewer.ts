@@ -2,6 +2,7 @@ import { getLoadingIcon, nonDraggableElement } from "../../../utils/htmlStatics"
 import { hasParams } from "../../../utils/utils";
 import { ImageLoadingPolicy, PhotonSettings } from "../../global/photonSettings/photonSettings";
 import { ControlsLayoutSlots } from "../../misc/controlsBar/controlsBar";
+import Users from "../../multiUser/userManagement";
 import Ph_PhotonBaseElement from "../../photon/photonBaseElement/photonBaseElement";
 import { MediaElement } from "../mediaElement";
 
@@ -42,7 +43,7 @@ export default class Ph_ImageViewer extends Ph_PhotonBaseElement implements Medi
 		this.originalImage.alt = initData.caption || this.url;
 		this.originalImage.onerror = this.makeOnImageError();
 		nonDraggableElement(this.originalImage);
-		if (initData.previewUrl && globalSettings.imageLoadingPolicy !== ImageLoadingPolicy.alwaysOriginal) {
+		if (initData.previewUrl && Users.current.d.photonSettings.imageLoadingPolicy !== ImageLoadingPolicy.alwaysOriginal) {
 			this.previewImage = document.createElement("img");
 			this.previewImage.className = "preview";
 			this.previewImage.src = initData.previewUrl
@@ -79,7 +80,7 @@ export default class Ph_ImageViewer extends Ph_PhotonBaseElement implements Medi
 	}
 
 	onFullscreenEnter() {
-		if (globalSettings.imageLoadingPolicy !== ImageLoadingPolicy.alwaysPreview)
+		if (Users.current.d.photonSettings.imageLoadingPolicy !== ImageLoadingPolicy.alwaysPreview)
 			this.startLoadingOriginal();
 	}
 

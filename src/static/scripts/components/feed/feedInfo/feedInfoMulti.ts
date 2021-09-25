@@ -16,6 +16,7 @@ import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDow
 import Ph_MultiCreateOrEdit from "../../misc/multiCreateOrEdit/multiCreateOrEdit";
 import Ph_SubredditSelector from "../../misc/subredditSelector/subredditSelector";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
+import Users from "../../multiUser/userManagement";
 import Ph_FeedInfo from "./feedInfo";
 
 export default class Ph_FeedInfoMulti extends Ph_FeedInfo<RedditMultiInfo> {
@@ -55,7 +56,7 @@ export default class Ph_FeedInfoMulti extends Ph_FeedInfo<RedditMultiInfo> {
 		}
 		const overviewBar = makeElement("div", { class: "overviewBar" });
 		this.editPane?.remove();
-		const isUserOwner = this.loadedInfo.data.owner === thisUser.name;
+		const isUserOwner = this.loadedInfo.data.owner === Users.current.name;
 		if (isUserOwner) {
 			this.editPane = new Ph_MultiCreateOrEdit(`Edit ${this.loadedInfo.data.display_name}`, "Edit",
 				this.editMulti.bind(this),
@@ -213,11 +214,9 @@ export default class Ph_FeedInfoMulti extends Ph_FeedInfo<RedditMultiInfo> {
 				this.loadedInfo.data.subreddits.sort((a, b) => stringSortComparer(a.name, b.name));
 				this.saveInfo();
 			}
-			else if (localStorage[multiPath.toLowerCase()]) {
+			else if (Users.current.d.caches.feedInfos[multiPath.toLowerCase()]) {
 				// force reload on next load
-				const multiData: StoredData<RedditMultiInfo> = JSON.parse(localStorage[multiPath.toLowerCase()]);
-				multiData.lastUpdatedMsUTC = 1;
-				localStorage[multiPath.toLowerCase()] = JSON.stringify(multiData);
+				await Users.current.set(["caches", "feedInfos", multiPath.toLowerCase(), "lastUpdatedMsUTC"], 1);
 			}
 			if (subsList) {
 				const newSubIndex = this.loadedInfo.data.subreddits.findIndex(sub => sub.name === response["name"]);
@@ -233,7 +232,7 @@ export default class Ph_FeedInfoMulti extends Ph_FeedInfo<RedditMultiInfo> {
 	}
 
 	private async editMulti(info) {
-		return await thisUser.multireddits.createOrUpdateMulti(this.feedUrl, true, {
+		return await Users.current.multireddits.createOrUpdateMulti(this.feedUrl, true, {
 			display_name: info.name,
 			description_md: info.descriptionMd,
 			visibility: info.visibility
@@ -242,7 +241,7 @@ export default class Ph_FeedInfoMulti extends Ph_FeedInfo<RedditMultiInfo> {
 
 	private deleteMulti() {
 		new Ph_Toast(Level.warning, "Are you sure you want to delete this multireddit?", { onConfirm: async () => {
-			const response = await thisUser.multireddits.createOrUpdateMulti(this.feedUrl, false);
+			const response = await Users.current.multireddits.createOrUpdateMulti(this.feedUrl, false);
 			if (!response) {
 				new Ph_Toast(Level.error, "Something went wrong", { timeout: 2500 });
 				return;
@@ -255,13 +254,13 @@ export default class Ph_FeedInfoMulti extends Ph_FeedInfo<RedditMultiInfo> {
 		setTimeout(() => {
 			if(!this.multisChangedCallback)
 				this.multisChangedCallback = this.onMultisChanged.bind(this);
-			thisUser.multireddits.listenForChanges(this.multisChangedCallback);
+			Users.current.multireddits.listenForChanges(this.multisChangedCallback);
 		}, 0);
 	}
 
 	disconnectedCallback() {
 		setTimeout(() => {
-			thisUser.multireddits.disconnectListener(this.multisChangedCallback);
+			Users.current.multireddits.disconnectListener(this.multisChangedCallback);
 		}, 0);
 	}
 

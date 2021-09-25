@@ -29,6 +29,7 @@ import Ph_CommentForm from "../misc/markdownForm/commentForm/commentForm";
 import Ph_MarkdownForm from "../misc/markdownForm/markdownForm";
 import Ph_Toast, { Level } from "../misc/toast/toast";
 import Ph_VoteButton from "../misc/voteButton/voteButton";
+import Users from "../multiUser/userManagement";
 import Ph_Post from "../post/post";
 
 /**
@@ -152,7 +153,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 		let dropDownParams: DropDownEntryParam[] = [];
 		if (!isLocked)
 			dropDownParams.push({ label: "Reply", labelImgUrl: "/img/commentEmpty.svg", onSelectCallback: this.showReplyForm.bind(this) });
-		if (commentData.data.author === thisUser.name) {
+		if (commentData.data.author === Users.current.name) {
 			this.setupEditForm();
 			dropDownParams.push({ label: "Edit", labelImgUrl: "/img/edit.svg", onSelectCallback: this.editStart.bind(this) });
 			dropDownParams.push({ label: "Delete", labelImgUrl: "/img/delete.svg", onSelectCallback: this.deletePrompt.bind(this) });

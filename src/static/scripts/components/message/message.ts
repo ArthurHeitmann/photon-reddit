@@ -6,6 +6,7 @@ import { hasParams, timePassedSince } from "../../utils/utils";
 import Ph_Readable from "../feed/feedItem/readable/readable";
 import Ph_MarkdownForm from "../misc/markdownForm/markdownForm";
 import Ph_Toast, { Level } from "../misc/toast/toast";
+import Users from "../multiUser/userManagement";
 
 /**
  * A message that has been sent by someone
@@ -17,7 +18,7 @@ export default class Ph_Message extends Ph_Readable {
 
 	constructor(messageData: RedditMessageObj, isInFeed: boolean, isReply: boolean = false) {
 		super(messageData.data.name, isInFeed ? `/message/messages/${messageData.data.id}` : null, !isReply,
-			messageData.data.dest === thisUser.name, !messageData.data.new);
+			messageData.data.dest === Users.current.name, !messageData.data.new);
 		if (!hasParams(arguments)) return;
 
 		this.fullName = this.itemId;
@@ -93,7 +94,7 @@ export default class Ph_Message extends Ph_Readable {
 					mainPart.append(document.createElement("hr"));
 					const message = new Ph_Message(reply, false, true);
 					mainPart.append(message);
-					if (reply.data.author !== thisUser.name)
+					if (reply.data.author !== Users.current.name)
 						this.lastMessageFromOther = message;
 				}
 			}
@@ -119,7 +120,7 @@ export default class Ph_Message extends Ph_Readable {
 					const newMessageData = response.json.data.things[0] as RedditMessageObj;
 					const message = new Ph_Message(newMessageData, false, true);
 					replyForm.insertAdjacentElement("beforebegin", message);
-					if (newMessageData.data.author !== thisUser.name)
+					if (newMessageData.data.author !== Users.current.name)
 						this.lastMessageFromOther = message;
 					replyForm.textField.value = "";
 					replyForm.onTextInput();

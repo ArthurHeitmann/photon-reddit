@@ -13,7 +13,6 @@ import Ph_Changelog from "./components/photon/changelog/changelog";
 import Ph_Tutorial from "./components/photon/tutorial/tutorial";
 import { pushLinkToHistorySep } from "./historyState/historyStateManager";
 import ViewsStack from "./historyState/viewsStack";
-import { hasAnalyticsFileLoaded } from "./unsuspiciousFolder/unsuspiciousFile";
 import { supportsIndexedDB } from "./utils/browserFeatures";
 import { loginSubredditFullName, loginSubredditName } from "./utils/consts";
 import { $css, $id } from "./utils/htmlStatics";
@@ -27,14 +26,13 @@ import VersionNumber from "./utils/versionNumber";
 async function init(): Promise<void> {
 	console.log("Photon Init");
 
+	await Users.init();
 	if (await checkFirefoxPrivateMode())
 		return;
-	await Users.init();
 
 	registerServiceWorker();
 	$id("mainWrapper").insertAdjacentElement("afterbegin", new Ph_Header());
 	linksToSpa(document.body);
-	checkIfAnalyticsFileLoaded()
 	const loginBtn = $css(".loginButton")[0];
 	loginBtn.addEventListener("click", () => initiateLogin());
 
@@ -59,7 +57,7 @@ async function init(): Promise<void> {
 	setInterval(checkTokenRefresh, 1000 * 30);
 	loadPosts();
 
-	checkForNewVersion();
+	await checkForNewVersion();
 	disableSpaceBarScroll();
 
 	if (thisUserFetch)
@@ -90,30 +88,8 @@ function loadPosts() {
 		pushLinkToHistorySep(location.pathname + location.hash, location.search || "");
 }
 
-function checkIfAnalyticsFileLoaded() {
-	if (hasAnalyticsFileLoaded())
-		return;
-
-	console.error("couldn't load unsuspiciousFolder file");
-	new Ph_Toast(Level.error, "Couldn't load all script files");
-	throw "couldn't load unsuspiciousFolder file";
-}
-
-function checkForNewVersion() {
-	if (!localStorage.version) {
-		localStorage.version = photonWebVersion;
-		return;
-	}
-
-	let lastVersion: VersionNumber;
-	try {
-		lastVersion = new VersionNumber(localStorage.version);
-	}
-	catch (e) {
-		localStorage.version = photonWebVersion;
-		return;
-	}
-
+async function checkForNewVersion() {
+	let lastVersion = new VersionNumber(Users.global.d.photonVersion);
 	const currentVersion = new VersionNumber(photonWebVersion);
 	if (currentVersion.equals(lastVersion))
 		return;
@@ -124,7 +100,7 @@ function checkForNewVersion() {
 			{ onConfirm: () => Ph_Changelog.show(lastVersion) }
 		);
 	}
-	localStorage.version = photonWebVersion;
+	await Users.global.set(["photonVersion"], photonWebVersion)
 }
 
 async function registerServiceWorker() {
@@ -161,10 +137,9 @@ function disableSpaceBarScroll() {
  * @return true --> stop execution, false: continue normally
  */
 async function checkFirefoxPrivateMode(): Promise<boolean> {
-	const hasCheckCompleted = localStorage.firefoxPrivateModeCheck === "true";
-	if (hasCheckCompleted)
+	if (Users.global.d.firefoxPrivateCheckCompleted)
 		return false;
-	localStorage.firefoxPrivateModeCheck = "true";
+	await Users.global.set(["firefoxPrivateCheckCompleted"], true);
 	const isFirefoxPrivate = await isFirefoxPrivateMode();
 	if (!isFirefoxPrivate)
 		return false;

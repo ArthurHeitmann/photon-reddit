@@ -25,6 +25,7 @@
  */
 
 import { trackBrowserFeatures } from "../api/photonApi";
+import Users from "../components/multiUser/userManagement";
 import { ViewChangeData } from "../historyState/viewsStack";
 import { supportsIndexedDB, supportsServiceWorkers } from "../utils/browserFeatures";
 import { extractPath, randomString } from "../utils/utils";
@@ -49,8 +50,8 @@ window.addEventListener("ph-view-change", (e: CustomEvent) => {
 			],
 			body: JSON.stringify({
 				"clientId": clientId,
-				"path": globalSettings.isIncognitoEnabled ? "/i" : path.toLowerCase(),
-				"referer": globalSettings.isIncognitoEnabled ? "" : referer.toLowerCase(),
+				"path": Users.current.d.photonSettings.isIncognitoEnabled ? "/i" : path.toLowerCase(),
+				"referer": Users.current.d.photonSettings.isIncognitoEnabled ? "" : referer.toLowerCase(),
 				"timeMillisUtc": Date.now()
 			})
 		});
@@ -66,66 +67,45 @@ interface ClientIdData {
 export let clientId: string;
 let referer = document.referrer || "";
 
-function init() {
+async function init() {
 	// client data has never before been set
-	if (!localStorage["clientIdData"]) {
-		generateClientIdData();
+	if (!Users.global.d.analytics.clientId) {
+		await generateClientIdData();
 		loadClientId()
 	}
-	// client data has been set in localstorage, but doesn't have to be valid
+	// client data has been set in storage, but could be corrupted
 	else {
-		let clientIdData: ClientIdData;
-		try {
-			clientIdData = JSON.parse(localStorage["clientIdData"]) as ClientIdData;
-		}
-		catch (e) {
-			// invalid localstorage string, go with empty default
-			clientIdData = { lastSetMillisUtc: 0, id: "" };
-		}
+		let clientIdData = Users.global.d.analytics;
 		// check if read data is valid & not expired
-		if (!clientIdData.lastSetMillisUtc || typeof clientIdData.lastSetMillisUtc !== "number"
-				|| clientIdData.lastSetMillisUtc > Date.now() ||										// if lastSet is corrupted
-				Date.now() - clientIdData.lastSetMillisUtc > 1000 * 60 * 60 * 24 * 30 ||				// or invalidate after 30 days
-				!clientIdData.id || clientIdData.id.length !== 128										// or is id corrupted
+		if (!clientIdData.idInitTime ||
+				clientIdData.idInitTime > Date.now() ||													// if lastSet is corrupted
+				Date.now() - clientIdData.idInitTime > 1000 * 60 * 60 * 24 * 30 ||				// or invalidate after 30 days
+				!clientIdData.clientId || clientIdData.clientId.length !== 128										// or is id corrupted
 		) {
-			generateClientIdData();
+			await generateClientIdData();
 		}
-		loadClientId(clientIdData.id);
+		loadClientId(clientIdData.clientId);
 	}
 }
 
-function generateClientIdData() {
-	clientId = randomString(128);
-	localStorage["clientIdData"] = JSON.stringify(<ClientIdData> {
-		id: clientId,
-		lastSetMillisUtc: Date.now()
-	})
+async function generateClientIdData() {
+	await Users.global.set(["analytics", "clientId"], randomString(128));
 }
 
 function loadClientId(id?: string) {
 	if (id)
 		clientId = id;
 	else {
-		const clientData = JSON.parse(localStorage["clientIdData"]) as ClientIdData;
-		clientId = clientData.id;
+		clientId = Users.global.d.analytics.clientId;
 	}
 }
-
-try {
-	init();
-} catch {}
-
-export function hasAnalyticsFileLoaded() {
-	return Boolean(clientId);
-}
-
 
 // track browser features
 
 const reportIntervalMs = 1000 * 60 * 60 * 24 * 7;	// new report every week
-window.addEventListener("load", () => {
-	let lastReportMs = parseInt(localStorage["lastReportMs"]);
-	if ((!lastReportMs || Date.now() - lastReportMs > reportIntervalMs) && location.hostname !== "localhost")
+Users.ensureDataHasLoaded().then(() => {
+	init();
+	if ((Date.now() - Users.global.d.analytics.lastReportAt > reportIntervalMs) && location.hostname !== "localhost")
 		sendBrowserFeatures();
 });
 
@@ -136,5 +116,5 @@ async function sendBrowserFeatures() {
 		trackBrowserFeatures({ featureName: "indexedDB", isAvailable: idbSupported }),
 		trackBrowserFeatures({ featureName: "serviceWorkers", isAvailable: swSupported }),
 	]);
-	localStorage["lastReportMs"] = `${Date.now()}`;
+	await Users.global.set(["analytics", "lastReportAt"], Date.now());
 }

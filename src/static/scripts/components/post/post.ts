@@ -34,6 +34,7 @@ import Ph_DropDownEntry, { DropDownActionData, DropDownEntryParam } from "../mis
 import Ph_Flair from "../misc/flair/flair";
 import Ph_Toast, { Level } from "../misc/toast/toast";
 import Ph_VoteButton from "../misc/voteButton/voteButton";
+import Users from "../multiUser/userManagement";
 import Ph_PostBody from "./postBody/postBody";
 import Ph_PostText from "./postBody/postText/postText";
 import PostDoubleLink from "./postDoubleLink/postDoubleLink";
@@ -86,7 +87,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		this.sendReplies = postData.data.send_replies;
 		this.isNsfw = postData.data.over_18;
 		this.isSpoiler = postData.data.spoiler;
-		this.wasInitiallySeen = hasPostsBeenSeen(this.fullName);
+		this.wasInitiallySeen = Users.current.hasPostsBeenSeen(this.fullName);
 		this.classList.add("post");
 
 		if (this.shouldPostBeHidden())
@@ -136,7 +137,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			] }
 		];
 		this.postFlair = Ph_Flair.fromThingData(postData.data, "link");
-		if (thisUser && thisUser.name === postData.data.author) {
+		if (Users.current.name === postData.data.author) {
 			const editEntries: DropDownEntryParam[] = [];
 			if (postData.data.is_self)
 				editEntries.push({ label: "Edit Text", labelImgUrl: "/img/text.svg", onSelectCallback: this.editPost.bind(this) });
@@ -289,7 +290,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		}
 		if (this.isNsfw) {
 			this.classList.add("nsfw");
-			if (globalSettings.nsfwPolicy === NsfwPolicy.never)
+			if (Users.current.d.photonSettings.nsfwPolicy === NsfwPolicy.never)
 				this.classList.add("hide");
 		}
 		makeFlair("darkred", "NSFW");
@@ -324,7 +325,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			new Ph_Toast(Level.error, "Error making post");
 		}
 		if (
-			(this.isSpoiler || this.isNsfw && globalSettings.nsfwPolicy === NsfwPolicy.covered) &&
+			(this.isSpoiler || this.isNsfw && Users.current.d.photonSettings.nsfwPolicy === NsfwPolicy.covered) &&
 			!this.cover && this.isInFeed && !this.isEmpty(this.postBody)
 		) {
 			this.postBody.classList.add("covered");
@@ -354,9 +355,8 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			if (this.becameVisibleAt) {
 				const visibilityDuration = Date.now() - this.becameVisibleAt;
 				this.becameVisibleAt = null;
-				if (visibilityDuration > 750 && globalSettings.markSeenPosts && this.isInFeed) {
-					markPostAsSeen(this.fullName);
-				}
+				if (visibilityDuration > 750 && Users.current.d.photonSettings.markSeenPosts && this.isInFeed)
+					Users.current.markPostAsSeen(this.fullName);
 			}
 		}
 	}
@@ -382,8 +382,8 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		if (changedSettings === undefined) {
 			return (
 				this.isInFeed && (
-					!this.isPinned && globalSettings.hideSeenPosts && !isInUserFeed && !ignoreSeenSettings && hasPostsBeenSeen(this.fullName)
-					|| this.isNsfw && globalSettings.nsfwPolicy === NsfwPolicy.never
+					!this.isPinned && Users.current.d.photonSettings.hideSeenPosts && !isInUserFeed && !ignoreSeenSettings && Users.current.hasPostsBeenSeen(this.fullName)
+					|| this.isNsfw && Users.current.d.photonSettings.nsfwPolicy === NsfwPolicy.never
 				)
 			);
 		}
@@ -391,15 +391,15 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			// the if notation might be a bit slower but is a lot more readable
 			if (!this.isInFeed)
 				return false;
-			if (this.isNsfw && globalSettings.nsfwPolicy === NsfwPolicy.never)
+			if (this.isNsfw && Users.current.d.photonSettings.nsfwPolicy === NsfwPolicy.never)
 				return true;
 			if (this.isPinned)
 				return false;
 			if (ignoreSeenSettings)
 				return false
 			if (changedSettings.hideSeenPosts !== undefined)
-				return changedSettings.hideSeenPosts && !isInUserFeed && this.wasInitiallySeen && hasPostsBeenSeen(this.fullName);
-			return this.wasInitiallySeen && globalSettings.hideSeenPosts;
+				return changedSettings.hideSeenPosts && !isInUserFeed && this.wasInitiallySeen && Users.current.hasPostsBeenSeen(this.fullName);
+			return this.wasInitiallySeen && Users.current.d.photonSettings.hideSeenPosts;
 		}
 	}
 

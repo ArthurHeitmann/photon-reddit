@@ -11,6 +11,7 @@ import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDow
 import { DropDownActionData, DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry";
 import Ph_Flair from "../../misc/flair/flair";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
+import Users from "../../multiUser/userManagement";
 import Ph_Header from "../header/header";
 
 /**
@@ -211,7 +212,7 @@ export default class Ph_Search extends HTMLElement {
 			if (this.currentSubreddit) {
 				limitToLabel.innerText = `Limit to ${this.currentSubreddit}`;
 				this.limitToSubreddit.nextElementSibling.classList.remove("hide");
-				this.flairSearch.setEntries([isLoggedIn ? {label: getLoadingIcon()} : {label: "Log in to list flairs"}]);
+				this.flairSearch.setEntries([Users.current.d.auth.isLoggedIn ? {label: getLoadingIcon()} : {label: "Log in to list flairs"}]);
 				this.flairSearch.classList.remove("hide");
 			}
 			else {

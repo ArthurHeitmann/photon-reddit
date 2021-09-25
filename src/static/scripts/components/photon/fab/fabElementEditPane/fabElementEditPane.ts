@@ -138,7 +138,7 @@ export default class Ph_FabElementEditPane extends HTMLElement {
 		this.setActiveAction(newPreset.action, false);
 		this.setActiveIcon(newPreset.icon, false);
 		this.controllingElement.loadPreset(newPreset);
-		Ph_Fab.getRoot(this)?.saveAllElementsToLS();
+		Ph_Fab.getRoot(this)?.saveAllElements();
 	}
 
 	setActiveAction(newAction: FabAction, updatePreset = true) {

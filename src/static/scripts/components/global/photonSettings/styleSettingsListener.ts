@@ -1,4 +1,5 @@
 import { ensurePageLoaded } from "../../../utils/utils";
+import Users from "../../multiUser/userManagement";
 import { PhotonSettings } from "./photonSettings";
 
 window.addEventListener("ph-settings-changed", (e: CustomEvent) => handleSettings(e.detail));
@@ -19,4 +20,4 @@ function setClassOnBody(className: string, state: boolean, invert: boolean = fal
 	}
 }
 
-ensurePageLoaded().then(() => handleSettings(globalSettings));
+ensurePageLoaded().then(() => handleSettings(Users.current.d.photonSettings));

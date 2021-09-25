@@ -38,6 +38,7 @@ export interface PhotonSettings {
 	isIncognitoEnabled?: boolean,
 	tooltipsVisible?: boolean,
 	messageCheckIntervalMs?: number,
+	userShortCacheTTLMs?: number
 }
 
 // default config
@@ -58,10 +59,8 @@ export const defaultSettings: PhotonSettings = {
 	isIncognitoEnabled: false,
 	tooltipsVisible: true,
 	messageCheckIntervalMs: 30 * 1000,
+	userShortCacheTTLMs: 1000 * 60 * 5
 };
-
-// export let globalSettings: PhotonSettings = deepClone(defaultSettings);
-// export let globalRedditPreferences: RedditPreferences;
 
 /** Stores and manages global settings */
 export default class Ph_PhotonSettings extends Ph_ModalPane {

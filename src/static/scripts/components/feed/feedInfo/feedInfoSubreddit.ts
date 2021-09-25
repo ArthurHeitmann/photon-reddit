@@ -21,6 +21,7 @@ import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDow
 import { DropDownActionData, DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry";
 import Ph_Flair from "../../misc/flair/flair";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
+import Users from "../../multiUser/userManagement";
 import Ph_FeedInfo from "./feedInfo";
 
 interface AllSubData extends SubredditDetails {
@@ -47,7 +48,7 @@ export default class Ph_FeedInfoSubreddit extends Ph_FeedInfo<AllSubData> {
 			if (tmpMods["error"] || !(tmpMods.kind === "UserList" && tmpMods.data))
 				tmpMods = { data: { children: [] } };
 			mods = tmpMods.data.children;
-			if (isLoggedIn)
+			if (Users.current.d.auth.isLoggedIn)
 				flairs = await getSubUserFlairs(this.feedUrl);
 		} catch (e) {
 			new Ph_Toast(Level.error, "Error getting subreddit info");
@@ -90,16 +91,16 @@ export default class Ph_FeedInfoSubreddit extends Ph_FeedInfo<AllSubData> {
 		overviewBar.appendChild(subActionsWrapper);
 		const subscribeButton = document.createElement("button");
 		subscribeButton.className = "subscribeButton button";
-		subscribeButton.innerText = thisUser.subreddits.isSubscribedTo(this.loadedInfo.data.display_name) ? "Unsubscribe" : "Subscribe";
+		subscribeButton.innerText = Users.current.subreddits.isSubscribedTo(this.loadedInfo.data.display_name) ? "Unsubscribe" : "Subscribe";
 		subscribeButton.addEventListener("click", async () => {
-			const isCurrentlySubscribed = thisUser.subreddits.isSubscribedTo(this.loadedInfo.data.display_name);
+			const isCurrentlySubscribed = Users.current.subreddits.isSubscribedTo(this.loadedInfo.data.display_name);
 			subscribeButton.innerText = !isCurrentlySubscribed ? "Unsubscribe" : "Subscribe";
-			if (await thisUser.subreddits.setIsSubscribed(this.loadedInfo.data.name, !isCurrentlySubscribed)) {
+			if (await Users.current.subreddits.setIsSubscribed(this.loadedInfo.data.name, !isCurrentlySubscribed)) {
 				this.loadedInfo.data.user_is_subscriber = !isCurrentlySubscribed;
 				new Ph_Toast(Level.success, "", { timeout: 2000 });
 			}
 			else {
-				subscribeButton.innerText = thisUser.subreddits.isSubscribedTo(this.loadedInfo.data.display_name) ? "Unsubscribe" : "Subscribe";
+				subscribeButton.innerText = Users.current.subreddits.isSubscribedTo(this.loadedInfo.data.display_name) ? "Unsubscribe" : "Subscribe";
 				this.loadedInfo.data.user_is_subscriber = isCurrentlySubscribed;
 				new Ph_Toast(Level.error, `Error subscribing to subreddit`, { timeout: 2000 });
 			}
@@ -108,12 +109,12 @@ export default class Ph_FeedInfoSubreddit extends Ph_FeedInfo<AllSubData> {
 		const dropDownEntries: DropDownEntryParam[] = [];
 		dropDownEntries.push({label:makeElement("a", { href: this.feedUrl }, "Visit"), labelImgUrl: "/img/rightArrow.svg"});
 		dropDownEntries.push({label: makeElement("a", { href: `${this.feedUrl}/submit` }, "Submit Post"), labelImgUrl: "/img/edit.svg"});
-		if (thisUser.multireddits.rawData.length > 0) {
+		if (Users.current.multireddits.rawData.length > 0) {
 			dropDownEntries.push({
 				label: "Add to Multireddit",
 				labelImgUrl: "/img/add.svg",
 				nestedEntries:
-					thisUser.multireddits.rawData.map(multi => ({
+					Users.current.multireddits.rawData.map(multi => ({
 						label: multi.data.display_name,
 						value: multi.data.path,
 						onSelectCallback: async (data: DropDownActionData) => {
@@ -130,11 +131,9 @@ export default class Ph_FeedInfoSubreddit extends Ph_FeedInfo<AllSubData> {
 								new Ph_Toast(Level.error, "Error Adding Sub to Multi", { timeout: 6000 });
 								return;
 							}
-							if (localStorage[multiPath.toLowerCase()]) {
+							if (Users.current.d.caches.feedInfos[multiPath.toLowerCase()]) {
 								// force reload on next load
-								const multiData: StoredData<AllSubData> = JSON.parse(localStorage[multiPath.toLowerCase()]);
-								multiData.lastUpdatedMsUTC = 1;
-								localStorage[multiPath.toLowerCase()] = JSON.stringify(multiData);
+								await Users.current.set(["caches", "feedInfos", multiPath.toLowerCase(), "lastUpdatedMsUTC"], 1);
 							}
 							new Ph_Toast(Level.success, "", { timeout: 3000 });
 						}

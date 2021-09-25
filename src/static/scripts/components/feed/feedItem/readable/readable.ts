@@ -6,6 +6,7 @@ import { hasParams } from "../../../../utils/utils";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../../misc/dropDown/dropDown";
 import { DropDownActionData, DropDownEntryParam } from "../../../misc/dropDown/dropDownEntry/dropDownEntry";
 import Ph_Toast, { Level } from "../../../misc/toast/toast";
+import Users from "../../../multiUser/userManagement";
 import { MessageSection } from "../../universalFeed/universalFeed";
 import Ph_FeedItem from "../feedItem";
 
@@ -65,7 +66,7 @@ export default abstract class Ph_Readable extends Ph_FeedItem implements FullNam
 			console.error(r);
 			return;
 		}
-		thisUser.setInboxIdUnreadState(this.fullName, this.isRead)
+		Users.current.setInboxIdUnreadState(this.fullName, this.isRead)
 		$css(`.readable[data-id="${this.getAttribute("data-id")}"]`)
 			.forEach((readable: Ph_Readable) => readable.setIsRead(!readable.isRead));
 	}
@@ -121,7 +122,7 @@ export default abstract class Ph_Readable extends Ph_FeedItem implements FullNam
 		for (const message of $css(".readable.unread")) {
 			(message as Ph_Readable).setIsRead(true);
 		}
-		thisUser.setAllInboxIdsAsRead();
+		Users.current.setAllInboxIdsAsRead();
 	}
 
 	async blockUser() {

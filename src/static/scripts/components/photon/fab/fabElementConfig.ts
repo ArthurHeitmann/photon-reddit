@@ -3,6 +3,7 @@ import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager
 import ViewsStack from "../../../historyState/viewsStack";
 import { isFakeSubreddit } from "../../../utils/utils";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
+import Users from "../../multiUser/userManagement";
 
 export interface FabPreset {
 	action: FabAction,
@@ -27,11 +28,11 @@ export const FunctionActions: { [actionName: string]: () => any } = {
 	},
 	"Unload Pages": () => ViewsStack.clear(),
 	"My Profile": () => {
-		if (!isLoggedIn) {
+		if (!Users.current.d.auth.isLoggedIn) {
 			new Ph_Toast(Level.error, "Not logged in! Do you want to log in with Reddit?", { onConfirm: () => initiateLogin(), groupId: "not logged in" });
 			return;
 		}
-		pushLinkToHistoryComb(`/user/${thisUser.name}`);
+		pushLinkToHistoryComb(`/user/${Users.current.name}`);
 	},
 	"": () => void new Ph_Toast(Level.info, "No action assigned", { timeout: 2000, groupId: "fab elem no action" })
 }
