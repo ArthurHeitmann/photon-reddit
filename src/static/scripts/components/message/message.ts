@@ -1,6 +1,5 @@
 import { comment, deleteMessage } from "../../api/redditApi";
 import { RedditMessageObj } from "../../types/redditTypes";
-import { thisUser } from "../../utils/globals";
 import { emojiFlagsToImages, escADQ, escHTML } from "../../utils/htmlStatics";
 import { linksToSpa } from "../../utils/htmlStuff";
 import { hasParams, timePassedSince } from "../../utils/utils";

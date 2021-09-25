@@ -12,7 +12,6 @@ import {
 	isFullscreen,
 	makeElement
 } from "../../utils/utils";
-import { globalSettings } from "../global/photonSettings/photonSettings";
 import Ph_ControlsBar from "../misc/controlsBar/controlsBar";
 import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown";
 import { DropDownEntryParam } from "../misc/dropDown/dropDownEntry/dropDownEntry";

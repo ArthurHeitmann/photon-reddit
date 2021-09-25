@@ -488,3 +488,23 @@ export function clientXOfEvent(e: MouseEvent | TouchEvent) {
 export function clientYOfEvent(e: MouseEvent | TouchEvent) {
 	return e instanceof MouseEvent ? e.clientY : e.changedTouches[0].clientY;
 }
+
+let isPageReady = false;
+
+export function ensurePageLoaded(): Promise<void> {
+	return new Promise(resolve => {
+		if (isPageReady) {
+			isPageReady = true;
+			resolve();
+		} else {
+			window.addEventListener(
+				"ph-page-ready",
+				() => {
+					isPageReady = true;
+					resolve();
+				},
+				{ once: true }
+			);
+		}
+	});
+}

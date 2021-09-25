@@ -1,6 +1,5 @@
 import { escADQ } from "../../../../utils/htmlStatics";
 import { clamp, hasParams, urlWithHttps } from "../../../../utils/utils";
-import { globalSettings } from "../../../global/photonSettings/photonSettings";
 import Ph_VideoWrapper, { BasicVideoData, SourceData, VideoTrackInfo } from "../videoWrapper";
 
 /**

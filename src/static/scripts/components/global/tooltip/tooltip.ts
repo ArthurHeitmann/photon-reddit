@@ -1,5 +1,4 @@
 import { clamp } from "../../../utils/utils";
-import { globalSettings } from "../photonSettings/photonSettings";
 
 interface ElementHover {
 	element: Element,

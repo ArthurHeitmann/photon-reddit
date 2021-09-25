@@ -122,3 +122,6 @@ function shouldUrlBeCached(url: URL): boolean {
 		.filter(type => !type.fileEnding || (new RegExp(`\.(${type.fileEnding})$`)).test(url.pathname));
 	return matchingTypes.length > 0;
 }
+
+// keep this, so that tsc treats this file as a module
+export {};

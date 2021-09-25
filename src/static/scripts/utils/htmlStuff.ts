@@ -4,7 +4,6 @@
  * Might import other files
  */
 
-import { globalSettings, PhotonSettings } from "../components/global/photonSettings/photonSettings";
 import Ph_MediaViewer from "../components/mediaViewer/mediaViewer";
 import { pushLinkToHistoryComb } from "../historyState/historyStateManager";
 import { $classAr } from "./htmlStatics";

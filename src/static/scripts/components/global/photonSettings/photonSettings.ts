@@ -1,11 +1,11 @@
 import { getUserPreferences, updateUserPreferences } from "../../../api/redditApi";
 import { RedditPreferences } from "../../../types/redditTypes";
-import { ensurePageLoaded, isLoggedIn } from "../../../utils/globals";
 import { escHTML } from "../../../utils/htmlStatics";
 import "../../../utils/htmlStuff";
-import { deepClone, isJsonEqual, isObjectEmpty, makeElement } from "../../../utils/utils";
+import { deepClone, ensurePageLoaded, isJsonEqual, isObjectEmpty, makeElement } from "../../../utils/utils";
 import Ph_ModalPane from "../../misc/modalPane/modalPane";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
+import Users from "../../multiUser/userManagement";
 import { getSettingsSections, SettingConfig, SettingsApi } from "./photonSettingsData";
 import "./styleSettingsListener";
 
@@ -60,8 +60,8 @@ export const defaultSettings: PhotonSettings = {
 	messageCheckIntervalMs: 30 * 1000,
 };
 
-export let globalSettings: PhotonSettings = deepClone(defaultSettings);
-export let globalRedditPreferences: RedditPreferences;
+// export let globalSettings: PhotonSettings = deepClone(defaultSettings);
+// export let globalRedditPreferences: RedditPreferences;
 
 /** Stores and manages global settings */
 export default class Ph_PhotonSettings extends Ph_ModalPane {
@@ -75,27 +75,12 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 		this.classList.add("photonSettings");
 		this.hide();
 
-		let savedSettings: any;
-		try {
-			savedSettings = localStorage.settings ? JSON.parse(localStorage.settings) : undefined;
-		}
-		catch {
-			savedSettings = {}
-		}
-		if (savedSettings) {
-			globalSettings = {
-				...globalSettings,
-				...savedSettings,
-			};
-		}
-		localStorage.settings = JSON.stringify(globalSettings);
-
 		ensurePageLoaded().then(() => this.init());
 	}
 
 	private async init() {
 		this.sectionsConfig = getSettingsSections();
-		globalRedditPreferences = isLoggedIn ? await getUserPreferences(): {};
+		await Users.current.set(["redditPreferences"], Users.current.d.auth.isLoggedIn ? await getUserPreferences(): {});
 
 		const sections: { [name: string]: HTMLElement } = {};
 		for (const section of this.sectionsConfig) {
@@ -150,30 +135,30 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 			))
 		);
 
-		window.addEventListener("storage", this.onLocalstorageChange.bind(this));
+		window.addEventListener("storage", this.onStorageChange.bind(this));
 	}
 
-	private onSettingChange(source: SettingConfig, newVal: any) {
+	private async onSettingChange(source: SettingConfig, newVal: any) {
 		switch (source.settingsType) {
 		case SettingsApi.Photon:
-			this.onPhotonSettingChange(source, newVal);
+			await this.onPhotonSettingChange(source, newVal);
 			break;
 		case SettingsApi.Reddit:
-			this.onRedditPreferenceChange(source, newVal);
+			await this.onRedditPreferenceChange(source, newVal);
 			break;
 		}
 	}
 
-	private onPhotonSettingChange(source: SettingConfig, newVal: any) {
+	private async onPhotonSettingChange(source: SettingConfig, newVal: any) {
 		const validatorReturn = source.validateValue(newVal);
 		if (!validatorReturn.isValid) {
 			new Ph_Toast(Level.error, escHTML(validatorReturn.error));
-			source.updateState(globalSettings[source.settingKey]);
+			source.updateState(Users.current.d.photonSettings[source.settingKey]);
 			return;
 		}
 		source.updateState(newVal);
 		this.temporarySettings[source.settingKey as string] = newVal;
-		this.applyTemporarySettings();
+		await this.applyTemporarySettings();
 	}
 
 	private async onRedditPreferenceChange(source: SettingConfig, newVal: any) {
@@ -188,12 +173,13 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 		await updateUserPreferences(newPrefs);
 	}
 
-	private onLocalstorageChange(e: StorageEvent) {
+	private async onStorageChange(e: StorageEvent) {
+		// TODO
 		if (e.key !== "settings")
 			return;
 		const newSettings = JSON.parse(e.newValue);
 		const changedKeys = Object.entries(newSettings)
-			.filter(([key, value]) => !isJsonEqual(value as any, globalSettings[key]))
+			.filter(([key, value]) => !isJsonEqual(value as any, Users.current.d.photonSettings[key]))
 			.map(([key]) => key);
 		for (const changedKey of changedKeys) {
 			this.temporarySettings[changedKey] = newSettings[changedKey];
@@ -203,19 +189,18 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 				.find(setting => setting.settingKey === changedKey)
 				.updateState(newSettings[changedKey]);
 		}
-		this.applyTemporarySettings();
+		await this.applyTemporarySettings();
 	}
 
-	private applyTemporarySettings() {
+	private async applyTemporarySettings() {
 		if (isObjectEmpty(this.temporarySettings))
 			return;
-		globalSettings = {
-			...globalSettings,
+		await Users.current.set(["photonSettings"], {
+			...Users.current.d.photonSettings,
 			...deepClone(this.temporarySettings),
-		};
+		});
 		window.dispatchEvent(new CustomEvent("ph-settings-changed", { detail: deepClone(this.temporarySettings) }));
 		this.temporarySettings = {};
-		localStorage.settings = JSON.stringify(globalSettings);
 	}
 
 	private onSearchInput(e: InputEvent) {

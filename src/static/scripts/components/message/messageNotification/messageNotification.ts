@@ -1,11 +1,10 @@
 import { redditApiRequest, setMessageReadStatus } from "../../../api/redditApi";
 import { RedditCommentObj, RedditListingObj, RedditMessageObj } from "../../../types/redditTypes";
-import { ensurePageLoaded, isLoggedIn, thisUser } from "../../../utils/globals";
 import { $css, escADQ, escHTML } from "../../../utils/htmlStatics";
 import { linksToSpa } from "../../../utils/htmlStuff";
-import { hasParams, numberToShort } from "../../../utils/utils";
+import { ensurePageLoaded, hasParams, numberToShort } from "../../../utils/utils";
 import Ph_Readable from "../../feed/feedItem/readable/readable";
-import { globalSettings, PhotonSettings } from "../../global/photonSettings/photonSettings";
+import { PhotonSettings } from "../../global/photonSettings/photonSettings";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
 
 export default class Ph_MessageNotification extends HTMLElement {

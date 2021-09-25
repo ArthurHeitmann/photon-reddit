@@ -4,7 +4,7 @@
  *  - added & removing elements from the history
  */
 
-import { globalSettings } from "../components/global/photonSettings/photonSettings";
+import Users from "../components/multiUser/userManagement";
 import { Ph_ViewState } from "../components/viewState/viewState";
 import { HistoryState } from "../types/misc";
 import { $tag } from "../utils/htmlStatics";
@@ -63,7 +63,7 @@ export default class ViewsStack {
 			ViewsStack.isNextReplace = false;
 		}
 		else {
-			if (globalSettings.isIncognitoEnabled)
+			if (Users.current.d.photonSettings.isIncognitoEnabled)
 				ViewsStack.incognitoPush(state.state);
 			else
 				history.pushState(state.state, state.state.title, state.state.url);
@@ -154,14 +154,14 @@ export default class ViewsStack {
 
 	/** Changes the title of the browser tab & history state */
 	static setCurrentStateTitle(title: string) {
-		document.title = globalSettings.isIncognitoEnabled ? `${ViewsStack.randomUrl()} - Photon` : title;
+		document.title = Users.current.d.photonSettings.isIncognitoEnabled ? `${ViewsStack.randomUrl()} - Photon` : title;
 		history.state.title = title;
 	}
 
 	static setStateTitle(state: Ph_ViewState, title: string) {
 		history.state.title = title;
 		if (state === ViewsStack.getCurrentState())
-			document.title = globalSettings.isIncognitoEnabled ? `${ViewsStack.randomUrl()} - Photon` : title;
+			document.title = Users.current.d.photonSettings.isIncognitoEnabled ? `${ViewsStack.randomUrl()} - Photon` : title;
 	}
 
 	static getNextState(): Ph_ViewState {
@@ -215,7 +215,7 @@ export default class ViewsStack {
 	}
 
 	static replaceHistoryState(state: HistoryState) {
-		if (globalSettings.isIncognitoEnabled)
+		if (Users.current.d.photonSettings.isIncognitoEnabled)
 			history.replaceState(state, `Photon; ${ViewsStack.randomUrl()}`, ViewsStack.randomUrl());
 		else
 			history.replaceState(state, state.title, state.url);

@@ -1,7 +1,6 @@
 import { getSubFlairs, getSubInfo, redditApiRequest } from "../../../api/redditApi";
 import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager";
 import { FlairApiData, SubredditDetails } from "../../../types/redditTypes";
-import { thisUser } from "../../../utils/globals";
 import { emojiFlagsToImages } from "../../../utils/htmlStatics";
 import { linksToSpa } from "../../../utils/htmlStuff";
 import { hasHTML } from "../../../utils/utils";

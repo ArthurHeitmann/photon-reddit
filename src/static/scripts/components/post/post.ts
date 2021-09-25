@@ -15,7 +15,6 @@ import { pushLinkToHistoryComb, PushType } from "../../historyState/historyState
 import ViewsStack from "../../historyState/viewsStack";
 import { FlairApiData, RedditApiObj, RedditListingObj, RedditPostObj } from "../../types/redditTypes";
 import Votable from "../../types/votable";
-import { hasPostsBeenSeen, markPostAsSeen, thisUser } from "../../utils/globals";
 import { emojiFlagsToImages, escADQ, escHTML, getLoadingIcon } from "../../utils/htmlStatics";
 import { linksToSpa } from "../../utils/htmlStuff";
 import {
@@ -28,7 +27,7 @@ import {
 	timePassedSince
 } from "../../utils/utils";
 import Ph_FeedItem from "../feed/feedItem/feedItem";
-import { globalSettings, NsfwPolicy, PhotonSettings } from "../global/photonSettings/photonSettings";
+import { NsfwPolicy, PhotonSettings } from "../global/photonSettings/photonSettings";
 import Ph_AwardsInfo from "../misc/awardsInfo/awardsInfo";
 import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown";
 import Ph_DropDownEntry, { DropDownActionData, DropDownEntryParam } from "../misc/dropDown/dropDownEntry/dropDownEntry";

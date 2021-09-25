@@ -8,6 +8,7 @@ import { AuthState, checkAuthOnPageLoad, checkTokenRefresh } from "./auth/auth";
 import { checkOrCompleteLoginRedirect, initiateLogin } from "./auth/loginHandler";
 import Ph_Header from "./components/global/header/header";
 import Ph_Toast, { Level } from "./components/misc/toast/toast";
+import Users from "./components/multiUser/userManagement";
 import Ph_Changelog from "./components/photon/changelog/changelog";
 import Ph_Tutorial from "./components/photon/tutorial/tutorial";
 import { pushLinkToHistorySep } from "./historyState/historyStateManager";
@@ -15,7 +16,6 @@ import ViewsStack from "./historyState/viewsStack";
 import { hasAnalyticsFileLoaded } from "./unsuspiciousFolder/unsuspiciousFile";
 import { supportsIndexedDB } from "./utils/browserFeatures";
 import { loginSubredditFullName, loginSubredditName } from "./utils/consts";
-import { thisUser } from "./utils/globals";
 import { $css, $id } from "./utils/htmlStatics";
 import { linksToSpa } from "./utils/htmlStuff";
 import "./utils/sideEffectImports";
@@ -29,6 +29,8 @@ async function init(): Promise<void> {
 
 	if (await checkFirefoxPrivateMode())
 		return;
+	await Users.init();
+
 	registerServiceWorker();
 	$id("mainWrapper").insertAdjacentElement("afterbegin", new Ph_Header());
 	linksToSpa(document.body);
@@ -39,14 +41,14 @@ async function init(): Promise<void> {
 	await checkOrCompleteLoginRedirect();
 	let thisUserFetch: Promise<void>;
 	if (await checkAuthOnPageLoad() === AuthState.loggedIn) {
-		thisUserFetch = thisUser.fetch()
+		thisUserFetch = Users.current.fetchUserData()
 			.then(() => {
-				if (localStorage["loginRecommendationFlag"] !== "set" && !thisUser.subreddits.isSubscribedTo(loginSubredditName)) {
+				if (!Users.current.d.loginSubPromptDisplayed && !Users.current.subreddits.isSubscribedTo(loginSubredditName)) {
 					new Ph_Toast(Level.info, `Do you want to subscribe to r/${loginSubredditName}?`, {
-						onConfirm: () => thisUser.subreddits.setIsSubscribed(loginSubredditFullName, true)
+						onConfirm: () => Users.current.subreddits.setIsSubscribed(loginSubredditFullName, true)
 					});
 				}
-				localStorage["loginRecommendationFlag"] = "set";
+				Users.current.set(["loginSubPromptDisplayed"], true);
 			})
 			.catch(() => {
 				showInitErrorPage();
@@ -65,8 +67,8 @@ async function init(): Promise<void> {
 
 	window.dispatchEvent(new Event("ph-page-ready"));
 	window["isReady"] = true;
-	if (localStorage["firstTimeFlag"] !== "set")
-		localStorage["firstTimeFlag"] = "set";
+	if (Users.global.d.isFirstTimeVisit)
+		await Users.global.set(["isFirstTimeVisit"], false);
 
 	Ph_Tutorial.checkForTutorial();
 

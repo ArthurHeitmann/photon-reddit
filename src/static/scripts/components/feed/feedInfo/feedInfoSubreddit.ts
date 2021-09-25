@@ -14,7 +14,6 @@ import {
 	SubredditModerator,
 	SubredditRule
 } from "../../../types/redditTypes";
-import { isLoggedIn, StoredData, thisUser } from "../../../utils/globals";
 import { emojiFlagsToImages, escADQ, escHTML } from "../../../utils/htmlStatics";
 import { linksToSpa } from "../../../utils/htmlStuff";
 import { getSubredditIconUrl, makeElement, numberToShort } from "../../../utils/utils";

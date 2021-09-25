@@ -3,7 +3,6 @@ import { pushLinkToHistoryComb, pushLinkToHistorySep } from "../../../historySta
 import { ViewChangeData } from "../../../historyState/viewsStack";
 import { SortPostsTimeFrame, SortSearchOrder } from "../../../types/misc";
 import { RedditApiObj, RedditListingObj, RedditSubredditObj } from "../../../types/redditTypes";
-import { isLoggedIn } from "../../../utils/globals";
 import { escADQ, getLoadingIcon } from "../../../utils/htmlStatics";
 import { elementWithClassInTree, isElementIn } from "../../../utils/htmlStuff";
 import { extractPath, extractQuery, hasHTML, isParamRedditTruthy, throttle } from "../../../utils/utils";

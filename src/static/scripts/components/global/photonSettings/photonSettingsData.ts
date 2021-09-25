@@ -1,18 +1,11 @@
 import { logOut } from "../../../auth/loginHandler";
 import { RedditPreferences } from "../../../types/redditTypes";
-import { clearSeenPosts, isLoggedIn } from "../../../utils/globals";
 import { editableTimeStrToMs, makeElement, timeMsToEditableTimeStr } from "../../../utils/utils";
 import { photonWebVersion } from "../../../utils/version";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
+import Users from "../../multiUser/userManagement";
 import Ph_Changelog from "../../photon/changelog/changelog";
-import {
-	defaultSettings,
-	globalRedditPreferences,
-	globalSettings,
-	ImageLoadingPolicy,
-	NsfwPolicy,
-	PhotonSettings
-} from "./photonSettings";
+import { defaultSettings, ImageLoadingPolicy, NsfwPolicy, PhotonSettings } from "./photonSettings";
 
 export interface SettingsSection {
 	name: string,
@@ -60,9 +53,9 @@ export abstract class SettingConfig {
 	protected getProperty(): any {
 		switch (this.settingsType) {
 		case SettingsApi.Photon:
-			return globalSettings[this.settingKey];
+			return Users.current.d.photonSettings[this.settingKey];
 		case SettingsApi.Reddit:
-			return globalRedditPreferences[this.settingKey];
+			return Users.current.d.redditPreferences[this.settingKey];
 		}
 	}
 }
@@ -350,7 +343,7 @@ export const getSettingsSections = (): SettingsSection[] => [
 				makeElement("a", { href: "https://old.reddit.com/prefs", target: "_blank", excludeLinkFromSpa: "" }, "https://old.reddit.com/prefs")
 			])),
 			...(
-				isLoggedIn ? [
+				Users.current.d.auth.isLoggedIn ? [
 						new MultiOptionSetting([
 							{ text: "Confidence", value: "confidence" },
 							{ text: "Top", value: "top" },
@@ -383,7 +376,7 @@ export const getSettingsSections = (): SettingsSection[] => [
 			new TimeSetting({ allowRange: [1, Number.MAX_SAFE_INTEGER] }, "clearFeedCacheAfterMs", "Subreddit info cache duration", "", SettingsApi.Photon),
 			new TimeSetting({ allowRange: [1000 * 10, Number.MAX_SAFE_INTEGER], allowList: [0] }, "messageCheckIntervalMs", "New messages checking interval", "Use \"0\" to disable. Min intervall is 10s. Message polling is only done while website is open.", SettingsApi.Photon),
 			new HTMLElementSetting(makeElement("div", null, [
-				makeElement("button", { class: "mla button", onclick: clearSeenPosts }, "Clear seen posts"),
+				makeElement("button", { class: "mla button", onclick: () => Users.current.clearSeenPosts() }, "Clear seen posts"),
 				makeElement("button", { class: "mla button", onclick: () => Ph_Changelog.show() }, "Show Changelog"),
 				makeElement("button", { class: "mla button", onclick: () => new Ph_Toast(Level.warning, "Are you sure you want to log out?", { onConfirm: logOut }) }, "Log out"),
 				makeElement("div", null, `v${photonWebVersion}`)

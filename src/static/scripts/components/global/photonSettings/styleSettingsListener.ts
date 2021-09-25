@@ -1,5 +1,5 @@
-import { ensurePageLoaded } from "../../../utils/globals";
-import { globalSettings, PhotonSettings } from "./photonSettings";
+import { ensurePageLoaded } from "../../../utils/utils";
+import { PhotonSettings } from "./photonSettings";
 
 window.addEventListener("ph-settings-changed", (e: CustomEvent) => handleSettings(e.detail));
 

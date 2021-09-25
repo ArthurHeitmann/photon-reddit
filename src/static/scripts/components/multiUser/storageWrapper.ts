@@ -1,7 +1,18 @@
+import { supportsIndexedDB } from "../../utils/browserFeatures";
 
 const dbName= "photonDb";
 const objectStoreName = "users";
 const version = 1;
+interface DbUpgrade {
+	wasUpgraded: boolean,
+	fromVersion: number,
+	toVersion: number,
+}
+export const wasDbUpgraded: DbUpgrade = {
+	wasUpgraded: false,
+	fromVersion: null,
+	toVersion: null
+};
 
 function openDb(): Promise<IDBDatabase> {
 	return new Promise<IDBDatabase>((resolve, reject) => {
@@ -15,6 +26,9 @@ function openDb(): Promise<IDBDatabase> {
 function onDbUpgradeNeeded(this: IDBOpenDBRequest, e: IDBVersionChangeEvent) {
 	const db = this.result;
 	db.createObjectStore(objectStoreName);
+	wasDbUpgraded.wasUpgraded = true;
+	wasDbUpgraded.fromVersion = e.oldVersion;
+	wasDbUpgraded.toVersion = e.newVersion;
 }
 
 function getDbObjectStoreValue(db: IDBDatabase, storeName: string, key: string): Promise<IDBObjectStore> {
@@ -30,7 +44,7 @@ function getDbObjectStoreValue(db: IDBDatabase, storeName: string, key: string):
 	});
 }
 
-export async function getFromDb(...keyPath: string[]): Promise<any> {
+async function getFromDb(...keyPath: string[]): Promise<any> {
 	const db = await openDb();
 	let value = await getDbObjectStoreValue(db, objectStoreName, keyPath[0]);
 	for (let i = 1; i < keyPath.length; i++)
@@ -38,7 +52,7 @@ export async function getFromDb(...keyPath: string[]): Promise<any> {
 	return value;
 }
 
-export function setInDb(value: any, ...keyPath: string[]): Promise<void> {
+function setInDb(value: any, ...keyPath: string[]): Promise<void> {
 	return new Promise(async (resolve, reject) => {
 		const db = await openDb();
 		let newVal = value;
@@ -63,14 +77,29 @@ export function setInDb(value: any, ...keyPath: string[]): Promise<void> {
 	});
 }
 
-export async function getFromLs(...keyPath: string[]): Promise<any> {
+function getAllKeysInDb(prefix: string): Promise<string[]> {
+	return new Promise<string[]>(async (resolve, reject) => {
+		const db = await openDb();
+		const transaction = db.transaction(objectStoreName, "readonly");
+		const objectStore = transaction.objectStore(objectStoreName);
+		const allKeysRequest = objectStore.getAllKeys();
+		allKeysRequest.onsuccess = () => resolve(
+			allKeysRequest.result
+				.map(key => String(key))
+				.filter(key => key.startsWith(prefix))
+		);
+		allKeysRequest.onerror = () => reject(allKeysRequest.error);
+	});
+}
+
+function getFromLs(...keyPath: string[]): any {
 	let value = JSON.parse(localStorage.getItem(keyPath[0]));
 	for (let i = 1; i < keyPath.length; i++)
 		value = value[keyPath[i]];
 	return value;
 }
 
-export async function setInLs(value: any, ...keyPath: string[]): Promise<void> {
+function setInLs(value: any, ...keyPath: string[]): void {
 	let newVal = value;
 	if (keyPath.length > 1) {
 		const currentObject = JSON.parse(localStorage.getItem(keyPath[0]));
@@ -82,4 +111,31 @@ export async function setInLs(value: any, ...keyPath: string[]): Promise<void> {
 		newVal = currentObject;
 	}
 	localStorage.setItem(keyPath[0], JSON.stringify(newVal));
+}
+
+function getAllKeysInLs(prefix: string): string[] {
+	return Object
+		.keys(localStorage)
+		.filter(key => key.startsWith(prefix));
+}
+
+export async function getFromStorage(...keyPath: string[]): Promise<any> {
+	if (await supportsIndexedDB())
+		return await getFromDb(...keyPath);
+	else
+		return getFromLs(...keyPath);
+}
+
+export async function setInStorage(value: any, ...keyPath: string[]): Promise<void> {
+	if (await supportsIndexedDB())
+		await setInDb(value, ...keyPath);
+	else
+		setInLs(value, ...keyPath);
+}
+
+export async function getAllKeysInStorage(key: string = ""): Promise<string[]> {
+	if (await supportsIndexedDB())
+		return await getAllKeysInDb(key);
+	else
+		return getAllKeysInLs(key);
 }

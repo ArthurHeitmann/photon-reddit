@@ -1,10 +1,9 @@
 /**
  * Clears cached data in the localstorage occasionally
  */
-import { globalSettings } from "../components/global/photonSettings/photonSettings";
-import { saveSeenPosts, seenPosts, StoredData, unmarkPostAsSeen } from "./globals";
 
 export function clearAllOldData() {
+	return;	// TODO remove & fix
 	const now = Date.now();
 	let removedCachedInfos = 0;
 	for (const localStorageKey in localStorage) {

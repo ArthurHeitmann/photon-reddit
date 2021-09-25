@@ -6,7 +6,6 @@ import {
 	SubredditExpanded,
 	SubredditInfoBase
 } from "../../../types/redditTypes";
-import { StoredData, thisUser } from "../../../utils/globals";
 import { emojiFlagsToImages, escADQ, escHTML } from "../../../utils/htmlStatics";
 import { linksToSpa } from "../../../utils/htmlStuff";
 import { MultiChangeType, MultisChangeEvent } from "../../../utils/MultiManager";

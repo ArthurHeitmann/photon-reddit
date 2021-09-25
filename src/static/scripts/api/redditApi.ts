@@ -6,6 +6,7 @@ import { checkTokenRefresh } from "../auth/auth";
 import { initiateLogin } from "../auth/loginHandler";
 import Ph_Flair from "../components/misc/flair/flair";
 import Ph_Toast, { Level } from "../components/misc/toast/toast";
+import Users from "../components/multiUser/userManagement";
 import {
 	FlairApiData,
 	RedditApiObj,
@@ -17,7 +18,6 @@ import {
 	RedditUserObj
 } from "../types/redditTypes";
 import Votable, { FullName } from "../types/votable";
-import { isLoggedIn, thisUser, } from "../utils/globals";
 import { isObjectEmpty, splitPathQuery, throttle } from "../utils/utils";
 
 /**
@@ -29,7 +29,7 @@ import { isObjectEmpty, splitPathQuery, throttle } from "../utils/utils";
  * @param options
  */
 export async function redditApiRequest(pathAndQuery, params: string[][] | any, requiresLogin: boolean, options: RequestInit = {}) {
-	if (requiresLogin && !isLoggedIn) {
+	if (requiresLogin && !Users.current.d.auth.isLoggedIn) {
 		new Ph_Toast(Level.error, "Not logged in! Do you want to log in with Reddit?", { onConfirm: () => initiateLogin(), groupId: "not logged in" });
 		throw "This feature requires to be logged in";
 	}
@@ -77,7 +77,7 @@ async function oauth2Request(pathAndQuery, params: string[][] | any, options: Re
 }
 
 export function getAuthHeader(): string {
-	return `Bearer ${ localStorage["accessToken"] }`;
+	return `Bearer ${ Users.current.d.auth.accessToken }`;
 }
 
 function fixUrl(url: string) {
@@ -89,7 +89,7 @@ function fixUrl(url: string) {
 	url = url.replace(/(^\/r\/[^/]+\/wiki)\/?(?=([?|#].*)?$)/, "$1/index");				// /r/.../wiki --> /r/.../wiki/index
 	url = url.replace(/(^\/\w+\/[^/]+\/wiki(?:[^#?]*)?)\/(?=([#?\/]).*|$)/, "$1");			// /.../.../wiki/.../ --> /.../.../wiki/... (with / causes redirect and removes params)
 	url = url.replace(/^\/gallery(?=\/\w+)/, "/comments");									// /gallery/... --> /comments/...
-	if (new RegExp(`^/(u|user)/${thisUser.name}/m/([^/]+)`, "i").test(url))							// private multireddits have CORS problems
+	if (new RegExp(`^/(u|user)/${Users.current.name}/m/([^/]+)`, "i").test(url))					// private multireddits have CORS problems
 		url = url.replace(/^\/user\/[^/]+\/m\//, "/me/m/")									// /user/thisUser/m/... --> /me/m/...
 	return url;
 }
@@ -360,7 +360,7 @@ export async function setUserFlair(subredditPath: string, flair: Ph_Flair) {
 	const flairText = flair.hasTextChanged ? flair.data.text : null;
 	const r = await redditApiRequest(
 		subredditPath + "/api/selectflair",
-		[["name", thisUser.name], ["flair_template_id", flairId], flairText ? ["text", flairText] : ["", ""]],
+		[["name", Users.current.name], ["flair_template_id", flairId], flairText ? ["text", flairText] : ["", ""]],
 		true, { method: "POST" }
 	);
 	return !("error" in r) && r["success"];
@@ -369,7 +369,7 @@ export async function setUserFlair(subredditPath: string, flair: Ph_Flair) {
 export async function deleteUserFlair(subredditPath: string) {
 	const r = await redditApiRequest(
 		subredditPath + "/api/selectflair",
-		[["name", thisUser.name], ["flair_template_id", ""]],
+		[["name", Users.current.name], ["flair_template_id", ""]],
 		true, { method: "POST" }
 	);
 	return !("error" in r) && r["success"];

@@ -9,7 +9,6 @@ import {
 } from "../../api/redditApi";
 import { RedditCommentObj, RedditListingObj, RedditMessageObj, RedditMoreCommentsObj } from "../../types/redditTypes";
 import Votable from "../../types/votable";
-import { thisUser } from "../../utils/globals";
 import { emojiFlagsToImages } from "../../utils/htmlStatics";
 import { elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff";
 import {

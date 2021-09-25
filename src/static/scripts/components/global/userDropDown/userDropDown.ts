@@ -1,11 +1,10 @@
 import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager";
 import ViewsStack from "../../../historyState/viewsStack";
 import { RedditApiObj, RedditSubredditObj } from "../../../types/redditTypes";
-import { ensurePageLoaded, thisUser } from "../../../utils/globals";
 import { elementWithClassInTree, isElementIn } from "../../../utils/htmlStuff";
 import { MultiChangeType, MultisChangeEvent } from "../../../utils/MultiManager";
 import { SubsChangeEvent } from "../../../utils/subredditManager";
-import { hasHTML, isFakeSubreddit, makeElement, numberToShort } from "../../../utils/utils";
+import { ensurePageLoaded, hasHTML, isFakeSubreddit, makeElement, numberToShort } from "../../../utils/utils";
 import Ph_FeedLink from "../../link/feedLink/feedLink";
 import Ph_MultiCreateOrEdit, { MultiBasicInfo } from "../../misc/multiCreateOrEdit/multiCreateOrEdit";
 import Ph_Toast, { Level } from "../../misc/toast/toast";

@@ -1,4 +1,3 @@
-import { StoredData, User } from "./globals";
 
 export type OnSubscriptionChangeCallback<EventType> = (e: EventType) => void;
 export abstract class UserSubscriptions<ContentType, EventData> {

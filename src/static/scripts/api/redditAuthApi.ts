@@ -1,5 +1,6 @@
 /** Get access and refresh Tokens and implicit grants */
 
+import Users from "../components/multiUser/userManagement";
 import { appId, redirectURI } from "../utils/consts";
 
 interface AccessTokenReturn {
@@ -65,7 +66,7 @@ export async function revokeToken(): Promise<boolean> {
 		const r = await fetch("https://www.reddit.com/api/v1/revoke_token", {
 			method: "POST",
 			body: new URLSearchParams([
-				["token", localStorage.refreshToken],	// revoking a refresh token, revokes all a related access tokens
+				["token", Users.current.d.auth.refreshToken],	// revoking a refresh token, revokes all a related access tokens
 				["token_type_hint", "refresh_token"],
 			]),
 			headers: new Headers({

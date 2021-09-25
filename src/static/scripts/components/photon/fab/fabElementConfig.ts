@@ -1,7 +1,6 @@
 import { initiateLogin } from "../../../auth/loginHandler";
 import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager";
 import ViewsStack from "../../../historyState/viewsStack";
-import { isLoggedIn, thisUser } from "../../../utils/globals";
 import { isFakeSubreddit } from "../../../utils/utils";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
 
@@ -110,4 +109,10 @@ export const defaultFabPresets: FabPreset[] = [
 	{ action: defaultFabActions[7], icon: defaultFabIcons[7], presetName: "New Post", names: ["Post", "submit", "new", "write"] },
 	{ action: defaultFabActions[8], icon: defaultFabIcons[8], presetName: "New Message", names: ["Compose Message", "message", "new", "compose", "chat"] },
 	{ action: defaultFabActions[9], icon: defaultFabIcons[9], presetName: "Unload Pages", names: ["Unload", "remove", "delete", "cross", "x", "pages"] },
+];
+
+export const initialDefaultFabPresets = [
+	defaultFabPresets[5],
+	defaultFabPresets[6],
+	defaultFabPresets[2],
 ];

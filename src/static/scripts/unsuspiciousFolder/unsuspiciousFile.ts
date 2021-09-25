@@ -25,7 +25,6 @@
  */
 
 import { trackBrowserFeatures } from "../api/photonApi";
-import { globalSettings } from "../components/global/photonSettings/photonSettings";
 import { ViewChangeData } from "../historyState/viewsStack";
 import { supportsIndexedDB, supportsServiceWorkers } from "../utils/browserFeatures";
 import { extractPath, randomString } from "../utils/utils";

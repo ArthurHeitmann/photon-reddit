@@ -1,9 +1,7 @@
-import { StoredData } from "../../../utils/globals";
 import { $class, $cssAr, escHTML } from "../../../utils/htmlStatics";
 import { tagInElementTree } from "../../../utils/htmlStuff";
 import { hasParams, makeElement } from "../../../utils/utils";
 import Ph_Header from "../../global/header/header";
-import { globalSettings } from "../../global/photonSettings/photonSettings";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
 
 export enum FeedType {

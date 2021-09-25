@@ -1,7 +1,6 @@
 import { blockUser, readAllMessages, setMessageReadStatus } from "../../../../api/redditApi";
 import { pushLinkToHistoryComb } from "../../../../historyState/historyStateManager";
 import { FullName } from "../../../../types/votable";
-import { thisUser } from "../../../../utils/globals";
 import { $css } from "../../../../utils/htmlStatics";
 import { hasParams } from "../../../../utils/utils";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../../misc/dropDown/dropDown";

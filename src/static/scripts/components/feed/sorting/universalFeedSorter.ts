@@ -9,7 +9,6 @@ import {
 	UserSection
 } from "../../../types/misc";
 import { RedditApiObj, RedditListingObj } from "../../../types/redditTypes";
-import { isLoggedIn, thisUser } from "../../../utils/globals";
 import { getLoadingIcon } from "../../../utils/htmlStatics";
 import { extractPath, extractQuery, hasParams, splitPathQuery } from "../../../utils/utils";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown";

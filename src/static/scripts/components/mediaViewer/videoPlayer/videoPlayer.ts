@@ -5,7 +5,6 @@ import { RedditPostObj } from "../../../types/redditTypes";
 import { $tagAr, escHTML } from "../../../utils/htmlStatics";
 import { classInElementTree, isElementIn } from "../../../utils/htmlStuff";
 import { getFullscreenElement, hasParams, isFullscreen, isJsonEqual, secondsToVideoTime } from "../../../utils/utils";
-import { globalSettings } from "../../global/photonSettings/photonSettings";
 import Ph_ControlsBar, { ControlsLayoutSlots } from "../../misc/controlsBar/controlsBar";
 import { DropDownActionData } from "../../misc/dropDown/dropDownEntry/dropDownEntry";
 import Ph_ProgressBar from "../../misc/progressBar/progressBar";

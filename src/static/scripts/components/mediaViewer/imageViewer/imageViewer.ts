@@ -1,6 +1,6 @@
 import { getLoadingIcon, nonDraggableElement } from "../../../utils/htmlStatics";
 import { hasParams } from "../../../utils/utils";
-import { globalSettings, ImageLoadingPolicy, PhotonSettings } from "../../global/photonSettings/photonSettings";
+import { ImageLoadingPolicy, PhotonSettings } from "../../global/photonSettings/photonSettings";
 import { ControlsLayoutSlots } from "../../misc/controlsBar/controlsBar";
 import Ph_PhotonBaseElement from "../../photon/photonBaseElement/photonBaseElement";
 import { MediaElement } from "../mediaElement";

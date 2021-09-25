@@ -3,6 +3,7 @@ import { SVGAnimateElement } from "../../../types/misc";
 import { $class } from "../../../utils/htmlStatics";
 import { hasHTML } from "../../../utils/utils";
 import Ph_DropDownArea from "../../misc/dropDown/dropDownArea/dropDownArea";
+import Users from "../../multiUser/userManagement";
 import Ph_PhotonSettings from "../photonSettings/photonSettings";
 import Ph_Search from "../search/search";
 import Ph_UserDropDown from "../userDropDown/userDropDown";
@@ -103,13 +104,13 @@ export default class Ph_Header extends HTMLElement {
 		const pinToggleButton = this.$class("pinToggleButton")[0] as HTMLButtonElement;
 		pinToggleButton.addEventListener("click", this.onPinnedToggle.bind(this));
 
-		if (localStorage["isHeaderPinned"] === "true") {
+		if (Users.global.d.isHeaderPinned === true) {
 			this.headerMouseEnter();
 			pinToggleButton.click();
 		}
 		// if the user visits the page for the first time, expand the header for a brief amount of time.
 		// Should help new users understand this feature
-		else if (localStorage["firstTimeFlag"] !== "set") {
+		else if (Users.global.d.isFirstTimeVisit) {
 			setTimeout(this.headerMouseEnter.bind(this), 4000);
 		}
 	}
