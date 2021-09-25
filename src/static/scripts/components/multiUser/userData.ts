@@ -63,6 +63,7 @@ export default class UserData extends DataAccessor<_UserData> {
 			this.tryMigrateFromLsToLoaded(["isLoggedIn"], ["auth", "isLoggedIn"]);
 			this.tryMigrateFromLsToLoaded(["loginTime"], ["auth", "loginTime"]);
 			this.tryMigrateFromLsToLoaded(["refreshToken"], ["auth", "refreshToken"]);
+			this.tryMigrateFromLsToLoaded(["pageBeforeLogin"], ["auth", "pageBeforeLogin"]);
 			this.tryMigrateFromLsToLoaded(["scope"], ["auth", "scopes"]);
 			this.tryMigrateFromLsToLoaded(["loginRecommendationFlag"], ["loginSubPromptDisplayed"], val => val === "set");
 			await setInStorage(this.loaded, this.key);

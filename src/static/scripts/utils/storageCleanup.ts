@@ -48,6 +48,12 @@ export function clearAllOldData() {
 	localStorage.removeItem("queuedHosts");
 	localStorage.removeItem("subreddits");
 	localStorage.removeItem("subredditsData");
+	localStorage.removeItem("subs");
+	localStorage.removeItem("multis");
+	for (const lsKey in localStorage) {
+		if (/^\/(r|u|user)\/[^/]+/.test(lsKey))
+			localStorage.removeItem(lsKey);
+	}
 
 	console.log(`Storage cleaner took ${Date.now() - now}ms, removed ${removedCachedInfos} cached feed infos and ${removedSeen} seen posts`);
 }

@@ -66,14 +66,11 @@ export default abstract class DataAccessor<T> {
 			}
 			for (let i = 1; i < lsKeys.length; i++)
 				lsVal = lsVal[lsKeys[i]];
-			if (lsVal) {
-				let target = this.loaded;
-				for (let i = 0; i < loadedKeys.length - 1; i++)
-					target = target[loadedKeys[i]];
-				target[loadedKeys[loadedKeys.length - 1]] = transformer(lsVal);
-				// localStorage[`_${lsKeys[0]}`] = localStorage[lsKeys[0]];
-				// TODO remove old key
-			}
+			let target = this.loaded;
+			for (let i = 0; i < loadedKeys.length - 1; i++)
+				target = target[loadedKeys[i]];
+			target[loadedKeys[loadedKeys.length - 1]] = transformer(lsVal);
+			localStorage.removeItem(lsKeys[0]);
 		}
 		catch {}
 	}
