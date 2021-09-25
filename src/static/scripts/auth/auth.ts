@@ -1,7 +1,6 @@
 import { getImplicitGrant, getRefreshAccessToken } from "../api/redditAuthApi";
 import Ph_Toast, { Level } from "../components/misc/toast/toast";
 import Users from "../components/multiUser/userManagement";
-import { clientId } from "../unsuspiciousFolder/unsuspiciousFile";
 import { logOut } from "./loginHandler";
 
 export enum AuthState {
@@ -53,7 +52,7 @@ function authError(msg: string) {
 }
 
 async function implicitGrant(): Promise<boolean> {
-	const newToken = await getImplicitGrant(clientId.slice(0, 25));
+	const newToken = await getImplicitGrant(Users.global.d.analytics.clientId.slice(0, 25));
 	if (newToken["error"]) {
 		console.error("error getting implicit grant", newToken);
 		return false;

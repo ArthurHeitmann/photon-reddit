@@ -64,7 +64,7 @@ interface ClientIdData {
 	lastSetMillisUtc: number
 }
 /** 128 character long random string */
-export let clientId: string;
+let clientId: string;
 let referer = document.referrer || "";
 
 async function init() {

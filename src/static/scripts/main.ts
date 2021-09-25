@@ -29,7 +29,6 @@ async function init(): Promise<void> {
 	await Users.init();
 	if (await checkFirefoxPrivateMode())
 		return;
-
 	registerServiceWorker();
 	$id("mainWrapper").insertAdjacentElement("afterbegin", new Ph_Header());
 	linksToSpa(document.body);

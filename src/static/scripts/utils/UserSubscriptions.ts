@@ -42,7 +42,7 @@ export abstract class UserSubscriptions<ContentType, EventData> {
 
 	protected loadUserContentFromLs(storageKey: keyof QuickCaches): ContentType[] | null {
 		try {
-			const storedData: StoredData<ContentType[]> = Users.current.d.caches[storageKey];
+			const storedData = Users.current.d.caches[storageKey] as StoredData<ContentType[]>;
 			this.userContent = storedData.data;
 			if (Date.now() - storedData.lastUpdatedMsUTC > Users.current.d.photonSettings.userShortCacheTTLMs)
 				return null;

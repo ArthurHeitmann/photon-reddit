@@ -6,6 +6,7 @@ import { MultiManager } from "../../utils/MultiManager";
 import { SubredditManager } from "../../utils/subredditManager";
 import { deepClone } from "../../utils/utils";
 import { StoredFeedInfo } from "../feed/feedInfo/feedInfo";
+import { defaultSettings } from "../global/photonSettings/photonSettings";
 import Ph_UserDropDown from "../global/userDropDown/userDropDown";
 import { initialDefaultFabPresets } from "../photon/fab/fabElementConfig";
 import DataAccessor from "./dataAccessor";
@@ -35,7 +36,7 @@ export default class UserData extends DataAccessor<_UserData> {
 		},
 		fabConfig: deepClone(initialDefaultFabPresets),
 		loginSubPromptDisplayed: false,
-		photonSettings: undefined,
+		photonSettings: deepClone(defaultSettings),
 		redditPreferences: undefined,
 		seenPosts: {}
 	};
