@@ -2,11 +2,12 @@ import { getUserPreferences, updateUserPreferences } from "../../../api/redditAp
 import { RedditPreferences } from "../../../types/redditTypes";
 import { escHTML } from "../../../utils/htmlStatics";
 import "../../../utils/htmlStuff";
+import { broadcastMessage, MessageFormat, onMessageBroadcast } from "../../../utils/messageCommunication";
 import { deepClone, ensurePageLoaded, isJsonEqual, isObjectEmpty, makeElement } from "../../../utils/utils";
 import Ph_ModalPane from "../../misc/modalPane/modalPane";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
 import Users from "../../multiUser/userManagement";
-import { getSettingsSections, SettingConfig, SettingsApi } from "./photonSettingsData";
+import { getSettingsSections, SettingConfig, SettingsApi, SettingsSection } from "./photonSettingsData";
 import "./styleSettingsListener";
 
 export enum ImageLoadingPolicy {
@@ -66,7 +67,7 @@ export const defaultSettings: PhotonSettings = {
 export default class Ph_PhotonSettings extends Ph_ModalPane {
 	/** unsaved settings are stored here */
 	temporarySettings: PhotonSettings = {};
-	sectionsConfig;
+	sectionsConfig: SettingsSection[];
 
 	constructor() {
 		super();
@@ -134,7 +135,7 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 			))
 		);
 
-		window.addEventListener("storage", this.onStorageChange.bind(this));
+		onMessageBroadcast(this.onSettingsExternalChange.bind(this));
 	}
 
 	private async onSettingChange(source: SettingConfig, newVal: any) {
@@ -158,6 +159,10 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 		source.updateState(newVal);
 		this.temporarySettings[source.settingKey as string] = newVal;
 		await this.applyTemporarySettings();
+		broadcastMessage({
+			type: "settingsChanged",
+			newSettings: Users.current.d.photonSettings
+		});
 	}
 
 	private async onRedditPreferenceChange(source: SettingConfig, newVal: any) {
@@ -172,11 +177,11 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 		await updateUserPreferences(newPrefs);
 	}
 
-	private async onStorageChange(e: StorageEvent) {
+	private async onSettingsExternalChange(msg: MessageFormat) {
 		// TODO
-		if (e.key !== "settings")
+		if (msg.type !== "settingsChanged")
 			return;
-		const newSettings = JSON.parse(e.newValue);
+		const newSettings = msg.newSettings;
 		const changedKeys = Object.entries(newSettings)
 			.filter(([key, value]) => !isJsonEqual(value as any, Users.current.d.photonSettings[key]))
 			.map(([key]) => key);

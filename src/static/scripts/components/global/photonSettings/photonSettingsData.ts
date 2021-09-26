@@ -262,7 +262,7 @@ export class MultiOptionSetting extends SettingConfig {
 		this.buttonsRoot.$class("selected")[0].classList.remove("selected");
 		const option = this.options.find(option => option.value === newVal);
 		Array.from(this.buttonsRoot.children)
-			.find((btn: HTMLElement) => btn.innerText === option.text)
+			.find((btn: HTMLElement) => btn.textContent === option.text)
 			.classList.add("selected");
 	}
 }

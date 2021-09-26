@@ -29,7 +29,9 @@ export abstract class UserSubscriptions<ContentType, EventData> {
 			try {
 				handler(event);
 			}
-			catch {}
+			catch (e) {
+				console.error(e);
+			}
 		}
 	}
 
