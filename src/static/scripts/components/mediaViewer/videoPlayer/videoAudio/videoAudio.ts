@@ -58,17 +58,29 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 		this.video.addEventListener("canplay", () => {
 			if (!this.pendingPlay)
 				return;
+			if (this.offsetWidth === 0)
+				return;
 			// if video started to buffer during playing continue now
 			this.pendingPlay = false;
 			this.play();
 		});
 		this.video.addEventListener("playing", () => {
+			if (this.offsetWidth === 0) {
+				this.pause();
+				return;
+			}
 			this.dispatchEvent(new Event("ph-playing"));
 			this.audio.play();
 		});
 		this.video.addEventListener("loadeddata", () => this.dispatchEvent(new Event("ph-ready")));
 		this.video.addEventListener("seeking", () => this.audio.currentTime = this.video.currentTime);
-		this.audio.addEventListener("play", () => this.video.play());
+		this.audio.addEventListener("play", () => {
+			if (this.offsetWidth === 0) {
+				this.pause();
+				return;
+			}
+			this.video.play();
+		});
 		this.audio.addEventListener("pause", () => this.video.readyState !== 1 && this.video.pause());
 
 		if (audioSources.length === 0) {
@@ -112,6 +124,10 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 	}
 
 	play(): void {
+		if (this.offsetWidth === 0) {
+			this.pause();
+			return;
+		}
 		this.video.play().catch(() => undefined);
 		if (!this.audioCheckCompleted || this.hasAudio)
 			this.audio.play().catch(() => undefined);

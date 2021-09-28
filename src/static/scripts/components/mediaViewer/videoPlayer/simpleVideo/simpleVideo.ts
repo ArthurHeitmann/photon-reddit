@@ -56,7 +56,13 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 		this.video.addEventListener("loadeddata", () => this.dispatchEvent(new Event("ph-ready")));
 		this.video.addEventListener("waiting", () => this.dispatchEvent(new Event("ph-buffering")));
 		this.video.addEventListener("playing", () => this.dispatchEvent(new Event("ph-playing")));
-		this.video.addEventListener("play", () => this.dispatchEvent( new Event("ph-play")));
+		this.video.addEventListener("play", () => {
+			if (this.offsetWidth === 0) {
+				this.pause();
+				return;
+			}
+			this.dispatchEvent(new Event("ph-play"));
+		});
 		this.video.addEventListener("pause", () => this.dispatchEvent( new Event("ph-pause")));
 		this.video.addEventListener("volumechange", () => this.dispatchEvent(
 			new CustomEvent("ph-volume-change", { detail: this.video.muted ? 0 : this.video.volume })));
@@ -65,6 +71,10 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 	}
 
 	play(): void {
+		if (this.offsetWidth === 0) {
+			this.pause();
+			return;
+		}
 		this.video.play().catch(() => undefined);
 	}
 
