@@ -32,11 +32,11 @@
     "@types/resize-observer-browser": "^0.1.6",
     "cypress": "^8.5.0",
     "cypress-terminal-report": "^3.3.2",
-    "esbuild": "^0.13.2",
+    "esbuild": "^0.12.1",
     "esbuild-node-externals": "^1.3.0",
     "nodemon": "^2.0.13",
     "sass": "^1.42.1",
-    "typescript": "^4.4.3"
+    "typescript": "^4.3.5"
   },
   "dependencies": {
     "@types/express-rate-limit": "^5.1.3",

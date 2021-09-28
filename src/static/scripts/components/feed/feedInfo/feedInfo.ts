@@ -91,7 +91,7 @@ export default abstract class Ph_FeedInfo<StoredData> extends HTMLElement {
 		this.displayInfo();
 	}
 
-	abstract async loadInfo(): Promise<void>;
+	abstract loadInfo(): Promise<void>;
 
 	abstract displayInfo(): void;
 
