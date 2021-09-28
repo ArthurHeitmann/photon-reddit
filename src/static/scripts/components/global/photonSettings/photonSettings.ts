@@ -135,7 +135,7 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 			))
 		);
 
-		onMessageBroadcast(this.onSettingsExternalChange.bind(this));
+		onMessageBroadcast(this.onSettingsExternalChange.bind(this), "settingsChanged");
 	}
 
 	private async onSettingChange(source: SettingConfig, newVal: any) {
@@ -178,7 +178,6 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 	}
 
 	private async onSettingsExternalChange(msg: MessageFormat) {
-		// TODO
 		if (msg.type !== "settingsChanged")
 			return;
 		const newSettings = msg.newSettings;

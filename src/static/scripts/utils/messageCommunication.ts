@@ -8,14 +8,14 @@ export interface MessageFormat {
 type MessageCallback = (msg: MessageFormat) => void;
 
 const messageChannelKey = "messageChannel";
-const messageListeners: MessageCallback[] = [];
+const messageListeners: { callback: MessageCallback, typeFilter?: string }[] = [];
 
-export function onMessageBroadcast(listener: MessageCallback): void {
-	messageListeners.push(listener);
+export function onMessageBroadcast(listener: MessageCallback, type?: string): void {
+	messageListeners.push({ callback: listener, typeFilter: type });
 }
 
 export function removeMessageListener(listener: MessageCallback): void {
-	const i = messageListeners.findIndex(l => l === listener);
+	const i = messageListeners.findIndex(l => l.callback === listener);
 	if (i !== -1)
 		messageListeners.splice(i, 1);
 }
@@ -31,8 +31,10 @@ function onLocalstorageChanged(e: StorageEvent) {
 		return;
 	const msg: MessageFormat = JSON.parse(e.newValue);
 	for (const listener of messageListeners) {
+		if (listener.typeFilter && listener.typeFilter !== msg.type)
+			continue;
 		try {
-			listener(msg);
+			listener.callback(msg);
 		} catch (e) {
 			console.error(e);
 		}

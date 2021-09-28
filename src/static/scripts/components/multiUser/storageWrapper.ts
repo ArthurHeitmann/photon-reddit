@@ -1,4 +1,5 @@
 import { supportsIndexedDB } from "../../utils/browserFeatures";
+import { broadcastMessage } from "../../utils/messageCommunication";
 
 const dbName= "photonDb";
 const objectStoreName = "users";
@@ -145,6 +146,7 @@ export async function setInStorage(value: any, ...keyPath: string[]): Promise<vo
 		await setInDb(value, ...keyPath);
 	else
 		setInLs(value, ...keyPath);
+	broadcastMessage({ type: "dataChanged" });
 }
 
 export async function getAllKeysInStorage(key: string = ""): Promise<string[]> {
@@ -159,4 +161,5 @@ export async function deleteKey(key: string): Promise<void> {
 		await deleteKeyFromDb(key);
 	else
 		deleteKeyFromLs(key);
+	broadcastMessage({ type: "dataChanged" });
 }

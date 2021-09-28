@@ -1,3 +1,4 @@
+import { onMessageBroadcast } from "../../utils/messageCommunication";
 import { deleteKey, getFromStorage, setInStorage } from "./storageWrapper";
 
 export default abstract class DataAccessor<T> {
@@ -6,6 +7,8 @@ export default abstract class DataAccessor<T> {
 	protected loaded: T;
 
 	async init(): Promise<this> {
+		onMessageBroadcast(this.refreshData.bind(this), "dataChanged");
+
 		let storedData: any;
 		try {
 			storedData = await getFromStorage(this.key);
@@ -73,5 +76,9 @@ export default abstract class DataAccessor<T> {
 			localStorage.removeItem(lsKeys[0]);
 		}
 		catch {}
+	}
+
+	protected async refreshData() {
+		this.loaded = await getFromStorage(this.key);
 	}
 }
