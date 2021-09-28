@@ -488,7 +488,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 	}
 
 	setVolume(newVolume: number, broadcastChange = true) {
-		this.video.setVolume(newVolume);
+		this.video?.setVolume(newVolume);
 		if (!broadcastChange || !globalSettings.globalVideoVolume)
 			return;
 		Ph_VideoPlayer.globalVolume = newVolume;
