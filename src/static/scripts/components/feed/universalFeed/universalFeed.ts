@@ -430,7 +430,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 	onResize(entries: ResizeObserverEntry[]) {
 		if (this.children.length <= 1
 			||window.innerWidth === this.lastWindowSize[0] && window.innerHeight === this.lastWindowSize[1]
-			|| entries[0].contentBoxSize?.[0].blockSize === 0)
+			|| (entries[0].contentBoxSize?.[0]?.blockSize ?? entries[0].contentBoxSize?.["blockSize"] ?? this.offsetWidth) === 0)
 			return;
 		this.lastWindowSize = [window.innerWidth, window.innerHeight];
 		const scrollTopDiff = this.currentlyVisibleItem.getBoundingClientRect().top - this.currentlyVisibleItemScrollTop;
