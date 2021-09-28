@@ -60,6 +60,7 @@ async function oauth2Request(pathAndQuery, params: string[][] | any, options: Re
 	}
 	if (fetchOptions.method && fetchOptions.method.toUpperCase() !== "GET") {
 		fetchOptions.body = parameters ?? params;
+		useUrlParams = false;
 	}
 
 	try {
