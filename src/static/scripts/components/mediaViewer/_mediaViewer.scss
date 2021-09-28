@@ -133,6 +133,7 @@
 
 	.imageViewer img, .videoPlayer video {
 		max-height: var(--max-media-height);
+		line-height: 3rem;
 	}
 
 	&.isInFullscreen {

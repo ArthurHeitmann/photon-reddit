@@ -1,5 +1,5 @@
 import { getLoadingIcon, nonDraggableElement } from "../../../utils/htmlStatics";
-import { hasParams } from "../../../utils/utils";
+import { hasParams, makeElement } from "../../../utils/utils";
 import { globalSettings, ImageLoadingPolicy, PhotonSettings } from "../../global/photonSettings/photonSettings";
 import { ControlsLayoutSlots } from "../../misc/controlsBar/controlsBar";
 import Ph_PhotonBaseElement from "../../photon/photonBaseElement/photonBaseElement";
@@ -20,6 +20,7 @@ export default class Ph_ImageViewer extends Ph_PhotonBaseElement implements Medi
 	caption: string;
 	controls: ControlsLayoutSlots;
 	element: HTMLElement;
+	refreshButton: HTMLElement;
 	url: string;
 	originalImage: HTMLImageElement;
 	previewImage: HTMLImageElement = null;
@@ -32,7 +33,12 @@ export default class Ph_ImageViewer extends Ph_PhotonBaseElement implements Medi
 		this.classList.add("imageViewer")
 
 		this.caption = initData.caption;
-		this.controls = { rightItems: [getLoadingIcon()] };
+		this.controls = { rightItems: [
+			getLoadingIcon(),
+				this.refreshButton = makeElement("button", { class: "refreshButton hide", "data-tooltip": "Reload Image", onclick: this.refreshImages.bind(this) }, [
+					makeElement("img", { src: "/img/refresh.svg", alt: "↻" })
+				])
+		] };
 		this.controls.rightItems[0].classList.add("hide");
 		this.element = this;
 		this.url = initData.displayUrl || initData.originalUrl;
@@ -40,7 +46,7 @@ export default class Ph_ImageViewer extends Ph_PhotonBaseElement implements Medi
 		this.originalImage = document.createElement("img")
 		this.originalImage.className = "original";
 		this.originalImage.alt = initData.caption || this.url;
-		this.originalImage.onerror = this.makeOnImageError();
+		this.originalImage.onerror = this.onImageError.bind(this);
 		nonDraggableElement(this.originalImage);
 		if (initData.previewUrl && globalSettings.imageLoadingPolicy !== ImageLoadingPolicy.alwaysOriginal) {
 			this.previewImage = document.createElement("img");
@@ -90,24 +96,22 @@ export default class Ph_ImageViewer extends Ph_PhotonBaseElement implements Medi
 		}
 	}
 
-	makeOnImageError() {
-		return (e: Event) => {
-			const currentImg = e.currentTarget as HTMLImageElement;
-			const refreshButton = document.createElement("button");
-			refreshButton.innerHTML = `<img src="/img/refresh.svg" alt="refresh">`;
-			refreshButton.className = "refreshButton";
-			refreshButton.setAttribute("data-tooltip", "Reload Image");
-			refreshButton.onclick = () => {
-				const refreshButtonIndex = this.controls.rightItems.findIndex(e => e === refreshButton);
-				this.controls.rightItems.splice(refreshButtonIndex, 1);
-				this.dispatchEvent(new Event("ph-controls-changed"));
-				const currentSrc = currentImg.src;
-				currentImg.src = "";
-				currentImg.src = currentSrc;
-			};
-			this.controls.rightItems.push(refreshButton);
-			this.dispatchEvent(new Event("ph-controls-changed"));
-		}
+	refreshImages() {
+		this.tryRefreshImage(this.previewImage);
+		this.tryRefreshImage(this.originalImage);
+		this.refreshButton.classList.add("hide");
+	}
+
+	tryRefreshImage(img: HTMLImageElement) {
+		if (img.complete && img.naturalWidth)
+			return;
+		const currentSrc = img.src;
+		img.src = "";
+		img.src = currentSrc;
+	}
+
+	onImageError() {
+		this.refreshButton.classList.remove("hide");
 	}
 }
 
