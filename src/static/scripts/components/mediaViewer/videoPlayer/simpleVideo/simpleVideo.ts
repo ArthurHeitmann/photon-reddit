@@ -57,7 +57,7 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 		this.video.addEventListener("waiting", () => this.dispatchEvent(new Event("ph-buffering")));
 		this.video.addEventListener("playing", () => this.dispatchEvent(new Event("ph-playing")));
 		this.video.addEventListener("play", () => {
-			if (this.offsetWidth === 0) {
+			if (!this.offsetParent) {
 				this.pause();
 				return;
 			}
@@ -71,7 +71,7 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 	}
 
 	play(): void {
-		if (this.offsetWidth === 0) {
+		if (!this.offsetParent) {
 			this.pause();
 			return;
 		}
