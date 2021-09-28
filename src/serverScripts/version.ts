@@ -1,6 +1,14 @@
 export const photonVersion = "0.6.7";		/// <change version script>
 
 export const photonChangelog = {
+	"0.6.8": {
+		"New": [
+			"Gifs in comments are now displayed as text instead and can be expanded manually. (to auto expand: settings > General UI > Expand media previews)"
+		],
+		"Fixed": [
+			"Lots of small fixes"
+		]
+	},
 	"0.6.7": {
 		"Fixed": [
 			"Fixed reddit preferences not showing"
