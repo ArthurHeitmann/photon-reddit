@@ -100,6 +100,8 @@ export function _linksToInlineMedia(elem: HTMLElement) {
 		if (!Ph_MediaViewer.isUrlMedia(link.href))
 			continue;
 
+		if (link.children[0]?.tagName === "IMG")
+			link.innerText = link.href
 		link.classList.add("inlineMediaViewer");
 		link.onclick = (e: MouseEvent) => {
 			const link = e.currentTarget as HTMLAnchorElement;

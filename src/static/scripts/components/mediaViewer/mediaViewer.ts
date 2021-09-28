@@ -114,10 +114,10 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	}
 
 	static fromUrl(url: string): Ph_MediaViewer | null {
-		if (Ph_MediaViewer.isUrlVideo(url))
-			return Ph_MediaViewer.fromUrl_Video(url);
-		else if (Ph_MediaViewer.isUrlImgur(url))
+		if (Ph_MediaViewer.isUrlImgur(url))
 			return Ph_MediaViewer.fromImgurUrl(url);
+		else if (Ph_MediaViewer.isUrlVideo(url))
+			return Ph_MediaViewer.fromUrl_Video(url);
 		else if (Ph_MediaViewer.isUrlImage(url))
 			return Ph_MediaViewer.fromUrl_Image(url);
 		else

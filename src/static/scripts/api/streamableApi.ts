@@ -10,11 +10,11 @@ export async function getStreamableUrl(url: string): Promise<SourceData[]> {
 			type: "video/mp4",
 			label: `${data["files"]["mp4"]["height"]}p`
 		},
-		{
+		...(data["files"]["mp4-mobile"] ? [{
 			src: data["files"]["mp4-mobile"]["url"],
 			type: "video/mp4",
 			label: `${data["files"]["mp4-mobile"]["height"]}p`,
 			lowerQualityAlternative: true
-		},
+		}] : []),
 	]
 }

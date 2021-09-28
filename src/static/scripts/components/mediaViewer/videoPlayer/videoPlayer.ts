@@ -207,7 +207,6 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				if (!twitchMp4Found) {
 					youtubeDlUrl(url).then(async clip => {
 						if ("error" in clip || !clip.url) {
-							new Ph_Toast(Level.error, "Error getting Twitch clip");
 							videoOut.init(null);
 							return;
 						}
@@ -276,8 +275,10 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 			if (isLateInit)
 				this.dispatchEvent(new Event("ph-controls-changed"));
 		}
-		else
-			this.innerText = "No video supplied (maybe video was deleted)";
+		else {
+			this.innerText = "No video found (maybe video was deleted)";
+			this.classList.add("noVideo");
+		}
 	}
 
 	fullInit() {
@@ -487,7 +488,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 	}
 
 	setVolume(newVolume: number, broadcastChange = true) {
-		this.video.setVolume(newVolume);
+		this.video?.setVolume(newVolume);
 		if (!broadcastChange || !Users.current.d.photonSettings.globalVideoVolume)
 			return;
 		Ph_VideoPlayer.globalVolume = newVolume;
