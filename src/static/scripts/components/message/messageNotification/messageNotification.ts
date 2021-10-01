@@ -77,6 +77,8 @@ export default class Ph_MessageNotification extends HTMLElement {
 	}
 
 	static async checkForNewMessages() {
+		if (!Users.current.d.auth.isLoggedIn)
+			return;
 		const unreadMessagesData = await redditApiRequest(`/message/unread`,
 			[], true) as RedditListingObj<RedditMessageObj>;
 		const unreadMessages = unreadMessagesData.data.children;
@@ -117,6 +119,6 @@ window.addEventListener("ph-settings-changed", (e: CustomEvent) => {
 		clearInterval(messageCheckInterval);
 	if (changed.messageCheckIntervalMs > 0)
 		messageCheckInterval = setInterval(Ph_MessageNotification.checkForNewMessages, Users.current.d.photonSettings.messageCheckIntervalMs);
-})
+});
 
 customElements.define("ph-message-notification", Ph_MessageNotification);

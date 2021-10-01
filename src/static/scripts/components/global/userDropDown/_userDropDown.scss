@@ -97,6 +97,75 @@
 			}
 		}
 
+		.userSelector {
+			.currentUserWrapper {
+
+			}
+
+			.allUsersList {
+				&:not(.expand) {
+					display: none;
+				}
+			}
+
+			.userOption {
+				display: flex;
+				height: 2rem;
+				justify-content: space-between;
+				align-items: center;
+				position: relative;
+
+				.mainArea {
+					display: flex;
+					align-items: center;
+					flex-grow: 1;
+
+					&::after {
+						content: "";
+						position: absolute;
+						width: 100%;
+						height: 100%;
+						padding: .1rem .5rem;
+						margin-left: -0.5rem;
+						border-radius: 2rem;
+						background: transparent;
+						opacity: 0.75;
+						transition: all .25s ease;
+						z-index: -1;
+					}
+
+					&:hover::after {
+						background: vars.$switcher-bg-hover;
+					}
+
+					&:active::after {
+						opacity: 0.75;
+						background: vars.$switcher-bg-selected;
+					}
+
+				}
+
+				&.selected .mainArea::after {
+					opacity: 1;
+					background: vars.$switcher-bg-active;
+				}
+
+				img {
+					height: 1.65rem;
+					margin-right: .5rem;
+				}
+
+				.subBtn {
+					--img: url("/img/transparent.svg");
+					background-image: var(--img);
+					background-size: cover;
+					width: 1.65rem;
+					height: 1.65rem;
+					--dim: 1.9rem;
+				}
+			}
+		}
+
 		.separated {
 			position: relative;
 

@@ -27,43 +27,46 @@ export async function redirectToLoginPage() {
 		`redirect_uri=${ encodeURIComponent(redirectURI) }&` +
 		`duration=${ tokenDuration }&` +
 		`scope=${ encodeURIComponent(scope.join(" ")) }`;
-	await Users.current.set(["auth", "loginCode"], loginCode);
-	await Users.current.set(["auth", "pageBeforeLogin"], history.state?.url || "/");
+	await Users.global.set(["loginCode"], loginCode);
+	await Users.global.set(["pageBeforeLogin"], history.state?.url || "/");
 	location.href = loginUrl;
 }
 
 /** After logging in reddit redirects to <origin>/redirect with an authorization code in the parameter  */
-export async function checkOrCompleteLoginRedirect() {
-	if (/^\/redirect/.test(history.state?.url || location.pathname)) {
-		await finishLogin();
-	}
+export async function tryCompleteLogin(): Promise<boolean> {
+	if (/^\/redirect/.test(history.state?.url || location.pathname))
+		return  await finishLogin();
+	return false;
 }
 
 /** exchange authorization code for first access & refresh token */
-export async function finishLogin() {
+export async function finishLogin(): Promise<boolean> {
 	const query = new URLSearchParams(extractQuery(history.state?.url || location.search));
 	const queryState = query.get("state");
-	const savedState = Users.current.d.auth.loginCode;
+	const savedState = Users.global.d.loginCode;
 	if (queryState && savedState && queryState === savedState) {
 		try {
 			const data = await getInitialAccessToken(query.get("code").toString());
 			if ("error" in data)
 				throw data;
-			await Users.current.set(["auth", "accessToken"], data.access_token);
-			await Users.current.set(["auth", "refreshToken"], data.refresh_token);
-			await Users.current.set(["auth", "scopes"], data.scope);
-			// set expiry to be 59 minutes from now
-			await Users.current.set(["auth", "expiration"], Date.now() + (59 * 60 * 1000));
-			await Users.current.set(["auth", "loginTime"], Date.now());
-			await Users.current.set(["auth", "isLoggedIn"], true);
-			location.replace(Users.current.d.auth.pageBeforeLogin || "/");
+			await Users.add({
+				accessToken: data.access_token,
+				refreshToken: data.refresh_token,
+				scopes: data.scope,
+				expiration: Date.now() + (59 * 60 * 1000),
+				loginTime: Date.now(),
+				isLoggedIn: true,
+			});
+			return true;
 		} catch (e) {
 			console.error(e);
 			new Ph_Toast(Level.error, "Error completing login");
+			return false;
 		}
 	}
 	else {
 		new Ph_Toast(Level.error, "Wrong redirect parameters");
+		return false;
 	}
 }
 

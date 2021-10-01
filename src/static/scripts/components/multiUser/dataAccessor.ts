@@ -1,5 +1,6 @@
 import { onMessageBroadcast } from "../../utils/messageCommunication";
-import { deleteKey, getFromStorage, setInStorage } from "./storageWrapper";
+import { deepClone } from "../../utils/utils";
+import { getFromStorage, setInStorage } from "./storageWrapper";
 
 export default abstract class DataAccessor<T> {
 	protected abstract key: string;
@@ -14,7 +15,7 @@ export default abstract class DataAccessor<T> {
 			storedData = await getFromStorage(this.key);
 		} catch {}
 		if (!storedData) {
-			this.loaded = this.default;
+			this.loaded = deepClone(this.default);
 			await setInStorage(this.default, this.key);
 		}
 		else {
@@ -49,12 +50,6 @@ export default abstract class DataAccessor<T> {
 			loadedTarget = loadedTarget[keys[i]];
 		delete loadedTarget[keys[keys.length - 1]];
 		await setInStorage(this.loaded, this.key);
-	}
-
-	protected async changeKey(newKey: string) {
-		await deleteKey(this.key);
-		await setInStorage(this.loaded, newKey);
-		this.key = newKey;
 	}
 
 	protected tryMigrateFromLsToLoaded(lsKeys: string[], loadedKeys: string[], transformer = val => val) {

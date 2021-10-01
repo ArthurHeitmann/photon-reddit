@@ -11,10 +11,11 @@ import Ph_UserDropDown from "../global/userDropDown/userDropDown";
 import { initialDefaultFabPresets } from "../photon/fab/fabElementConfig";
 import DataAccessor from "./dataAccessor";
 import { _GlobalOrUserData } from "./globalData";
-import { setInStorage, wasDbUpgraded } from "./storageWrapper";
+import { deleteKey, setInStorage, wasDbUpgraded } from "./storageWrapper";
 import Users from "./userManagement";
 
 export const guestUserName = "#guest";
+export const tmpLoginUserName = "#login";
 
 export default class UserData extends DataAccessor<_UserData> {
 	protected key: string;
@@ -24,10 +25,8 @@ export default class UserData extends DataAccessor<_UserData> {
 			refreshToken: null,
 			expiration: null,
 			scopes: null,
-			pageBeforeLogin: null,
 			loginTime: null,
 			isLoggedIn: false,
-			loginCode: null
 		},
 		caches: {
 			subs: null,
@@ -38,7 +37,8 @@ export default class UserData extends DataAccessor<_UserData> {
 		loginSubPromptDisplayed: false,
 		photonSettings: deepClone(defaultSettings),
 		redditPreferences: undefined,
-		seenPosts: {}
+		seenPosts: {},
+		userData: null
 	};
 	subreddits = new SubredditManager();
 	multireddits = new MultiManager();
@@ -58,13 +58,6 @@ export default class UserData extends DataAccessor<_UserData> {
 			this.tryMigrateFromLsToLoaded(["fabConfig"], ["fabConfig"]);
 			this.tryMigrateFromLsToLoaded(["seenPosts"], ["seenPosts"]);
 			this.tryMigrateFromLsToLoaded(["settings"], ["photonSettings"]);
-			this.tryMigrateFromLsToLoaded(["accessToken"], ["auth", "accessToken"]);
-			this.tryMigrateFromLsToLoaded(["expiration"], ["auth", "expiration"]);
-			this.tryMigrateFromLsToLoaded(["isLoggedIn"], ["auth", "isLoggedIn"]);
-			this.tryMigrateFromLsToLoaded(["loginTime"], ["auth", "loginTime"]);
-			this.tryMigrateFromLsToLoaded(["refreshToken"], ["auth", "refreshToken"]);
-			this.tryMigrateFromLsToLoaded(["pageBeforeLogin"], ["auth", "pageBeforeLogin"]);
-			this.tryMigrateFromLsToLoaded(["scope"], ["auth", "scopes"]);
 			this.tryMigrateFromLsToLoaded(["loginRecommendationFlag"], ["loginSubPromptDisplayed"], val => val === "set");
 			await setInStorage(this.loaded, this.key);
 		}
@@ -72,13 +65,13 @@ export default class UserData extends DataAccessor<_UserData> {
 	}
 
 	async fetchName(): Promise<boolean> {
-		const userData: RedditUserInfo = await redditApiRequest("/api/v1/me", [], false);
-		if ("error" in userData)
+		await this.set(["userData"], await redditApiRequest("/api/v1/me", [], false));
+		if ("error" in this.d.userData)
 			return false;
-		this.name = userData.name || "";
-		// if was previously guest (migrated from LS)
-		if (this.name && this.key.endsWith(guestUserName)) {
-			await this.changeKey(`u/${this.name}`);
+		const oldName = this.name;
+		this.name = this.d.userData.name || this.name || "";
+		if (this.name && this.key.endsWith(tmpLoginUserName)) {
+			await this.changeKey(oldName, this.name);
 			await Users.global.set(["lastActiveUser"], this.name);
 		}
 		return true;
@@ -90,6 +83,12 @@ export default class UserData extends DataAccessor<_UserData> {
 			Users.current.subreddits.load(),
 			Users.current.multireddits.load(),
 		]);
+	}
+
+	get displayName(): string {
+		return this.name === guestUserName ?
+			"Guest" :
+			`u/${this.name}`;
 	}
 
 	hasPostsBeenSeen(postFullName: string): boolean {
@@ -131,6 +130,14 @@ export default class UserData extends DataAccessor<_UserData> {
 	getInboxUnreadCount(): number {
 		return this.inboxUnreadIds.size;
 	}
+
+	protected async changeKey(oldName: string, newName: string): Promise<void> {
+		if (Users.global.d.lastActiveUser === oldName)
+			await Users.global.set(["lastActiveUser"], newName);
+		await deleteKey(this.key);
+		this.key = `u/${newName}`;
+		await setInStorage(this.loaded, this.key);
+	}
 }
 
 /**
@@ -143,18 +150,17 @@ interface _UserData extends _GlobalOrUserData {
 	redditPreferences: RedditPreferences;
 	/** If false, after logging in a info is displayed to subscribe to r/photon_reddit */
 	loginSubPromptDisplayed: boolean;
+	userData: RedditUserInfo;
 	caches: QuickCaches;
 }
 
-interface AuthData {
+export interface AuthData {
 	accessToken: string,
 	refreshToken?: string,
 	expiration: number,
 	isLoggedIn: boolean,
 	scopes: string,
 	loginTime: number,
-	pageBeforeLogin: string,
-	loginCode: string
 }
 
 export interface QuickCaches {

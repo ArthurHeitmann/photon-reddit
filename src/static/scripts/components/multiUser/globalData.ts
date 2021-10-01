@@ -23,7 +23,9 @@ export default class GlobalUserData extends DataAccessor<_GlobalData> {
 		hasAcknowledgedTutorial: false,
 		photonSettings: deepClone(defaultSettings),
 		photonVersion: photonWebVersion,
-		seenPosts: {}
+		seenPosts: {},
+		pageBeforeLogin: null,
+		loginCode: null
 	}
 
 	async init(): Promise<this> {
@@ -77,6 +79,8 @@ interface _GlobalData extends _GlobalOrUserData {
 	hasAcknowledgedTutorial: boolean;
 	/** When visiting for the first time, a test is needed to know if firefox is used in private mode */
 	firefoxPrivateCheckCompleted: boolean;
+	pageBeforeLogin: string,
+	loginCode: string
 }
 
 export interface AnalyticsData {

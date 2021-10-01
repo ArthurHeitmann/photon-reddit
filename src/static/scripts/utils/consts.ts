@@ -1,7 +1,7 @@
-// export const appId = "5RvVL5Ehk-R0LQ";
-export const appId = "N3bHM42Rmlc3sQ";
-// export const redirectURI = "http://localhost:8080/redirect";
-export const redirectURI = "https://photon-reddit.com/redirect";
+export const appId = "5RvVL5Ehk-R0LQ";
+// export const appId = "N3bHM42Rmlc3sQ";
+export const redirectURI = "http://localhost:8080/redirect";
+// export const redirectURI = "https://photon-reddit.com/redirect";
 export const tokenDuration = "permanent";
 export const scope = ["account", "creddits", "edit", "flair", "history", "identity", "livemanage", "modconfig", "modcontributors", "modflair", "modlog", "modmail", "modothers", "modposts", "modself", "modtraffic", "modwiki", "mysubreddits", "privatemessages", "read", "report", "save", "structuredstyles", "submit", "subscribe", "vote", "wikiedit", "wikiread"];
 export const loginSubredditName =  "photon_reddit";

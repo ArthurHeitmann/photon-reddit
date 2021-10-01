@@ -140,11 +140,11 @@ input.checkbox {
 		&::before {
 			content: "";
 			position: absolute;
-			width: 70%;
-			height: 31%;
+			width: 60%;
+			height: 27%;
 			border-bottom: 4px solid var(--text-color);
 			border-left: 4px solid var(--text-color);
-			transform: translateY(-80%) translateX(-52%) rotate(-45deg);
+			transform: translateY(-76%) translateX(-52%) rotate(-45deg);
 			margin-top: 50%;
 			margin-left: 50%;
 			opacity: 0;

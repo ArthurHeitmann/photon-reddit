@@ -1,13 +1,22 @@
+import { initiateLogin } from "../../../auth/loginHandler";
 import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager";
 import ViewsStack from "../../../historyState/viewsStack";
 import { RedditApiObj, RedditSubredditObj } from "../../../types/redditTypes";
 import { elementWithClassInTree, isElementIn } from "../../../utils/htmlStuff";
 import { MultiChangeType, MultisChangeEvent } from "../../../utils/MultiManager";
 import { SubsChangeEvent } from "../../../utils/subredditManager";
-import { ensurePageLoaded, hasHTML, isFakeSubreddit, makeElement, numberToShort } from "../../../utils/utils";
+import {
+	ensurePageLoaded,
+	getUserIconUrl,
+	hasHTML,
+	isFakeSubreddit,
+	makeElement,
+	numberToShort
+} from "../../../utils/utils";
 import Ph_FeedLink from "../../link/feedLink/feedLink";
 import Ph_MultiCreateOrEdit, { MultiBasicInfo } from "../../misc/multiCreateOrEdit/multiCreateOrEdit";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
+import UserData, { guestUserName } from "../../multiUser/userData";
 import Users from "../../multiUser/userManagement";
 import Ph_Header from "../header/header";
 
@@ -36,6 +45,7 @@ export default class Ph_UserDropDown extends HTMLElement {
 				{ class: "filterSearch", placeholder: "Quick search", oninput: this.filterSearch.bind(this) }
 				) as HTMLInputElement,
 			this.makeActionBar(),
+			this.makeUserSelector(),
 			this.makeSubredditGroup([ "r/all", "r/popular" ], "Reddit Feeds")
 		]);
 		this.append(dropDownArea);
@@ -77,7 +87,7 @@ export default class Ph_UserDropDown extends HTMLElement {
 	}
 
 	private makeActionBar(): HTMLElement {
-		const actions = makeElement("div", { class: "actionBar separated" });
+		const actions = makeElement("div", { class: "actionBar" });
 		function makeAction(imgSrc: string, tooltip: string, onClick: string | (() => void)): HTMLElement {
 			let item: HTMLElement;
 			if (typeof onClick === "string")
@@ -141,6 +151,71 @@ export default class Ph_UserDropDown extends HTMLElement {
 		actions.append(aboutAction);
 
 		return actions
+	}
+
+	private makeUserSelector(): HTMLElement {
+		const userSelector = makeElement("div", { class: "userSelector separated" });
+		ensurePageLoaded().then(() => {
+			const userActionImages = {
+				"remove": "/img/close.svg",
+				"expand": "/img/downArrow.svg",
+				"none": "/img/transparent.svg"
+			}
+			function makeUser(params: { user: UserData, rightImg: keyof typeof userActionImages, additionalClasses?: string, onMainClick?: () => void, onSubBtnClick?: () => void}): HTMLElement {
+				return makeElement("div", { class: `userOption ${params.additionalClasses ?? ""}` }, [
+					makeElement("button", { class: "mainArea", onclick: params.onMainClick }, [
+						makeElement("img", { src: params.user.name !== guestUserName ? getUserIconUrl(params.user.d.userData) : "/img/user.svg" }),
+						makeElement("div", {}, params.user.displayName),
+					]),
+					params.rightImg !== "none" && makeElement(
+						"button",
+						{ class: "subBtn transparentButtonAlt", style: `--img: url("${userActionImages[params.rightImg]}")`, onclick: params.onSubBtnClick }
+					),
+				]);
+			}
+			const current = makeElement("div", { class: "currentUserWrapper" },[
+				makeUser({
+					user: Users.current,
+					rightImg: "expand",
+					onMainClick: () => others.classList.toggle("expand"),
+					onSubBtnClick: () => others.classList.toggle("expand")
+				})
+			]);
+			const others = makeElement("div", { class: "allUsersList" }, [
+				...Users.all.map(user => {
+					const userBtn = makeUser({
+						user: user,
+						rightImg: "remove",
+						additionalClasses: user === Users.current ? "selected" : "",
+						onMainClick: async () => {
+							await Users.switchUser(user);
+							others.$css(".userOption.selected")[0]?.classList.remove("selected");
+							userBtn.classList.add("selected");
+							current.innerText = "";
+							current.append(makeUser({
+								user: Users.current,
+								rightImg: "expand",
+								onMainClick: () => others.classList.toggle("expand"),
+								onSubBtnClick: () => others.classList.toggle("expand")
+							}));
+						}
+					});
+					return userBtn;
+				}),
+				makeElement("div", { class: "userOption" }, [
+					makeElement("button", { class: "mainArea", onclick: () => {
+							this.minimize();
+							initiateLogin();
+						}
+					}, [
+						makeElement("img", { src: "/img/add.svg" }),
+						makeElement("div", {}, "Add User"),
+					])
+				])
+			]);
+			userSelector.append(current, others);
+		})
+		return userSelector;
 	}
 
 	filterSearch() {

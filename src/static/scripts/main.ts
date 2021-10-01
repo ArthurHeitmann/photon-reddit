@@ -5,7 +5,7 @@
  */
 
 import { AuthState, checkAuthOnPageLoad, checkTokenRefresh } from "./auth/auth";
-import { checkOrCompleteLoginRedirect, initiateLogin } from "./auth/loginHandler";
+import { initiateLogin } from "./auth/loginHandler";
 import Ph_Header from "./components/global/header/header";
 import Ph_Toast, { Level } from "./components/misc/toast/toast";
 import Users from "./components/multiUser/userManagement";
@@ -35,7 +35,6 @@ async function init(): Promise<void> {
 	const loginBtn = $css(".loginButton")[0];
 	loginBtn.addEventListener("click", () => initiateLogin());
 
-	await checkOrCompleteLoginRedirect();
 	let thisUserFetch: Promise<void>;
 	if (await checkAuthOnPageLoad() === AuthState.loggedIn) {
 		thisUserFetch = Users.current.fetchUserData()
