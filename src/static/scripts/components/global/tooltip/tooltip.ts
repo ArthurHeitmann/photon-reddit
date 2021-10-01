@@ -71,20 +71,20 @@ export default class Ph_Tooltips extends HTMLElement {
 	}
 
 	private getNewHovered(allNewHovered: Element[]): Element[] {
-		return Users.current.d.photonSettings.tooltipsVisible ? allNewHovered
+		return Users.global.d.photonSettings.tooltipsVisible ? allNewHovered
 			.filter(elem => this.allHovered
 				.findIndex(hovered => hovered.element === elem) === -1
 			) : [];
 	}
 
 	private getSameHovered(allNewHovered: Element[]): ElementHover[] {
-		return Users.current.d.photonSettings.tooltipsVisible ? this.allHovered
+		return Users.global.d.photonSettings.tooltipsVisible ? this.allHovered
 			.filter(hovered => allNewHovered
 				.findIndex(elem => hovered.element === elem) !== -1) : [];
 	}
 
 	private getDeadHovered(allNewHovered: Element[]): ElementHover[] {
-		return Users.current.d.photonSettings.tooltipsVisible ? this.allHovered
+		return Users.global.d.photonSettings.tooltipsVisible ? this.allHovered
 			.filter(hovered => allNewHovered
 				.findIndex(elem => hovered.element === elem) === -1) : this.allHovered;
 	}

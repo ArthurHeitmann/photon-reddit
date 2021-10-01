@@ -74,7 +74,7 @@ export default abstract class Ph_FeedInfo<StoredData> extends HTMLElement {
 			console.error(`Corrupted feed info for ${this.feedUrl} (${JSON.stringify(this.loadedInfo)})`);
 			throw "Corrupted feed info";
 		}
-		if (!isValid || this.loadedInfo.lastUpdatedMsUTC + Users.current.d.photonSettings.clearFeedCacheAfterMs < Date.now()) {
+		if (!isValid || this.loadedInfo.lastUpdatedMsUTC + Users.global.d.photonSettings.clearFeedCacheAfterMs < Date.now()) {
 			this.classList.add("loading");
 			// get it
 			await this.loadInfo();

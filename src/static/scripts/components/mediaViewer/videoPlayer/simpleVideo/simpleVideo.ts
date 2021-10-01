@@ -32,7 +32,7 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 		if (sourcesArray.length === 0)
 			this.insertAdjacentHTML("afterbegin", `<p>No video</p>`);
 		const qualityPreferenceSortedSources: SourceData[] =
-			Users.current.d.photonSettings.preferHigherVideoQuality
+			Users.global.d.photonSettings.preferHigherVideoQuality
 				? sourcesArray
 				: sourcesArray.filter(src => src.lowerQualityAlternative)
 					.concat(sourcesArray.filter(src => !src.lowerQualityAlternative));

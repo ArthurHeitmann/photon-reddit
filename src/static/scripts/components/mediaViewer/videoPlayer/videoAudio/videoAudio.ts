@@ -33,7 +33,7 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 		this.video = document.createElement("video");
 		this.video.setAttribute("loop", "");
 		const qualityPreferenceSortedSources: SourceData[] =
-			Users.current.d.photonSettings.preferHigherVideoQuality
+			Users.global.d.photonSettings.preferHigherVideoQuality
 				? videoSources
 				: videoSources.filter(src => src.lowerQualityAlternative)
 				  .concat(videoSources.filter(src => !src.lowerQualityAlternative));

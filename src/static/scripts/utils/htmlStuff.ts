@@ -113,7 +113,7 @@ export function _linksToInlineMedia(elem: HTMLElement) {
 			link.classList.toggle("isExpanded");
 			return Boolean(e.ctrlKey)
 		}
-		if (Users.current.d.photonSettings.loadInlineMedia)
+		if (Users.global.d.photonSettings.loadInlineMedia)
 			link.click();
 		link.setAttribute("excludeLinkFromSpa", "")
 	}

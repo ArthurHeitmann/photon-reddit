@@ -20,4 +20,4 @@ function setClassOnBody(className: string, state: boolean, invert: boolean = fal
 	}
 }
 
-ensurePageLoaded().then(() => handleSettings(Users.current.d.photonSettings));
+ensurePageLoaded().then(() => handleSettings(Users.global.d.photonSettings));

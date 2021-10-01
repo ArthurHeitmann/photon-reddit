@@ -1,3 +1,4 @@
+import { checkTokenRefresh } from "../../auth/auth";
 import { tryCompleteLogin } from "../../auth/loginHandler";
 import GlobalUserData from "./globalData";
 import { getAllKeysInStorage } from "./storageWrapper";
@@ -47,6 +48,9 @@ export default class Users {
 	static async switchUser(newUser: UserData) {
 		this._current = newUser;
 		await Users.global.set(["lastActiveUser"], newUser.name);
+		await checkTokenRefresh();
+		if (newUser.d.auth.isLoggedIn)
+			await newUser.fetchUserData();
 		window.dispatchEvent(new Event("ph-user-changed"));
 	}
 

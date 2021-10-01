@@ -46,7 +46,7 @@ export abstract class UserSubscriptions<ContentType, EventData> {
 		try {
 			const storedData = Users.current.d.caches[storageKey] as StoredData<ContentType[]>;
 			this.userContent = storedData.data;
-			if (Date.now() - storedData.lastUpdatedMsUTC > Users.current.d.photonSettings.userShortCacheTTLMs)
+			if (Date.now() - storedData.lastUpdatedMsUTC > Users.global.d.photonSettings.userShortCacheTTLMs)
 				return null;
 		} catch (e) {
 			return null;

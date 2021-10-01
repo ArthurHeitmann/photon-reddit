@@ -153,7 +153,7 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 		const validatorReturn = source.validateValue(newVal);
 		if (!validatorReturn.isValid) {
 			new Ph_Toast(Level.error, escHTML(validatorReturn.error));
-			source.updateState(Users.current.d.photonSettings[source.settingKey]);
+			source.updateState(Users.global.d.photonSettings[source.settingKey]);
 			return;
 		}
 		source.updateState(newVal);
@@ -161,7 +161,7 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 		await this.applyTemporarySettings();
 		broadcastMessage({
 			type: "settingsChanged",
-			newSettings: Users.current.d.photonSettings
+			newSettings: Users.global.d.photonSettings
 		});
 	}
 
@@ -182,7 +182,7 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 			return;
 		const newSettings = msg.newSettings;
 		const changedKeys = Object.entries(newSettings)
-			.filter(([key, value]) => !isJsonEqual(value as any, Users.current.d.photonSettings[key]))
+			.filter(([key, value]) => !isJsonEqual(value as any, Users.global.d.photonSettings[key]))
 			.map(([key]) => key);
 		for (const changedKey of changedKeys) {
 			this.temporarySettings[changedKey] = newSettings[changedKey];
@@ -198,8 +198,8 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 	private async applyTemporarySettings() {
 		if (isObjectEmpty(this.temporarySettings))
 			return;
-		await Users.current.set(["photonSettings"], {
-			...Users.current.d.photonSettings,
+		await Users.global.set(["photonSettings"], {
+			...Users.global.d.photonSettings,
 			...deepClone(this.temporarySettings),
 		});
 		window.dispatchEvent(new CustomEvent("ph-settings-changed", { detail: deepClone(this.temporarySettings) }));

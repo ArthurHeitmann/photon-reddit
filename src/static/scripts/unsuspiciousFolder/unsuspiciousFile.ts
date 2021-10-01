@@ -50,8 +50,8 @@ window.addEventListener("ph-view-change", (e: CustomEvent) => {
 			],
 			body: JSON.stringify({
 				"clientId": clientId,
-				"path": Users.current.d.photonSettings.isIncognitoEnabled ? "/i" : path.toLowerCase(),
-				"referer": Users.current.d.photonSettings.isIncognitoEnabled ? "" : referer.toLowerCase(),
+				"path": Users.global.d.photonSettings.isIncognitoEnabled ? "/i" : path.toLowerCase(),
+				"referer": Users.global.d.photonSettings.isIncognitoEnabled ? "" : referer.toLowerCase(),
 				"timeMillisUtc": Date.now()
 			})
 		});

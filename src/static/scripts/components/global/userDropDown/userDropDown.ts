@@ -188,7 +188,10 @@ export default class Ph_UserDropDown extends HTMLElement {
 						rightImg: "remove",
 						additionalClasses: user === Users.current ? "selected" : "",
 						onMainClick: async () => {
-							await Users.switchUser(user);
+							Users.switchUser(user).catch(e => {
+								new Ph_Toast(Level.error, "Couldn't switch user");
+								console.error(e);
+							});
 							others.$css(".userOption.selected")[0]?.classList.remove("selected");
 							userBtn.classList.add("selected");
 							current.innerText = "";

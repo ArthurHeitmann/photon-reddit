@@ -11,7 +11,7 @@ export function clearAllOldData() {
 		if (!/^\/(r|u|user)\/[^/]+/.test(storageKey))		// skip if not feed info, must be /r/..., /u/..., /user/...
 			continue;
 		const feedInfo = Users.current.d.caches.feedInfos[storageKey];
-		if (now - feedInfo.lastUpdatedMsUTC < Users.current.d.photonSettings.clearFeedCacheAfterMs)			// skip if has been accessed recently
+		if (now - feedInfo.lastUpdatedMsUTC < Users.global.d.photonSettings.clearFeedCacheAfterMs)			// skip if has been accessed recently
 			continue;
 		const currentFeedUrlMatches = history.state.url.match(/^\/(u|user)\/([^/]+)/);
 		if (storageKey[1] === "r" 							// skip if this is currently active feed
@@ -25,19 +25,19 @@ export function clearAllOldData() {
 	}
 
 	let removedSeen = 0;
-	for (const [postName, lastSeenUtcS] of Object.entries(Users.current.d.seenPosts)) {
-		if (now - lastSeenUtcS*1000 < Users.current.d.photonSettings.clearSeenPostAfterMs)
+	for (const [postName, lastSeenUtcS] of Object.entries(Users.global.d.seenPosts)) {
+		if (now - lastSeenUtcS*1000 < Users.global.d.photonSettings.clearSeenPostAfterMs)
 			continue;
-		Users.current.unmarkPostAsSeen(postName);
+		Users.global.unmarkPostAsSeen(postName);
 		++removedSeen;
 	}
 	// remove some seen posts, if more than 35k marked as seen; leave 30k most recent
-	if (Object.keys(Users.current.d.seenPosts).length > 35000) {
-		const tooManyPosts = Object.entries(Users.current.d.seenPosts)							// all seen posts
+	if (Object.keys(Users.global.d.seenPosts).length > 35000) {
+		const tooManyPosts = Object.entries(Users.global.d.seenPosts)							// all seen posts
 			.sort((a, b) => b[1] - a[1])	// sort descending by time seen
 			.slice(30000);														// select all starting from 30k
 		for (const post of tooManyPosts) {
-			Users.current.unmarkPostAsSeen(post[0]);
+			Users.global.unmarkPostAsSeen(post[0]);
 			++removedSeen;
 		}
 	}

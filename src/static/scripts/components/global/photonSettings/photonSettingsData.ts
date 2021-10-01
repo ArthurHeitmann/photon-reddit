@@ -53,7 +53,7 @@ export abstract class SettingConfig {
 	protected getProperty(): any {
 		switch (this.settingsType) {
 		case SettingsApi.Photon:
-			return Users.current.d.photonSettings[this.settingKey];
+			return Users.global.d.photonSettings[this.settingKey];
 		case SettingsApi.Reddit:
 			return Users.current.d.redditPreferences[this.settingKey];
 		}
@@ -377,7 +377,7 @@ export const getSettingsSections = (): SettingsSection[] => [
 			new TimeSetting({ allowRange: [1, Number.MAX_SAFE_INTEGER] }, "userShortCacheTTLMs", "Short Cache Duration", "For your subscriptions", SettingsApi.Photon),
 			new TimeSetting({ allowRange: [1000 * 10, Number.MAX_SAFE_INTEGER], allowList: [0] }, "messageCheckIntervalMs", "New messages checking interval", "Use \"0\" to disable. Min intervall is 10s. Message polling is only done while website is open.", SettingsApi.Photon),
 			new HTMLElementSetting(makeElement("div", null, [
-				makeElement("button", { class: "mla button", onclick: () => Users.current.clearSeenPosts() }, "Clear seen posts"),
+				makeElement("button", { class: "mla button", onclick: () => Users.global.clearSeenPosts() }, "Clear seen posts"),
 				makeElement("button", { class: "mla button", onclick: () => Ph_Changelog.show() }, "Show Changelog"),
 				makeElement("button", { class: "mla button", onclick: () => new Ph_Toast(Level.warning, "Are you sure you want to log out?", { onConfirm: logOut }) }, "Log out"),
 				makeElement("div", null, `v${photonWebVersion}`)

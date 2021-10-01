@@ -47,25 +47,34 @@ export default class GlobalUserData extends DataAccessor<_GlobalData> {
 		return this;
 	}
 
+	hasPostsBeenSeen(postFullName: string): boolean {
+		return postFullName in this.d.seenPosts
+	}
+
+	async markPostAsSeen(postFullName: string) {
+		await this.set(["seenPosts", postFullName], Math.floor(Date.now() / 1000));
+	}
+
+	async unmarkPostAsSeen(postFullName: string) {
+		delete this.loaded.seenPosts[postFullName];
+		await this.set(["seenPosts"], this.loaded.seenPosts);
+	}
+
+	async clearSeenPosts() {
+		await this.set(["seenPosts"], {});
+	}
 }
 
 /**
- * By default these settings are global. But a user can decide to individually configure them for their account.
+ * This data is globally applied to all users
  */
-export interface _GlobalOrUserData {
+interface _GlobalData {
 	/** Floating action button user configuration */
 	fabConfig: FabPreset[];
 	/** Photon Settings */
 	photonSettings: PhotonSettings;
 	/** All posts the user has seen/scrolled past */
 	seenPosts: SeenPosts;
-}
-
-/**
- * This data is globally applied to all users
- */
-interface _GlobalData extends _GlobalOrUserData {
-	// always global
 	/** Name of last active user (for all logged in users) */
 	lastActiveUser: string;
 	/** Information about analytics */

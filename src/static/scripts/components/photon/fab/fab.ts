@@ -77,12 +77,12 @@ export default class Ph_Fab extends HTMLElement {
 		const allConfigs = this.fabElements
 			.map(el => el.activePreset)
 			.filter(el => Boolean(el));
-		Users.current.set(["fabConfig"], allConfigs);
+		Users.global.set(["fabConfig"], allConfigs);
 	}
 
 	async loadAllElementsFromLS(_isSecondAttempt = false) {
 		try {
-			const presets = Users.current.d.fabConfig;
+			const presets = Users.global.d.fabConfig;
 			for (const preset of presets) {
 				const fabElement = new Ph_FabElement(this.onElementRemoved.bind(this));
 				fabElement.loadPreset(preset);
@@ -94,7 +94,7 @@ export default class Ph_Fab extends HTMLElement {
 		} catch (e) {
 			if (_isSecondAttempt)
 				return;
-			await Users.current.set(["fabConfig"], deepClone(initialDefaultFabPresets));
+			await Users.global.set(["fabConfig"], deepClone(initialDefaultFabPresets));
 			await this.loadAllElementsFromLS(true);
 		}
 	}

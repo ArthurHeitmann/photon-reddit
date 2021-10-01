@@ -288,7 +288,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				if (!Ph_VideoPlayer.isVideoPlayAllowed)
 					return;
 				if (
-					Users.current.d.photonSettings.autoplayVideos &&
+					Users.global.d.photonSettings.autoplayVideos &&
 					entries[0].intersectionRatio > .4 &&
 					isFullscreen() === (getFullscreenElement() === this) &&
 					!classInElementTree(this.parentElement, "covered")
@@ -489,7 +489,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 
 	setVolume(newVolume: number, broadcastChange = true) {
 		this.video?.setVolume(newVolume);
-		if (!broadcastChange || !Users.current.d.photonSettings.globalVideoVolume)
+		if (!broadcastChange || !Users.global.d.photonSettings.globalVideoVolume)
 			return;
 		Ph_VideoPlayer.globalVolume = newVolume;
 		Ph_VideoPlayer.globalIsMuted = newVolume === 0;
@@ -502,7 +502,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 			return;
 		}
 		const newMuted = this.video.toggleMute();
-		if (!Users.current.d.photonSettings.globalVideoVolume)
+		if (!Users.global.d.photonSettings.globalVideoVolume)
 			return;
 		Ph_VideoPlayer.globalIsMuted = newMuted;
 		$tagAr("ph-video-player").forEach((player: Ph_VideoPlayer) => player.toggleMuted(false, newMuted));

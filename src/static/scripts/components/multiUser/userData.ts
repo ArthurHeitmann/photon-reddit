@@ -4,13 +4,9 @@ import { RedditPreferences, RedditUserInfo } from "../../types/redditTypes";
 import { $class } from "../../utils/htmlStatics";
 import { MultiManager } from "../../utils/MultiManager";
 import { SubredditManager } from "../../utils/subredditManager";
-import { deepClone } from "../../utils/utils";
 import { StoredFeedInfo } from "../feed/feedInfo/feedInfo";
-import { defaultSettings } from "../global/photonSettings/photonSettings";
 import Ph_UserDropDown from "../global/userDropDown/userDropDown";
-import { initialDefaultFabPresets } from "../photon/fab/fabElementConfig";
 import DataAccessor from "./dataAccessor";
-import { _GlobalOrUserData } from "./globalData";
 import { deleteKey, setInStorage, wasDbUpgraded } from "./storageWrapper";
 import Users from "./userManagement";
 
@@ -33,11 +29,8 @@ export default class UserData extends DataAccessor<_UserData> {
 			multis: null,
 			feedInfos: {}
 		},
-		fabConfig: deepClone(initialDefaultFabPresets),
 		loginSubPromptDisplayed: false,
-		photonSettings: deepClone(defaultSettings),
 		redditPreferences: undefined,
-		seenPosts: {},
 		userData: null
 	};
 	subreddits = new SubredditManager();
@@ -91,23 +84,6 @@ export default class UserData extends DataAccessor<_UserData> {
 			`u/${this.name}`;
 	}
 
-	hasPostsBeenSeen(postFullName: string): boolean {
-		return postFullName in this.d.seenPosts
-	}
-
-	async markPostAsSeen(postFullName: string) {
-		await this.set(["seenPosts", postFullName], Math.floor(Date.now() / 1000));
-	}
-
-	async unmarkPostAsSeen(postFullName: string) {
-		delete this.loaded.seenPosts[postFullName];
-		await this.set(["seenPosts"], this.loaded.seenPosts);
-	}
-
-	async clearSeenPosts() {
-		await this.set(["seenPosts"], {});
-	}
-
 	setInboxIdsUnreadState(inboxItemIds: string[], isUnread: boolean): void {
 		for (const id of inboxItemIds)
 			this.setInboxIdUnreadState(id, isUnread);
@@ -143,7 +119,7 @@ export default class UserData extends DataAccessor<_UserData> {
 /**
  * This data is user specific
  */
-interface _UserData extends _GlobalOrUserData {
+interface _UserData {
 	/** Information for OAuth and login state */
 	auth: AuthData;
 	/** The users reddit.com preferences */

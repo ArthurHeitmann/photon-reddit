@@ -224,7 +224,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		this.draggableWrapper = new Ph_DraggableWrapper();
 		this.append(this.draggableWrapper);
 
-		this.controls = new Ph_ControlsBar(Users.current.d.photonSettings.firstShowControlBar);
+		this.controls = new Ph_ControlsBar(Users.global.d.photonSettings.firstShowControlBar);
 		this.controls.addShowHideListeners(this.draggableWrapper);
 		this.append(this.controls);
 

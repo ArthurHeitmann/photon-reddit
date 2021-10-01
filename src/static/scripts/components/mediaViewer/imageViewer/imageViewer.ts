@@ -49,7 +49,7 @@ export default class Ph_ImageViewer extends Ph_PhotonBaseElement implements Medi
 		this.originalImage.alt = initData.caption || this.url;
 		this.originalImage.onerror = this.onImageError.bind(this);
 		nonDraggableElement(this.originalImage);
-		if (initData.previewUrl && Users.current.d.photonSettings.imageLoadingPolicy !== ImageLoadingPolicy.alwaysOriginal) {
+		if (initData.previewUrl && Users.global.d.photonSettings.imageLoadingPolicy !== ImageLoadingPolicy.alwaysOriginal) {
 			this.previewImage = document.createElement("img");
 			this.previewImage.className = "preview";
 			this.previewImage.src = initData.previewUrl
@@ -86,7 +86,7 @@ export default class Ph_ImageViewer extends Ph_PhotonBaseElement implements Medi
 	}
 
 	onFullscreenEnter() {
-		if (Users.current.d.photonSettings.imageLoadingPolicy !== ImageLoadingPolicy.alwaysPreview)
+		if (Users.global.d.photonSettings.imageLoadingPolicy !== ImageLoadingPolicy.alwaysPreview)
 			this.startLoadingOriginal();
 	}
 
