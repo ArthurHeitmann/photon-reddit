@@ -1,6 +1,7 @@
 import { getSubFlairs, searchSubreddits, searchUser } from "../../../api/redditApi";
 import { pushLinkToHistoryComb, pushLinkToHistorySep } from "../../../historyState/historyStateManager";
 import { ViewChangeData } from "../../../historyState/viewsStack";
+import { PhEvents } from "../../../types/Events";
 import { SortPostsTimeFrame, SortSearchOrder } from "../../../types/misc";
 import { RedditApiObj, RedditListingObj, RedditSubredditObj } from "../../../types/redditTypes";
 import { escADQ, getLoadingIcon } from "../../../utils/htmlStatics";
@@ -205,7 +206,7 @@ export default class Ph_Search extends HTMLElement {
 			if (!isElementIn(this, e.target as HTMLElement))
 				this.minimize();
 		});
-		window.addEventListener("ph-view-change", (e: CustomEvent) => {
+		window.addEventListener(PhEvents.viewChange, (e: CustomEvent) => {
 			const subMatches = (e.detail as ViewChangeData).viewState.state.url.match(/^\/r\/[^/?#]+/i);		// /r/all/top --> /r/all
 			this.currentSubreddit = subMatches && subMatches[0] || null;
 			this.areFlairsLoaded = false;

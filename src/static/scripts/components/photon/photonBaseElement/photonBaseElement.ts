@@ -1,3 +1,4 @@
+import { PhEvents } from "../../../types/Events";
 
 export default class Ph_PhotonBaseElement extends HTMLElement {
 	windowEventListeners: { eventName: string, listener: EventListener }[] = [];
@@ -20,11 +21,11 @@ export default class Ph_PhotonBaseElement extends HTMLElement {
 	}
 
 	connectedCallback() {
-		this.dispatchEvent(new Event("ph-added"));
+		this.dispatchEvent(new Event(PhEvents.added));
 	}
 
 	disconnectedCallback() {
-		this.dispatchEvent(new Event("ph-removed"));
+		this.dispatchEvent(new Event(PhEvents.removed));
 	}
 
 	remove() {

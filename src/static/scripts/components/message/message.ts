@@ -1,4 +1,5 @@
 import { comment, deleteMessage } from "../../api/redditApi";
+import { PhEvents } from "../../types/Events";
 import { RedditMessageObj } from "../../types/redditTypes";
 import { emojiFlagsToImages, escADQ, escHTML } from "../../utils/htmlStatics";
 import { linksToSpa } from "../../utils/htmlStuff";
@@ -102,7 +103,7 @@ export default class Ph_Message extends Ph_Readable {
 			if (!isReply) {
 				const replyForm = new Ph_MarkdownForm("Send", false);
 				mainPart.append(replyForm);
-				replyForm.addEventListener("ph-submit", async () => {
+				replyForm.addEventListener(PhEvents.submit, async () => {
 					const response = await comment(this.lastMessageFromOther, replyForm.textField.value);
 					if (response["error"]) {
 						new Ph_Toast(Level.error, `Couldn't reply (${escHTML(response["message"])})`);

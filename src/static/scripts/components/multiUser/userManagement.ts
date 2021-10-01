@@ -1,5 +1,6 @@
 import { checkTokenRefresh } from "../../auth/auth";
 import { tryCompleteLogin } from "../../auth/loginHandler";
+import { PhEvents } from "../../types/Events";
 import GlobalUserData from "./globalData";
 import { getAllKeysInStorage } from "./storageWrapper";
 import UserData, { AuthData, guestUserName, tmpLoginUserName } from "./userData";
@@ -38,7 +39,7 @@ export default class Users {
 			await Users.global.set(["lastActiveUser"], guestUserName);
 		}
 
-		window.dispatchEvent(new Event("ph-db-ready"));
+		window.dispatchEvent(new Event(PhEvents.dbReady));
 	}
 
 	static get current(): UserData {
@@ -51,7 +52,7 @@ export default class Users {
 		await checkTokenRefresh();
 		if (newUser.d.auth.isLoggedIn)
 			await newUser.fetchUserData();
-		window.dispatchEvent(new Event("ph-user-changed"));
+		window.dispatchEvent(new Event(PhEvents.userChanged));
 	}
 
 	static async add(auth: AuthData): Promise<void> {
@@ -68,7 +69,7 @@ export default class Users {
 			if (Users.hasDbLoaded)
 				resolve();
 			else
-				window.addEventListener("ph-db-ready", () => {
+				window.addEventListener(PhEvents.dbReady, () => {
 					Users.hasDbLoaded = true;
 					resolve();
 				});

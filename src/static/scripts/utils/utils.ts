@@ -3,6 +3,7 @@
  */
 
 import Ph_Toast, { Level } from "../components/misc/toast/toast";
+import { PhEvents } from "../types/Events";
 import { RedditMultiInfo, RedditUserInfo, SubredditInfoBase } from "../types/redditTypes";
 import { fakeSubreddits } from "./consts";
 
@@ -498,7 +499,7 @@ export function ensurePageLoaded(): Promise<void> {
 			resolve();
 		} else {
 			window.addEventListener(
-				"ph-page-ready",
+				PhEvents.pageReady,
 				() => {
 					isPageReady = true;
 					resolve();

@@ -1,3 +1,4 @@
+import { PhEvents } from "../../types/Events";
 import { HistoryState } from "../../types/misc";
 import { $tag } from "../../utils/htmlStatics";
 import { elementWithClassInTree } from "../../utils/htmlStuff";
@@ -25,7 +26,7 @@ export abstract class Ph_ViewState extends Ph_PhotonBaseElement {
 		this.state = state;
 		this.header = $tag("ph-header")[0] as Ph_Header;
 
-		this.addEventListener("ph-removed", this.onRemoved.bind(this));
+		this.addEventListener(PhEvents.removed, this.onRemoved.bind(this));
 	}
 
 	setHeaderElements(elements: HTMLElement[]) {

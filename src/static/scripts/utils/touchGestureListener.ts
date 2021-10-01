@@ -2,6 +2,7 @@
  *
  * https://developer.mozilla.org/en-US/docs/Web/API/Touch_events
  */
+import { PhEvents } from "../types/Events";
 
 export default class TouchGestureListener {
 	private activeTouches: Touch[] = [];
@@ -74,11 +75,11 @@ export default class TouchGestureListener {
 		const xAvr = xSum / this.activeTouches.length;
 		const yAvr = ySum / this.activeTouches.length;
 
-		let eventType: string
+		let eventType: PhEvents;
 		if (this.hasDragStarted)
-			eventType = "ph-touch-drag";
+			eventType = PhEvents.touchDrag;
 		else {
-			eventType = "ph-begin-touch-pinch";
+			eventType = PhEvents.beginTouchPinch;
 			this.hasDragStarted = true;
 		}
 		this.attached.dispatchEvent(new CustomEvent(
@@ -94,7 +95,7 @@ export default class TouchGestureListener {
 			const distanceChange = 1 - this.previousDistance / distance;
 			if (this.previousDistance !== null) {
 				this.attached.dispatchEvent(
-					new CustomEvent("ph-touch-pinch", { detail: distanceChange })
+					new CustomEvent(PhEvents.touchPinch, { detail: distanceChange })
 				);
 			}
 			this.previousDistance = distance;

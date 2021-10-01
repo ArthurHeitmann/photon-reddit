@@ -1,3 +1,4 @@
+import { PhEvents } from "../../../types/Events";
 import { getLoadingIcon, nonDraggableElement } from "../../../utils/htmlStatics";
 import { hasParams, makeElement } from "../../../utils/utils";
 import { ImageLoadingPolicy, PhotonSettings } from "../../global/photonSettings/photonSettings";
@@ -57,7 +58,7 @@ export default class Ph_ImageViewer extends Ph_PhotonBaseElement implements Medi
 			this.previewImage.onerror = this.startLoadingOriginal.bind(this);
 			nonDraggableElement(this.previewImage);
 			this.append(this.previewImage);
-			this.addEventListener("ph-entered-fullscreen", this.onFullscreenEnter.bind(this));
+			this.addEventListener(PhEvents.enteredFullscreen, this.onFullscreenEnter.bind(this));
 			this.originalSrc = initData.originalUrl;
 			this.originalImage.classList.add("hide");
 		}
@@ -66,7 +67,7 @@ export default class Ph_ImageViewer extends Ph_PhotonBaseElement implements Medi
 		}
 		this.append(this.originalImage);
 
-		this.addWindowEventListener("ph-settings-changed", this.onSettingsChange.bind(this));
+		this.addWindowEventListener(PhEvents.settingsChanged, this.onSettingsChange.bind(this));
 	}
 
 	startLoadingOriginal() {

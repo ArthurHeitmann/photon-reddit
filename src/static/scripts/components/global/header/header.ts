@@ -1,4 +1,5 @@
 import { ViewChangeData } from "../../../historyState/viewsStack";
+import { PhEvents } from "../../../types/Events";
 import { SVGAnimateElement } from "../../../types/misc";
 import { $class } from "../../../utils/htmlStatics";
 import { hasHTML } from "../../../utils/utils";
@@ -29,7 +30,7 @@ export default class Ph_Header extends HTMLElement {
 		super();
 		if (hasHTML(this)) return;
 
-		window.addEventListener("ph-view-change", (e: CustomEvent) =>
+		window.addEventListener(PhEvents.viewChange, (e: CustomEvent) =>
 			this.setFeedElements((e.detail as ViewChangeData).viewState.headerElements));
 	}
 
@@ -90,7 +91,7 @@ export default class Ph_Header extends HTMLElement {
 			this.settings.toggle();
 			this.hide();
 		});
-		window.addEventListener("ph-view-change", () => {
+		window.addEventListener(PhEvents.viewChange, () => {
 			if (!this.isPinned)
 				this.hide();
 			else

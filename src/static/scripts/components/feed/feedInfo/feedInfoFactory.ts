@@ -1,3 +1,4 @@
+import { PhEvents } from "../../../types/Events";
 import { escHTML } from "../../../utils/htmlStatics";
 import { makeElement } from "../../../utils/utils";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
@@ -25,8 +26,8 @@ export default class FeedInfoFactory {
 
 		button.children[0].addEventListener("click", info.feedInfo.toggle.bind(info.feedInfo));
 
-		button.addEventListener("ph-added", () => FeedInfoFactory.onButtonAddedOrRemoved(button, true));
-		button.addEventListener("ph-removed", () => FeedInfoFactory.onButtonAddedOrRemoved(button, false));
+		button.addEventListener(PhEvents.added, () => FeedInfoFactory.onButtonAddedOrRemoved(button, true));
+		button.addEventListener(PhEvents.removed, () => FeedInfoFactory.onButtonAddedOrRemoved(button, false));
 
 		return button;
 	}

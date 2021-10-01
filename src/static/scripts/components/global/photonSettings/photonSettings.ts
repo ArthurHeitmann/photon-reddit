@@ -1,4 +1,5 @@
 import { getUserPreferences, updateUserPreferences } from "../../../api/redditApi";
+import { PhEvents } from "../../../types/Events";
 import { RedditPreferences } from "../../../types/redditTypes";
 import { escHTML } from "../../../utils/htmlStatics";
 import "../../../utils/htmlStuff";
@@ -202,7 +203,7 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 			...Users.global.d.photonSettings,
 			...deepClone(this.temporarySettings),
 		});
-		window.dispatchEvent(new CustomEvent("ph-settings-changed", { detail: deepClone(this.temporarySettings) }));
+		window.dispatchEvent(new CustomEvent(PhEvents.settingsChanged, { detail: deepClone(this.temporarySettings) }));
 		this.temporarySettings = {};
 	}
 

@@ -1,4 +1,5 @@
 import { parseMarkdown } from "../../../lib/markdownForReddit/markdown-for-reddit";
+import { PhEvents } from "../../../types/Events";
 import { linksToSpa } from "../../../utils/htmlStuff";
 import { hasParams } from "../../../utils/utils";
 
@@ -49,7 +50,7 @@ export default class Ph_MarkdownForm extends HTMLElement {
 				cancelBtn.innerText = "Cancel";
 				buttonsWrapper.appendChild(cancelBtn);
 
-				cancelBtn.addEventListener("click", () => this.dispatchEvent(new Event("ph-cancel")));
+				cancelBtn.addEventListener("click", () => this.dispatchEvent(new Event(PhEvents.cancel)));
 			}
 
 			if (submitBtnText) {
@@ -58,7 +59,7 @@ export default class Ph_MarkdownForm extends HTMLElement {
 				this.submitCommentBtn.className = "submitBtn";
 				this.submitCommentBtn.innerText = submitBtnText;
 
-				this.submitCommentBtn.addEventListener("click", () => this.dispatchEvent(new Event("ph-submit")));
+				this.submitCommentBtn.addEventListener("click", () => this.dispatchEvent(new Event(PhEvents.submit)));
 			}
 		}
 

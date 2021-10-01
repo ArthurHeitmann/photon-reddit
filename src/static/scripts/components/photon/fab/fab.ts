@@ -1,3 +1,4 @@
+import { PhEvents } from "../../../types/Events";
 import { nonDraggableElement } from "../../../utils/htmlStatics";
 import { elementWithClassInTree } from "../../../utils/htmlStuff";
 import { bufferedMouseLeave, deepClone, makeElement, sleep } from "../../../utils/utils";
@@ -51,7 +52,7 @@ export default class Ph_Fab extends HTMLElement {
 
 		this.loadAllElementsFromLS().then(r => this.saveAllElements());
 
-		window.addEventListener("ph-settings-changed", (e: CustomEvent) => {
+		window.addEventListener(PhEvents.settingsChanged, (e: CustomEvent) => {
 			const changed = e.detail as PhotonSettings;
 			if (!("enableFab" in changed))
 				return;

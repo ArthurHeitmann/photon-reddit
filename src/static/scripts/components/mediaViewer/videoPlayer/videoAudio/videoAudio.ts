@@ -1,3 +1,4 @@
+import { PhEvents } from "../../../../types/Events";
 import { escADQ } from "../../../../utils/htmlStatics";
 import { clamp, hasParams, urlWithHttps } from "../../../../utils/utils";
 import Users from "../../../multiUser/userManagement";
@@ -50,7 +51,7 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 
 		// pause (and play again) audio when video is buffering (and pray that the audio will never buffer)
 		this.video.addEventListener("waiting", () => {
-			this.dispatchEvent(new Event("ph-buffering"));
+			this.dispatchEvent(new Event(PhEvents.buffering));
 			this.audio.pause();
 			if (!this.video.paused)
 				this.pendingPlay = true;
@@ -69,10 +70,10 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 				this.pause();
 				return;
 			}
-			this.dispatchEvent(new Event("ph-playing"));
+			this.dispatchEvent(new Event(PhEvents.playing));
 			this.audio.play();
 		});
-		this.video.addEventListener("loadeddata", () => this.dispatchEvent(new Event("ph-ready")));
+		this.video.addEventListener("loadeddata", () => this.dispatchEvent(new Event(PhEvents.ready)));
 		this.video.addEventListener("seeking", () => this.audio.currentTime = this.video.currentTime);
 		this.audio.addEventListener("play", () => {
 			if (!this.offsetParent) {
@@ -86,7 +87,7 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 		if (audioSources.length === 0) {
 			this.audioCheckCompleted = true;
 			this.hasAudio = false;
-			setTimeout(() => this.dispatchEvent(new Event("ph-no-audio")), 0);
+			setTimeout(() => this.dispatchEvent(new Event(PhEvents.noAudio)), 0);
 		}
 		this.video.addEventListener("timeupdate", () => {
 			// this mess is needed in order to know if the video has audio
@@ -97,7 +98,7 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 					|| this.audio["mozHasAudio"] === false ||
 					this.audio["audioTracks"] && this.audio["audioTracks"]["length"] === 0
 				) {
-					this.dispatchEvent(new Event("ph-no-audio"));
+					this.dispatchEvent(new Event(PhEvents.noAudio));
 					this.hasAudio = false;
 				}
 			}
@@ -115,12 +116,12 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 		this.lastNon0Volume = this.audio.volume;
 		this.audio.muted = true;
 
-		this.video.addEventListener("play", () => this.dispatchEvent(new Event("ph-play")));
-		this.video.addEventListener("pause", () => this.dispatchEvent(new Event("ph-pause")));
+		this.video.addEventListener("play", () => this.dispatchEvent(new Event(PhEvents.play)));
+		this.video.addEventListener("pause", () => this.dispatchEvent(new Event(PhEvents.pause)));
 		this.audio.addEventListener("volumechange", () => this.dispatchEvent(
-			new CustomEvent("ph-volume-change", { detail: this.audio.muted ? 0 : this.audio.volume })));
-		this.video.addEventListener("seeked", () => this.dispatchEvent(new Event("ph-seek")));
-		this.video.addEventListener("seeking", () => this.dispatchEvent(new Event("ph-seek")));
+			new CustomEvent(PhEvents.volumeChange, { detail: this.audio.muted ? 0 : this.audio.volume })));
+		this.video.addEventListener("seeked", () => this.dispatchEvent(new Event(PhEvents.seek)));
+		this.video.addEventListener("seeking", () => this.dispatchEvent(new Event(PhEvents.seek)));
 	}
 
 	play(): void {
@@ -208,12 +209,12 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 		const isPaused = this.video.paused;
 		const playbackSpeed = this.video.playbackRate;
 		this.pause();
-		this.dispatchEvent(new Event("ph-buffering"));
+		this.dispatchEvent(new Event(PhEvents.buffering));
 		this.video.innerHTML = `<source src="${escADQ(key.src)}" type="${escADQ(key.type)}">`;
 		this.video.load();
 		this.video.currentTime = currentTime;
 		if (!isPaused)
-			this.addEventListener("ph-ready", this.play.bind(this), { once: true })
+			this.addEventListener(PhEvents.ready, this.play.bind(this), { once: true })
 		if (playbackSpeed !== 1)
 			this.setPlaybackSpeed(playbackSpeed);
 	}

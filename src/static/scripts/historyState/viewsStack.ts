@@ -6,6 +6,7 @@
 
 import Users from "../components/multiUser/userManagement";
 import { Ph_ViewState } from "../components/viewState/viewState";
+import { PhEvents } from "../types/Events";
 import { HistoryState } from "../types/misc";
 import { $tag } from "../utils/htmlStatics";
 import { pushLinkToHistoryComb, PushType } from "./historyStateManager";
@@ -69,7 +70,7 @@ export default class ViewsStack {
 				history.pushState(state.state, state.state.title, state.state.url);
 		}
 
-		window.dispatchEvent(new CustomEvent("ph-view-change", {
+		window.dispatchEvent(new CustomEvent(PhEvents.viewChange, {
 			detail: <ViewChangeData> {
 				viewState: ViewsStack.views[ViewsStack.pos],
 				newLoad: true,
@@ -114,7 +115,7 @@ export default class ViewsStack {
 		ViewsStack.views[ViewsStack.pos].classList.remove("hide");
 		ViewsStack.views[ViewsStack.pos].loadScroll();
 
-		window.dispatchEvent(new CustomEvent("ph-view-change", {
+		window.dispatchEvent(new CustomEvent(PhEvents.viewChange, {
 			detail: <ViewChangeData> {
 				viewState: ViewsStack.views[ViewsStack.pos],
 				newLoad: false,
@@ -126,7 +127,7 @@ export default class ViewsStack {
 	static back() {
 		if (ViewsStack.views[ViewsStack.pos - 1] == undefined) {						// probably a page reload,
 			pushLinkToHistoryComb(history.state.url, PushType.pushBefore);				// need to create html elements
-			window.dispatchEvent(new CustomEvent("ph-view-change", {
+			window.dispatchEvent(new CustomEvent(PhEvents.viewChange, {
 				detail: <ViewChangeData> {
 					viewState: ViewsStack.views[ViewsStack.pos],
 					newLoad: true,
@@ -140,7 +141,7 @@ export default class ViewsStack {
 		ViewsStack.views[ViewsStack.pos].classList.remove("hide");
 		ViewsStack.views[ViewsStack.pos].loadScroll();
 
-		window.dispatchEvent(new CustomEvent("ph-view-change", {
+		window.dispatchEvent(new CustomEvent(PhEvents.viewChange, {
 			detail: <ViewChangeData> {
 				viewState: ViewsStack.views[ViewsStack.pos],
 				newLoad: false,

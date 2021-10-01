@@ -1,3 +1,4 @@
+import { PhEvents } from "../../../types/Events";
 import { isElementInViewport } from "../../../utils/htmlStatics";
 import { hasParams } from "../../../utils/utils";
 import Ph_PhotonBaseElement from "../../photon/photonBaseElement/photonBaseElement";
@@ -35,7 +36,7 @@ export default class Ph_FeedItem extends Ph_PhotonBaseElement {
 				if (entries[0].intersectionRatio === 0 && isElementInViewport(this))		// when initializing this can be visible but the ration is 0
 					isVisible = true;
 				this.dispatchEvent(new CustomEvent(
-					"ph-intersection-change",
+					PhEvents.intersectionChange,
 					{ detail: isVisible }
 				));
 				if (!isVisible)
@@ -43,7 +44,7 @@ export default class Ph_FeedItem extends Ph_PhotonBaseElement {
 
 				if (!this.hasBeenOrAlmostVisible) {
 					this.hasBeenOrAlmostVisible = true;
-					this.dispatchEvent(new Event("ph-almost-visible"));
+					this.dispatchEvent(new Event(PhEvents.almostVisible));
 				}
 				let next: Element = this;
 				for (let i = 0; i < 5; i++) {
@@ -55,7 +56,7 @@ export default class Ph_FeedItem extends Ph_PhotonBaseElement {
 					else if (next.offsetHeight === 0)
 						i--;
 					next.hasBeenOrAlmostVisible = true;
-					next.dispatchEvent(new Event("ph-almost-visible"));
+					next.dispatchEvent(new Event(PhEvents.almostVisible));
 				}
 				let prev: Element = this;
 				for (let i = 0; i < 5; i++) {
@@ -67,7 +68,7 @@ export default class Ph_FeedItem extends Ph_PhotonBaseElement {
 					else if (prev.offsetHeight === 0)
 						i--;
 					prev.hasBeenOrAlmostVisible = true;
-					prev.dispatchEvent(new Event("ph-almost-visible"));
+					prev.dispatchEvent(new Event(PhEvents.almostVisible));
 				}
 			},
 			{ threshold: .4 }

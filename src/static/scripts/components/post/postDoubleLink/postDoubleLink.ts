@@ -1,4 +1,5 @@
 import ViewsStack from "../../../historyState/viewsStack";
+import { PhEvents } from "../../../types/Events";
 import { elementWithClassInTree } from "../../../utils/htmlStuff";
 import Ph_UniversalFeed from "../../feed/universalFeed/universalFeed";
 import Ph_PostAndComments from "../../postAndComments/postAndComments";
@@ -24,8 +25,8 @@ export default class PostDoubleLink {
 		this.onPostAddedRef = this.onPostAdded.bind(this);
 		this.onPostRemovedRef = this.onPostRemoved.bind(this);
 		this.post = postInFeed;
-		this.post.addEventListener("ph-added", this.onPostAddedRef);
-		this.post.addEventListener("ph-removed", this.onPostRemovedRef);
+		this.post.addEventListener(PhEvents.added, this.onPostAddedRef);
+		this.post.addEventListener(PhEvents.removed, this.onPostRemovedRef);
 		this.previousElementInFeed = postInFeed.previousElementSibling as HTMLElement;
 		this.universalFeed = elementWithClassInTree(postInFeed, "universalFeed") as Ph_UniversalFeed;
 		this.postSubredditPrefixed = this.post.$css(".header a.subreddit")[0].getAttribute("href").slice(1);
@@ -82,12 +83,12 @@ export default class PostDoubleLink {
 			this.postAndComments = this.post.parentElement;
 			this.commentsViewStateLoader = this.postAndComments.parentElement as Ph_CommentsViewStateLoader;
 		}
-		window.addEventListener("ph-view-change", this.viewChangeRef);
+		window.addEventListener(PhEvents.viewChange, this.viewChangeRef);
 		this.commentsViewStateLoader?.setIsNotReadyForCleanup();
 	}
 
 	onPostRemoved() {
-		window.removeEventListener("ph-view-change", this.viewChangeRef);
+		window.removeEventListener(PhEvents.viewChange, this.viewChangeRef);
 		this.commentsViewStateLoader?.setIsReadyForCleanup();
 		// another edge case:
 		// commentsViewStateLoader is loaded in the next history state
@@ -100,7 +101,7 @@ export default class PostDoubleLink {
 	}
 
 	disable() {
-		this.post.removeEventListener("ph-added", this.onPostAddedRef);
-		this.post.removeEventListener("ph-removed", this.onPostRemovedRef);
+		this.post.removeEventListener(PhEvents.added, this.onPostAddedRef);
+		this.post.removeEventListener(PhEvents.removed, this.onPostRemovedRef);
 	}
 }

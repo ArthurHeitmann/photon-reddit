@@ -8,6 +8,7 @@ import { PhotonSettings } from "../components/global/photonSettings/photonSettin
 import Ph_MediaViewer from "../components/mediaViewer/mediaViewer";
 import Users from "../components/multiUser/userManagement";
 import { pushLinkToHistoryComb } from "../historyState/historyStateManager";
+import { PhEvents } from "../types/Events";
 import { $classAr } from "./htmlStatics";
 
 /** Converts all same origin links of an element to SPA (single page application) links */
@@ -119,7 +120,7 @@ export function _linksToInlineMedia(elem: HTMLElement) {
 	}
 }
 
-window.addEventListener("ph-settings-changed", (e: CustomEvent) => {
+window.addEventListener(PhEvents.settingsChanged, (e: CustomEvent) => {
 	const changed = e.detail as PhotonSettings;
 	if (!("loadInlineMedia" in changed))
 		return;

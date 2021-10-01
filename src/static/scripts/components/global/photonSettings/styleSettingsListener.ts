@@ -1,8 +1,9 @@
+import { PhEvents } from "../../../types/Events";
 import { ensurePageLoaded } from "../../../utils/utils";
 import Users from "../../multiUser/userManagement";
 import { PhotonSettings } from "./photonSettings";
 
-window.addEventListener("ph-settings-changed", (e: CustomEvent) => handleSettings(e.detail));
+window.addEventListener(PhEvents.settingsChanged, (e: CustomEvent) => handleSettings(e.detail));
 
 function handleSettings(settings: PhotonSettings) {
 	if (settings.imageLimitedHeight !== undefined) {

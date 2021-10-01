@@ -1,6 +1,7 @@
 import { getGfycatMp4SrcFromUrl, GfycatDomain } from "../../../api/gfycatApi";
 import { youtubeDlUrl } from "../../../api/photonApi";
 import { getStreamableUrl } from "../../../api/streamableApi";
+import { PhEvents } from "../../../types/Events";
 import { RedditPostObj } from "../../../types/redditTypes";
 import { $tagAr, escHTML } from "../../../utils/htmlStatics";
 import { classInElementTree, isElementIn } from "../../../utils/htmlStuff";
@@ -273,7 +274,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 			this.video.setVolume(Ph_VideoPlayer.globalVolume);
 			this.video.setIsMuted(Ph_VideoPlayer.globalIsMuted);
 			if (isLateInit)
-				this.dispatchEvent(new Event("ph-controls-changed"));
+				this.dispatchEvent(new Event(PhEvents.controlsChanged));
 		}
 		else {
 			this.innerText = "No video found (maybe video was deleted)";
@@ -305,31 +306,31 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 		);
 		intersectionObserver.observe(this);
 
-		this.addWindowEventListener("ph-view-change", () => this.video.pause());
+		this.addWindowEventListener(PhEvents.viewChange, () => this.video.pause());
 		this.video.addEventListener("click", this.togglePlay.bind(this));
-		this.video.addEventListener("ph-ready", () => {
+		this.video.addEventListener(PhEvents.ready, () => {
 			this.overlayIcon.showImage("ready");
 			timeText.innerText = `${secondsToVideoTime(this.video.getCurrentTime())} / ${secondsToVideoTime(this.video.getMaxTime())}`;
 			const activeTrackName = this.video.getCurrentTrack()?.label;
 			this.markNewTrack(activeTrackName);
 		});
-		this.video.addEventListener("ph-buffering", () => this.overlayIcon.showImage("loading"));
-		this.video.addEventListener("ph-playing", () => this.overlayIcon.showImage("none"));
+		this.video.addEventListener(PhEvents.buffering, () => this.overlayIcon.showImage("loading"));
+		this.video.addEventListener(PhEvents.playing, () => this.overlayIcon.showImage("none"));
 
 		// play, pause, progress bar
 		const playButton = new Ph_PlayImage(true);
 		this.controls.firstLeftItems.push(playButton);
 		playButton.addEventListener("click", () => this.togglePlay());
-		this.video.addEventListener("ph-play", () => {
+		this.video.addEventListener(PhEvents.play, () => {
 			playButton.toPause();
 			this.videoProgressInterval = setInterval(() => {
 				this.controls.progressBar.setProgress(this.video.getCurrentTime() / this.video.getMaxTime());
 				timeText.innerText = `${secondsToVideoTime(this.video.getCurrentTime())} / ${secondsToVideoTime(this.video.getMaxTime())}`;
 			}, 100);
 		});
-		this.video.addEventListener("ph-seek",
+		this.video.addEventListener(PhEvents.seek,
 			() => this.controls.progressBar.setProgress(this.video.getCurrentTime() / this.video.getMaxTime()));
-		this.video.addEventListener("ph-pause", () => {
+		this.video.addEventListener(PhEvents.pause, () => {
 			playButton.toPlay();
 			if (this.videoProgressInterval !== null) {
 				clearTimeout(this.videoProgressInterval);
@@ -354,9 +355,9 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 		volumeWrapper.appendChild(muteButton);
 		muteButton.addEventListener("click", () => this.toggleMuted());
 		const volumeSlider = new Ph_ProgressBar(true, 20);
-		volumeSlider.addEventListener("ph-drag", (e: CustomEvent) => this.setVolume(e.detail));
+		volumeSlider.addEventListener(PhEvents.drag, (e: CustomEvent) => this.setVolume(e.detail));
 		volumeWrapper.appendChild(volumeSlider);
-		this.video.addEventListener("ph-volume-change",
+		this.video.addEventListener(PhEvents.volumeChange,
 			(e: CustomEvent) => {
 				muteImg.showImage(e.detail === 0 ? "mute" : "audio");
 				volumeSlider.setProgress(e.detail);
@@ -366,14 +367,14 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 			e.preventDefault();
 			this.setVolume(this.video.getVolume() + ((-e.deltaY || e.deltaX) > 0 ? .05 : -.05));
 		}, {passive: false});
-		this.video.addEventListener("ph-no-audio", () => {
+		this.video.addEventListener(PhEvents.noAudio, () => {
 			volumeWrapper.classList.add("remove");
 			setTimeout(() => volumeWrapper.remove(), 1000);
 		});
 
 		// settings
 		const speedChanger = new Ph_SpeedChanger();
-		speedChanger.addEventListener("ph-speed-changed", this.onVideoSpeedChange.bind(this));
+		speedChanger.addEventListener(PhEvents.speedChanged, this.onVideoSpeedChange.bind(this));
 		this.controls.settingsEntries = [
 			{
 				label: speedChanger,
@@ -398,7 +399,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 
 		// progress bar
 		this.controls.progressBar = new Ph_ProgressBar(true);
-		this.controls.progressBar.addEventListener("ph-drag", (e: CustomEvent) => {
+		this.controls.progressBar.addEventListener(PhEvents.drag, (e: CustomEvent) => {
 			this.video.seekTo(e.detail * this.video.getMaxTime());
 		});
 		this.controls.progressBar.addEventListener("wheel", e => {
@@ -527,7 +528,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 			?.find(entry => entry.label === newTrackLabel);
 		if (newEntry)
 			newEntry.labelImgUrl = "/img/circleFilled.svg";
-		this.dispatchEvent(new Event("ph-controls-changed"))
+		this.dispatchEvent(new Event(PhEvents.controlsChanged))
 	}
 }
 

@@ -1,3 +1,4 @@
+import { PhEvents } from "../../../types/Events";
 import { StoredData } from "../../../types/misc";
 import { $class, $cssAr, escHTML } from "../../../utils/htmlStatics";
 import { tagInElementTree } from "../../../utils/htmlStuff";
@@ -168,14 +169,14 @@ export default abstract class Ph_FeedInfo<StoredData> extends HTMLElement {
 		this.classList.remove("remove");
 		($class("header")[0] as Ph_Header).hide();
 		setTimeout(() => window.addEventListener("click", this.focusLossHideRef), 0);
-		window.addEventListener("ph-view-change", this.hideRef);
+		window.addEventListener(PhEvents.viewChange, this.hideRef);
 		this.forceLoad();
 	}
 
 	hide() {
 		this.classList.add("remove");
 		window.removeEventListener("click", this.focusLossHideRef);
-		window.removeEventListener("ph-view-change", this.hideRef);
+		window.removeEventListener(PhEvents.viewChange, this.hideRef);
 	}
 
 	getKebabImg(): HTMLImageElement {

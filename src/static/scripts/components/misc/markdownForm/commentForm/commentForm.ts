@@ -1,4 +1,5 @@
 import { comment } from "../../../../api/redditApi";
+import { PhEvents } from "../../../../types/Events";
 import { FullName } from "../../../../types/votable";
 import { escHTML } from "../../../../utils/htmlStatics";
 import { hasParams } from "../../../../utils/utils";
@@ -10,7 +11,7 @@ export default class Ph_CommentForm extends Ph_MarkdownForm {
 		super("Submit comment", hasCancelBtn);
 		if (!hasParams(arguments)) return;
 
-		this.addEventListener("ph-submit", async () => {
+		this.addEventListener(PhEvents.submit, async () => {
 			this.submitCommentBtn.disabled = true;
 			let response;
 			try {
@@ -33,7 +34,7 @@ export default class Ph_CommentForm extends Ph_MarkdownForm {
 
 			this.clear();
 			this.textField.dispatchEvent(new Event("input"));
-			this.dispatchEvent(new CustomEvent("ph-comment-submitted", { detail: response.json.data.things[0] }))
+			this.dispatchEvent(new CustomEvent(PhEvents.commentSubmitted, { detail: response.json.data.things[0] }))
 		})
 	}
 }

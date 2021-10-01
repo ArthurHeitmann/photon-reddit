@@ -1,3 +1,4 @@
+import { PhEvents } from "../../../types/Events";
 import { hasParams, throttle } from "../../../utils/utils";
 
 /**
@@ -47,7 +48,7 @@ export default class Ph_ProgressBar extends HTMLElement {
 	private sendEvent(e: MouseEvent) {
 		const bounds = this.getBoundingClientRect();
 		const progress = (e.clientX - bounds.left) / this.offsetWidth;
-		this.dispatchEvent(new CustomEvent("ph-drag", {detail: progress}));
+		this.dispatchEvent(new CustomEvent(PhEvents.drag, {detail: progress}));
 		this.setProgress(progress);
 	}
 

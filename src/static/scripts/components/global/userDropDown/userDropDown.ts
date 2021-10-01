@@ -1,6 +1,7 @@
 import { initiateLogin } from "../../../auth/loginHandler";
 import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager";
 import ViewsStack from "../../../historyState/viewsStack";
+import { PhEvents } from "../../../types/Events";
 import { RedditApiObj, RedditSubredditObj } from "../../../types/redditTypes";
 import { elementWithClassInTree, isElementIn } from "../../../utils/htmlStuff";
 import { MultiChangeType, MultisChangeEvent } from "../../../utils/MultiManager";
@@ -116,7 +117,7 @@ export default class Ph_UserDropDown extends HTMLElement {
 			"Submit Post",
 			"/submit"
 		) as HTMLAnchorElement;
-		window.addEventListener("ph-view-change", (e: CustomEvent) => {
+		window.addEventListener(PhEvents.viewChange, (e: CustomEvent) => {
 				let submitUrl: string;
 				const currentSubMatch: RegExpMatchArray = history.state.url.match(/\/r\/\w+/i);		// /r/sub
 				if (currentSubMatch && !isFakeSubreddit(currentSubMatch[0].substr(3)))

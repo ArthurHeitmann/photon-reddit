@@ -1,4 +1,5 @@
 import { getImgurContent, ImgurContent, ImgurContentType } from "../../api/imgurApi";
+import { PhEvents } from "../../types/Events";
 import { RedditPostData, RedditPostObj } from "../../types/redditTypes";
 import { mediaHostsWhiteList } from "../../utils/consts";
 import { nonDraggableElement } from "../../utils/htmlStatics";
@@ -317,7 +318,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		attachOnFullscreenChangeListener(this, this.onFullscreenChange.bind(this));
 		this.draggableWrapper.addEventListener("dblclick", this.toggleFullscreen.bind(this));
 		for (const media of this.mediaElements) {
-			media.element.addEventListener("ph-controls-changed",
+			media.element.addEventListener(PhEvents.controlsChanged,
 				e => this.controls.updateSlotsWith(media.controls));
 		}
 
@@ -377,7 +378,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		this.controls.updateSlotsWith(newMedia.controls);
 		// fs event
 		if (isFullscreen())
-			newMedia.element.dispatchEvent(new Event("ph-entered-fullscreen"));
+			newMedia.element.dispatchEvent(new Event(PhEvents.enteredFullscreen));
 	}
 
 	nextGalleryElement(fixScrollToBottom = true) {
@@ -413,7 +414,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 
 	onEnterFullscreen() {
 		this.isInFullscreenState = true;
-		this.mediaElements[this.currentIndex].element.dispatchEvent(new Event("ph-entered-fullscreen"));
+		this.mediaElements[this.currentIndex].element.dispatchEvent(new Event(PhEvents.enteredFullscreen));
 		this.draggableWrapper.activate();
 		this.fullscreenImage.showImage("minimize");
 		this.classList.add("isInFullscreen");

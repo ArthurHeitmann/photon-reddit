@@ -27,10 +27,11 @@
 import { trackBrowserFeatures } from "../api/photonApi";
 import Users from "../components/multiUser/userManagement";
 import { ViewChangeData } from "../historyState/viewsStack";
+import { PhEvents } from "../types/Events";
 import { supportsIndexedDB, supportsServiceWorkers } from "../utils/browserFeatures";
 import { extractPath, randomString } from "../utils/utils";
 
-window.addEventListener("ph-view-change", (e: CustomEvent) => {
+window.addEventListener(PhEvents.viewChange, (e: CustomEvent) => {
 	if (location.hostname === "localhost")
 		return;
 	

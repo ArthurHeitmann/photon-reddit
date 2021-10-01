@@ -1,3 +1,4 @@
+import { PhEvents } from "../../../../types/Events";
 import { hasHTML } from "../../../../utils/utils";
 
 export default class Ph_SpeedChanger extends HTMLElement {
@@ -18,7 +19,7 @@ export default class Ph_SpeedChanger extends HTMLElement {
 			this.currentSpeedIndex = Math.max(0, this.currentSpeedIndex - 1);
 			this.updateSpeedDisplay();
 			this.dispatchEvent(new CustomEvent(
-				"ph-speed-changed",
+				PhEvents.speedChanged,
 				{ detail: Ph_SpeedChanger.speedOptions[this.currentSpeedIndex] }
 			));
 		});
@@ -30,7 +31,7 @@ export default class Ph_SpeedChanger extends HTMLElement {
 			this.currentSpeedIndex = Math.min(Ph_SpeedChanger.speedOptions.length - 1, this.currentSpeedIndex + 1);
 			this.updateSpeedDisplay();
 			this.dispatchEvent(new CustomEvent(
-				"ph-speed-changed",
+				PhEvents.speedChanged,
 				{ detail: Ph_SpeedChanger.speedOptions[this.currentSpeedIndex] }
 			));
 		});

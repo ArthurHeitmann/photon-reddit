@@ -1,4 +1,5 @@
 import { redditApiRequest, setMessageReadStatus } from "../../../api/redditApi";
+import { PhEvents } from "../../../types/Events";
 import { RedditCommentObj, RedditListingObj, RedditMessageObj } from "../../../types/redditTypes";
 import { $css, escADQ, escHTML } from "../../../utils/htmlStatics";
 import { linksToSpa } from "../../../utils/htmlStuff";
@@ -111,7 +112,7 @@ ensurePageLoaded().then( () => {
 	if (Users.global.d.photonSettings.messageCheckIntervalMs > 0)
 		messageCheckInterval = setInterval(Ph_MessageNotification.checkForNewMessages, Users.global.d.photonSettings.messageCheckIntervalMs);
 });
-window.addEventListener("ph-settings-changed", (e: CustomEvent) => {
+window.addEventListener(PhEvents.settingsChanged, (e: CustomEvent) => {
 	const changed = e.detail as PhotonSettings;
 	if (changed.messageCheckIntervalMs === undefined)
 		return;

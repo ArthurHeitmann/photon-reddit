@@ -1,3 +1,4 @@
+import { PhEvents } from "../../../../types/Events";
 import { hasParams, urlWithHttps } from "../../../../utils/utils";
 import Ph_VideoWrapper, { BasicVideoData, SourceData, VideoTrackInfo } from "../videoWrapper";
 
@@ -31,7 +32,7 @@ export default class Ph_GifVideo extends Ph_VideoWrapper {
 			this.gifCanvas.height = this.gifImg.naturalHeight;
 			this.gifCanvas.getContext("2d").drawImage(this.gifImg, 0, 0, this.gifCanvas.width, this.gifCanvas.height);
 			this.pause();
-			this.dispatchEvent(new Event("ph-ready"));
+			this.dispatchEvent(new Event(PhEvents.ready));
 		}, { once: true });
 		this.gifImg.addEventListener("dragstart", e => {
 			e.preventDefault();
@@ -43,7 +44,7 @@ export default class Ph_GifVideo extends Ph_VideoWrapper {
 		this.gifCanvas = document.createElement("canvas");
 		this.canvasWrapper.append(this.gifCanvas);
 
-		setTimeout(() => this.dispatchEvent(new Event("ph-no-audio")), 0);
+		setTimeout(() => this.dispatchEvent(new Event(PhEvents.noAudio)), 0);
 	}
 
 	getCurrentTime(): number {
@@ -65,7 +66,7 @@ export default class Ph_GifVideo extends Ph_VideoWrapper {
 	pause(): void {
 		this.canvasWrapper.classList.remove("hide");
 		this.gifImg.classList.add("remove");
-		this.dispatchEvent(new Event("ph-pause"));
+		this.dispatchEvent(new Event(PhEvents.pause));
 	}
 
 	play(): void {
@@ -73,8 +74,8 @@ export default class Ph_GifVideo extends Ph_VideoWrapper {
 		this.gifImg.src = this.gifSrc;
 		this.canvasWrapper.classList.add("hide");
 		this.gifImg.classList.remove("remove");
-		this.dispatchEvent(new Event("ph-play"));
-		this.dispatchEvent(new Event("ph-playing"));
+		this.dispatchEvent(new Event(PhEvents.play));
+		this.dispatchEvent(new Event(PhEvents.playing));
 	}
 
 	seekTo(time: number): void {

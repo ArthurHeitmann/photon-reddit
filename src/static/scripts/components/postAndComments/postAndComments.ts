@@ -1,5 +1,6 @@
 import { redditApiRequest } from "../../api/redditApi";
 import ViewsStack from "../../historyState/viewsStack";
+import { PhEvents } from "../../types/Events";
 import { SortCommentsOrder, SortCommentsOrderNamed } from "../../types/misc";
 import { RedditCommentObj, RedditListingObj, RedditPostObj } from "../../types/redditTypes";
 import { getLoadingIcon } from "../../utils/htmlStatics";
@@ -74,7 +75,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 		if (!this.post.isLocked) {
 			const commentForm = new Ph_CommentForm(this.post, false);
 			this.append(commentForm);
-			commentForm.addEventListener("ph-comment-submitted",
+			commentForm.addEventListener(PhEvents.commentSubmitted,
 				(e: CustomEvent) => this.comments.insertAdjacentElement("afterbegin",
 					new Ph_Comment(e.detail, false, false, this.post)));
 		}

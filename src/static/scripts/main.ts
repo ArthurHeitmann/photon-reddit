@@ -13,6 +13,7 @@ import Ph_Changelog from "./components/photon/changelog/changelog";
 import Ph_Tutorial from "./components/photon/tutorial/tutorial";
 import { pushLinkToHistorySep } from "./historyState/historyStateManager";
 import ViewsStack from "./historyState/viewsStack";
+import { PhEvents } from "./types/Events";
 import { supportsIndexedDB } from "./utils/browserFeatures";
 import { loginSubredditFullName, loginSubredditName } from "./utils/consts";
 import { $css, $id } from "./utils/htmlStatics";
@@ -61,7 +62,7 @@ async function init(): Promise<void> {
 	if (thisUserFetch)
 		await thisUserFetch;
 
-	window.dispatchEvent(new Event("ph-page-ready"));
+	window.dispatchEvent(new Event(PhEvents.pageReady));
 	window["isReady"] = true;
 	if (Users.global.d.isFirstTimeVisit)
 		await Users.global.set(["isFirstTimeVisit"], false);

@@ -1,4 +1,5 @@
 import { editCommentOrPost } from "../../../../api/redditApi";
+import { PhEvents } from "../../../../types/Events";
 import { RedditPostData } from "../../../../types/redditTypes";
 import { emojiFlagsToImages, escHTML } from "../../../../utils/htmlStatics";
 import { elementWithClassInTree, linksToSpa } from "../../../../utils/htmlStuff";
@@ -54,8 +55,8 @@ export default class Ph_PostText extends HTMLElement {
 
 		this.editForm = new Ph_MarkdownForm("Edit", true);
 		this.editForm.classList.add("hide");
-		this.editForm.addEventListener("ph-submit", this.edit.bind(this));
-		this.editForm.addEventListener("ph-cancel", this.endEditing.bind(this));
+		this.editForm.addEventListener(PhEvents.submit, this.edit.bind(this));
+		this.editForm.addEventListener(PhEvents.cancel, this.endEditing.bind(this));
 		this.appendChild(this.editForm);
 
 		if (postData.poll_data) {

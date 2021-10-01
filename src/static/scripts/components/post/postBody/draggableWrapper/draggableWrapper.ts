@@ -1,6 +1,7 @@
 /**
  * The children of this wrapper can be dragged around and zoomed in on with the mouse & scroll wheel
  */
+import { PhEvents } from "../../../../types/Events";
 import TouchGestureListener from "../../../../utils/touchGestureListener";
 
 const zoomInPercent = 0.15;
@@ -40,9 +41,9 @@ export default class Ph_DraggableWrapper extends HTMLElement {
 		this.addEventListener("mouseup", this.mouseUpRef);
 		this.addEventListener("mouseleave", this.mouseLeaveRef);
 		this.addEventListener("wheel", this.wheelRef, { passive: false });
-		this.addEventListener("ph-touch-pinch", this.pinchRef, { passive: false });
-		this.addEventListener("ph-begin-touch-pinch", this.touchDragBeginRef, { passive: false });
-		this.addEventListener("ph-touch-drag", this.touchDragRef, { passive: false });
+		this.addEventListener(PhEvents.touchPinch, this.pinchRef, { passive: false });
+		this.addEventListener(PhEvents.beginTouchPinch, this.touchDragBeginRef, { passive: false });
+		this.addEventListener(PhEvents.touchDrag, this.touchDragRef, { passive: false });
 		this.pinchListener.enable();
 	}
 
@@ -51,9 +52,9 @@ export default class Ph_DraggableWrapper extends HTMLElement {
 		this.removeEventListener("mouseup", this.mouseUpRef);
 		this.removeEventListener("mouseleave", this.mouseLeaveRef);
 		this.removeEventListener("wheel", this.wheelRef);
-		this.removeEventListener("ph-touch-pinch", this.pinchRef);
-		this.removeEventListener("ph-begin-touch-pinch", this.touchDragBeginRef);
-		this.removeEventListener("ph-touch-drag", this.touchDragRef);
+		this.removeEventListener(PhEvents.touchPinch, this.pinchRef);
+		this.removeEventListener(PhEvents.beginTouchPinch, this.touchDragBeginRef);
+		this.removeEventListener(PhEvents.touchDrag, this.touchDragRef);
 		this.pinchListener.disable();
 		this.endDrag();
 	}

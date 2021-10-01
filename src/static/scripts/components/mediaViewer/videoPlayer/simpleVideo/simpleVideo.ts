@@ -1,3 +1,4 @@
+import { PhEvents } from "../../../../types/Events";
 import { escADQ } from "../../../../utils/htmlStatics";
 import { clamp, hasParams, urlWithHttps } from "../../../../utils/utils";
 import Users from "../../../multiUser/userManagement";
@@ -48,26 +49,26 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 				this.video.removeEventListener("timeupdate", this.noAudioProgressCallback);
 				this.noAudioProgressCallback = undefined;
 				if (this.video["webkitAudioDecodedByteCount"] === 0 || this.video["mozHasAudio"] === false || this.video["audioTracks"] && this.video["audioTracks"]["length"] === 0)
-					this.dispatchEvent(new Event("ph-no-audio"));
+					this.dispatchEvent(new Event(PhEvents.noAudio));
 			}
 		});
 
 
-		this.video.addEventListener("loadeddata", () => this.dispatchEvent(new Event("ph-ready")));
-		this.video.addEventListener("waiting", () => this.dispatchEvent(new Event("ph-buffering")));
-		this.video.addEventListener("playing", () => this.dispatchEvent(new Event("ph-playing")));
+		this.video.addEventListener("loadeddata", () => this.dispatchEvent(new Event(PhEvents.ready)));
+		this.video.addEventListener("waiting", () => this.dispatchEvent(new Event(PhEvents.buffering)));
+		this.video.addEventListener("playing", () => this.dispatchEvent(new Event(PhEvents.playing)));
 		this.video.addEventListener("play", () => {
 			if (!this.offsetParent) {
 				this.pause();
 				return;
 			}
-			this.dispatchEvent(new Event("ph-play"));
+			this.dispatchEvent(new Event(PhEvents.play));
 		});
-		this.video.addEventListener("pause", () => this.dispatchEvent( new Event("ph-pause")));
+		this.video.addEventListener("pause", () => this.dispatchEvent( new Event(PhEvents.pause)));
 		this.video.addEventListener("volumechange", () => this.dispatchEvent(
-			new CustomEvent("ph-volume-change", { detail: this.video.muted ? 0 : this.video.volume })));
-		this.video.addEventListener("seeked", () => this.dispatchEvent(new Event("ph-seek")));
-		this.video.addEventListener("seeking", () => this.dispatchEvent(new Event("ph-seek")));
+			new CustomEvent(PhEvents.volumeChange, { detail: this.video.muted ? 0 : this.video.volume })));
+		this.video.addEventListener("seeked", () => this.dispatchEvent(new Event(PhEvents.seek)));
+		this.video.addEventListener("seeking", () => this.dispatchEvent(new Event(PhEvents.seek)));
 	}
 
 	play(): void {
@@ -148,12 +149,12 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 		const isPaused = this.video.paused;
 		const playbackSpeed = this.video.playbackRate;
 		this.pause();
-		this.dispatchEvent(new Event("ph-buffering"));
+		this.dispatchEvent(new Event(PhEvents.buffering));
 		this.video.innerHTML = `<source src="${escADQ(key.src)}" type="${escADQ(key.type)}">`;
 		this.video.load();
 		this.video.currentTime = currentTime;
 		if (!isPaused)
-			this.addEventListener("ph-ready", this.play.bind(this), { once: true });
+			this.addEventListener(PhEvents.ready, this.play.bind(this), { once: true });
 		if (playbackSpeed !== 1)
 			this.setPlaybackSpeed(playbackSpeed);
 	}

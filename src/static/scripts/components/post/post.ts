@@ -13,6 +13,7 @@ import {
 } from "../../api/redditApi";
 import { pushLinkToHistoryComb, PushType } from "../../historyState/historyStateManager";
 import ViewsStack from "../../historyState/viewsStack";
+import { PhEvents } from "../../types/Events";
 import { FlairApiData, RedditApiObj, RedditListingObj, RedditPostObj } from "../../types/redditTypes";
 import Votable from "../../types/votable";
 import { emojiFlagsToImages, escADQ, escHTML, getLoadingIcon } from "../../utils/htmlStatics";
@@ -93,7 +94,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 		if (this.shouldPostBeHidden())
 			this.classList.add("hide");
 
-		this.addWindowEventListener("ph-settings-changed", this.onSettingsChanged.bind(this));
+		this.addWindowEventListener(PhEvents.settingsChanged, this.onSettingsChanged.bind(this));
 
 		// actions bar
 		this.actionBar = document.createElement("div");
@@ -310,9 +311,9 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			return false;
 		};
 
-		this.addEventListener("ph-intersection-change", this.onIntersectionChange.bind(this));
+		this.addEventListener(PhEvents.intersectionChange, this.onIntersectionChange.bind(this));
 		if (!this.postBody.isInitialized)
-			this.addEventListener("ph-almost-visible", () => this.initPostBody(postData), { once: true });
+			this.addEventListener(PhEvents.almostVisible, () => this.initPostBody(postData), { once: true });
 	}
 
 	private initPostBody(postData: RedditPostObj) {
