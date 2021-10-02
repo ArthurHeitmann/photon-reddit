@@ -2,6 +2,7 @@ import { parseMarkdown } from "../../../lib/markdownForReddit/markdown-for-reddi
 import { PhEvents } from "../../../types/Events";
 import { linksToSpa } from "../../../utils/htmlStuff";
 import { hasParams } from "../../../utils/utils";
+import Ph_CurrentUserDisplay from "../currentUser/currentUser";
 
 /**
  * Not actually markdown yet, just plain text (but hopefully in the future)
@@ -32,12 +33,13 @@ export default class Ph_MarkdownForm extends HTMLElement {
 		this.shadowTextField = this.textField.cloneNode(true) as HTMLTextAreaElement;
 		this.textField.contentEditable = "true";
 		this.textField.addEventListener("input", this.onTextInput.bind(this));
-		textArea.appendChild(this.textField);
+		textArea.append(this.textField);
 		this.shadowTextField.classList.add("shadow");
-		textArea.appendChild(this.shadowTextField);
+		textArea.append(this.shadowTextField);
 		this.markdownPreview = document.createElement("div");
 		this.markdownPreview.className = "markdownPreview";
 		textArea.append(this.markdownPreview);
+		textArea.append(new Ph_CurrentUserDisplay());
 
 		if (hasCancelBtn || submitBtnText) {
 			const buttonsWrapper = document.createElement("div");

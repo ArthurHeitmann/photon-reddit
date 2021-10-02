@@ -41,9 +41,13 @@
 				filter: blur(0);
 				transition: filter .125s ease;
 			}
-			
-			&.covered > *:not(.cover) {
-				filter: blur(100px);
+
+			&.covered {
+				overflow: hidden;
+
+				> *:not(.cover) {
+					filter: blur(100px);
+				}
 			}
 
 			.cover {

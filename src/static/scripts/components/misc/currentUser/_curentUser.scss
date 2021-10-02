@@ -1,0 +1,21 @@
+.currentUserDisplay {
+	display: flex !important;
+	align-items: center;
+	opacity: .75;
+	user-select: none;
+
+	img {
+		width: 1rem;
+		height: 1rem;
+		border-radius: 50%;
+		margin-right: .3rem;
+	}
+
+	&.remove {
+		opacity: 0;
+	}
+
+	div {
+		font-size: .8rem;
+	}
+}

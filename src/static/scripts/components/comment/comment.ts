@@ -239,7 +239,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 					new Ph_Comment(e.detail, true, false, post));
 				this.classList.remove("isReplying");
 			});
-			this.replyForm.addEventListener(PhEvents.commentSubmitted, () => this.classList.remove("isReplying"));
+			this.replyForm.addEventListener(PhEvents.cancel, () => this.classList.remove("isReplying"));
 
 			this.childComments.appendChild(this.replyForm);
 		}

@@ -12,6 +12,7 @@
 		background: vars.$background-el2;
 		border: 1px solid vars.$border-color;
 		border-radius: 1rem;
+		position: relative;
 
 		> * {
 			display: block;
@@ -47,6 +48,12 @@
 			&:empty {
 				display: none;
 			}
+		}
+
+		.currentUserDisplay {
+			position: absolute;
+			bottom: 0;
+			left: 0;
 		}
 	}
 
