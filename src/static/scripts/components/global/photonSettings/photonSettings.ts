@@ -1,4 +1,4 @@
-import { getUserPreferences, updateUserPreferences } from "../../../api/redditApi";
+import { updateUserPreferences } from "../../../api/redditApi";
 import { PhEvents } from "../../../types/Events";
 import { RedditPreferences } from "../../../types/redditTypes";
 import { escHTML } from "../../../utils/htmlStatics";
@@ -81,7 +81,6 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 
 	private async init() {
 		this.sectionsConfig = getSettingsSections();
-		await Users.current.set(["redditPreferences"], Users.current.d.auth.isLoggedIn ? await getUserPreferences(): {});
 
 		const sections: { [name: string]: HTMLElement } = {};
 		for (const section of this.sectionsConfig) {
@@ -137,6 +136,7 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 		);
 
 		onMessageBroadcast(this.onSettingsExternalChange.bind(this), "settingsChanged");
+		window.addEventListener(PhEvents.userChanged, this.onUserChange.bind(this));
 	}
 
 	private async onSettingChange(source: SettingConfig, newVal: any) {
@@ -226,6 +226,16 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 		}
 		if (window.matchMedia("(min-width: 800px)").matches)
 			(this.$css("button.sectionEntry:not(.hide, .hamburger)")[0] as HTMLElement)?.click();
+	}
+
+	private onUserChange() {
+		for (const section of this.sectionsConfig) {
+			for (const setting of section.settings) {
+				const newVal = setting.getProperty();
+				if (newVal !== undefined)
+					setting.updateState(newVal);
+			}
+		}
 	}
 
 	toggle() {

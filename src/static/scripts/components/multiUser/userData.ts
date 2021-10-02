@@ -1,4 +1,4 @@
-import { redditApiRequest } from "../../api/redditApi";
+import { getUserPreferences, redditApiRequest } from "../../api/redditApi";
 import { StoredData } from "../../types/misc";
 import { RedditPreferences, RedditUserInfo } from "../../types/redditTypes";
 import { $class } from "../../utils/htmlStatics";
@@ -73,8 +73,8 @@ export default class UserData extends DataAccessor<_UserData> {
 	async fetchUserData(): Promise<void> {
 		await Promise.all([
 			Users.current.subreddits.load(),
-			Users.current.subreddits.load(),
 			Users.current.multireddits.load(),
+			Users.current.set(["redditPreferences"], Users.current.d.auth.isLoggedIn ? await getUserPreferences(): {})
 		]);
 	}
 

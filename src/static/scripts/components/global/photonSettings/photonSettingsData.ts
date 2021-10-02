@@ -50,7 +50,7 @@ export abstract class SettingConfig {
 		return this.element ?? (this.element = this.makeElement(onValueChange));
 	}
 
-	protected getProperty(): any {
+	getProperty(): any {
 		switch (this.settingsType) {
 		case SettingsApi.Photon:
 			return Users.global.d.photonSettings[this.settingKey];
