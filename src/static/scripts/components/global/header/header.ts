@@ -54,7 +54,7 @@ export default class Ph_Header extends HTMLElement {
 				<div class="mainItems">
 					<a href="/" class="home" draggable="false"><img src="/img/logo.png" alt="home" draggable="false"></a>
 					<button class="showSettingsButton transparentButtonAlt"><img src="/img/settings1.svg" alt="show settings" draggable="false"></button>
-					<button class="loginButton" hidden>Login</button>
+					<button class="loginButton" ${Users.current.d.auth.isLoggedIn ? "hidden" : ""}>Login</button>
 				</div>
 				<div class="feedSpecific"></div>
 			</div>
@@ -97,6 +97,8 @@ export default class Ph_Header extends HTMLElement {
 			else
 				this.minimizeAll();
 		});
+		window.addEventListener(PhEvents.userChanged,
+			() => (this.$class("loginButton")[0] as HTMLElement).hidden = Users.current.d.auth.isLoggedIn);
 		this.onWindowResize();
 		window.addEventListener("resize", this.onWindowResize.bind(this));
 
