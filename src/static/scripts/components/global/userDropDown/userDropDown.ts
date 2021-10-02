@@ -3,6 +3,7 @@ import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager
 import ViewsStack from "../../../historyState/viewsStack";
 import { PhEvents } from "../../../types/Events";
 import { RedditApiObj, RedditSubredditObj } from "../../../types/redditTypes";
+import { getLoadingIcon } from "../../../utils/htmlStatics";
 import { elementWithClassInTree, isElementIn } from "../../../utils/htmlStuff";
 import { MultiChangeType, MultisChangeEvent } from "../../../utils/MultiManager";
 import { SubsChangeEvent } from "../../../utils/subredditManager";
@@ -74,6 +75,23 @@ export default class Ph_UserDropDown extends HTMLElement {
 				Users.current.subreddits.rawData,
 				"Subscribed"
 			));
+			window.addEventListener(PhEvents.userChanged, () => {
+				const newMultis = this.makeSubredditGroup(
+					Users.current.multireddits.rawData,
+					"Multireddits",
+					newMultiBtn
+				);
+				this.multisList.after(newMultis);
+				this.multisList.remove();
+				this.multisList = newMultis;
+				const newSubs = this.makeSubredditGroup(
+					Users.current.subreddits.rawData,
+					"Subscribed"
+				);
+				this.subredditsList.after(newSubs);
+				this.subredditsList.remove();
+				this.subredditsList = newSubs;
+			})
 		});
 		Users.current.subreddits.listenForChanges(this.onSubscriptionChanged.bind(this));
 		Users.current.multireddits.listenForChanges(this.onMultisChanged.bind(this));
@@ -182,6 +200,8 @@ export default class Ph_UserDropDown extends HTMLElement {
 					onSubBtnClick: () => others.classList.toggle("expand")
 				})
 			]);
+			const loadingImg = getLoadingIcon();
+			loadingImg.classList.add("hide");
 			const others = makeElement("div", { class: "allUsersList" }, [
 				...Users.all.map(user => {
 					const userBtn = makeUser({
@@ -189,10 +209,14 @@ export default class Ph_UserDropDown extends HTMLElement {
 						rightImg: "remove",
 						additionalClasses: user === Users.current ? "selected" : "",
 						onMainClick: async () => {
-							Users.switchUser(user).catch(e => {
-								new Ph_Toast(Level.error, "Couldn't switch user");
-								console.error(e);
-							});
+							loadingImg.classList.remove("hide");
+							Users.switchUser(user)
+								.then(() => loadingImg.classList.add("hide"))
+								.catch(e => {
+									loadingImg.classList.add("hide")
+									new Ph_Toast(Level.error, "Couldn't switch user");
+									console.error(e);
+								});
 							others.$css(".userOption.selected")[0]?.classList.remove("selected");
 							userBtn.classList.add("selected");
 							current.innerText = "";
@@ -214,7 +238,8 @@ export default class Ph_UserDropDown extends HTMLElement {
 					}, [
 						makeElement("img", { src: "/img/add.svg" }),
 						makeElement("div", {}, "Add User"),
-					])
+					]),
+					loadingImg
 				])
 			]);
 			userSelector.append(current, others);

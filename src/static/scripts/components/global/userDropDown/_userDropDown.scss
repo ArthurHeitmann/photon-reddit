@@ -119,6 +119,12 @@
 					display: flex;
 					align-items: center;
 					flex-grow: 1;
+					max-width: calc(100% - 1.65rem);
+
+					> div {
+						overflow: hidden;
+						text-overflow: ellipsis;
+					}
 
 					&::after {
 						content: "";

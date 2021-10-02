@@ -11,12 +11,6 @@ export interface SubsChangeEvent {
 
 export class SubredditManager extends UserSubscriptions<RedditSubredditObj, SubsChangeEvent> {
 
-	constructor() {
-		super();
-
-
-	}
-
 	async load() {
 		const cached = this.loadUserContentFromLs("subs");
 		if (cached === null)

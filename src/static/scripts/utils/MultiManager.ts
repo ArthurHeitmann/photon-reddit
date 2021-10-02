@@ -13,6 +13,7 @@ export interface MultisChangeEvent {
 }
 
 export class MultiManager extends UserSubscriptions<RedditMultiObj, MultisChangeEvent> {
+
 	async load(): Promise<void> {
 		const cached = this.loadUserContentFromLs("multis");
 		if (cached === null)
