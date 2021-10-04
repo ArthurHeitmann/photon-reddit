@@ -98,10 +98,6 @@
 		}
 
 		.userSelector {
-			.currentUserWrapper {
-
-			}
-
 			.allUsersList {
 				position: relative;
 				padding-top: .5rem;
@@ -168,6 +164,14 @@
 				&.selected .mainArea::after {
 					opacity: 1;
 					background: vars.$switcher-bg-active;
+				}
+
+				&:not(:first-child) {
+					margin-top: .35rem;
+				}
+
+				&:not(:last-child) {
+					margin-bottom: .35rem;
 				}
 
 				img {

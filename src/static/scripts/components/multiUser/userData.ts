@@ -36,7 +36,7 @@ export default class UserData extends DataAccessor<_UserData> {
 	subreddits = new SubredditManager();
 	multireddits = new MultiManager();
 	name: string;
-	private inboxUnreadIds: Set<string> = new Set();
+	inboxUnreadIds: Set<string> = new Set();
 
 	constructor(name: string) {
 		super();
@@ -87,6 +87,7 @@ export default class UserData extends DataAccessor<_UserData> {
 	setInboxIdsUnreadState(inboxItemIds: string[], isUnread: boolean): void {
 		for (const id of inboxItemIds)
 			this.setInboxIdUnreadState(id, isUnread);
+		this.updateUnreadBadge(this.getInboxUnreadCount());
 	}
 
 	setInboxIdUnreadState(inboxItemId: string, isUnread: boolean): void {
@@ -95,12 +96,18 @@ export default class UserData extends DataAccessor<_UserData> {
 		else
 			this.inboxUnreadIds.delete(inboxItemId);
 
-		($class("userDropDown")[0] as Ph_UserDropDown).setUnreadCount(this.getInboxUnreadCount());
+		this.updateUnreadBadge(this.getInboxUnreadCount());
 	}
 
 	setAllInboxIdsAsRead() {
 		this.inboxUnreadIds.clear();
-		($class("userDropDown")[0] as Ph_UserDropDown).setUnreadCount(0);
+		this.updateUnreadBadge(0);
+	}
+
+	private updateUnreadBadge(val: number) {
+		if (this === Users.current)
+			($class("userDropDown")[0] as Ph_UserDropDown).setUnreadCount(val);
+
 	}
 
 	getInboxUnreadCount(): number {

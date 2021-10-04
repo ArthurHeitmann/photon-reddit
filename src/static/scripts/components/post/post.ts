@@ -356,7 +356,7 @@ export default class Ph_Post extends Ph_FeedItem implements Votable {
 			if (this.becameVisibleAt) {
 				const visibilityDuration = Date.now() - this.becameVisibleAt;
 				this.becameVisibleAt = null;
-				if (visibilityDuration > 750 && Users.global.d.photonSettings.markSeenPosts && this.isInFeed)
+				if (visibilityDuration > 450 && Users.global.d.photonSettings.markSeenPosts && this.isInFeed)
 					Users.global.markPostAsSeen(this.fullName);
 			}
 		}

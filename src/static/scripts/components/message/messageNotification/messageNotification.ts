@@ -10,7 +10,6 @@ import Ph_Toast, { Level } from "../../misc/toast/toast";
 import Users from "../../multiUser/userManagement";
 
 export default class Ph_MessageNotification extends HTMLElement {
-	static previousUnreadMessages = 0;
 	static currentlyDisplayedNotification: Ph_MessageNotification = null;
 	isRequestInProgress = false;
 	isClosing = false;
@@ -63,7 +62,7 @@ export default class Ph_MessageNotification extends HTMLElement {
 		const r = await setMessageReadStatus(true, messageFullNames.join(","));
 		this.isRequestInProgress = false;
 		if (r["error"]) {
-			new Ph_Toast(Level.error, "Failed mark as read read");
+			new Ph_Toast(Level.error, "Failed mark as read");
 			console.error("Failed to mark as read");
 			console.error(r);
 			return;
@@ -78,36 +77,22 @@ export default class Ph_MessageNotification extends HTMLElement {
 	}
 
 	static async checkForNewMessages() {
-		if (!Users.current.d.auth.isLoggedIn)
-			return;
-		const unreadMessagesData = await redditApiRequest(`/message/unread`,
-			[], true) as RedditListingObj<RedditMessageObj>;
-		const unreadMessages = unreadMessagesData.data.children;
-
+		const unreadMsgData = await redditApiRequest(`/message/unread`, [], true) as RedditListingObj<RedditMessageObj>;
+		const unreadMessages = unreadMsgData.data.children;
+		const newMessages = unreadMessages.filter(msg => !Users.current.inboxUnreadIds.has(msg.data.name));
+		if (unreadMessages.length < 25)
+			Users.current.inboxUnreadIds.clear();
 		Users.current.setInboxIdsUnreadState(unreadMessages.map(msg => msg.data.name), true);
-
-		if (unreadMessages.length < Ph_MessageNotification.previousUnreadMessages)
-			Ph_MessageNotification.previousUnreadMessages = unreadMessages.length;
-		if (unreadMessages.length === Ph_MessageNotification.previousUnreadMessages)
+		if (newMessages.length === 0)
 			return;
-
-		const newMessages = Array.from(unreadMessages);
-		newMessages.splice(unreadMessages.length - Ph_MessageNotification.previousUnreadMessages);
-
-		if (Ph_MessageNotification.currentlyDisplayedNotification) {
+		if (Ph_MessageNotification.currentlyDisplayedNotification)
 			Ph_MessageNotification.currentlyDisplayedNotification.close();
-			Ph_MessageNotification.currentlyDisplayedNotification = null;
-		}
 		Ph_MessageNotification.currentlyDisplayedNotification = new Ph_MessageNotification(newMessages);
-
-		Ph_MessageNotification.previousUnreadMessages = newMessages.length;
 	}
 }
 
 let messageCheckInterval = null;
 ensurePageLoaded().then( () => {
-	if (!Users.current.d.auth.isLoggedIn)
-		return;
 	Ph_MessageNotification.checkForNewMessages();
 	if (Users.global.d.photonSettings.messageCheckIntervalMs > 0)
 		messageCheckInterval = setInterval(Ph_MessageNotification.checkForNewMessages, Users.global.d.photonSettings.messageCheckIntervalMs);
