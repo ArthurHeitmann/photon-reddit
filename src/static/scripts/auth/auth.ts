@@ -1,7 +1,6 @@
 import { getImplicitGrant, getRefreshAccessToken } from "../api/redditAuthApi";
 import Ph_Toast, { Level } from "../components/misc/toast/toast";
 import Users from "../components/multiUser/userManagement";
-import { logOut } from "./loginHandler";
 
 export enum AuthState {
 	loggedIn, implicitGrant
@@ -48,7 +47,7 @@ export async function checkAuthOnPageLoad(): Promise<AuthState> {
 }
 
 function authError(msg: string) {
-	new Ph_Toast(Level.warning, msg, { onConfirm: logOut });
+	new Ph_Toast(Level.warning, msg, { onConfirm: () => Users.remove(Users.current) });
 }
 
 async function implicitGrant(): Promise<boolean> {

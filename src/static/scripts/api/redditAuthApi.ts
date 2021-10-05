@@ -63,17 +63,19 @@ export async function getImplicitGrant(clientId: string): Promise<AccessTokenRet
 
 export async function revokeToken(): Promise<boolean> {
 	try {
-		const r = await fetch("https://www.reddit.com/api/v1/revoke_token", {
-			method: "POST",
-			body: new URLSearchParams([
-				["token", Users.current.d.auth.refreshToken],	// revoking a refresh token, revokes all a related access tokens
-				["token_type_hint", "refresh_token"],
-			]),
-			headers: new Headers({
-				Authorization: `Basic ${btoa(appId + ":")}`,
-			})
-		});
-		return r.status === 200;
+		const revokeRequests = await Promise.all(
+			[Users.current.d.auth.refreshToken, Users.current.d.auth.accessToken]
+				.map(token => fetch("https://www.reddit.com/api/v1/revoke_token", {
+					method: "POST",
+					body: new URLSearchParams([
+						["token", token],
+					]),
+					headers: new Headers({
+						Authorization: `Basic ${btoa(appId + ":")}`,
+					})
+				}))
+		);
+		return revokeRequests.every(req => req.status === 200);
 	}
 	catch (e) {
 		console.error(e);

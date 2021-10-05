@@ -77,6 +77,8 @@ export default class Ph_MessageNotification extends HTMLElement {
 	}
 
 	static async checkForNewMessages() {
+		if (!Users.current.d.auth.isLoggedIn)
+			return;
 		const unreadMsgData = await redditApiRequest(`/message/unread`, [], true) as RedditListingObj<RedditMessageObj>;
 		const unreadMessages = unreadMsgData.data.children;
 		const newMessages = unreadMessages.filter(msg => !Users.current.inboxUnreadIds.has(msg.data.name));

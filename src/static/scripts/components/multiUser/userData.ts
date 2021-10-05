@@ -14,7 +14,7 @@ export const guestUserName = "#guest";
 export const tmpLoginUserName = "#login";
 
 export default class UserData extends DataAccessor<_UserData> {
-	protected key: string;
+	key: string;
 	protected default: _UserData = {
 		auth: {
 			accessToken: null,

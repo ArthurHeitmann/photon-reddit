@@ -1,9 +1,9 @@
 import { checkTokenRefresh } from "../../auth/auth";
-import { tryCompleteLogin } from "../../auth/loginHandler";
+import { logOutCurrentUser, tryCompleteLogin } from "../../auth/loginHandler";
 import { PhEvents } from "../../types/Events";
 import Ph_MessageNotification from "../message/messageNotification/messageNotification";
 import GlobalUserData from "./globalData";
-import { getAllKeysInStorage } from "./storageWrapper";
+import { deleteKey, getAllKeysInStorage } from "./storageWrapper";
 import UserData, { AuthData, guestUserName, tmpLoginUserName } from "./userData";
 
 export default class Users {
@@ -32,12 +32,14 @@ export default class Users {
 			Users._current = Users.all[0];
 			await Users.global.set(["lastActiveUser"], Users._current.name);
 		}
-		if (users.length === 0) {
+		if (users.length === 0 || !Users.all.some(user => user.name === guestUserName)) {
 			const guestUser = new UserData(guestUserName);
 			await guestUser.init();
 			Users.all.push(guestUser);
-			Users._current = guestUser;
-			await Users.global.set(["lastActiveUser"], guestUserName);
+			if (users.length === 0) {
+				Users._current = guestUser;
+				await Users.global.set(["lastActiveUser"], guestUserName);
+			}
 		}
 
 		window.dispatchEvent(new Event(PhEvents.dbReady));
@@ -66,6 +68,15 @@ export default class Users {
 		Users.all.push(newUser);
 		Users._current = newUser;
 		await Users.global.set(["lastActiveUser"], tmpLoginUserName);
+	}
+
+	static async remove(user: UserData) {
+		if (user.d.auth.isLoggedIn)
+			await logOutCurrentUser();
+		if (user === Users.current)
+			await Users.switchUser(Users.all[0]);
+		await deleteKey(user.key);
+
 	}
 
 	private static hasDbLoaded = false;

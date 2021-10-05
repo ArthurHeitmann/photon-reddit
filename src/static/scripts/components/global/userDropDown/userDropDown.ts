@@ -208,7 +208,10 @@ export default class Ph_UserDropDown extends HTMLElement {
 						user: user,
 						rightImg: "remove",
 						additionalClasses: user === Users.current ? "selected" : "",
+						// switch to user
 						onMainClick: async () => {
+							if (user === Users.current)
+								return;
 							loadingImg.classList.remove("hide");
 							Users.switchUser(user)
 								.then(() => loadingImg.classList.add("hide"))
@@ -226,7 +229,21 @@ export default class Ph_UserDropDown extends HTMLElement {
 								onMainClick: () => others.classList.toggle("expand"),
 								onSubBtnClick: () => others.classList.toggle("expand")
 							}));
-						}
+						},
+						// remove user
+						onSubBtnClick: () => user.d.auth.isLoggedIn && new Ph_Toast(Level.warning, `Are you sure you want to remove ${user.displayName}?`, {
+							onConfirm: async() => {
+								await Users.remove(user);
+								userBtn.remove();
+								current.innerText = "";
+								current.append(makeUser({
+									user: Users.current,
+									rightImg: "expand",
+									onMainClick: () => others.classList.toggle("expand"),
+									onSubBtnClick: () => others.classList.toggle("expand")
+								}));
+							}
+						})
 					});
 					return userBtn;
 				}),

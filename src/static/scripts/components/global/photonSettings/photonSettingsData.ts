@@ -1,8 +1,6 @@
-import { logOut } from "../../../auth/loginHandler";
 import { RedditPreferences } from "../../../types/redditTypes";
 import { editableTimeStrToMs, makeElement, timeMsToEditableTimeStr } from "../../../utils/utils";
 import { photonWebVersion } from "../../../utils/version";
-import Ph_Toast, { Level } from "../../misc/toast/toast";
 import Users from "../../multiUser/userManagement";
 import Ph_Changelog from "../../photon/changelog/changelog";
 import { defaultSettings, ImageLoadingPolicy, NsfwPolicy, PhotonSettings } from "./photonSettings";
@@ -379,7 +377,6 @@ export const getSettingsSections = (): SettingsSection[] => [
 			new HTMLElementSetting(makeElement("div", null, [
 				makeElement("button", { class: "mla button", onclick: () => Users.global.clearSeenPosts() }, "Clear seen posts"),
 				makeElement("button", { class: "mla button", onclick: () => Ph_Changelog.show() }, "Show Changelog"),
-				makeElement("button", { class: "mla button", onclick: () => new Ph_Toast(Level.warning, "Are you sure you want to log out?", { onConfirm: logOut }) }, "Log out"),
 				makeElement("div", null, `v${photonWebVersion}`)
 			])),
 		]

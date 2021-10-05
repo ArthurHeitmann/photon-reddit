@@ -70,21 +70,9 @@ export async function finishLogin(): Promise<boolean> {
 	}
 }
 
-export async function logOut() {
-	const success = await revokeToken();
-	if (success) {
-		await clearAuthLocalData();
+export async function logOutCurrentUser() {
+	if (!await revokeToken()) {
+		new Ph_Toast(Level.error, "Couldn't confirm logout");
+		throw "Couldn't confirm logout";
 	}
-	else {
-		new Ph_Toast(Level.error, "Couldn't confirm logout. Complete cleanup anyway?", { onConfirm: clearAuthLocalData });
-	}
-}
-
-async function clearAuthLocalData() {
-	await Users.current.set(["auth", "accessToken"], null);
-	await Users.current.set(["auth", "refreshToken"], null);
-	await Users.current.set(["auth", "isLoggedIn"], null);
-	await Users.current.set(["auth", "expiration"], null);
-	await Users.current.set(["auth", "scopes"], null);
-	location.reload();
 }
