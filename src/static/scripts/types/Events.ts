@@ -25,5 +25,6 @@ export enum PhEvents {
 	viewChange = "ph-viewChange",
 	beginTouchPinch = "ph-beginTouchPinch",
 	touchDrag = "ph-touchDrag",
-	touchPinch = "ph-touchPinch"
+	touchPinch = "ph-touchPinch",
+	dataChanged = "ph-dataChanged",
 }

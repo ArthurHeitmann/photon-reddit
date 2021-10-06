@@ -1,16 +1,17 @@
+import { PhEvents } from "../types/Events.js";
 import { randomString } from "./utils";
 
 export interface MessageFormat {
-	type: string,
+	type: PhEvents,
 	randomId?: string,
 	[other: string]: any
 }
 type MessageCallback = (msg: MessageFormat) => void;
 
 const messageChannelKey = "messageChannel";
-const messageListeners: { callback: MessageCallback, typeFilter?: string }[] = [];
+const messageListeners: { callback: MessageCallback, typeFilter?: PhEvents }[] = [];
 
-export function onMessageBroadcast(listener: MessageCallback, type?: string): void {
+export function onMessageBroadcast(listener: MessageCallback, type?: PhEvents): void {
 	messageListeners.push({ callback: listener, typeFilter: type });
 }
 

@@ -135,7 +135,7 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 			))
 		);
 
-		onMessageBroadcast(this.onSettingsExternalChange.bind(this), "settingsChanged");
+		onMessageBroadcast(this.onSettingsExternalChange.bind(this), PhEvents.settingsChanged);
 		window.addEventListener(PhEvents.userChanged, this.onUserChange.bind(this));
 	}
 
@@ -161,7 +161,7 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 		this.temporarySettings[source.settingKey as string] = newVal;
 		await this.applyTemporarySettings();
 		broadcastMessage({
-			type: "settingsChanged",
+			type: PhEvents.settingsChanged,
 			newSettings: Users.global.d.photonSettings
 		});
 	}
@@ -179,7 +179,7 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 	}
 
 	private async onSettingsExternalChange(msg: MessageFormat) {
-		if (msg.type !== "settingsChanged")
+		if (msg.type !== PhEvents.settingsChanged)
 			return;
 		const newSettings = msg.newSettings;
 		const changedKeys = Object.entries(newSettings)

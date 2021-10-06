@@ -1,3 +1,4 @@
+import { PhEvents } from "../../types/Events.js";
 import { onMessageBroadcast } from "../../utils/messageCommunication";
 import { deepClone } from "../../utils/utils";
 import { getFromStorage, setInStorage } from "./storageWrapper";
@@ -8,7 +9,7 @@ export default abstract class DataAccessor<T> {
 	protected loaded: T;
 
 	async init(): Promise<this> {
-		onMessageBroadcast(this.refreshData.bind(this), "dataChanged");
+		onMessageBroadcast(this.refreshData.bind(this), PhEvents.dataChanged);
 
 		let storedData: any;
 		try {

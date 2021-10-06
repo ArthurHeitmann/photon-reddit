@@ -1,3 +1,4 @@
+import { PhEvents } from "../../types/Events.js";
 import { supportsIndexedDB } from "../../utils/browserFeatures";
 import { broadcastMessage } from "../../utils/messageCommunication";
 
@@ -146,7 +147,7 @@ export async function setInStorage(value: any, ...keyPath: string[]): Promise<vo
 		await setInDb(value, ...keyPath);
 	else
 		setInLs(value, ...keyPath);
-	broadcastMessage({ type: "dataChanged" });
+	broadcastMessage({ type: PhEvents.dataChanged });
 }
 
 export async function getAllKeysInStorage(key: string = ""): Promise<string[]> {
@@ -161,5 +162,5 @@ export async function deleteKey(key: string): Promise<void> {
 		await deleteKeyFromDb(key);
 	else
 		deleteKeyFromLs(key);
-	broadcastMessage({ type: "dataChanged" });
+	broadcastMessage({ type: PhEvents.dataChanged });
 }
