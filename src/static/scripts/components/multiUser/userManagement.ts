@@ -113,6 +113,7 @@ export default class Users {
 			loginTime: tryMigrateFromLs("loginTime"),
 			refreshToken: tryMigrateFromLs("refreshToken"),
 			scopes: tryMigrateFromLs("scope"),
+			isLocked: false,
 		}
 		const newUser = await (new UserData(tmpLoginUserName)).init();
 		await newUser.set(["auth"], newAuth);

@@ -1,4 +1,5 @@
 import { getUserPreferences, redditApiRequest } from "../../api/redditApi";
+import { PhEvents } from "../../types/Events.js";
 import { StoredData } from "../../types/misc";
 import { RedditPreferences, RedditUserInfo } from "../../types/redditTypes";
 import { $class } from "../../utils/htmlStatics";
@@ -23,6 +24,7 @@ export default class UserData extends DataAccessor<_UserData> {
 			scopes: null,
 			loginTime: null,
 			isLoggedIn: false,
+			isLocked: false
 		},
 		caches: {
 			subs: null,
@@ -82,6 +84,35 @@ export default class UserData extends DataAccessor<_UserData> {
 		return this.name === guestUserName ?
 			"Guest" :
 			`u/${this.name}`;
+	}
+
+	async lockAuthData(): Promise<void> {
+		await new Promise<void>(async resolve => {
+			if (this.d.auth.isLocked) {
+				const onDataChanged = () => {
+					if (this.d.auth.isLocked)
+						return;
+					window.removeEventListener(PhEvents.dataChanged, onDataChanged);
+					clearTimeout(unlockTimeout);
+					resolve();
+				};
+				window.addEventListener(PhEvents.dataChanged, onDataChanged);
+				const unlockTimeoutFunc = async () => {
+					window.removeEventListener(PhEvents.dataChanged, onDataChanged);
+					await this.unlockAuthData();
+					resolve();
+				};
+				const unlockTimeout = setTimeout(unlockTimeoutFunc, 7500);
+			}
+			else {
+				resolve();
+			}
+		});
+		await this.set(["auth", "isLocked"], true);
+	}
+
+	async unlockAuthData(): Promise<void> {
+		await this.set(["auth", "isLocked"], false);
 	}
 
 	setInboxIdsUnreadState(inboxItemIds: string[], isUnread: boolean): void {
@@ -144,6 +175,7 @@ export interface AuthData {
 	isLoggedIn: boolean,
 	scopes: string,
 	loginTime: number,
+	isLocked: boolean
 }
 
 export interface QuickCaches {

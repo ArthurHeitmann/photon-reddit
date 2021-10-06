@@ -76,5 +76,6 @@ export default abstract class DataAccessor<T> {
 
 	protected async refreshData() {
 		this.loaded = await getFromStorage(this.key);
+		window.dispatchEvent(new Event(PhEvents.dataChanged));
 	}
 }
