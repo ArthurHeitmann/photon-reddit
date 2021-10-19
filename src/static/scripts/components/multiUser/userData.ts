@@ -1,5 +1,4 @@
 import { getUserPreferences, redditApiRequest } from "../../api/redditApi";
-import { PhEvents } from "../../types/Events.js";
 import { StoredData } from "../../types/misc";
 import { RedditPreferences, RedditUserInfo } from "../../types/redditTypes";
 import { $class } from "../../utils/htmlStatics";
@@ -24,7 +23,6 @@ export default class UserData extends DataAccessor<_UserData> {
 			scopes: null,
 			loginTime: null,
 			isLoggedIn: false,
-			isLocked: false
 		},
 		caches: {
 			subs: null,
@@ -39,12 +37,15 @@ export default class UserData extends DataAccessor<_UserData> {
 	multireddits = new MultiManager();
 	name: string;
 	inboxUnreadIds: Set<string> = new Set();
+	isLockOwner = false;
 
 	constructor(name: string) {
 		super();
 
 		this.key = `u/${name}`;
 		this.name = name;
+
+		window.addEventListener("beforeunload", this.unlockBeforePageUnload.bind(this));
 	}
 
 	async init(): Promise<this> {
@@ -88,31 +89,39 @@ export default class UserData extends DataAccessor<_UserData> {
 
 	async lockAuthData(): Promise<void> {
 		await new Promise<void>(async resolve => {
-			if (this.d.auth.isLocked) {
-				const onDataChanged = () => {
-					if (this.d.auth.isLocked)
+			if ("authLock" in localStorage) {
+				const onLsChanged = () => {
+					if ("authLock" in localStorage)
 						return;
-					window.removeEventListener(PhEvents.dataChanged, onDataChanged);
+					window.removeEventListener("storage", onLsChanged);
 					clearTimeout(unlockTimeout);
 					resolve();
 				};
-				window.addEventListener(PhEvents.dataChanged, onDataChanged);
-				const unlockTimeoutFunc = async () => {
-					window.removeEventListener(PhEvents.dataChanged, onDataChanged);
-					await this.unlockAuthData();
+				window.addEventListener("storage", onLsChanged);
+				const unlockFallbackFunc = async () => {
+					window.removeEventListener("storage", onLsChanged);
+					clearTimeout(unlockTimeout);
+					this.unlockAuthData();
 					resolve();
 				};
-				const unlockTimeout = setTimeout(unlockTimeoutFunc, 7500);
+				const unlockTimeout = setTimeout(unlockFallbackFunc, 7500);
 			}
 			else {
 				resolve();
 			}
 		});
-		await this.set(["auth", "isLocked"], true);
+		this.isLockOwner = true;
+		localStorage.setItem("authLock", "");
 	}
 
-	async unlockAuthData(): Promise<void> {
-		await this.set(["auth", "isLocked"], false);
+	unlockAuthData(): void {
+		this.isLockOwner = false;
+		localStorage.removeItem("authLock");
+	}
+
+	private unlockBeforePageUnload() {
+		if ("authLock" in localStorage && this.isLockOwner)
+			this.unlockAuthData();
 	}
 
 	setInboxIdsUnreadState(inboxItemIds: string[], isUnread: boolean): void {
@@ -175,7 +184,6 @@ export interface AuthData {
 	isLoggedIn: boolean,
 	scopes: string,
 	loginTime: number,
-	isLocked: boolean
 }
 
 export interface QuickCaches {

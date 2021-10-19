@@ -56,7 +56,6 @@ export async function finishLogin(): Promise<boolean> {
 				expiration: Date.now() + (59 * 60 * 1000),
 				loginTime: Date.now(),
 				isLoggedIn: true,
-				isLocked: false
 			});
 			return true;
 		} catch (e) {
