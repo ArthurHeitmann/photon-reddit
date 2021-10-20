@@ -8,15 +8,17 @@ export enum AuthState {
 
 export async function checkTokenRefresh(): Promise<boolean> {
 	await Users.current.lockAuthData();
-	if (!hasTokenExpired())
+	if (!hasTokenExpired()) {
+		Users.current.unlockAuthData();
 		return;
+	}
 
 	let result: boolean;
 	if (Users.current.d.auth.isLoggedIn)
 		result = await refreshAccessToken();
 	else
 		result = await implicitGrant();
-	await Users.current.unlockAuthData();
+	Users.current.unlockAuthData();
 	return result;
 }
 
@@ -24,33 +26,35 @@ export async function checkAuthOnPageLoad(): Promise<AuthState> {
 	// An over engineered way to check the auth state. Has some fallback in case of data corruption
 	// has storage potentially usable auth data
 	await Users.current.lockAuthData();
-	if (!Users.current.d.auth.isLoggedIn || Users.current.d.auth.refreshToken) {
-		if (Users.current.d.auth.isLoggedIn) {
-			// before returning AuthState.loggedIn verifyTokenWorks() must somewhere be called
-			if (hasTokenExpired() && !await refreshAccessToken()) {
-				if (!await verifyTokenWorks())
-					authError("Failed to refresh authentication! If this is breaking the website, log out & reload?");
+	try {
+		if (!Users.current.d.auth.isLoggedIn || Users.current.d.auth.refreshToken) {
+			if (Users.current.d.auth.isLoggedIn) {
+				// before returning AuthState.loggedIn verifyTokenWorks() must somewhere be called
+				if (hasTokenExpired() && !await refreshAccessToken()) {
+					if (!await verifyTokenWorks()) {
+						authError("Failed to refresh authentication! If this is breaking the website, log out & reload?");
+					}
+				} else if (!await verifyTokenWorks() && !await refreshAccessToken()) {
+					authError("Invalid authentication! If this is breaking the website, log out & reload?");
+				}
+				return AuthState.loggedIn;
+			} else {
+				if (hasTokenExpired() && !await implicitGrant() || !await verifyTokenWorks() && !await implicitGrant()) {
+					authError("Failed to get authentication! Do you want to clear data & reload?");
+				}
+				return AuthState.implicitGrant;
 			}
-			else if (!await verifyTokenWorks() && !await refreshAccessToken()) {
-				authError("Invalid authentication! If this is breaking the website, log out & reload?");
-			}
-			await Users.current.unlockAuthData();
-			return AuthState.loggedIn;
 		}
+		// no usable auth data
 		else {
-			if (hasTokenExpired() && !await implicitGrant() || !await verifyTokenWorks() && !await implicitGrant())
+			await Users.current.set(["auth", "isLoggedIn"], false);
+			if (!await implicitGrant()) {
 				authError("Failed to get authentication! Do you want to clear data & reload?");
-			await Users.current.unlockAuthData();
+			}
 			return AuthState.implicitGrant;
 		}
-	}
-	// no usable auth data
-	else {
-		await Users.current.set(["auth", "isLoggedIn"], false);
-		if (!await implicitGrant())
-			authError("Failed to get authentication! Do you want to clear data & reload?");
-		await Users.current.unlockAuthData();
-		return AuthState.implicitGrant;
+	} finally {
+		Users.current.unlockAuthData();
 	}
 }
 
