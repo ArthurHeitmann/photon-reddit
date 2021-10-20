@@ -51,9 +51,6 @@ export default class UserData extends DataAccessor<_UserData> {
 	async init(): Promise<this> {
 		await super.init();
 		if (wasDbUpgraded.wasUpgraded) {
-			this.tryMigrateFromLsToLoaded(["fabConfig"], ["fabConfig"]);
-			this.tryMigrateFromLsToLoaded(["seenPosts"], ["seenPosts"]);
-			this.tryMigrateFromLsToLoaded(["settings"], ["photonSettings"]);
 			this.tryMigrateFromLsToLoaded(["loginRecommendationFlag"], ["loginSubPromptDisplayed"], val => val === "set");
 			await setInStorage(this.loaded, this.key);
 		}
@@ -65,7 +62,7 @@ export default class UserData extends DataAccessor<_UserData> {
 		if ("error" in this.d.userData)
 			return false;
 		const oldName = this.name;
-		this.name = this.d.userData.name || this.name || "";
+		this.name = this.d.userData.name || guestUserName;
 		if (this.name && this.key.endsWith(tmpLoginUserName)) {
 			await this.changeKey(oldName, this.name);
 			await Users.global.set(["lastActiveUser"], this.name);

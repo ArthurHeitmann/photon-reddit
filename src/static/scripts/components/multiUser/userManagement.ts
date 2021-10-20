@@ -22,6 +22,8 @@ export default class Users {
 		const currentUser = Users.global.d.lastActiveUser;
 		const users = await getAllKeysInStorage("u/");
 		for (const user of users) {
+			if (Users.all.find(u => u.key === user))
+				continue;
 			const username = user.slice(2);
 			const newUser = await (new UserData(username)).init();
 			if (username === currentUser)
@@ -76,7 +78,6 @@ export default class Users {
 		if (user === Users.current)
 			await Users.switchUser(Users.all[0]);
 		await deleteKey(user.key);
-
 	}
 
 	private static hasDbLoaded = false;
@@ -114,9 +115,11 @@ export default class Users {
 			refreshToken: tryMigrateFromLs("refreshToken"),
 			scopes: tryMigrateFromLs("scope"),
 		}
-		const newUser = await (new UserData(tmpLoginUserName)).init();
+		localStorage.removeItem("pageBeforeLogin");
+		const newUser = await (new UserData(newAuth.isLoggedIn ? tmpLoginUserName : guestUserName)).init();
 		await newUser.set(["auth"], newAuth);
 		Users.all.push(newUser);
 		Users._current = newUser;
+		await Users.global.set(["lastActiveUser"], newUser.name);
 	}
 }
