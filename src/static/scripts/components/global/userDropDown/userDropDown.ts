@@ -341,11 +341,20 @@ export default class Ph_UserDropDown extends HTMLElement {
 	}
 
 	toggle() {
-		this.classList.toggle("expanded");
-		if (this.classList.contains("expanded")) {
-			(elementWithClassInTree(this.parentElement, "header") as Ph_Header)?.minimizeAll([this]);
-			setTimeout(() => this.searchFilterInput.focus({ preventScroll: true }), 200);
-		}
+		if (this.classList.contains("expanded"))
+			this.hide();
+		else
+			this.show();
+	}
+
+	show() {
+		this.classList.add("expanded");
+		(elementWithClassInTree(this.parentElement, "header") as Ph_Header)?.minimizeAll([this]);
+		setTimeout(() => this.searchFilterInput.focus({ preventScroll: true }), 200);
+	}
+
+	hide() {
+		this.classList.remove("expanded");
 	}
 }
 

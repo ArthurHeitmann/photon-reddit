@@ -9,6 +9,7 @@ import {
 } from "../../../utils/htmlStatics";
 import { hasHTML } from "../../../utils/utils";
 import Ph_Header from "../../global/header/header";
+import Ph_UserDropDown from "../../global/userDropDown/userDropDown";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
 import Users from "../../multiUser/userManagement";
 
@@ -28,7 +29,7 @@ interface TutorialDescription {
 }
 
 const tutorialDescription: TutorialDescription = {
-	url: "/r/cats/top?t=all",
+	url: "/r/Eyebleach/top?t=day",
 	steps: [
 		{
 			highlightElementSelector: null,
@@ -94,8 +95,23 @@ const tutorialDescription: TutorialDescription = {
 				"Quick access to some pages and actions (like your profile, inbox, ...)",
 				"Your followed subreddits und multireddits"
 			],
-			beginAction: () => $css("ph-header ph-user-dropdown > button")[0].click(),
-			endAction: () => $css("ph-header ph-user-dropdown > button")[0].click()
+			beginAction: () => ($css("ph-header ph-user-dropdown")[0] as Ph_UserDropDown).show(),
+			endAction: () => ($css("ph-header ph-user-dropdown")[0] as Ph_UserDropDown).hide(),
+		},
+		{
+			highlightElementSelector: "ph-header ph-user-dropdown .userSelector ",
+			updateHighlightForMs: 300,
+			displayText: [
+				"Log in with multiple accounts",
+			],
+			beginAction: () => {
+				($css("ph-header ph-user-dropdown")[0] as Ph_UserDropDown).show();
+				$css("ph-header ph-user-dropdown .allUsersList")[0].classList.add("expand");
+			},
+			endAction: () => {
+				($css("ph-header ph-user-dropdown")[0] as Ph_UserDropDown).hide();
+				$css("ph-header ph-user-dropdown .allUsersList")[0].classList.remove("expand");
+			},
 		},
 		{
 			highlightElementSelector: "ph-header .showSettingsButton",
