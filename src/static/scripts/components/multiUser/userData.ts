@@ -2,6 +2,7 @@ import { getUserPreferences, redditApiRequest } from "../../api/redditApi";
 import { StoredData } from "../../types/misc";
 import { RedditPreferences, RedditUserInfo } from "../../types/redditTypes";
 import { $class } from "../../utils/htmlStatics";
+import { createLock, unlock } from "../../utils/lock";
 import { MultiManager } from "../../utils/MultiManager";
 import { SubredditManager } from "../../utils/subredditManager";
 import { StoredFeedInfo } from "../feed/feedInfo/feedInfo";
@@ -46,8 +47,6 @@ export default class UserData extends DataAccessor<_UserData> {
 		this.key = `u/${name}`;
 		this.name = name;
 		this.isGuest = name === guestUserName;
-
-		window.addEventListener("beforeunload", this.unlockBeforePageUnload.bind(this));
 	}
 
 	async init(): Promise<this> {
@@ -87,40 +86,11 @@ export default class UserData extends DataAccessor<_UserData> {
 	}
 
 	async lockAuthData(): Promise<void> {
-		await new Promise<void>(async resolve => {
-			if ("authLock" in localStorage) {
-				const onLsChanged = () => {
-					if ("authLock" in localStorage)
-						return;
-					window.removeEventListener("storage", onLsChanged);
-					clearTimeout(unlockTimeout);
-					resolve();
-				};
-				window.addEventListener("storage", onLsChanged);
-				const unlockFallbackFunc = async () => {
-					window.removeEventListener("storage", onLsChanged);
-					clearTimeout(unlockTimeout);
-					this.unlockAuthData();
-					resolve();
-				};
-				const unlockTimeout = setTimeout(unlockFallbackFunc, 7500);
-			}
-			else {
-				resolve();
-			}
-		});
-		this.isLockOwner = true;
-		localStorage.setItem("authLock", "");
+		await createLock("authLock");
 	}
 
 	unlockAuthData(): void {
-		this.isLockOwner = false;
-		localStorage.removeItem("authLock");
-	}
-
-	private unlockBeforePageUnload() {
-		if ("authLock" in localStorage && this.isLockOwner)
-			this.unlockAuthData();
+		unlock("authLock");
 	}
 
 	setInboxIdsUnreadState(inboxItemIds: string[], isUnread: boolean): void {

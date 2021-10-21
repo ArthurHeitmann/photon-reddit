@@ -1,6 +1,7 @@
 import { checkTokenRefresh } from "../../auth/auth";
 import { logOutCurrentUser, tryCompleteLogin } from "../../auth/loginHandler";
 import { PhEvents } from "../../types/Events";
+import { createLock, unlock } from "../../utils/lock";
 import Ph_MessageNotification from "../message/messageNotification/messageNotification";
 import GlobalUserData from "./globalData";
 import { deleteKey, getAllKeysInStorage } from "./storageWrapper";
@@ -13,6 +14,7 @@ export default class Users {
 	static isSwitchingUser = false;
 
 	static async init(): Promise<void> {
+		await createLock("dbInitLock");
 		Users.global = await (new GlobalUserData()).init();
 
 		if (await tryCompleteLogin())
@@ -45,6 +47,7 @@ export default class Users {
 			}
 		}
 
+		unlock("dbInitLock");
 		window.dispatchEvent(new Event(PhEvents.dbReady));
 	}
 
