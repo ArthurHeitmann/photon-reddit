@@ -17,7 +17,8 @@ export function supportsIndexedDB(): Promise<boolean> {
 		}
 		const db = indexedDB.open("featureTest");
 		db.onsuccess = () => {
-			indexedDB.deleteDatabase("featureTest");
+			const deleteRequest = indexedDB.deleteDatabase("featureTest");
+			deleteRequest.onsuccess = () => {};
 			localStorage.setItem("idbSupported", "true");
 			resolve(_isIdbSupported = true);
 		};

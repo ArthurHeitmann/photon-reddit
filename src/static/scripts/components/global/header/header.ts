@@ -1,3 +1,4 @@
+import { initiateLogin } from "../../../auth/loginHandler";
 import { ViewChangeData } from "../../../historyState/viewsStack";
 import { PhEvents } from "../../../types/Events";
 import { SVGAnimateElement } from "../../../types/misc";
@@ -91,6 +92,7 @@ export default class Ph_Header extends HTMLElement {
 			this.settings.toggle();
 			this.hide();
 		});
+		this.$class("loginButton")[0].addEventListener("click", () => initiateLogin());
 		window.addEventListener(PhEvents.viewChange, () => {
 			if (!this.isPinned)
 				this.hide();

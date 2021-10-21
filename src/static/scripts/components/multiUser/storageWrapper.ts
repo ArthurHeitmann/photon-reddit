@@ -1,4 +1,4 @@
-import { PhEvents } from "../../types/Events.js";
+import { PhEvents } from "../../types/Events";
 import { supportsIndexedDB } from "../../utils/browserFeatures";
 import { broadcastMessage } from "../../utils/messageCommunication";
 

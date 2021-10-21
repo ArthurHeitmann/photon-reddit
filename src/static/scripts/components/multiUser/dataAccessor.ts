@@ -1,4 +1,4 @@
-import { PhEvents } from "../../types/Events.js";
+import { PhEvents } from "../../types/Events";
 import { onMessageBroadcast } from "../../utils/messageCommunication";
 import { deepClone } from "../../utils/utils";
 import { getFromStorage, setInStorage } from "./storageWrapper";
