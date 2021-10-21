@@ -257,7 +257,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 		};
 
 		this.overlayIcon = new Ph_SwitchingImage([
-			{src: "/img/loading.svg", key: "loading"},
+			{src: "/img/loading3.svg", key: "loading"},
 			{src: "/img/playVideo.svg", key: "ready"},
 			{src: "", key: "none"},
 		]);

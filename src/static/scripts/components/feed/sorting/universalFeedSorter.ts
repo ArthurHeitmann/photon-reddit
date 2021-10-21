@@ -122,7 +122,7 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 			timeFrame: data.valueChain[1]
 		};
 
-		data.setButtonLabel(getLoadingIcon());
+		data.setButtonLabel(getLoadingIcon("3"));
 
 		this.setSorting(selection)
 			.then(() => data.setButtonLabel(`Sort - ${selection.order}${selection.timeFrame ? `/${selection.timeFrame}` : ""}`));

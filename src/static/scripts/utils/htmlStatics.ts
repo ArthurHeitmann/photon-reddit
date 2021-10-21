@@ -97,10 +97,10 @@ export function escADQ(unsafeAttribute: string): string {
 	return out;
 }
 
-export function getLoadingIcon(): HTMLImageElement {
+export function getLoadingIcon(thickness: "1" | "3" = "3"): HTMLImageElement {
 	const loadingIcon = document.createElement("img");
 	loadingIcon.alt = "loading";
-	loadingIcon.src = "/img/loading.svg";
+	loadingIcon.src = `/img/loading${thickness}.svg`;
 	loadingIcon.className = "loadingIcon";
 	return loadingIcon;
 }

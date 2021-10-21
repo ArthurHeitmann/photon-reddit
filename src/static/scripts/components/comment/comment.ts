@@ -91,7 +91,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 				let nextChildren = commentData.data.children;
 				loadMoreButton.addEventListener("click", async () => {
 					loadMoreButton.disabled = true;
-					loadMoreButton.innerHTML = `<img src="/img/loading.svg" alt="loading">`;
+					loadMoreButton.innerHTML = `<img src="/img/loading3.svg" alt="loading">`;
 					try {
 						const loadedComments = await this.loadMoreComments(nextChildren, moreId);
 

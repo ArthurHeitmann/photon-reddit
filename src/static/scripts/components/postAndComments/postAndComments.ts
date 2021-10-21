@@ -65,7 +65,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 		if (data)
 			this.initWithData(data);
 		else
-			this.append(this.tmpLoadingIcon = getLoadingIcon())
+			this.append(this.tmpLoadingIcon = getLoadingIcon("1"))
 	}
 
 	initWithData(data: PostCommentsListings) {
