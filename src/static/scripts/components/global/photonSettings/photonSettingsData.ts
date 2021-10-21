@@ -312,7 +312,6 @@ export const getSettingsSections = (): SettingsSection[] => [
 					{ text: "Always originals", value: ImageLoadingPolicy.alwaysOriginal },
 				], "imageLoadingPolicy", "Image previews", "Decide whether images in posts are loaded in max resolution or preview quality", SettingsApi.Photon
 			),
-			new NumberSetting({ allowRange: [0, Number.MAX_SAFE_INTEGER] }, "imageLimitedHeight", "Max image height", "Set the maximum image height in % of screen height. Set height to \"0\" to disable height limits.", SettingsApi.Photon)
 		]
 	},
 	{
@@ -329,6 +328,7 @@ export const getSettingsSections = (): SettingsSection[] => [
 		iconUrl: "/img/settings2.svg",
 		settings: [
 			new BooleanSetting("loadInlineMedia", "Expand media previews", "Expand previews for links with media (e.g. imgur.com/..., reddit.com/.../.png).", SettingsApi.Photon),
+			new NumberSetting({ allowRange: [0, Number.MAX_SAFE_INTEGER] }, "imageLimitedHeight", "Max media height", "Set the maximum height for images/videos in % of screen height. Set height to \"0\" to disable height limits.", SettingsApi.Photon),
 			new BooleanSetting("firstShowControlBar", "Initially show bottom bar", "Initially show or hide controls bar on the bottom of images and videos.", SettingsApi.Photon),
 			new BooleanSetting("enableFab", "Enable FAB", "Enable Floating Action Button (bottom left corner).", SettingsApi.Photon),
 			new BooleanSetting("tooltipsVisible", "Show tooltips", "Toggle tooltips when hovering some UI elements.", SettingsApi.Photon),

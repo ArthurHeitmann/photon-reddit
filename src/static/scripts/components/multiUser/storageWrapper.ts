@@ -49,6 +49,7 @@ function getDbObjectStoreValue(db: IDBDatabase, storeName: string, key: string):
 async function getFromDb(...keyPath: string[]): Promise<any> {
 	const db = await openDb();
 	let value = await getDbObjectStoreValue(db, objectStoreName, keyPath[0]);
+	db.close();
 	for (let i = 1; i < keyPath.length; i++)
 		value = value[keyPath[i]];
 	return value;
@@ -74,7 +75,10 @@ function setInDb(value: any, ...keyPath: string[]): Promise<void> {
 		const transaction = db.transaction(objectStoreName, "readwrite");
 		const objectStore = transaction.objectStore(objectStoreName);
 		const putRequest = objectStore.put(newVal, keyPath[0]);
-		putRequest.onsuccess = () => resolve();
+		putRequest.onsuccess = () => {
+			resolve();
+			db.close();
+		};
 		putRequest.onerror = () => reject(putRequest.error);
 	});
 }
@@ -85,11 +89,14 @@ function getAllKeysInDb(prefix: string): Promise<string[]> {
 		const transaction = db.transaction(objectStoreName, "readonly");
 		const objectStore = transaction.objectStore(objectStoreName);
 		const allKeysRequest = objectStore.getAllKeys();
-		allKeysRequest.onsuccess = () => resolve(
-			allKeysRequest.result
-				.map(key => String(key))
-				.filter(key => key.startsWith(prefix))
-		);
+		allKeysRequest.onsuccess = () => {
+			resolve(
+				allKeysRequest.result
+					.map(key => String(key))
+					.filter(key => key.startsWith(prefix))
+			);
+			db.close();
+		};
 		allKeysRequest.onerror = () => reject(allKeysRequest.error);
 	});
 }
@@ -100,7 +107,10 @@ function deleteKeyFromDb(key: string): Promise<void> {
 		const transaction = db.transaction(objectStoreName, "readwrite");
 		const objectStore = transaction.objectStore(objectStoreName);
 		const deleteRequest = objectStore.delete(key);
-		deleteRequest.onsuccess = () => resolve();
+		deleteRequest.onsuccess = () => {
+			resolve();
+			db.close();
+		};
 		deleteRequest.onerror = e => reject(e);
 	});
 }
