@@ -1,4 +1,4 @@
-import { PhEvents } from "../types/Events.js";
+import { PhEvents } from "../types/Events";
 import { randomString } from "./utils";
 
 export interface MessageFormat {

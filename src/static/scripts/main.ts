@@ -5,7 +5,6 @@
  */
 
 import { AuthState, checkAuthOnPageLoad, checkTokenRefresh } from "./auth/auth";
-import { initiateLogin } from "./auth/loginHandler";
 import Ph_Header from "./components/global/header/header";
 import Ph_Toast, { Level } from "./components/misc/toast/toast";
 import Users from "./components/multiUser/userManagement";
@@ -33,8 +32,6 @@ async function init(): Promise<void> {
 	registerServiceWorker();
 	$id("mainWrapper").insertAdjacentElement("afterbegin", new Ph_Header());
 	linksToSpa(document.body);
-	const loginBtn = $css(".loginButton")[0];
-	loginBtn.addEventListener("click", () => initiateLogin());
 
 	let thisUserFetch: Promise<void>;
 	if (await checkAuthOnPageLoad() === AuthState.loggedIn) {
@@ -52,7 +49,7 @@ async function init(): Promise<void> {
 			});
 	}
 	else
-		loginBtn.hidden = false;
+		$css(".loginButton")[0].hidden = false;
 	setInterval(checkTokenRefresh, 1000 * 30);
 	loadPosts();
 
