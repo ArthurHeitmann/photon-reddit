@@ -51,6 +51,7 @@ async function init(): Promise<void> {
 	else
 		$css(".loginButton")[0].hidden = false;
 	setInterval(checkTokenRefresh, 1000 * 30);
+	$id("initialLoadingIcon").remove();
 	loadPosts();
 
 	await checkForNewVersion();

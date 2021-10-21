@@ -11,6 +11,13 @@ body {
 	margin: auto;
 }
 
+#initialLoadingIcon {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	padding-top: vars.$header-height;
+}
+
 .dropdown {
 	display: none;
 }
