@@ -10,6 +10,7 @@ export default class Users {
 	static global: GlobalUserData;
 	private static _current: UserData;
 	static all: UserData[] = [];
+	static isSwitchingUser = false;
 
 	static async init(): Promise<void> {
 		Users.global = await (new GlobalUserData()).init();
@@ -48,11 +49,12 @@ export default class Users {
 	}
 
 	static get current(): UserData {
-		return this._current;
+		return Users._current;
 	}
 
 	static async switchUser(newUser: UserData) {
-		this._current = newUser;
+		Users.isSwitchingUser = true;
+		Users._current = newUser;
 		await Users.global.set(["lastActiveUser"], newUser.name);
 		await checkTokenRefresh();
 		if (newUser.d.auth.isLoggedIn) {
@@ -62,6 +64,7 @@ export default class Users {
 			]);
 		}
 		window.dispatchEvent(new Event(PhEvents.userChanged));
+		Users.isSwitchingUser = false;
 	}
 
 	static async add(auth: AuthData): Promise<void> {

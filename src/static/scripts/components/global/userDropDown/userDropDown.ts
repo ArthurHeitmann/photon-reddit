@@ -212,6 +212,8 @@ export default class Ph_UserDropDown extends HTMLElement {
 						onMainClick: async () => {
 							if (user === Users.current)
 								return;
+							if (Users.isSwitchingUser)
+								return;
 							loadingImg.classList.remove("hide");
 							Users.switchUser(user)
 								.then(() => loadingImg.classList.add("hide"))
