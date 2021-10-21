@@ -1,4 +1,5 @@
 import { getMySubs, redditInfo, subscribe } from "../api/redditApi";
+import Ph_Toast, { Level } from "../components/misc/toast/toast";
 import { RedditSubredditObj } from "../types/redditTypes";
 import { UserSubscriptions } from "./UserSubscriptions";
 import { stringSortComparer } from "./utils";
@@ -12,15 +13,23 @@ export interface SubsChangeEvent {
 export class SubredditManager extends UserSubscriptions<RedditSubredditObj, SubsChangeEvent> {
 
 	async load() {
-		const cached = this.loadUserContentFromLs("subs");
+		let cached = this.loadUserContentFromLs("subs");
+		if (cached && "error" in cached)
+			cached = null
 		if (cached === null)
 			await this.fetchSubreddits();
 	}
 
 	private async fetchSubreddits() {
 		const subs = await getMySubs(100);
+		if ("error" in subs) {
+			new Ph_Toast(Level.error, "Error getting subreddits");
+			return;
+		}
 		while(subs.data.after !== null) {
 			const tmpSubs = await getMySubs(100, subs.data.after);
+			if ("error" in tmpSubs)
+				return;
 			subs.data.children.push(...tmpSubs.data.children);
 			subs.data.after = tmpSubs.data.after;
 		}

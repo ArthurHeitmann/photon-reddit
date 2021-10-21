@@ -1,9 +1,11 @@
 import { RedditPreferences } from "../../../types/redditTypes";
+import { $class } from "../../../utils/htmlStatics";
 import { editableTimeStrToMs, makeElement, timeMsToEditableTimeStr } from "../../../utils/utils";
 import { photonWebVersion } from "../../../utils/version";
 import Users from "../../multiUser/userManagement";
 import Ph_Changelog from "../../photon/changelog/changelog";
-import { defaultSettings, ImageLoadingPolicy, NsfwPolicy, PhotonSettings } from "./photonSettings";
+import Ph_Tutorial from "../../photon/tutorial/tutorial";
+import Ph_PhotonSettings, { defaultSettings, ImageLoadingPolicy, NsfwPolicy, PhotonSettings } from "./photonSettings";
 
 export interface SettingsSection {
 	name: string,

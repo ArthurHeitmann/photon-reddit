@@ -15,13 +15,20 @@ export interface MultisChangeEvent {
 export class MultiManager extends UserSubscriptions<RedditMultiObj, MultisChangeEvent> {
 
 	async load(): Promise<void> {
-		const cached = this.loadUserContentFromLs("multis");
+		let cached = this.loadUserContentFromLs("multis");
+		if (cached && "error" in cached)
+			cached = null
 		if (cached === null)
 			await this.fetchMultis();
 	}
 
 	private async fetchMultis() {
-		this.userContent = await getMyMultis();
+		const multis = await getMyMultis();
+		if ("error" in multis) {
+			new Ph_Toast(Level.error, "Error getting multireddits");
+			return;
+		}
+		this.userContent = multis;
 		this.cacheUserContentLs("multis", true);
 	}
 

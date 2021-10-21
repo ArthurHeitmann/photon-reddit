@@ -54,14 +54,14 @@ export default class Ph_Toast extends HTMLElement {
 				<div class="info">${displayHtml}</div>
 			</div>
 			<button class="closeButton transparentButtonAlt">
-				<img src="/img/close.svg" draggable="false" alt="close">
+				<img src="/img/close.svg" draggable="false" alt="✖">
 			</button>
 		`;
 
 		if (options.onConfirm !== undefined) {
 			const confirmBtn = document.createElement("button");
 			confirmBtn.className = "confirmButton transparentButtonAlt";
-			confirmBtn.innerHTML = `<img src="/img/check.svg" alt="confirm" draggable="false" class="confirm">`;
+			confirmBtn.innerHTML = `<img src="/img/check.svg" alt="✔" draggable="false" class="confirm">`;
 			confirmBtn.addEventListener("click", this.onConfirm.bind(this));
 			this.$class("closeButton")[0].insertAdjacentElement("beforebegin", confirmBtn);
 		}
