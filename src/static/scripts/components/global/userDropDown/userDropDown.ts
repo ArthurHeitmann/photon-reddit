@@ -18,7 +18,7 @@ import {
 import Ph_FeedLink from "../../link/feedLink/feedLink";
 import Ph_MultiCreateOrEdit, { MultiBasicInfo } from "../../misc/multiCreateOrEdit/multiCreateOrEdit";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
-import UserData, { guestUserName } from "../../multiUser/userData";
+import UserData from "../../multiUser/userData";
 import Users from "../../multiUser/userManagement";
 import Ph_Header from "../header/header";
 
@@ -180,10 +180,10 @@ export default class Ph_UserDropDown extends HTMLElement {
 				"expand": "/img/downArrow.svg",
 				"none": "/img/transparent.svg"
 			}
-			function makeUser(params: { user: UserData, rightImg: keyof typeof userActionImages, additionalClasses?: string, onMainClick?: () => void, onSubBtnClick?: () => void}): HTMLElement {
+			function makeUser(params: { user: UserData, rightImg: keyof typeof userActionImages | "", additionalClasses?: string, onMainClick?: () => void, onSubBtnClick?: () => void}): HTMLElement {
 				return makeElement("div", { class: `userOption ${params.additionalClasses ?? ""}` }, [
 					makeElement("button", { class: "mainArea", onclick: params.onMainClick }, [
-						makeElement("img", { src: params.user.name !== guestUserName ? getUserIconUrl(params.user.d.userData) : "/img/user.svg" }),
+						makeElement("img", { src: !params.user.isGuest ? getUserIconUrl(params.user.d.userData) : "/img/user.svg" }),
 						makeElement("div", {}, params.user.displayName),
 					]),
 					params.rightImg !== "none" && makeElement(
@@ -206,7 +206,7 @@ export default class Ph_UserDropDown extends HTMLElement {
 				...Users.all.map(user => {
 					const userBtn = makeUser({
 						user: user,
-						rightImg: "remove",
+						rightImg: !user.isGuest && "remove",
 						additionalClasses: user === Users.current ? "selected" : "",
 						// switch to user
 						onMainClick: async () => {

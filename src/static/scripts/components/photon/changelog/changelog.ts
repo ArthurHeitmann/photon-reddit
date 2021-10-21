@@ -23,7 +23,7 @@ export default class Ph_Changelog extends Ph_ModalPane {
 		this.classList.add("remove");
 		this.classList.add("changelog");
 
-		this.content.append(getLoadingIcon());
+		this.content.append(getLoadingIcon("1"));
 
 		this.populate();
 	}

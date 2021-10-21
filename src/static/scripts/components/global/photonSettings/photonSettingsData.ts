@@ -53,7 +53,7 @@ export abstract class SettingConfig {
 		case SettingsApi.Photon:
 			return Users.global.d.photonSettings[this.settingKey];
 		case SettingsApi.Reddit:
-			return Users.current.d.redditPreferences[this.settingKey];
+			return Users.current.d.redditPreferences?.[this.settingKey];
 		}
 	}
 }
@@ -135,7 +135,7 @@ export class NumberSetting extends SettingConfig {
 					type: "number",
 					id: `${this.settingKey}Setting`,
 					class: "text",
-					value: this.getProperty().toString(),
+					value: this.getProperty()?.toString(),
 					onchange: (e: InputEvent) => onValueChange(this, Number((e.currentTarget as HTMLInputElement).value)),
 				}) as HTMLInputElement,
 			]),
@@ -257,7 +257,7 @@ export class MultiOptionSetting extends SettingConfig {
 	}
 
 	updateState(newVal) {
-		this.buttonsRoot.$class("selected")[0].classList.remove("selected");
+		this.buttonsRoot.$class("selected")[0]?.classList.remove("selected");
 		const option = this.options.find(option => option.value === newVal);
 		Array.from(this.buttonsRoot.children)
 			.find((btn: HTMLElement) => btn.textContent === option.text)
@@ -340,30 +340,24 @@ export const getSettingsSections = (): SettingsSection[] => [
 				makeElement("span", null, "Here are your Reddit Preferences from "),
 				makeElement("a", { href: "https://old.reddit.com/prefs", target: "_blank", excludeLinkFromSpa: "" }, "https://old.reddit.com/prefs")
 			])),
-			...(
-				Users.current.d.auth.isLoggedIn ? [
-						new MultiOptionSetting([
-							{ text: "Confidence", value: "confidence" },
-							{ text: "Top", value: "top" },
-							{ text: "New", value: "new" },
-							{ text: "Controversial", value: "controversial" },
-							{ text: "Old", value: "old" },
-							{ text: "Random", value: "random" },
-							{ text: "Q & A", value: "qa" },
-							{ text: "Live", value: "live" },
-						], "default_comment_sort", "Default Comment Sort", "", SettingsApi.Reddit),
-						new BooleanSetting("enable_followers", "Enable Followers", "Allow people to follow you.", SettingsApi.Reddit),
-						new BooleanSetting("hide_from_robots", "Hide Profile from Search Engines", "Hide your profile from search results (like Google, Bing, DuckDuckGo, ...)", SettingsApi.Reddit),
-						new BooleanSetting("ignore_suggested_sort", "Ignore Suggested Sort", "Ignore suggested sort set by subreddit moderators.", SettingsApi.Reddit),
-						new NumberSetting({ allowRange: [1, 500] }, "num_comments", "Number of Comments", "Number of comments to load when viewing a post.", SettingsApi.Reddit),
-						new NumberSetting({ allowRange: [1, 100] }, "numsites", "Number of loaded Posts", "Number of posts loaded when viewing a subreddit or scrolling.", SettingsApi.Reddit),
-						new BooleanSetting("over_18", "Over 18", "Enable to show NSFW posts", SettingsApi.Reddit),
-						new BooleanSetting("search_include_over_18", "Include NSFW results in searches", "", SettingsApi.Reddit),
-						new BooleanSetting("show_presence", "Show Online Status", "Other people can see if you are online.", SettingsApi.Reddit)
-					]
-				: [new HTMLElementSetting(makeElement("p", null, "Log in to see your Reddit Preferences"))]
-			),
-
+			new MultiOptionSetting([
+				{ text: "Confidence", value: "confidence" },
+				{ text: "Top", value: "top" },
+				{ text: "New", value: "new" },
+				{ text: "Controversial", value: "controversial" },
+				{ text: "Old", value: "old" },
+				{ text: "Random", value: "random" },
+				{ text: "Q & A", value: "qa" },
+				{ text: "Live", value: "live" },
+			], "default_comment_sort", "Default Comment Sort", "", SettingsApi.Reddit),
+			new BooleanSetting("enable_followers", "Enable Followers", "Allow people to follow you.", SettingsApi.Reddit),
+			new BooleanSetting("hide_from_robots", "Hide Profile from Search Engines", "Hide your profile from search results (like Google, Bing, DuckDuckGo, ...)", SettingsApi.Reddit),
+			new BooleanSetting("ignore_suggested_sort", "Ignore Suggested Sort", "Ignore suggested sort set by subreddit moderators.", SettingsApi.Reddit),
+			new NumberSetting({ allowRange: [1, 500] }, "num_comments", "Number of Comments", "Number of comments to load when viewing a post.", SettingsApi.Reddit),
+			new NumberSetting({ allowRange: [1, 100] }, "numsites", "Number of loaded Posts", "Number of posts loaded when viewing a subreddit or scrolling.", SettingsApi.Reddit),
+			new BooleanSetting("over_18", "Over 18", "Enable to show NSFW posts", SettingsApi.Reddit),
+			new BooleanSetting("search_include_over_18", "Include NSFW results in searches", "", SettingsApi.Reddit),
+			new BooleanSetting("show_presence", "Show Online Status", "Other people can see if you are online.", SettingsApi.Reddit)
 		]
 	},
 	{

@@ -34,7 +34,7 @@ export default class Users {
 			Users._current = Users.all[0];
 			await Users.global.set(["lastActiveUser"], Users._current.name);
 		}
-		if (users.length === 0 || !Users.all.some(user => user.name === guestUserName)) {
+		if (users.length === 0 || !Users.all.some(user => user.isGuest)) {
 			const guestUser = new UserData(guestUserName);
 			await guestUser.init();
 			Users.all.push(guestUser);

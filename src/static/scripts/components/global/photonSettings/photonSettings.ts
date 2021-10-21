@@ -83,15 +83,24 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 		this.sectionsConfig = getSettingsSections();
 
 		const sections: { [name: string]: HTMLElement } = {};
+		const redditPrefsElements: HTMLElement[] = [];
 		for (const section of this.sectionsConfig) {
 			sections[section.name] = makeElement("div", { class: "section" }, [
 				makeElement("div", { class: "sectionName" }, section.name),
 				...section.settings.map(
-					setting => setting.getElement(this.onSettingChange.bind(this))
+					setting => {
+						const element = setting.getElement(this.onSettingChange.bind(this));
+						if (section.name === "Reddit Prefs")
+							redditPrefsElements.push(element);
+						return element;
+					}
 				)
 			]);
 		}
-		sections[this.sectionsConfig[0].name].classList.add("selected")
+		sections[this.sectionsConfig[0].name].classList.add("selected");
+		const updateRedditPrefsVisibility = () => redditPrefsElements.forEach(e => e.classList.toggle("hide", Users.current.isGuest));
+		updateRedditPrefsVisibility();
+		window.addEventListener(PhEvents.userChanged, updateRedditPrefsVisibility);
 
 		this.content.append(
 			makeElement("div", { class: "sectionsSelection" },[

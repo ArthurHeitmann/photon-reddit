@@ -38,12 +38,14 @@ export default class UserData extends DataAccessor<_UserData> {
 	name: string;
 	inboxUnreadIds: Set<string> = new Set();
 	isLockOwner = false;
+	isGuest: boolean;
 
 	constructor(name: string) {
 		super();
 
 		this.key = `u/${name}`;
 		this.name = name;
+		this.isGuest = name === guestUserName;
 
 		window.addEventListener("beforeunload", this.unlockBeforePageUnload.bind(this));
 	}
@@ -79,7 +81,7 @@ export default class UserData extends DataAccessor<_UserData> {
 	}
 
 	get displayName(): string {
-		return this.name === guestUserName ?
+		return this.isGuest ?
 			"Guest" :
 			`u/${this.name}`;
 	}
