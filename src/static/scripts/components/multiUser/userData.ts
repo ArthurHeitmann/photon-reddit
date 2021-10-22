@@ -52,7 +52,7 @@ export default class UserData extends DataAccessor<_UserData> {
 	async init(): Promise<this> {
 		await super.init();
 		if (wasDbUpgraded.wasUpgraded) {
-			this.tryMigrateFromLsToLoaded(["loginRecommendationFlag"], ["loginSubPromptDisplayed"], val => val === "set");
+			this.tryMigrateFromLsToLoaded(["loginRecommendationFlag"], ["loginSubPromptDisplayed"], true, val => val === "set");
 			await setInStorage(this.loaded, this.key);
 		}
 		return this;

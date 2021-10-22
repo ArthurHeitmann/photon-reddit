@@ -62,4 +62,4 @@ export function clearAllOldData() {
 Users.ensureDataHasLoaded().then(() => setTimeout(() => {
 	clearAllOldData();
 	setInterval(() => clearAllOldData(), 1000 * 60 * 60);		// clear cache every 60 minutes
-}, 10 * 1000));
+}, 60 * 1000 * 5));

@@ -32,12 +32,12 @@ export default class GlobalUserData extends DataAccessor<_GlobalData> {
 		await super.init();
 
 		if (wasDbUpgraded.wasUpgraded) {
-			this.tryMigrateFromLsToLoaded(["clientIdData", "id"], ["analytics", "clientId"]);
+			this.tryMigrateFromLsToLoaded(["clientIdData", "id"], ["analytics", "clientId"], false);
 			this.tryMigrateFromLsToLoaded(["clientIdData", "lastSetMillisUtc"], ["analytics", "idInitTime"]);
 			this.tryMigrateFromLsToLoaded(["lastReportMs"], ["analytics", "lastReportAt"]);
 			this.tryMigrateFromLsToLoaded(["fabConfig"], ["fabConfig"]);
 			this.tryMigrateFromLsToLoaded(["firefoxPrivateModeCheck"], ["firefoxPrivateCheckCompleted"]);
-			this.tryMigrateFromLsToLoaded(["firstTimeFlag"], ["isFirstTimeVisit"], val => val !== "set");
+			this.tryMigrateFromLsToLoaded(["firstTimeFlag"], ["isFirstTimeVisit"], true, val => val !== "set");
 			this.tryMigrateFromLsToLoaded(["hasCompletedTutorial"], ["hasAcknowledgedTutorial"]);
 			this.tryMigrateFromLsToLoaded(["isHeaderPinned"], ["isHeaderPinned"]);
 			this.tryMigrateFromLsToLoaded(["seenPosts"], ["seenPosts"]);

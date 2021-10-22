@@ -53,7 +53,7 @@ export default abstract class DataAccessor<T> {
 		await setInStorage(this.loaded, this.key);
 	}
 
-	protected tryMigrateFromLsToLoaded(lsKeys: string[], loadedKeys: string[], transformer = val => val) {
+	protected tryMigrateFromLsToLoaded(lsKeys: string[], loadedKeys: string[], removeOldKey = true, transformer = val => val) {
 		try {
 			if (!(lsKeys[0] in localStorage))
 				return;
@@ -69,7 +69,8 @@ export default abstract class DataAccessor<T> {
 			for (let i = 0; i < loadedKeys.length - 1; i++)
 				target = target[loadedKeys[i]];
 			target[loadedKeys[loadedKeys.length - 1]] = transformer(lsVal);
-			localStorage.removeItem(lsKeys[0]);
+			if (removeOldKey)
+				localStorage.removeItem(lsKeys[0]);
 		}
 		catch {}
 	}
