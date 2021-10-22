@@ -30,6 +30,7 @@ export default class GlobalUserData extends DataAccessor<_GlobalData> {
 
 	async init(): Promise<this> {
 		await super.init();
+
 		if (wasDbUpgraded.wasUpgraded) {
 			this.tryMigrateFromLsToLoaded(["clientIdData", "id"], ["analytics", "clientId"]);
 			this.tryMigrateFromLsToLoaded(["clientIdData", "lastSetMillisUtc"], ["analytics", "idInitTime"]);
@@ -44,6 +45,12 @@ export default class GlobalUserData extends DataAccessor<_GlobalData> {
 			this.tryMigrateFromLsToLoaded(["version"], ["photonVersion"]);
 			await setInStorage(this.loaded, this.key);
 		}
+
+		await this.set(["photonSettings"], {
+			...defaultSettings,
+			...this.d.photonSettings
+		});
+
 		return this;
 	}
 

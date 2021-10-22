@@ -132,7 +132,9 @@ window.addEventListener(PhEvents.settingsChanged, (e: CustomEvent) => {
 	}
 });
 
-export function addRedditStickers(element: Element, commentData: RedditCommentData) {
+export function addRedditEmojis(element: Element, commentData: RedditCommentData) {
+	if (!Users.global.d.photonSettings.displayRedditEmojis)
+		return;
 	if (!commentData.media_metadata)
 		return;
 	for (const [id, data] of Object.entries(commentData.media_metadata)) {

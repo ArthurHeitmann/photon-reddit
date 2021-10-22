@@ -40,7 +40,8 @@ export interface PhotonSettings {
 	isIncognitoEnabled?: boolean,
 	tooltipsVisible?: boolean,
 	messageCheckIntervalMs?: number,
-	userShortCacheTTLMs?: number
+	userShortCacheTTLMs?: number,
+	displayRedditEmojis?: boolean,
 }
 
 // default config
@@ -61,7 +62,8 @@ export const defaultSettings: PhotonSettings = {
 	isIncognitoEnabled: false,
 	tooltipsVisible: true,
 	messageCheckIntervalMs: 30 * 1000,
-	userShortCacheTTLMs: 1000 * 60 * 5
+	userShortCacheTTLMs: 1000 * 60 * 5,
+	displayRedditEmojis: true
 };
 
 /** Stores and manages global settings */

@@ -17,7 +17,7 @@ import {
 } from "../../types/redditTypes";
 import Votable from "../../types/votable";
 import { emojiFlagsToImages } from "../../utils/htmlStatics";
-import { addRedditStickers, elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff";
+import { addRedditEmojis, elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff";
 import {
 	hasParams,
 	isObjectEmpty,
@@ -224,7 +224,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 		]);
 
 		emojiFlagsToImages(mainPart);
-		addRedditStickers(mainPart.$class("content")[0], commentData.data as RedditCommentData);
+		addRedditEmojis(mainPart.$class("content")[0], commentData.data as RedditCommentData);
 		if (commentData.data["all_awardings"] && commentData.data["all_awardings"].length > 0) {
 			const nonLocked = mainPart.$css(".header > :not(.locked)");
 			nonLocked[nonLocked.length - 1].insertAdjacentElement("afterend", new Ph_AwardsInfo(commentData.data["all_awardings"]));
