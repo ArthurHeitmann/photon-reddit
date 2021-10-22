@@ -1,6 +1,16 @@
-export const photonVersion = "0.6.8";		/// <change version script>
+export const photonVersion = "1.0.0";		/// <change version script>
 
 export const photonChangelog = {
+	"1.0.0": {
+		"New": [
+			"Added support for multiple user accounts",
+			"(Add new users and switch users from the actions dropdown)",
+			"Reddit emojis in comments are now displayed",
+		],
+		"Fixed": [
+			"Many small fixes & changes"
+		]
+	},
 	"0.6.8": {
 		"New": [
 			"Gifs in comments are now displayed as text instead and can be expanded manually. (to auto expand: settings > General UI > Expand media previews)"
