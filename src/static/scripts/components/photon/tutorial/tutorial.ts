@@ -13,9 +13,15 @@ import Ph_UserDropDown from "../../global/userDropDown/userDropDown";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
 import Users from "../../multiUser/userManagement";
 
+type textPosition = "TL" | "TR" | "BL" | "BR";
+
 interface TutorialStep {
 	highlightElementSelector: string | null,
+	getAdditionalWidth?: () => number,
 	getAdditionalHeight?: () => number,
+	additionXOffset?: number,
+	additionYOffset?: number,
+	textPosition?: textPosition,
 	updateHighlightForMs?: number,
 	displayText: string[],
 	showIf?: () => boolean,
@@ -48,6 +54,21 @@ const tutorialDescription: TutorialDescription = {
 				"In fullscreen you can zoom in and drag images/videos"
 			],
 			updateHighlightForMs: 300,
+		},
+		{
+			highlightElementSelector: "ph-fab",
+			getAdditionalHeight: () => 250,
+			getAdditionalWidth: () => 250,
+			additionXOffset: -15,
+			additionYOffset: -235,
+			textPosition: "BR",
+			updateHighlightForMs: 300,
+			displayText: [
+				"Use the FAB (Float Action Button) for quick access to your favorite pages",
+				"It's fully customizable",
+			],
+			beginAction: () => $css("ph-fab")[0].classList.add("show"),
+			endAction: () => $css("ph-fab")[0].classList.remove("show"),
 		},
 		{
 			highlightElementSelector: "ph-header .actions",
@@ -303,6 +324,7 @@ export default class Ph_Tutorial extends HTMLElement {
 			line.innerText = text;
 			return line;
 		}));
+		this.stepText.className = `stepText ${currentStep.textPosition ?? "BL"}`;
 
 		if (currentStep.beginAction)
 			currentStep.beginAction();
@@ -326,14 +348,17 @@ export default class Ph_Tutorial extends HTMLElement {
 	updateHighlight(currentStep: TutorialStep) {
 		if (currentStep.highlightElementSelector) {
 			const highlightTarget = $css(currentStep.highlightElementSelector)[0] as HTMLElement;
+			const additionWidth = currentStep.getAdditionalWidth?.() ?? 0;
 			const additionHeight = currentStep.getAdditionalHeight?.() ?? 0;
+			const xOffset = currentStep.additionXOffset ?? 0;
+			const yOffset = currentStep.additionYOffset ?? 0;
 			if (highlightTarget) {
 				const bounds = highlightTarget.getBoundingClientRect();
 				this.setHighlightBounds(
-					Math.max(0, bounds.top - 7),
-					Math.max(0, window.innerWidth - bounds.right - 11),
-					Math.max(0, window.innerHeight - bounds.bottom - 7) - additionHeight,
-					Math.max(0, bounds.left - 7),
+					Math.max(0, bounds.top - 7) + yOffset,
+					Math.max(0, window.innerWidth - bounds.right - 11) - additionWidth - xOffset,
+					Math.max(0, window.innerHeight - bounds.bottom - 7) - additionHeight - yOffset,
+					Math.max(0, bounds.left - 7) + xOffset,
 				);
 			}
 			else {

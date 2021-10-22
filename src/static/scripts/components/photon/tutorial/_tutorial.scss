@@ -89,9 +89,24 @@
 
 	.stepText {
 		position: fixed;
-		bottom: 5rem;
 		left: 1rem;
 		right: 1rem;
+
+		&.BL, &.BR {
+			bottom: 5rem;
+		}
+
+		&.BR {
+			text-align: right;
+		}
+
+		&.TL, &.TR {
+			top: 5rem;
+		}
+
+		&.TR {
+			text-align: right;
+		}
 
 		* {
 			font-size: 1.75rem;
