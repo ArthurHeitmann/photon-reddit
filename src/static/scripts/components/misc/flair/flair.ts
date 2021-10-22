@@ -40,7 +40,7 @@ export default class Ph_Flair extends HTMLElement {
 					case "text":
 						const text = document.createElement("span");
 						text.className = "flairText";
-						text.innerText = flairPart.t;
+						text.innerText = flairPart.t.replace(/\n/g, " ");
 						this.flairContent.append(text);
 						break;
 					case "emoji":
@@ -62,7 +62,7 @@ export default class Ph_Flair extends HTMLElement {
 			}
 		}
 		else if (data.type === "text") {
-			this.flairContent.innerText = data.text;
+			this.flairContent.innerText = data.text?.replace(/\n/g, " ") || "";
 		}
 		else {
 			this.flairContent.innerText = `Unknown Flair ${data.text}`;
