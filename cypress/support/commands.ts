@@ -23,3 +23,9 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+Cypress.Commands.add("clearIdb", () => new Cypress.Promise((resolve, reject) => {
+	const request = indexedDB.deleteDatabase("photonDb");
+	request.onsuccess = () => resolve();
+	request.onerror = () => resolve();
+}));
