@@ -9,7 +9,9 @@ import Ph_MediaViewer from "../components/mediaViewer/mediaViewer";
 import Users from "../components/multiUser/userManagement";
 import { pushLinkToHistoryComb } from "../historyState/historyStateManager";
 import { PhEvents } from "../types/Events";
+import { RedditCommentData } from "../types/redditTypes";
 import { $classAr } from "./htmlStatics";
+import { makeElement } from "./utils";
 
 /** Converts all same origin links of an element to SPA (single page application) links */
 export function linksToSpa(elem: HTMLElement, inlineMedia: boolean = false) {
@@ -129,3 +131,43 @@ window.addEventListener(PhEvents.settingsChanged, (e: CustomEvent) => {
 			a.click();
 	}
 });
+
+export function addRedditStickers(element: Element, commentData: RedditCommentData) {
+	if (!commentData.media_metadata)
+		return;
+	for (const [id, data] of Object.entries(commentData.media_metadata)) {
+		// check if sticker is used in markdown
+		if (!(new RegExp(`!\\[\\w+]\\(${id}\\)`).test(commentData.body)))
+			continue;
+		const htmlSearchText = `:${id.match(/([^|]*\|)*([^|]*)/)[2]}:`;
+		let matchingNode: Text;
+		while (matchingNode = getTextNodeWithText(element, htmlSearchText)) {
+			const replaceNode = matchingNode.splitText(matchingNode.textContent.indexOf(htmlSearchText));
+			replaceNode.splitText(htmlSearchText.length);
+			replaceNode.replaceWith(makeElement(
+				"img", {
+					src: data.s.gif ?? data.s.u,
+					width: data.s.x.toString(),
+					height: data.s.y.toString(),
+					class: "redditSticker",
+					alt: htmlSearchText
+				}
+			));
+		}
+	}
+}
+
+function getTextNodeWithText(element: Node, searchString: string): Text | undefined {
+	if (element instanceof Text && element.textContent.includes(searchString))
+		return element;
+	for (const child of element.childNodes) {
+		if (child instanceof Text && child.textContent.includes(searchString))
+			return child;
+		for (const subChild of child.childNodes) {
+			const res = getTextNodeWithText(subChild, searchString);
+			if (res)
+				return res;
+		}
+	}
+	return null;
+}

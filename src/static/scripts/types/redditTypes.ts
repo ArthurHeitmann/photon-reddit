@@ -298,6 +298,21 @@ export interface RedditCommentData extends RedditApiData {
 	likes: boolean | null,
 	link_id: string,
 	locked: boolean,
+	media_metadata?: {
+		[key: string]: {
+			e: string,
+			id: string,
+			m: string,
+			s: {
+				x: number,
+				y: number,
+				u?: string,
+				gif?: string,
+			},
+			status: string,
+			t: string
+		}
+	}
 	mod_note: any,
 	mod_reason_by: any,
 	mod_reason_title: any,
