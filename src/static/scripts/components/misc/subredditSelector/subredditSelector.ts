@@ -90,7 +90,7 @@ export default class Ph_SubredditSelector extends HTMLElement {
 	}
 
 	async selectCurrent() {
-		const subInfo = await getSubInfo(`/r/${this.input.value}`);
+		const subInfo = await getSubInfo(`/r/${this.input.value.replace(/^\/?r\//, "")}`);
 		if (subInfo["error"]) {
 			new Ph_Toast(Level.error, "Couldn't find subreddit", { timeout: 2000 });
 			return;

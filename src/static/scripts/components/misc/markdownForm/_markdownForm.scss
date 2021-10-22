@@ -66,28 +66,31 @@
 
 		> button {
 			width: max-content;
-			padding: .5rem;
+			padding: .25rem .5rem;
 			border-radius: 1.5rem;
-			transition: filter .25s ease;
+			transition: all .25s ease;
+			--btn-color: none;
+			border: 2px solid var(--btn-color);
 
 			&:disabled {
 				filter: grayscale(.75) !important;
 			}
 
 			&:hover {
-				filter: brightness(1.25);
+				color: var(--btn-color);
 			}
 
 			&:active {
-				filter: brightness(1.5);
+				background: var(--btn-color);
+				color: vars.$text-color;
 			}
 
 			&.submitBtn {
-				background: vars.$primary-contrast;
+				--btn-color: #{vars.$primary-contrast};
 			}
 
 			&.cancelBtn {
-				background: vars.$cancel-btn-bg;
+				--btn-color: #{vars.$cancel-btn-bg};
 			}
 		}
 	}
