@@ -1,6 +1,11 @@
-export const photonVersion = "1.0.0";		/// <change version script>
+export const photonVersion = "1.0.1";		/// <change version script>
 
 export const photonChangelog = {
+	"1.0.1": {
+		"New": [
+			"You can now filter out posts (by subreddits, user, title, or flair)",
+		],
+	},
 	"1.0.0": {
 		"New": [
 			"Added support for multiple user accounts",
