@@ -41,9 +41,9 @@ export interface PhotonSettings {
 	isIncognitoEnabled?: boolean,
 	tooltipsVisible?: boolean,
 	messageCheckIntervalMs?: number,
+	subredditBlacklist?: string[],
 	userShortCacheTTLMs?: number,
 	displayRedditEmojis?: boolean,
-	subredditBlacklist?: string[],
 	userBlacklist?: string[],
 	tileTextBlacklist?: string[],
 	flairTextBlacklist?: string[]
@@ -196,6 +196,16 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 		const newPrefs: RedditPreferences = {};
 		newPrefs[source.settingKey] = newVal;
 		await updateUserPreferences(newPrefs);
+	}
+
+	async setSettingTo<K extends keyof PhotonSettings>(prop: K, value: PhotonSettings[K]) {
+		const settingConfig = this.sectionsConfig
+			.map(section => section.settings)
+			.flat()
+			.find(setting => setting.settingKey === prop);
+		if (!settingConfig)
+			throw "Invalid key";
+		await this.onPhotonSettingChange(settingConfig, value);
 	}
 
 	private async onSettingsExternalChange(msg: MessageFormat) {

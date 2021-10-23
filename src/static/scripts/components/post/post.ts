@@ -15,7 +15,7 @@ import { pushLinkToHistoryComb, PushType } from "../../historyState/historyState
 import ViewsStack from "../../historyState/viewsStack";
 import { PhEvents } from "../../types/Events";
 import { FlairApiData, RedditApiObj, RedditListingObj, RedditPostData, RedditPostObj } from "../../types/redditTypes";
-import { emojiFlagsToImages, escADQ, escHTML, getLoadingIcon } from "../../utils/htmlStatics";
+import { $css, emojiFlagsToImages, escADQ, escHTML, getLoadingIcon } from "../../utils/htmlStatics";
 import { linksToSpa } from "../../utils/htmlStuff";
 import {
 	escRegex,
@@ -28,7 +28,7 @@ import {
 	timePassedSince
 } from "../../utils/utils";
 import Ph_FeedItem from "../feed/feedItem/feedItem";
-import { NsfwPolicy, PhotonSettings } from "../global/photonSettings/photonSettings";
+import Ph_PhotonSettings, { NsfwPolicy, PhotonSettings } from "../global/photonSettings/photonSettings";
 import Ph_AwardsInfo from "../misc/awardsInfo/awardsInfo";
 import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown";
 import Ph_DropDownEntry, { DropDownActionData, DropDownEntryParam } from "../misc/dropDown/dropDownEntry/dropDownEntry";
@@ -48,21 +48,11 @@ export default class Ph_Post extends Ph_FeedItem {
 	voteUpButton: Ph_VoteButton;
 	currentUpvotes: HTMLDivElement;
 	voteDownButton: Ph_VoteButton;
-	// url: string;
 	feedUrl: string;
-	// permalink: string;
-	// postTitle: string
 	cover: HTMLElement = null;
 	totalVotes: number;
-	// fullName: string;
 	currentVoteDirection: VoteDirection;
-	// isSaved: boolean;
-	// isLocked: boolean;
-	// sendReplies: boolean;
 	postBody: Ph_PostBody;
-	// isPinned: boolean;
-	// isNsfw: boolean;
-	// isSpoiler: boolean;
 	data: RedditPostData;
 	wasInitiallySeen: boolean;
 	becameVisibleAt: number;
@@ -78,18 +68,9 @@ export default class Ph_Post extends Ph_FeedItem {
 			throw "Invalid comment data type";
 
 		this.data = postData.data;
-		// this.fullName = postData.data.name;
 		this.currentVoteDirection = voteDirectionFromLikes(postData.data.likes);
 		this.totalVotes = postData.data.ups + -parseInt(this.currentVoteDirection);
-		// this.isSaved = postData.data.saved;
-		// this.url = postData.data.url;
 		this.feedUrl = feedUrl;
-		// this.permalink = postData.data.permalink;
-		// this.postTitle = postData.data.title;
-		// this.isPinned = postData.data.stickied;
-		// this.sendReplies = postData.data.send_replies;
-		// this.isNsfw = postData.data.over_18;
-		// this.isSpoiler = postData.data.spoiler;
 		this.wasInitiallySeen = Users.global.hasPostsBeenSeen(this.data.name);
 		this.classList.add("post");
 
@@ -116,8 +97,6 @@ export default class Ph_Post extends Ph_FeedItem {
 		actionWrapper.append(this.voteDownButton);
 		this.setVotesState(this.currentVoteDirection);
 
-
-
 		this.postBody = new Ph_PostBody(undefined);
 		if (!isInFeed)
 			this.initPostBody(postData);
@@ -128,6 +107,14 @@ export default class Ph_Post extends Ph_FeedItem {
 				label: this.data.saved ? "Unsave" : "Save",
 				labelImgUrl: this.data.saved ? "/img/bookmarkFilled.svg" : "/img/bookmarkEmpty.svg",
 				onSelectCallback: this.toggleSave.bind(this)
+			},
+			{
+				label: "Filter out",
+				labelImgUrl: "/img/filter.svg",
+				nestedEntries: [
+					{ label: `Filter r/${this.data.subreddit}`, labelImgUrl: "/img/rSlash.svg", onSelectCallback: () => this.addToFilters("subredditBlacklist", this.data.subreddit) },
+					{ label: `Filter u/${this.data.author}`, labelImgUrl: "/img/user.svg", onSelectCallback: () => this.addToFilters("userBlacklist", this.data.author)},
+				]
 			},
 			{ label: "Share", labelImgUrl: "/img/share.svg", nestedEntries: [
 					{ label: "Copy Post Link", value: "post link", onSelectCallback: this.share.bind(this) },
@@ -619,6 +606,13 @@ export default class Ph_Post extends Ph_FeedItem {
 
 	crossPost() {
 		new Ph_Toast(Level.info, "Currently not supported", { timeout: 5000 });
+	}
+
+	private addToFilters(key: keyof PhotonSettings, entry: string) {
+		const newList = [...Users.global.d.photonSettings[key] as string[]];
+		newList.push(entry);
+		const settings = $css(".photonSettings")[0] as Ph_PhotonSettings;
+		settings.setSettingTo(key, newList);
 	}
 }
 
