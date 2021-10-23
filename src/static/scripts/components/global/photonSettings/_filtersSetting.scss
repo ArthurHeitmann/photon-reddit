@@ -1,0 +1,48 @@
+@use "../../../../style/vars";
+
+.filtersWrapper {
+	.filtersList {
+		max-height: 15rem;
+		overflow-y: auto;
+	}
+
+	.filtersEntry {
+		display: flex;
+		align-items: center;
+		height: 2.25rem;
+
+		button {
+			width: 1.5rem;
+			height: 1.5rem;
+			background-size: cover;
+			margin: 0 .5rem;
+			--dim: 2rem;
+
+			&.add {
+				background-image: url("/img/add.svg");
+			}
+
+			&.remove {
+				background-image: url("/img/close.svg");
+			}
+		}
+
+		div {
+
+		}
+
+		input {
+			border-bottom: 1px solid vars.$border-color;
+			transition: all .25s ease;
+			width: 15rem;
+
+			&:hover {
+				border-bottom: 1px solid vars.$primary-faint;
+			}
+
+			&:focus {
+				border-bottom: 1px solid vars.$primary;
+			}
+		}
+	}
+}

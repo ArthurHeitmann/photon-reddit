@@ -8,7 +8,8 @@ import { deepClone, ensurePageLoaded, isJsonEqual, isObjectEmpty, makeElement } 
 import Ph_ModalPane from "../../misc/modalPane/modalPane";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
 import Users from "../../multiUser/userManagement";
-import { getSettingsSections, SettingConfig, SettingsApi, SettingsSection } from "./photonSettingsData";
+import { SettingConfig, SettingsApi, SettingsSection } from "./photonSettingsData";
+import { getSettingsSections } from "./settingsSections";
 import "./styleSettingsListener";
 
 export enum ImageLoadingPolicy {
@@ -42,6 +43,10 @@ export interface PhotonSettings {
 	messageCheckIntervalMs?: number,
 	userShortCacheTTLMs?: number,
 	displayRedditEmojis?: boolean,
+	subredditBlacklist?: string[],
+	userBlacklist?: string[],
+	tileTextBlacklist?: string[],
+	flairTextBlacklist?: string[]
 }
 
 // default config
@@ -63,7 +68,11 @@ export const defaultSettings: PhotonSettings = {
 	tooltipsVisible: true,
 	messageCheckIntervalMs: 30 * 1000,
 	userShortCacheTTLMs: 1000 * 60 * 5,
-	displayRedditEmojis: true
+	displayRedditEmojis: true,
+	subredditBlacklist: [],
+	userBlacklist: [],
+	tileTextBlacklist: [],
+	flairTextBlacklist: [],
 };
 
 /** Stores and manages global settings */

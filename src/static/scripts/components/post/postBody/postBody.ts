@@ -144,7 +144,6 @@ customElements.define("ph-post-body", Ph_PostBody);
 
 enum PostType {
 	link,
-	media,
 	image,
 	video,
 	redditGallery,
