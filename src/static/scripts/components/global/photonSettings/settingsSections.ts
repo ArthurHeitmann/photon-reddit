@@ -38,7 +38,7 @@ export const getSettingsSections = (): SettingsSection[] => [
 			new FiltersSetting("subredditBlacklist", "Subreddits", "Posts from these subreddits will be hidden. They are still visible when visiting the actual subreddit.", SettingsApi.Photon, input => input.replace(/^\/?r\//, "")),
 			new FiltersSetting("userBlacklist", "Users", "Posts from these users will be hidden. They are still visible when visiting the users profile.", SettingsApi.Photon, input => input.replace(/^\/?(u|user)\//, "")),
 			new FiltersSetting("tileTextBlacklist", "Post Tile", "Posts where the title contains on of these keywords will be hidden.", SettingsApi.Photon),
-			new FiltersSetting("flairTextBlacklist", "Post Tile", "Posts with flairs that contain on of these keywords will be hidden.", SettingsApi.Photon),
+			new FiltersSetting("flairTextBlacklist", "Flair", "Posts with flairs that contain on of these keywords will be hidden.", SettingsApi.Photon),
 		]
 	},
 	{

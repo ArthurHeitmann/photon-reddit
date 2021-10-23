@@ -72,8 +72,8 @@ export default class Ph_PostAndComments extends HTMLElement {
 		if (!hasParams(arguments)) return;
 
 		// write comment form
-		if (!this.post.isLocked) {
-			const commentForm = new Ph_CommentForm(this.post, false);
+		if (!(this.post.data.archived || this.post.data.locked)) {
+			const commentForm = new Ph_CommentForm(this.post.data.name, false);
 			this.append(commentForm);
 			commentForm.addEventListener(PhEvents.commentSubmitted,
 				(e: CustomEvent) => this.comments.insertAdjacentElement("afterbegin",
@@ -91,7 +91,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 			const highlightedComment = this.comments.$css(`[data-id=t1_${commentLinkMatches[1]}]`)[0];
 			if (highlightedComment) {
 				highlightedComment.classList.add("highlight");
-				this.comments.insertParentLink(this.post.permalink, "Load all comments");
+				this.comments.insertParentLink(this.post.data.permalink, "Load all comments");
 				setTimeout(() => highlightedComment.scrollIntoView({ behavior: "smooth" }), 500);
 			}
 		}

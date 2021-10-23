@@ -104,7 +104,7 @@ export default class Ph_Message extends Ph_Readable {
 				const replyForm = new Ph_MarkdownForm("Send", false);
 				mainPart.append(replyForm);
 				replyForm.addEventListener(PhEvents.submit, async () => {
-					const response = await comment(this.lastMessageFromOther, replyForm.textField.value);
+					const response = await comment(this.lastMessageFromOther.fullName, replyForm.textField.value);
 					if (response["error"]) {
 						new Ph_Toast(Level.error, `Couldn't reply (${escHTML(response["message"])})`);
 						console.error(response);

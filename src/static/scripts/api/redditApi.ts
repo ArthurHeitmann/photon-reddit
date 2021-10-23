@@ -17,7 +17,6 @@ import {
 	RedditSubredditObj,
 	RedditUserObj
 } from "../types/redditTypes";
-import Votable, { FullName } from "../types/votable";
 import { isObjectEmpty, splitPathQuery, throttle } from "../utils/utils";
 
 /**
@@ -126,11 +125,11 @@ export function voteDirectionFromLikes(likes: boolean) {
 	}
 }
 
-export async function vote(votable: Votable): Promise<boolean> {
+export async function vote(fullname: string, voteDirection: VoteDirection): Promise<boolean> {
 	try {
 		const resp = await redditApiRequest("/api/vote", [
-			["dir", votable.currentVoteDirection], 
-			["id", votable.fullName]
+			["dir", voteDirection],
+			["id", fullname]
 		],
 		true, { method: "POST" });
 
@@ -143,10 +142,10 @@ export async function vote(votable: Votable): Promise<boolean> {
 	}
 }
 
-export async function save(votable: Votable): Promise<boolean> {
+export async function save(fullname: string, shouldSave: boolean): Promise<boolean> {
 	try {
-		const resp = await redditApiRequest(votable.isSaved ? "/api/save" : "/api/unsave", [
-			["id", votable.fullName]
+		const resp = await redditApiRequest(shouldSave ? "/api/save" : "/api/unsave", [
+			["id", fullname]
 		],
 		true, { method: "POST" });
 
@@ -159,11 +158,11 @@ export async function save(votable: Votable): Promise<boolean> {
 	}
 }
 
-export async function comment(thing: FullName, text: string): Promise<RedditJsonApiResponse> {
+export async function comment(fullname: string, text: string): Promise<RedditJsonApiResponse> {
 	return await redditApiRequest("/api/comment", [
 		["api_type", "json"],
 		["text", text],
-		["thing_id", thing.fullName]
+		["thing_id", fullname]
 	], true, { method: "POST" });
 }
 
@@ -171,17 +170,17 @@ export async function redditInfo(fullName: string): Promise<RedditApiObj> {
 	return (await redditApiRequest("/api/info", [["id", fullName]], false)).data.children[0];
 }
 
-export async function edit(votable: Votable, bodyMd: string) {
+export async function edit(fullname: string, bodyMd: string) {
 	return await redditApiRequest("/api/editusertext", [
 		["api_type", "json"],
 		["return_rtjson", "trie"],
 		["text", bodyMd],
-		["thing_id", votable.fullName],
+		["thing_id", fullname],
 	], true, { method: "POST" })
 }
 
-export async function deleteThing(votable: Votable) {
-	return await redditApiRequest("/api/del", [["id", votable.fullName]], true, { method: "POST" });
+export async function deleteThing(fullname: string) {
+	return await redditApiRequest("/api/del", [["id", fullname]], true, { method: "POST" });
 }
 
 export async function searchSubredditNames(query: string) {

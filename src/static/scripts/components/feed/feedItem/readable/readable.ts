@@ -1,6 +1,5 @@
 import { blockUser, readAllMessages, setMessageReadStatus } from "../../../../api/redditApi";
 import { pushLinkToHistoryComb } from "../../../../historyState/historyStateManager";
-import { FullName } from "../../../../types/votable";
 import { $css } from "../../../../utils/htmlStatics";
 import { hasParams } from "../../../../utils/utils";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../../misc/dropDown/dropDown";
@@ -10,7 +9,7 @@ import Users from "../../../multiUser/userManagement";
 import { MessageSection } from "../../universalFeed/universalFeed";
 import Ph_FeedItem from "../feedItem";
 
-export default abstract class Ph_Readable extends Ph_FeedItem implements FullName {
+export default abstract class Ph_Readable extends Ph_FeedItem {
 	abstract fullName: string;
 	isRead: boolean;
 	canBeRead: boolean;

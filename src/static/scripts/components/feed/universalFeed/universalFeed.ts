@@ -174,8 +174,8 @@ export default class Ph_UniversalFeed extends HTMLElement {
 		switch (itemData.kind) {
 			case "t3":
 				const post = new Ph_Post(itemData as RedditPostObj, true, this.requestUrl);
-				if (!this.allPostFullNames.includes(post.fullName))
-					this.allPostFullNames.push(post.fullName);
+				if (!this.allPostFullNames.includes(post.data.name))
+					this.allPostFullNames.push(post.data.name);
 				return post;
 			case "t1":
 				return new Ph_Comment(itemData as RedditCommentObj, false, true);

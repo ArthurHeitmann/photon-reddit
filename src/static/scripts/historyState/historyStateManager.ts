@@ -104,7 +104,7 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 		ViewsStack.pushBefore(stateLoader);
 
 	if (postHintState === PostHintState.postAndComments) {
-		ViewsStack.setCurrentStateTitle(`${postHint.post.postTitle} - Photon`);
+		ViewsStack.setCurrentStateTitle(`${postHint.post.data.title} - Photon`);
 		return;
 	}
 
@@ -131,7 +131,7 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 	let newTabTitle: string = null;
 	if (postHintState === PostHintState.postNoComments) {
 		stateLoader.finishWith(requestData);
-		newTabTitle = `${postHint.post.postTitle} - Photon`;
+		newTabTitle = `${postHint.post.data.title} - Photon`;
 	}
 	// result is a posts comments or post crosspost list
 	else if (requestData instanceof Array) {		// --> [0]: post [1]: comments/posts

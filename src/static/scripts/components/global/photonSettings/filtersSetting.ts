@@ -67,7 +67,7 @@ export class FiltersSetting extends SettingConfig {
 		for (const entry of newValue) {
 			if (!entry)
 				return { isValid: false, error: "Input can't be empty" };
-			if (newValue.filter(e => e === entry).length > 1)
+			if (newValue.filter(e => e.toLowerCase() === entry.toLowerCase()).length > 1)
 				return { isValid: false, error: "No duplicates allowed" };
 		}
 		return { isValid: true };

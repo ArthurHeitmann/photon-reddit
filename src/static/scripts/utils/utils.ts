@@ -509,3 +509,7 @@ export function ensurePageLoaded(): Promise<void> {
 		}
 	});
 }
+
+export function escRegex(strToEscape: string): string {
+	return strToEscape.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}

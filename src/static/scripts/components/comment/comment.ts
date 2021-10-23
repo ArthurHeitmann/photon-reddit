@@ -15,7 +15,6 @@ import {
 	RedditMessageObj,
 	RedditMoreCommentsObj
 } from "../../types/redditTypes";
-import Votable from "../../types/votable";
 import { emojiFlagsToImages } from "../../utils/htmlStatics";
 import { addRedditEmojis, elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff";
 import {
@@ -44,7 +43,7 @@ import Ph_Post from "../post/post";
  *
  * Can be displayed with a post or detached without
  */
-export default class Ph_Comment extends Ph_Readable implements Votable {
+export default class Ph_Comment extends Ph_Readable {
 	voteUpButton: Ph_VoteButton;
 	currentUpvotes: HTMLElement;
 	voteDownButton: Ph_VoteButton;
@@ -85,12 +84,12 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 
 			// continue thread button/link
 			if (commentData.data.children.length === 0) {
-				loadMoreButton.append(makeElement("a", { href: `${post.permalink}${commentData.data.parent_id.slice(3)}` }, "Continue thread"));
+				loadMoreButton.append(makeElement("a", { href: `${post.data.permalink}${commentData.data.parent_id.slice(3)}` }, "Continue thread"));
 				linksToSpa(loadMoreButton);
 			}
 			// load n more comments button
 			else {
-				this.postFullName = post.fullName;
+				this.postFullName = post.data.name;
 				const moreId = commentData.data.name;
 				const loadMoreBtnText: string = `Load more (${commentData.data.count})`;
 				loadMoreButton.innerText = loadMoreBtnText;
@@ -134,7 +133,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 		if (!isInFeed && !isChild && commentData.data.parent_id && commentData.data.parent_id.slice(0, 3) === "t1_") {
 			setTimeout(() =>
 				(elementWithClassInTree(this.parentElement, "commentsFeed") as Ph_CommentsFeed)
-					.insertParentLink(`${post.permalink}${commentData.data.parent_id.slice(3)}?context=3`, "Load parent comment")
+					.insertParentLink(`${post.data.permalink}${commentData.data.parent_id.slice(3)}?context=3`, "Load parent comment")
 				, 0)
 		}
 
@@ -239,7 +238,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 
 		// reply form
 		if (!isLocked) {
-			this.replyForm = new Ph_CommentForm(this, true);
+			this.replyForm = new Ph_CommentForm(this.fullName, true);
 			this.replyForm.classList.add("replyForm")
 			this.replyForm.addEventListener(PhEvents.commentSubmitted, (e: CustomEvent) => {
 				this.replyForm.insertAdjacentElement("afterend",
@@ -319,7 +318,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 	async vote(dir: VoteDirection): Promise<void> {
 		const prevDir = this.currentVoteDirection;
 		this.setVotesState(dir === this.currentVoteDirection ? VoteDirection.none : dir);
-		const res = await vote(this);
+		const res = await vote(this.fullName, this.currentVoteDirection);
 		if (!res) {
 			console.error("Error voting on post");
 			this.setVotesState(prevDir);
@@ -368,7 +367,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 		this.isSaved = !this.isSaved;
 		data.source.setLabel(this.isSaved ? "Unsave" : "Save");
 		data.source.setLabelImg(this.isSaved ? "/img/bookmarkFilled.svg" : "/img/bookmarkEmpty.svg");
-		if (!await save(this)) {
+		if (!await save(this.fullName, this.isSaved)) {
 			console.error(`error voting on comment ${this.fullName}`);
 			new Ph_Toast(Level.error, "Error saving post");
 		}
@@ -393,7 +392,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 		this.editForm.textField.value = this.bodyMarkdown;
 		this.editForm.addEventListener(PhEvents.submit, async () => {
 			this.editForm.submitCommentBtn.disabled = true;
-			const resp = await edit(this, this.editForm.textField.value);
+			const resp = await edit(this.fullName, this.editForm.textField.value);
 			this.editForm.submitCommentBtn.disabled = false;
 
 			if (resp["json"] && resp["json"]["errors"]) {
@@ -430,7 +429,7 @@ export default class Ph_Comment extends Ph_Readable implements Votable {
 
 	async delete(dropDownEntry: Ph_DropDownEntry) {
 		try {
-			const resp = await deleteThing(this);
+			const resp = await deleteThing(this.fullName);
 
 			if (!isObjectEmpty(resp) || resp["error"]) {
 				console.error("Error deleting comment");
