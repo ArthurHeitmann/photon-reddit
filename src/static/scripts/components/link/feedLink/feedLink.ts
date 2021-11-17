@@ -9,17 +9,32 @@ import {
 	SubredditInfoBase
 } from "../../../types/redditTypes";
 import { linksToSpa } from "../../../utils/htmlStuff";
-import { getMultiIconUrl, getSubredditIconUrl, getUserIconUrl, hasParams } from "../../../utils/utils";
+import {
+	getMultiIconUrl,
+	getSubredditIconUrl,
+	getUserIconUrl,
+	hasParams,
+	makeElement,
+	numberToShort
+} from "../../../utils/utils";
 
 export default class Ph_FeedLink extends HTMLElement {
 	private name: string;
 	private url: string;
 
-	constructor(feedData: RedditSubredditObj | RedditUserObj | RedditMultiObj | string, blurNsfw = false, isClickable = true) {
+	constructor(
+		feedData: RedditSubredditObj | RedditUserObj | RedditMultiObj | string,
+		options: { blurNsfw?: boolean, isClickable?: boolean, showSubscribers?: boolean } = {}
+	) {
 		super();
 		if (!hasParams(arguments)) return
 
 		this.className = "feedLink";
+		const {
+			blurNsfw = false,
+			isClickable = true,
+			showSubscribers = false
+		} = options;
 
 		const linkWrapper = document.createElement(isClickable ? "a" : "button");
 		linkWrapper.classList.add("linkWrapper");
@@ -35,7 +50,16 @@ export default class Ph_FeedLink extends HTMLElement {
 			case "t5":	// subreddit
 				this.name = feedData.data.display_name;
 				this.url = feedData.data.url;
-				linkText.innerText = `r/${feedData.data.display_name}`;
+				if (showSubscribers) {
+					linkText.append(
+						makeElement("div", { class: "subName" }, `r/${feedData.data.display_name}`),
+						makeElement("div", { class: "subCount" },
+							`${numberToShort(feedData.data.subscribers)} Subscribers`)
+					);
+				}
+				else {
+					linkText.innerText = `r/${feedData.data.display_name}`;
+				}
 				if (linkWrapper instanceof HTMLAnchorElement)
 					linkWrapper.href = `/r/${feedData.data.display_name}`;
 				const subIconImg = getSubredditIconUrl(feedData.data as SubredditInfoBase);

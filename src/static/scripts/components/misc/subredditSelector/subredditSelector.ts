@@ -55,7 +55,7 @@ export default class Ph_SubredditSelector extends HTMLElement {
 			const subs = await searchSubreddits(this.input.value, 6);
 			this.innerText = "";
 			subs.data.children.forEach(sub => {
-				const selectSubBtn = new Ph_FeedLink(sub, this.blurNsfw, false);
+				const selectSubBtn = new Ph_FeedLink(sub, { blurNsfw: this.blurNsfw, isClickable: false, showSubscribers: true });
 				this.appendChild(selectSubBtn);
 				selectSubBtn.addEventListener("click", () => this.onSubSelected(sub.data.display_name, sub));
 			});

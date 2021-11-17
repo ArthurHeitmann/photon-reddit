@@ -7,7 +7,7 @@
 		display: flex;
 		align-items: center;
 		width: 100%;
-		height: 2rem;
+		height: 2.15rem;
 
 		* {
 			color: vars.$text-color;
@@ -73,6 +73,18 @@
 			text-overflow: ellipsis;
 			transition: color 0.25s ease;
 			font-size: 1.075rem;
+			line-height: 1.15;
+			display: flex;
+			flex-direction: column;
+
+			> div {
+				display: flex;
+				transition: inherit;
+			}
+
+			.subCount {
+				font-size: 0.6rem;
+			}
 		}
 	}
 }

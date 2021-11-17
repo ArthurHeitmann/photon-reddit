@@ -300,7 +300,7 @@ export default class Ph_Search extends HTMLElement {
 		this.resultsWrapper.innerText = "";
 		for (const entry of result.data.children) {
 			try {
-				this.resultsWrapper.append(new Ph_FeedLink(entry as RedditSubredditObj, true));
+				this.resultsWrapper.append(new Ph_FeedLink(entry as RedditSubredditObj, { blurNsfw: true, showSubscribers: true }));
 			}
 			catch (e) {
 				console.error("Error making search result entry");
