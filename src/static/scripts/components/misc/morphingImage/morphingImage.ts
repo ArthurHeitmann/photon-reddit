@@ -19,6 +19,7 @@ export default class Ph_MorphingImage extends HTMLElement {
 		if (isButton) {
 			const wrapperBtn = document.createElement("button");
 			wrapperBtn.append(this.svg);
+			wrapperBtn.style.display = "flex";
 			this.append(wrapperBtn);
 		}
 		else
