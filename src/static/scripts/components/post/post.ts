@@ -112,8 +112,9 @@ export default class Ph_Post extends Ph_FeedItem {
 				label: "Filter out",
 				labelImgUrl: "/img/filter.svg",
 				nestedEntries: [
-					{ label: `Filter r/${this.data.subreddit}`, labelImgUrl: "/img/rSlash.svg", onSelectCallback: () => this.addToFilters("subredditBlacklist", this.data.subreddit) },
-					{ label: `Filter u/${this.data.author}`, labelImgUrl: "/img/user.svg", onSelectCallback: () => this.addToFilters("userBlacklist", this.data.author)},
+					{ label: "Filter out...", labelImgUrl: "/img/filter.svg" },
+					{ label: ` r/${this.data.subreddit}`, labelImgUrl: "/img/rSlash.svg", onSelectCallback: () => this.addToFilters("subredditBlacklist", this.data.subreddit) },
+					{ label: ` u/${this.data.author}`, labelImgUrl: "/img/user.svg", onSelectCallback: () => this.addToFilters("userBlacklist", this.data.author)},
 				]
 			},
 			{ label: "Share", labelImgUrl: "/img/share.svg", nestedEntries: [
