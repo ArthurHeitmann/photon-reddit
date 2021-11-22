@@ -27,7 +27,7 @@ describe("Guest only things", () => {
 })
 
 function tutorialStep() {
-	cy.wait(50);
+	cy.wait(250);
 	cy.get("@tutorial").then((tutorial) => {
 		// First step
 		if (tutorial.hasClass("isFirst")) {
@@ -51,7 +51,9 @@ function tutorialStep() {
 
 function checkHighlightVisibility(shouldBeVisible: boolean) {
 	return (highlight: JQuery) => {
-		const rect = highlight.get(0).getBoundingClientRect();
+		const highlightElem = highlight.get(0);
+		const rect = highlightElem && highlightElem.getBoundingClientRect();
+		assert(Boolean(rect), `Rect ${rect} must be valid`);
 		assert(shouldBeVisible === (
 			rect.top >= 0 &&
 			rect.left >= 0 &&
