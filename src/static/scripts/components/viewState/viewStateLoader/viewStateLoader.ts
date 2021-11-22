@@ -1,6 +1,7 @@
 import ViewsStack from "../../../historyState/viewsStack";
 import { HistoryState } from "../../../types/misc";
 import { hasParams } from "../../../utils/utils";
+import Users from "../../multiUser/userManagement";
 import { Ph_ViewState } from "../viewState";
 
 /**
@@ -36,6 +37,8 @@ export default class Ph_ViewStateLoader extends Ph_ViewState {
 	}
 
 	onBackAreaClick(e: MouseEvent) {
+		if (!Users.global.d.photonSettings.emptyAreaClickGoesBack)
+			return;
 		if (e.currentTarget !== e.target || !ViewsStack.hasPreviousLoaded())
 			return;
 		

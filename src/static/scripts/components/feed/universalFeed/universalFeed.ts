@@ -16,6 +16,7 @@ import Ph_Comment from "../../comment/comment";
 import Ph_Message from "../../message/message";
 import { DropDownActionData } from "../../misc/dropDown/dropDownEntry/dropDownEntry";
 import Ph_Toast, { Level } from "../../misc/toast/toast";
+import Users from "../../multiUser/userManagement";
 import Ph_Post from "../../post/post";
 import { Ph_ViewState } from "../../viewState/viewState";
 import Ph_FeedInfo, { FeedType } from "../feedInfo/feedInfo";
@@ -439,6 +440,8 @@ export default class Ph_UniversalFeed extends HTMLElement {
 	}
 
 	onBackAreaClick(e: MouseEvent) {
+		if (!Users.global.d.photonSettings.emptyAreaClickGoesBack)
+			return;
 		if (e.currentTarget !== e.target || !ViewsStack.hasPreviousLoaded())
 			return;
 		const style = getComputedStyle(this);

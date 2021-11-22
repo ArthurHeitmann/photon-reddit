@@ -2,6 +2,7 @@ import ViewsStack from "../../../historyState/viewsStack";
 import { HistoryState } from "../../../types/misc";
 import { RedditApiObj } from "../../../types/redditTypes";
 import { hasParams } from "../../../utils/utils";
+import Users from "../../multiUser/userManagement";
 import Ph_Post from "../../post/post";
 import PostDoubleLink from "../../post/postDoubleLink/postDoubleLink";
 import Ph_PostAndComments, { PostCommentsListings } from "../../postAndComments/postAndComments";
@@ -48,6 +49,8 @@ export default class Ph_CommentsViewStateLoader extends Ph_ViewState {
 	}
 
 	onBackAreaClick(e: MouseEvent) {
+		if (!Users.global.d.photonSettings.emptyAreaClickGoesBack)
+			return;
 		if (e.currentTarget !== e.target || !ViewsStack.hasPreviousLoaded())
 			return;
 

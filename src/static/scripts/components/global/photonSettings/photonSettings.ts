@@ -44,9 +44,10 @@ export interface PhotonSettings {
 	subredditBlacklist?: string[],
 	userShortCacheTTLMs?: number,
 	displayRedditEmojis?: boolean,
+	emptyAreaClickGoesBack?: boolean
 	userBlacklist?: string[],
 	tileTextBlacklist?: string[],
-	flairTextBlacklist?: string[]
+	flairTextBlacklist?: string[],
 }
 
 // default config
@@ -69,6 +70,7 @@ export const defaultSettings: PhotonSettings = {
 	messageCheckIntervalMs: 30 * 1000,
 	userShortCacheTTLMs: 1000 * 60 * 5,
 	displayRedditEmojis: true,
+	emptyAreaClickGoesBack: true,
 	subredditBlacklist: [],
 	userBlacklist: [],
 	tileTextBlacklist: [],

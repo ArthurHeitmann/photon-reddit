@@ -111,6 +111,7 @@ export const getSettingsSections = (): SettingsSection[] => [
 		name: "Other",
 		iconUrl: "/img/circle.svg",
 		settings: [
+			new BooleanSetting("emptyAreaClickGoesBack", "Click empty area to go back", "", SettingsApi.Photon),
 			new BooleanSetting("isIncognitoEnabled", "Incognito mode", "Randomize the tab title & url.", SettingsApi.Photon),
 			new TimeSetting({ allowRange: [1, Number.MAX_SAFE_INTEGER] }, "clearFeedCacheAfterMs", "Subreddit info cache duration", "", SettingsApi.Photon),
 			new TimeSetting({ allowRange: [1, Number.MAX_SAFE_INTEGER] }, "userShortCacheTTLMs", "Short Cache Duration", "For your subscriptions", SettingsApi.Photon),
