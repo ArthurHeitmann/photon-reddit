@@ -66,7 +66,7 @@ describe("Basic Navigation", () => {
 		cy.get("ph-search .modeButton").contains("r/").should("have.class", "checked");
 		cy.get("ph-search .resultsWrapper a").first().as("askRedditLink");
 		cy.get("@askRedditLink")
-			.should("have.text", "r/AskReddit")
+			.should("include.text", "r/AskReddit")
 			.should("have.attr", "href");
 		cy.get("@askRedditLink").invoke("attr", "href").should("eq", "/r/AskReddit");
 		cy.get("@askRedditLink").click()
