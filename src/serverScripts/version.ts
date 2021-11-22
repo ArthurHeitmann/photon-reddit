@@ -1,6 +1,16 @@
-export const photonVersion = "1.0.1";		/// <change version script>
+export const photonVersion = "1.0.2";		/// <change version script>
 
 export const photonChangelog = {
+	"1.0.2": {
+		"New": [
+			"When searching for subreddits the subscriber count is now displayed",
+		],
+		"Fixed": [
+			"Some reddit video links not being recognized",
+			"Play/Pause button animation sometimes being out of sync",
+			"Some minor changes"
+		],
+	},
 	"1.0.1": {
 		"New": [
 			"You can now filter out posts (by subreddits, user, title, or flair)",
