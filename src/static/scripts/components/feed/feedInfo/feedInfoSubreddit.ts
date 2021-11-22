@@ -169,8 +169,10 @@ export default class Ph_FeedInfoSubreddit extends Ph_FeedInfo<AllSubData> {
 				Subscribers: ${numberToShort(this.loadedInfo.data.subscribers)}
 			</div>
 			<div data-tooltip="${this.loadedInfo.data.active_user_count}">
-				Online: ${numberToShort(this.loadedInfo.data.active_user_count)} &nbsp — &nbsp; 
-				${(this.loadedInfo.data.active_user_count / this.loadedInfo.data.subscribers * 100).toFixed(1)} %
+				Online: ${numberToShort(this.loadedInfo.data.active_user_count)} 
+				${this.loadedInfo.data.subscribers > 0
+					? `&nbsp; — &nbsp;${(this.loadedInfo.data.active_user_count / this.loadedInfo.data.subscribers * 100).toFixed(1)} %`
+					: ""}
 			</div>
 		`);
 		headerBar.appendChild(overviewBar);
