@@ -3,6 +3,9 @@
 
 :root {
 	font-size: 1.075rem;
+	@media (max-width: 1600px) {
+		font-size: 0.95rem;
+	}
 }
 
 * {
