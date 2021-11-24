@@ -459,7 +459,7 @@ export default class Ph_Post extends Ph_FeedItem {
 			this.currentUpvotes.classList.remove("medium");
 			this.currentUpvotes.classList.remove("small");
 		}
-		this.currentUpvotes.setAttribute("data-tooltip", (this.totalVotes + parseInt(voteDirection)).toString());
+		this.currentUpvotes.setAttribute("data-tooltip", `${(this.totalVotes + parseInt(voteDirection)).toString()}🠉 — ${this.data.upvote_ratio * 100}%`);
 
 		const isAnimated = voteDirection !== this.currentVoteDirection;
 
