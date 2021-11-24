@@ -50,7 +50,7 @@ window.addEventListener(PhEvents.viewChange, (e: CustomEvent) => {
 				["Content-Type", "application/json"]
 			],
 			body: JSON.stringify({
-				"clientId": clientId,
+				"clientId": Users.global.d.analytics.clientId,
 				"path": Users.global.d.photonSettings.isIncognitoEnabled ? "/i" : path.toLowerCase(),
 				"referer": Users.global.d.photonSettings.isIncognitoEnabled ? "" : referer.toLowerCase(),
 				"timeMillisUtc": Date.now()
@@ -60,45 +60,23 @@ window.addEventListener(PhEvents.viewChange, (e: CustomEvent) => {
 	referer = location.origin + path;
 })
 
-interface ClientIdData {
-	id: string,
-	lastSetMillisUtc: number
-}
-/** 128 character long random string */
-let clientId: string;
 let referer = document.referrer || "";
 
 async function init() {
-	// client data has never before been set
-	if (!Users.global.d.analytics.clientId) {
+	let clientIdData = Users.global.d.analytics;
+	// generate id if not set, expired, or invalid
+	if (!clientIdData.idInitTime ||
+		clientIdData.idInitTime > Date.now() ||												// if lastSet is corrupted
+		Date.now() - clientIdData.idInitTime > 1000 * 60 * 60 * 24 * 30 ||					// or invalidate after 30 days
+		!clientIdData.clientId || clientIdData.clientId.length !== 128						// or is id corrupted
+	) {
 		await generateClientIdData();
-		loadClientId()
-	}
-	// client data has been set in storage, but could be corrupted
-	else {
-		let clientIdData = Users.global.d.analytics;
-		// check if read data is valid & not expired
-		if (!clientIdData.idInitTime ||
-				clientIdData.idInitTime > Date.now() ||													// if lastSet is corrupted
-				Date.now() - clientIdData.idInitTime > 1000 * 60 * 60 * 24 * 30 ||				// or invalidate after 30 days
-				!clientIdData.clientId || clientIdData.clientId.length !== 128										// or is id corrupted
-		) {
-			await generateClientIdData();
-		}
-		loadClientId(clientIdData.clientId);
 	}
 }
 
 async function generateClientIdData() {
 	await Users.global.set(["analytics", "clientId"], randomString(128));
-}
-
-function loadClientId(id?: string) {
-	if (id)
-		clientId = id;
-	else {
-		clientId = Users.global.d.analytics.clientId;
-	}
+	await Users.global.set(["analytics", "idInitTime"], Date.now());
 }
 
 // track browser features
