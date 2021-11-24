@@ -107,3 +107,14 @@ export async function getRandomSubredditPostUrl(subreddit: string): Promise<stri
 	else
 		return postRes["url"];
 }
+
+export async function isRedditApiUp(): Promise<boolean> {
+	try {
+		const r = await fetch("/api/isRedditApiAvailable");
+		const t = await r.text();
+		return t === "true";
+	}
+	catch {
+		return false;
+	}
+}

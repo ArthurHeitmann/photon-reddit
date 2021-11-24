@@ -13,7 +13,7 @@ import Ph_Tutorial from "./components/photon/tutorial/tutorial";
 import { pushLinkToHistorySep } from "./historyState/historyStateManager";
 import ViewsStack from "./historyState/viewsStack";
 import { PhEvents } from "./types/Events";
-import { supportsIndexedDB } from "./utils/browserFeatures";
+import { isFirefoxEtpBlocking } from "./utils/browserFeatures";
 import { loginSubredditFullName, loginSubredditName } from "./utils/consts";
 import { $css, $id } from "./utils/htmlStatics";
 import { linksToSpa } from "./utils/htmlStuff";
@@ -27,8 +27,10 @@ async function init(): Promise<void> {
 	console.log("Photon Init");
 
 	await Users.init();
-	if (await checkFirefoxPrivateMode())
+	if (await isFirefoxEtpBlocking()) {
+		removeLoadingIcon();
 		return;
+	}
 	registerServiceWorker();
 	$id("mainWrapper").insertAdjacentElement("afterbegin", new Ph_Header());
 	linksToSpa(document.body);
@@ -51,7 +53,7 @@ async function init(): Promise<void> {
 	else
 		$css(".loginButton")[0].hidden = false;
 	setInterval(checkTokenRefresh, 1000 * 30);
-	$id("initialLoadingIcon").remove();
+	removeLoadingIcon();
 	loadPosts();
 
 	await checkForNewVersion();
@@ -68,6 +70,10 @@ async function init(): Promise<void> {
 	Ph_Tutorial.checkForTutorial();
 
 	console.log("Photon is ready");
+}
+
+function removeLoadingIcon() {
+	$id("initialLoadingIcon")?.remove();
 }
 
 function showInitErrorPage() {
@@ -126,53 +132,6 @@ function disableSpaceBarScroll() {
 		if (e.code === "Space" && !["INPUT", "TEXTAREA"].includes((e.target as HTMLElement).tagName))
 			e.preventDefault();
 	})
-}
-
-/**
- * Firefox in private mode can cause all sorts of problems --> check for it
- *
- * @return true --> stop execution, false: continue normally
- */
-async function checkFirefoxPrivateMode(): Promise<boolean> {
-	if (Users.global.d.firefoxPrivateCheckCompleted)
-		return false;
-	await Users.global.set(["firefoxPrivateCheckCompleted"], true);
-	const isFirefoxPrivate = await isFirefoxPrivateMode();
-	if (!isFirefoxPrivate)
-		return false;
-	const errorPage = document.createElement("div");
-	errorPage.innerHTML = `
-		<h1>Are you using Firefox in Private Mode?</h1>
-		<h2>Yes</h2>
-		<p>
-			In order to work at all you have to disable "Enhanced Tracking Protection". 
-			<a href="https://support.mozilla.org/en-US/kb/enhanced-tracking-protection-firefox-desktop#w_what-to-do-if-a-site-seems-broken" target="_blank">
-			https://support.mozilla.org/en-US/kb/enhanced-tracking-protection-firefox-desktop#w_what-to-do-if-a-site-seems-broken
-			</a>
-		</p>
-		<p>Firefox private mode is not fully supported.</p>
-		<h2>No</h2>
-		<p>Reload the page and hope that everything works :)</p>
-	`;
-	ViewsStack.attachmentPoint.appendChild(errorPage);
-	return true;
-}
-
-async function isFirefoxPrivateMode(): Promise<boolean> {
-	// as of now firefox does not support indexed db in private mode
-	const idbSupported = await supportsIndexedDB();
-	if (idbSupported)
-		return false;
-	try {
-		// firefox has an aggressive "Enhanced Tracking protection" in private mode, which blocks request to reddit
-		// check if basic request fails
-		const r = await fetch("https://www.reddit.com/r/all.json?limit=1");
-		await r.json();
-		return false;
-	}
-	catch {
-		return true;
-	}
 }
 
 window.addEventListener("load", init);

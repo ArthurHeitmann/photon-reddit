@@ -53,7 +53,14 @@ export async function checkAuthOnPageLoad(): Promise<AuthState> {
 			}
 			return AuthState.implicitGrant;
 		}
-	} finally {
+	}
+	catch (e) {
+		console.error("Error initializing auth");
+		console.error(e);
+		new Ph_Toast(Level.error, "Bad Error happened while authenticating with Reddit");
+		return AuthState.implicitGrant;
+	}
+	finally {
 		Users.current.unlockAuthData();
 	}
 }

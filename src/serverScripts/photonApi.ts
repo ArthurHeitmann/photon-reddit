@@ -84,3 +84,30 @@ photonApiRouter.get("/randomSubredditPostUrl", safeExcAsync(async (req, res) => 
 	const path = redirectedUrl.match(/(?<=https:\/\/www\.reddit\.com).*(?=\.json)/)[0];		// https://reddit.com/**/.json* --> **
 	res.json({ url: path });
 }));
+
+let lastApiCheck = -1;
+let lastApiStatus = false;
+const apiCheckInterval = 1000 * 60 * 10;
+photonApiRouter.get("/isRedditApiAvailable", safeExcAsync(async (req, res) => {
+	if (Date.now() - lastApiCheck < apiCheckInterval) {
+		res.send(lastApiStatus ? "true" : "false");
+		return;
+	}
+	lastApiCheck = Date.now();
+	try {
+		const r = await fetch("https://www.reddit.com/r/all.json?limit=1", {
+			headers: {
+				"User-Agent": `web_backend:photon-reddit.com:v${photonVersion} (by /u/RaiderBDev)`
+			}
+		});
+		await r.json();
+		res.send("true");
+		lastApiStatus = true;
+	}
+	catch {
+		res.send("false");
+		lastApiStatus = false;
+	}
+}));
+
+
