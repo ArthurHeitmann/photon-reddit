@@ -1,6 +1,15 @@
-export const photonVersion = "1.0.2";		/// <change version script>
+export const photonVersion = "1.0.3";		/// <change version script>
 
 export const photonChangelog = {
+	"1.0.3": {
+		"New": [
+			"Post upvote percentage now visible when hovering over upvotes number",
+			"Reduced text size for smaller screens (laptops)",
+		],
+		"Fixed": [
+			"Small fixes & changes"
+		],
+	},
 	"1.0.2": {
 		"New": [
 			"When searching for subreddits the subscriber count is now displayed",
