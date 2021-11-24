@@ -1,6 +1,5 @@
 import { getSubInfo, getUserMultis } from "../../../api/redditApi";
 import { RedditMultiObj, RedditUserInfo, RedditUserObj } from "../../../types/redditTypes";
-import { escADQ, escHTML } from "../../../utils/htmlStatics";
 import { linksToSpa } from "../../../utils/htmlStuff";
 import { getUserIconUrl, makeElement, numberToShort } from "../../../utils/utils";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown";
@@ -89,16 +88,18 @@ export default class Ph_FeedInfoUser extends Ph_FeedInfo<AllUserInfo> {
 
 		const publicDescription = document.createElement("div");
 		publicDescription.innerText = this.loadedInfo.data.subreddit.public_description;
-		const miscText = document.createElement("div");
 		const createdDate = new Date(this.loadedInfo.data.created_utc * 1000);
-		miscText.innerHTML = `
-			<div data-tooltip="${createdDate.toString()}">Created: ${createdDate.toDateString()}</div>
-		`;
+		const miscText = makeElement("div", {}, [makeElement(
+			"div",
+			{ "data-tooltip": createdDate.toString() },
+			`Created: ${createdDate.toDateString()}`
+		)]);
 		if (this.loadedInfo.data.multis.length > 0) {
-			miscText.insertAdjacentHTML("beforeend", `
-				<div>User Multireddits:</div>
-				${this.loadedInfo.data.multis.map(multi => `<div><a href="${escADQ(multi.data.path)}">${escHTML(multi.data.display_name)}</a></div>`).join("")}
-			`);
+			miscText.append(
+				makeElement("div", {}, "User Multireddits:"),
+				...this.loadedInfo.data.multis.map(multi => makeElement("div", {}, [
+					makeElement("a", { href: multi.data.path }, multi.data.display_name)]))
+			)
 		}
 		linksToSpa(miscText);
 		this.appendChild(this.makeSwitchableBar([

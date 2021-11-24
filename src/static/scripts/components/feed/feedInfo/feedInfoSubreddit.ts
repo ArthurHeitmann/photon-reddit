@@ -14,7 +14,7 @@ import {
 	SubredditModerator,
 	SubredditRule
 } from "../../../types/redditTypes";
-import { emojiFlagsToImages, escADQ, escHTML } from "../../../utils/htmlStatics";
+import { emojiFlagsToImages, escHTML } from "../../../utils/htmlStatics";
 import { linksToSpa } from "../../../utils/htmlStuff";
 import { getSubredditIconUrl, makeElement, numberToShort } from "../../../utils/utils";
 import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown";
@@ -191,15 +191,13 @@ export default class Ph_FeedInfoSubreddit extends Ph_FeedInfo<AllSubData> {
 		const rules = document.createElement("div");
 		rules.append(...this.makeRules());
 		linksToSpa(rules);
-		const miscText = document.createElement("div");
 		const createdDate = new Date(this.loadedInfo.data.created_utc * 1000);
-		miscText.innerHTML = `
-			<div data-tooltip="${createdDate.toString()}">Created: ${createdDate.toDateString()}</div>
-			<div>Moderators:</div>
-			${(this.loadedInfo.data.mods as SubredditModerator[])
-			.map(mod => `<div><a href="/user/${escADQ(mod.name)}">${escHTML(mod.name)}</a></div>`)
-			.join("\n")}	
-		`;
+		const miscText = makeElement("div", {}, [
+			makeElement("div", { "data-tooltip": createdDate.toString }, `Created: ${createdDate.toDateString()}`),
+			makeElement("div", {}, "Moderators:"),
+			...this.loadedInfo.data.mods.map(mod => makeElement("div", {},[
+				makeElement("a", { href: `/user/${mod.name}` }, mod.name)]))]
+		);
 		linksToSpa(miscText);
 		this.appendChild(this.makeSwitchableBar([
 			{ title: "Description", content: description },
