@@ -64,3 +64,17 @@
 .debug1 { border: 1px dotted lightcoral }
 .debug2 { border: 1px dotted lightblue }
 .debug3 { border: 1px dotted lightgreen }
+.debugPixel {
+	--x: 0;
+	--y: 0;
+
+	&::after {
+		content: "";
+		position: absolute;
+		left: calc(var(--x) * 1px);
+		top: calc(var(--y) * 1px);
+		width: 2px;
+		height: 2px;
+		background: red;
+	}
+}
