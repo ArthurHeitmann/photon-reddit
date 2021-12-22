@@ -50,7 +50,7 @@ export const getSettingsSections = (): SettingsSection[] => [
 					{ text: "Only previews", value: ImageLoadingPolicy.alwaysPreview },
 					{ text: "Original in fullscreen", value: ImageLoadingPolicy.originalInFs },
 					{ text: "Always originals", value: ImageLoadingPolicy.alwaysOriginal },
-				], "imageLoadingPolicy", "Image previews", "Decide whether images in posts are loaded in max resolution or preview quality", SettingsApi.Photon
+				], "imageLoadingPolicy", "Image quality", "Decide whether images in posts are loaded in max resolution or preview quality", SettingsApi.Photon
 			),
 		]
 	},
@@ -64,7 +64,7 @@ export const getSettingsSections = (): SettingsSection[] => [
 		]
 	},
 	{
-		name: "General UI",
+		name: "UI",
 		iconUrl: "/img/settings2.svg",
 		settings: [
 			new BooleanSetting("loadInlineMedia", "Expand media previews", "Expand previews for links with media (e.g. imgur.com/..., reddit.com/.../.png).", SettingsApi.Photon),
@@ -73,6 +73,11 @@ export const getSettingsSections = (): SettingsSection[] => [
 			new BooleanSetting("firstShowControlBar", "Initially show bottom bar", "Initially show or hide controls bar on the bottom of images and videos.", SettingsApi.Photon),
 			new BooleanSetting("enableFab", "Enable FAB", "Enable Floating Action Button (bottom left corner).", SettingsApi.Photon),
 			new BooleanSetting("tooltipsVisible", "Show tooltips", "Toggle tooltips when hovering some UI elements.", SettingsApi.Photon),
+			new BooleanSetting("hidePostTitle", "Hide post titles", "", SettingsApi.Photon),
+			new BooleanSetting("hidePostTopInfo", "Hide post general info", "Hide Subreddit, user, post time", SettingsApi.Photon),
+			new BooleanSetting("hidePostFlairs", "Hide post flair", "", SettingsApi.Photon),
+			new BooleanSetting("hidePostLeftBar", "Hide post left action bar", "", SettingsApi.Photon),
+			new BooleanSetting("hideCrosspostInfo", "Hide crosspost info", "", SettingsApi.Photon),
 		]
 	},
 	{
