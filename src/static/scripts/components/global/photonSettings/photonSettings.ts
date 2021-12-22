@@ -100,6 +100,7 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 		this.hide();
 
 		ensurePageLoaded().then(() => this.init());
+		window.addEventListener(PhEvents.viewChange, () => this.hide());
 	}
 
 	private async init() {
