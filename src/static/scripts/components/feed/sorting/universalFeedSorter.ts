@@ -159,7 +159,7 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 		}
 		ViewsStack.changeCurrentUrl(newUrl);
 
-		this.feed.replaceChildren(request.data.children, request.data.before, request.data.after);
+		this.feed.replaceItems(request.data.children, request.data.before, request.data.after);
 	}
 
 	async setUserSection(data: DropDownActionData) {
@@ -177,7 +177,7 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 			);
 			this.feed.beforeData = sectionItems.data.before;
 			this.feed.afterData = sectionItems.data.after;
-			this.feed.replaceChildren(sectionItems.data.children, sectionItems.data.before, sectionItems.data.after);
+			this.feed.replaceItems(sectionItems.data.children, sectionItems.data.before, sectionItems.data.after);
 			ViewsStack.changeCurrentUrl(this.feed.requestUrl);
 			data.setButtonLabel(section || "Overview");
 			if (isSortable) {

@@ -15,6 +15,15 @@
 
 // Import commands.ts using ES2015 syntax:
 import './commands'
+import Bluebird from "cypress/types/bluebird";
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
+
+declare global {
+	namespace Cypress {
+		interface Chainable {
+			clearIdb(): Bluebird<unknown>;
+		}
+	}
+}
