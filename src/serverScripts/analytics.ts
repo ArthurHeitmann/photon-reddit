@@ -25,7 +25,7 @@
 import { config } from "dotenv";
 import express from "express";
 import RateLimit from "express-rate-limit";
-import mariadb from "mariadb";
+import mariadb, {Pool} from "mariadb";
 import { analyticsRateLimitConfig, basicRateLimitConfig } from "./consts";
 import { isIpFromBot, safeExcAsync } from "./utils";
 
@@ -35,25 +35,31 @@ if (env !== "production")
 
 export const analyticsRouter = express.Router();
 
-const pool = mariadb.createPool({
-	host: process.env.DB_HOST,
-	port: parseInt(process.env.DB_PORT),
-	user: process.env.DB_USER,
-	password: process.env.DB_PW,
-	database: process.env.DB_DB,
-	connectionLimit: 4
-});
 let connectionSuccessFull = false;
-pool.query("SELECT id FROM trackedEvents LIMIT 1;")
-	.then(connection => {
-		connectionSuccessFull = true;
-		console.log("Connected to DB");
-
-	})
-	.catch(err => {
-		connectionSuccessFull = false;
-		console.error("Couldn't connect to DB");
+let pool: Pool;
+if (process.env.DB_USER && process.env.DB_PW && process.env.DB_DB && process.env.DB_HOST && process.env.DB_PORT) {
+	pool = mariadb.createPool({
+		host: process.env.DB_HOST,
+		port: parseInt(process.env.DB_PORT),
+		user: process.env.DB_USER,
+		password: process.env.DB_PW,
+		database: process.env.DB_DB,
+		connectionLimit: 4
 	});
+	pool.query("SELECT id FROM trackedEvents LIMIT 1;")
+		.then(() => {
+			connectionSuccessFull = true;
+			console.log("Connected to DB");
+
+		})
+		.catch(() => {
+			connectionSuccessFull = false;
+			console.error("Couldn't connect to DB");
+		});
+}
+else {
+	console.warn("No DB given");
+}
 
 async function getConnection(): Promise<mariadb.PoolConnection> {
 	if (!connectionSuccessFull)
@@ -170,28 +176,28 @@ async function getPopularPathsInTimeFrame(timeFrame: number, limit: number): Pro
 	}
 }
 
-interface MediaHost {
-	mediaHost: string, linkHost: string, type: string
-}
-
-async function trackMediaHost(hosts: MediaHost[]): Promise<void> {
-	const connection = await getConnection();
-	if (connection === null)
-		return;
-	const insertValues = hosts
-		.map(host => `(${connection.escape(host.mediaHost)}, ${connection.escape(host.linkHost)}, ${connection.escape(host.type)}, 1)`)
-		.join(",");
-	try {
-		await connection.query(`
-			INSERT INTO mediaHosts 
-				VALUES ${insertValues}
-				ON DUPLICATE KEY UPDATE count = count + 1
-		`);
-	}
-	finally {
-		await connection.release();
-	}
-}
+// interface MediaHost {
+// 	mediaHost: string, linkHost: string, type: string
+// }
+//
+// async function trackMediaHost(hosts: MediaHost[]): Promise<void> {
+// 	const connection = await getConnection();
+// 	if (connection === null)
+// 		return;
+// 	const insertValues = hosts
+// 		.map(host => `(${connection.escape(host.mediaHost)}, ${connection.escape(host.linkHost)}, ${connection.escape(host.type)}, 1)`)
+// 		.join(",");
+// 	try {
+// 		await connection.query(`
+// 			INSERT INTO mediaHosts
+// 				VALUES ${insertValues}
+// 				ON DUPLICATE KEY UPDATE count = count + 1
+// 		`);
+// 	}
+// 	finally {
+// 		await connection.release();
+// 	}
+// }
 
 async function trackBrowserFeature(featureName: string, isAvailable: boolean): Promise<void> {
 	const connection = await getConnection();
