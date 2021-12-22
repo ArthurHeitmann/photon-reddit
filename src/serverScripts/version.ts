@@ -1,6 +1,14 @@
-export const photonVersion = "1.0.3";		/// <change version script>
+export const photonVersion = "1.0.4";		/// <change version script>
 
 export const photonChangelog = {
+	"1.0.4": {
+		"New": [
+			"Added settings to hide various post UI elements (title, flair, crosspost info, ...)",
+		],
+		"Fixed": [
+			"Many Small fixes & changes"
+		],
+	},
 	"1.0.3": {
 		"New": [
 			"Post upvote percentage now visible when hovering over upvotes number",
