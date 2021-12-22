@@ -160,7 +160,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			);
 			this.beforeData = sectionItems.data.before;
 			this.afterData = sectionItems.data.after;
-			this.replaceChildren(sectionItems.data.children, sectionItems.data.before, sectionItems.data.after);
+			this.replaceItems(sectionItems.data.children, sectionItems.data.before, sectionItems.data.after);
 			ViewsStack.changeCurrentUrl(this.requestUrl);
 			data.setButtonLabel(section);
 		} catch (e) {
@@ -345,7 +345,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 		this.checkIfFeedEmpty();
 	}
 
-	replaceChildren(posts: RedditApiObj[], beforeData: string, afterData: string) {
+	replaceItems(posts: RedditApiObj[], beforeData: string, afterData: string) {
 		this.innerText = "";
 		this.allPostFullNames = [];
 		this.beforeData = beforeData;

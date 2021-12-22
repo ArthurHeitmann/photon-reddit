@@ -48,6 +48,11 @@ export interface PhotonSettings {
 	userBlacklist?: string[],
 	tileTextBlacklist?: string[],
 	flairTextBlacklist?: string[],
+	hidePostFlairs?: boolean,
+	hidePostTitle?: boolean,
+	hidePostTopInfo?: boolean,
+	hidePostLeftBar?: boolean,
+	hideCrosspostInfo?: boolean,
 }
 
 // default config
@@ -75,6 +80,11 @@ export const defaultSettings: PhotonSettings = {
 	userBlacklist: [],
 	tileTextBlacklist: [],
 	flairTextBlacklist: [],
+	hidePostFlairs: false,
+	hidePostTitle: false,
+	hidePostTopInfo: false,
+	hidePostLeftBar: false,
+	hideCrosspostInfo: false,
 };
 
 /** Stores and manages global settings */
@@ -90,6 +100,7 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 		this.hide();
 
 		ensurePageLoaded().then(() => this.init());
+		window.addEventListener(PhEvents.viewChange, () => this.hide());
 	}
 
 	private async init() {

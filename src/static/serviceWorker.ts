@@ -1,7 +1,7 @@
 /**
  * This service worker is responsible for updating & caching files, if there are more recent versions
  */
-const version = "1.0.3";			/// <change version script>
+const version = "1.0.4";			/// <change version script>
 const CACHE_NAME = `photon-cache-${version}`;
 interface CacheDescription {
 	hostname: "/" | string,
@@ -11,10 +11,10 @@ interface CacheDescription {
 const typesToCache: CacheDescription[] = [
 	{ hostname: "/", path: "/", fileEnding: "css|js|png|jpg|svg" },
 	{ hostname: "/", path: "/api/youtube-dl" },
-	{ hostname: "v.redd.it", path: "/", fileEnding: "mpd" },
-	{ hostname: "api.imgur.com", path: "/" },
-	{ hostname: "api.gfycat.com", path: "/" },
-	{ hostname: "api.redgifs.com", path: "/" },
+	// { hostname: "v.redd.it", path: "/", fileEnding: "mpd" },
+	// { hostname: "api.imgur.com", path: "/" },
+	// { hostname: "api.gfycat.com", path: "/" },
+	// { hostname: "api.redgifs.com", path: "/" },
 ];
 const forceCacheFiles = [
 	"/index.html",

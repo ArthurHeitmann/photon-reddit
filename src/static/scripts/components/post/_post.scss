@@ -324,12 +324,10 @@
 
 			&.medium {
 				font-size: .8em;
-				transform: translateY(-.15rem);
 			}
 
 			&.small {
 				font-size: .6em;
-				transform: translateY(-.2rem);
 			}
 		}
 	}
@@ -344,5 +342,48 @@
 		.flair.spoiler {
 			display: none;
 		}
+	}
+}
+
+// global settings
+
+.hidePostFlairs {
+	.post.isInFeed .header .top .flairWrapper .flair {
+		display: none;
+	}
+}
+
+.hidePostTitle {
+	.post.isInFeed .header .bottom .title {
+		display: none;
+	}
+}
+
+.hidePostTopInfo {
+	.post.isInFeed .header .top {
+		display: none;
+	}
+}
+
+.hidePostTitle.hidePostTopInfo {
+	.post.isInFeed .header {
+		display: none;
+	}
+
+	.content.fullScale {
+		border-top-left-radius: 1rem;
+		border-top-right-radius: 1rem;
+	}
+}
+
+.hidePostLeftBar {
+	.post.isInFeed > .actions {
+		display: none;
+	}
+}
+
+.hideCrosspostInfo {
+	.post.isInFeed .miniPost {
+		display: none;
 	}
 }
