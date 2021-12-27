@@ -9,21 +9,38 @@ export enum GfycatDomain {
 	redgifs = "redgifs"
 }
 
+function makeGfycatApiUrl(domain: GfycatDomain, id: string) {
+	if (domain === GfycatDomain.gfycat)
+		return `https://api.${GfycatDomain.gfycat}.com/v1/gfycats/${id}`;
+	else if (domain === GfycatDomain.redgifs)
+		return `https://api.${GfycatDomain.redgifs}.com/v2/gifs/${id.toLowerCase()}`;
+	else
+		throw "invalid gfycat domain";
+}
+
 /** */
 export async function getGfycatMp4SrcFromUrl(url: string, domain: GfycatDomain): Promise<SourceData[]> {
 	const idMatches = url.match(/\.com\/(?:\w+\/)?(\w+)/i);	// id might be like x.com/<id> or x.com/<something>/<id>
 	if (!idMatches)
 		throw "invalid url";
-	const req = await fetch(`https://api.${domain}.com/v1/gfycats/${idMatches[1]}`);
+	let req = await fetch(makeGfycatApiUrl(domain, idMatches[1]));
+	if (req.status === 404 && domain === GfycatDomain.gfycat) {
+		// some old gfycat links have been moved to redgifs, so try that if not found
+		return await getGfycatMp4SrcFromUrl(url, GfycatDomain.redgifs);
+	}
 	const data = await req.json();
 	return [
 		{
-			src: data["gfyItem"]["mp4Url"],
+			src: domain === GfycatDomain.gfycat
+				? data["gfyItem"]["mp4Url"]
+				: data["gif"]["urls"]["hd"],
 			type: "video/mp4",
 			label: "Default"
 		},
 		{
-			src: data["gfyItem"]["mobileUrl"],
+			src: domain === GfycatDomain.gfycat
+				? data["gfyItem"]["mobileUrl"]
+				: data["gif"]["urls"]["sd"],
 			type: "video/mp4",
 			label: "Mobile",
 			lowerQualityAlternative: true
