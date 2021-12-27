@@ -48,6 +48,10 @@
 			&:empty {
 				display: none;
 			}
+
+			> :last-child {
+				margin-block-end: 1em;
+			}
 		}
 
 		.currentUserDisplay {
