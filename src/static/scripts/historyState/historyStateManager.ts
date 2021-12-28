@@ -129,35 +129,37 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 	}
 
 	let newTabTitle: string = null;
-	if (postHintState === PostHintState.postNoComments) {
-		stateLoader.finishWith(requestData);
-		newTabTitle = `${postHint.post.data.title} - Photon`;
-	}
-	// result is a posts comments or post crosspost list
-	else if (requestData instanceof Array) {		// --> [0]: post [1]: comments/posts
-		if (requestData[1].data.children[0]?.kind === "t3")
-			stateLoader.finishWith(new Ph_PostCrossposts(requestData));
-		else
-			stateLoader.finishWith(new Ph_PostAndComments(requestData as PostCommentsListings));
-		newTabTitle = `${requestData[0].data.children[0].data.title} - Photon`;
-	}
+	try {
+		if (postHintState === PostHintState.postNoComments) {
+			stateLoader.finishWith(requestData);
+			newTabTitle = `${postHint.post.data.title} - Photon`;
+		}
+		// result is a posts comments or post crosspost list
+		else if (requestData instanceof Array) {		// --> [0]: post [1]: comments/posts
+			if (requestData[1].data.children[0]?.kind === "t3")
+				stateLoader.finishWith(new Ph_PostCrossposts(requestData));
+			else
+				stateLoader.finishWith(new Ph_PostAndComments(requestData as PostCommentsListings));
+			newTabTitle = `${requestData[0].data.children[0].data.title} - Photon`;
+		}
 		// result is some sort of generic feed
-	else if (requestData.kind === "Listing") {
-		stateLoader.finishWith(new Ph_UniversalFeed(requestData, path + query));
-		newTabTitle = `${(path.length > 3) ? path.slice(1) : "Home"} - Photon`;
-	}
-	// result is a wiki page
-	else if (requestData.kind === "wikipage") {
-		stateLoader.finishWith(new Ph_Wiki(requestData));
-		newTabTitle = `${path.match(/r\/[^/?#]+/i)[0]} Wiki - Photon`;
-	}
-	else if (requestData["message"] && requestData["reason"]) {
-		stateLoader.finishWith(makeElement("div", null, [
-			makeElement("p", null, requestData["message"]),
-			makeElement("p", null, requestData["reason"]),
-		]));
-	}
-	else {
+		else if (requestData.kind === "Listing") {
+			stateLoader.finishWith(new Ph_UniversalFeed(requestData, path + query));
+			newTabTitle = `${(path.length > 3) ? path.slice(1) : "Home"} - Photon`;
+		}
+		// result is a wiki page
+		else if (requestData.kind === "wikipage") {
+			stateLoader.finishWith(new Ph_Wiki(requestData));
+			newTabTitle = `${path.match(/r\/[^/?#]+/i)[0]} Wiki - Photon`;
+		} else if (requestData["message"] && requestData["reason"]) {
+			stateLoader.finishWith(makeElement("div", null, [
+				makeElement("p", null, requestData["message"]),
+				makeElement("p", null, requestData["reason"]),
+			]));
+		} else {
+			stateLoader.error();
+		}
+	} catch (e) {
 		stateLoader.error();
 	}
 
