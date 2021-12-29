@@ -32,7 +32,8 @@ export default class Ph_ImageViewer extends Ph_PhotonBaseElement implements Medi
 		super();
 		if (!hasParams(arguments)) return;
 
-		this.classList.add("imageViewer")
+		this.classList.add("imageViewer");
+		this.classList.add("loading");
 
 		this.caption = initData.caption;
 		this.controls = { rightItems: [
@@ -48,14 +49,16 @@ export default class Ph_ImageViewer extends Ph_PhotonBaseElement implements Medi
 		this.originalImage = document.createElement("img")
 		this.originalImage.className = "original";
 		this.originalImage.alt = initData.caption || this.url;
-		this.originalImage.onerror = this.onImageError.bind(this);
+		this.originalImage.addEventListener("error", this.onImageError.bind(this));
+		this.originalImage.addEventListener("load", () => this.classList.remove("loading"));
 		nonDraggableElement(this.originalImage);
 		if (initData.previewUrl && Users.global.d.photonSettings.imageLoadingPolicy !== ImageLoadingPolicy.alwaysOriginal) {
 			this.previewImage = document.createElement("img");
 			this.previewImage.className = "preview";
 			this.previewImage.src = initData.previewUrl
 			this.previewImage.alt = initData.caption || this.url;
-			this.previewImage.onerror = this.startLoadingOriginal.bind(this);
+			this.previewImage.addEventListener("error", this.startLoadingOriginal.bind(this));
+			this.previewImage.addEventListener("load", () => this.classList.remove("loading"));
 			nonDraggableElement(this.previewImage);
 			this.append(this.previewImage);
 			this.addEventListener(PhEvents.enteredFullscreen, this.onFullscreenEnter.bind(this));
