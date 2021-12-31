@@ -1,4 +1,4 @@
-import { loadPage } from "../../support/utils";
+import {loadPage} from "../../support/utils";
 
 const viewportSize = {
 	width: -1,
@@ -55,10 +55,10 @@ function checkHighlightVisibility(shouldBeVisible: boolean) {
 		const rect = highlightElem && highlightElem.getBoundingClientRect();
 		assert(Boolean(rect), `Rect ${rect} must be valid`);
 		assert(shouldBeVisible === (
-			rect.top >= 0 &&
-			rect.left >= 0 &&
-			rect.bottom <= viewportSize.height &&
-			rect.right <= viewportSize.width &&
+			Math.round(rect.top) >= 0 &&
+			Math.round(rect.left) >= 0 &&
+			Math.round(rect.bottom) <= viewportSize.height &&
+			Math.round(rect.right) <= viewportSize.width &&
 			rect.width > 0 &&
 			rect.height > 0
 		));
