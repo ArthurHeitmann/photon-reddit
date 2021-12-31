@@ -16,6 +16,12 @@
 			top: 0;
 			left: 0;
 		}
+
+	}
+
+	&.loading {
+		min-width: 1rem;
+		min-height: 1rem;
 	}
 }
 

@@ -54,10 +54,17 @@ export async function getImgurContent(link: string): Promise<ImgurContent[]> {
 		]
 	}
 	const response = await fetch(`https://api.imgur.com/3/${linkType}/${id}`, options);
-	const data = await response.json();
+	let data: any;
+	try {
+		data = await response.json();
+	} catch (e) {
+		return [];
+	}
 
-	if ("images" in data.data)
-		return data.data.images.map(img => makeContentData(img));
+	if (data["status"] === 500 && data["success"] === false)
+		return [];
+	else if ("images" in data.data)
+		return data.data.images.map((img) => makeContentData(img));
 	else
-		return [ makeContentData(data.data) ];
+		return [makeContentData(data.data)];
 }

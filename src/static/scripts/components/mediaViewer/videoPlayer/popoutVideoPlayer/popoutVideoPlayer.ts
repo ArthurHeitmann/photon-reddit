@@ -27,7 +27,7 @@ async function main() {
 			break;
 	}
 
-	const mediaViewer = new Ph_MediaViewer([video]);
+	const mediaViewer = new Ph_MediaViewer([video], "");
 	document.body.append(mediaViewer);
 }
 main().catch(e => console.error(e));

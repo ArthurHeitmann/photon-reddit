@@ -39,6 +39,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	elementLink: HTMLAnchorElement;
 	elementCaption: HTMLElement;
 	currentIndexDisplay: HTMLDivElement;
+	fallbackUrl: string;
 
 	static fromPostData_Image(postData: RedditPostObj): Ph_MediaViewer {
 		if (postData.data.preview && postData.data.preview.images[0].resolutions.length) {
@@ -46,7 +47,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 			return new Ph_MediaViewer([new Ph_ImageViewer({
 				originalUrl: postData.data.url,
 				previewUrl: previews[previews.length - 1].url
-			})]);
+			})], postData.data.url);
 		}
 		else {
 			return Ph_MediaViewer.fromUrl_Image(postData.data.url);
@@ -56,18 +57,18 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	static fromUrl_Image(url: string): Ph_MediaViewer {
 		return new Ph_MediaViewer([new Ph_ImageViewer({
 			originalUrl: url,
-		})]);
+		})], url);
 	}
 
 	static fromPostData_Video(postData: RedditPostObj): Ph_MediaViewer {
-		const mediaViewer = new Ph_MediaViewer();
+		const mediaViewer = new Ph_MediaViewer(null, postData.data.url);
 		const video = Ph_VideoPlayer.fromPostData({ postData })
 		mediaViewer.init([ video]);
 		return mediaViewer;
 	}
 
 	static fromUrl_Video(url: string): Ph_MediaViewer {
-		const mediaViewer = new Ph_MediaViewer();
+		const mediaViewer = new Ph_MediaViewer(null, url);
 		const video = Ph_VideoPlayer.fromPostData({ url })
 		mediaViewer.init([video]);
 		return mediaViewer;
@@ -111,7 +112,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 			}
 		}
 
-		return  new Ph_MediaViewer(mediaElements);
+		return  new Ph_MediaViewer(mediaElements, postData.data.url);
 	}
 
 	static fromUrl(url: string): Ph_MediaViewer | null {
@@ -126,7 +127,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	}
 
 	static fromImgurUrl(url: string): Ph_MediaViewer {
-		const mediaViewer = new Ph_MediaViewer();
+		const mediaViewer = new Ph_MediaViewer(null, url);
 		getImgurContent(url).then((contents: ImgurContent[]) =>
 			mediaViewer.init(contents.map(imgurElement => {
 				if (imgurElement.type === ImgurContentType.image)
@@ -136,7 +137,10 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 				else
 					throw new Error("oops");
 			})))
-			.catch(() => mediaViewer.init([]));
+			.catch(e => {
+				console.error("Error getting imgur content", e);
+				mediaViewer.init([]);
+			});
 		return mediaViewer;
 	}
 
@@ -216,11 +220,12 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		return false;
 	}
 
-	constructor(initElements?: MediaElement[]) {
+	constructor(initElements: MediaElement[] | null, fallbackUrl: string) {
 		super();
 		if (hasHTML(this)) return;
 
 		this.classList.add("mediaViewer");
+		this.fallbackUrl = fallbackUrl;
 
 		this.draggableWrapper = new Ph_DraggableWrapper();
 		this.append(this.draggableWrapper);
@@ -237,7 +242,14 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		if (!hasParams(arguments)) return;
 
 		if (initElements.length === 0) {
-			this.innerText = "Nothing loaded";
+			this.innerText = "";
+			this.append(
+				makeElement("div", {}, "No media loaded"),
+				makeElement("div", { class: "linkPreviewWrapper" }, [
+					makeElement("a", { href: this.fallbackUrl },  this.fallbackUrl)
+				])
+			);
+			linksToSpa(this);
 			return;
 		}
 
@@ -484,7 +496,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 			const manualInput = document.createElement("input");
 			manualInput.type = "text";
 			manualInput.value = init.toString();
-			manualInput.oninput = e => this.draggableWrapper.style.setProperty(`--${filterName}`, manualInput.value + append);
+			manualInput.oninput = () => this.draggableWrapper.style.setProperty(`--${filterName}`, manualInput.value + append);
 			sliderWrapper.append(manualInput);
 			return sliderWrapper;
 

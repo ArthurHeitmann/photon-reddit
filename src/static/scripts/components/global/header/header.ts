@@ -2,7 +2,7 @@ import { initiateLogin } from "../../../auth/loginHandler";
 import { ViewChangeData } from "../../../historyState/viewsStack";
 import { PhEvents } from "../../../types/Events";
 import { SVGAnimateElement } from "../../../types/misc";
-import { $class } from "../../../utils/htmlStatics";
+import {$class, $tag} from "../../../utils/htmlStatics";
 import { hasHTML } from "../../../utils/utils";
 import Ph_DropDownArea from "../../misc/dropDown/dropDownArea/dropDownArea";
 import Users from "../../multiUser/userManagement";
@@ -190,6 +190,7 @@ export default class Ph_Header extends HTMLElement {
 	private onPinnedToggle(e: MouseEvent) {
 		this.isPinned = !this.isPinned;
 		this.classList.toggle("pinned", this.isPinned);
+		$tag("main")[0].classList.toggle("pinned", this.isPinned);
 		(e.currentTarget as HTMLElement).classList.toggle("pinned", this.isPinned);
 		Users.global.set(["isHeaderPinned"], this.isPinned);
 		if (this.isPinned) {
