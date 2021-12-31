@@ -1,6 +1,14 @@
-export const photonVersion = "1.0.4";		/// <change version script>
+export const photonVersion = "1.0.5";		/// <change version script>
 
 export const photonChangelog = {
+	"1.0.5": {
+		"Fixed": [
+			"Fixed some old gfycat videos not working",
+			"slightly improved pinned top header",
+			"added more error handling",
+			"Other small fixes & changes"
+		],
+	},
 	"1.0.4": {
 		"New": [
 			"Added settings to hide various post UI elements (title, flair, crosspost info, ...)",
