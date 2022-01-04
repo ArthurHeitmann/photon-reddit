@@ -109,6 +109,18 @@
 		}
 	}
 
+	&.outOfView {
+		--placeholder-height: 5rem;
+		content-visibility: hidden;
+
+	}
+
+	&:not(.outOfView) {
+		content-visibility: visible;
+		// this is here to avoid layout shift when switching between .outOfView
+		contain: style layout paint;
+	}
+
 	img.pinned {
 		width: 1.25rem;
 		height: 1.25rem;
