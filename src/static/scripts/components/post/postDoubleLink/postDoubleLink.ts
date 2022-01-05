@@ -1,10 +1,10 @@
 import ViewsStack from "../../../historyState/viewsStack";
-import { PhEvents } from "../../../types/Events";
-import { elementWithClassInTree } from "../../../utils/htmlStuff";
+import {PhEvents} from "../../../types/Events";
+import {elementWithClassInTree} from "../../../utils/htmlStuff";
 import Ph_UniversalFeed from "../../feed/universalFeed/universalFeed";
 import Ph_PostAndComments from "../../postAndComments/postAndComments";
 import Ph_CommentsViewStateLoader from "../../viewState/commentsViewStateLoader/commentsViewStateLoader";
-import { Ph_ViewState } from "../../viewState/viewState";
+import {Ph_ViewState} from "../../viewState/viewState";
 import Ph_Post from "../post";
 
 export default class PostDoubleLink {
@@ -50,7 +50,7 @@ export default class PostDoubleLink {
 
 		if (activeView !== postView) {
 			this.updatePlaceholderPosition();
-			// new active view ist post and comments
+			// new active view is post and comments
 			if (activeView instanceof Ph_CommentsViewStateLoader)
 				this.postAndComments.insertAdjacentElement("afterbegin", this.post);
 			// new active view is universal feed
@@ -92,12 +92,16 @@ export default class PostDoubleLink {
 		this.commentsViewStateLoader?.setIsReadyForCleanup();
 		// another edge case:
 		// commentsViewStateLoader is loaded in the next history state
-		// the post has been permanently removed from it's parent feed
+		// the post has been permanently removed from its parent feed
 		setTimeout(() => {
 			if (this.post.isConnected)
 				return;
 			ViewsStack.removeViewState(this.commentsViewStateLoader);
-		}, 0)
+			this.disable();
+			for (const props in this) {
+				this[props] = null;
+			}
+		}, 0);
 	}
 
 	disable() {

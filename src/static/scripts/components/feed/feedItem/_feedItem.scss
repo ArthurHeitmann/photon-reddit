@@ -93,6 +93,10 @@
 		border-radius: vars.$border-radius;
 		@extend %shadow-diffuse;
 
+		&.isHidden {
+			visibility: hidden;
+		}
+
 		.backgroundLink {
 			position: absolute;
 			top: 0;
@@ -107,10 +111,6 @@
 		a:not(.backgroundLink), .content > * {
 			position: relative;
 		}
-	}
-
-	&.isHidden {
-		visibility: hidden;
 	}
 
 	img.pinned {
