@@ -113,7 +113,7 @@ export function nonDraggableElement(img: HTMLElement): HTMLElement {
 	return img;
 }
 
-export function isElementInViewport(elem: HTMLElement) {
+export function isElementInViewport(elem: Element) {
 	const rect = elem.getBoundingClientRect();
 	return (
 		(	// either the top or bottom edge has to be in the viewport

@@ -1,6 +1,6 @@
-import { PhEvents } from "../../../types/Events";
-import { isElementInViewport } from "../../../utils/htmlStatics";
-import { hasParams } from "../../../utils/utils";
+import {PhEvents} from "../../../types/Events";
+import {isElementInViewport} from "../../../utils/htmlStatics";
+import {hasParams} from "../../../utils/utils";
 import Ph_PhotonBaseElement from "../../photon/photonBaseElement/photonBaseElement";
 
 export default class Ph_FeedItem extends Ph_PhotonBaseElement {
@@ -73,7 +73,7 @@ export default class Ph_FeedItem extends Ph_PhotonBaseElement {
 			},
 			{ threshold: .4 }
 		);
-		intersectionObserver.observe(this);
+		// intersectionObserver.observe(this);
 	}
 }
 

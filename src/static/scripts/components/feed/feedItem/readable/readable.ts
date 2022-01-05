@@ -1,13 +1,22 @@
-import { blockUser, readAllMessages, setMessageReadStatus } from "../../../../api/redditApi";
-import { pushLinkToHistoryComb } from "../../../../historyState/historyStateManager";
-import { $css } from "../../../../utils/htmlStatics";
-import { hasParams } from "../../../../utils/utils";
-import Ph_DropDown, { DirectionX, DirectionY } from "../../../misc/dropDown/dropDown";
-import { DropDownActionData, DropDownEntryParam } from "../../../misc/dropDown/dropDownEntry/dropDownEntry";
-import Ph_Toast, { Level } from "../../../misc/toast/toast";
+import {blockUser, readAllMessages, setMessageReadStatus} from "../../../../api/redditApi";
+import {pushLinkToHistoryComb} from "../../../../historyState/historyStateManager";
+import {$css} from "../../../../utils/htmlStatics";
+import {hasParams} from "../../../../utils/utils";
+import Ph_DropDown, {DirectionX, DirectionY} from "../../../misc/dropDown/dropDown";
+import {DropDownActionData, DropDownEntryParam} from "../../../misc/dropDown/dropDownEntry/dropDownEntry";
+import Ph_Toast, {Level} from "../../../misc/toast/toast";
 import Users from "../../../multiUser/userManagement";
-import { MessageSection } from "../../universalFeed/universalFeed";
 import Ph_FeedItem from "../feedItem";
+
+enum MessageSection {
+	all = "inbox",
+	unread = "unread",
+	messages = "messages",
+	commentReplies = "comments",
+	postReplies = "selfreply",
+	mentions = "mentions",
+	sent = "sent"
+}
 
 export default abstract class Ph_Readable extends Ph_FeedItem {
 	abstract fullName: string;

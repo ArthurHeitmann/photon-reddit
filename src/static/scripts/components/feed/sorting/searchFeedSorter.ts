@@ -1,12 +1,12 @@
-import { redditApiRequest } from "../../../api/redditApi";
+import {redditApiRequest} from "../../../api/redditApi";
 import ViewsStack from "../../../historyState/viewsStack";
-import { SortPostsTimeFrame, SortSearchOrder } from "../../../types/misc";
-import { RedditApiObj, RedditListingObj } from "../../../types/redditTypes";
-import { getLoadingIcon } from "../../../utils/htmlStatics";
-import { extractQuery, hasParams, splitPathQuery } from "../../../utils/utils";
-import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown";
-import { DropDownActionData } from "../../misc/dropDown/dropDownEntry/dropDownEntry";
-import Ph_Toast, { Level } from "../../misc/toast/toast";
+import {SortPostsTimeFrame, SortSearchOrder} from "../../../types/misc";
+import {RedditApiObj, RedditListingObj} from "../../../types/redditTypes";
+import {getLoadingIcon} from "../../../utils/htmlStatics";
+import {extractQuery, hasParams, splitPathQuery} from "../../../utils/utils";
+import Ph_DropDown, {DirectionX, DirectionY} from "../../misc/dropDown/dropDown";
+import {DropDownActionData} from "../../misc/dropDown/dropDownEntry/dropDownEntry";
+import Ph_Toast, {Level} from "../../misc/toast/toast";
 import Ph_UniversalFeed from "../universalFeed/universalFeed";
 
 /** Sorts a search result feed */
@@ -87,7 +87,7 @@ export default class Ph_SearchFeedSorter extends HTMLElement {
 			throw `Error making sort request: ${JSON.stringify(request)}`;
 		}
 
-		this.feed.replaceItems(request.data.children, request.data.before, request.data.after);
+		// this.feed.replaceItems(request.data.children, request.data.before, request.data.after);
 	}
 }
 

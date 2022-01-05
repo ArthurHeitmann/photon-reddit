@@ -12,6 +12,14 @@
 	> * {
 		margin: .75rem 0;
 	}
+
+	> .itemPlaceholder {
+		--height: 0;
+		width: 100%;
+		height: var(--height);
+		background: vars.$background-el1;
+		margin: 0;
+	}
 }
 
 .feedSorter {

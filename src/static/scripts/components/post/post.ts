@@ -11,12 +11,12 @@ import {
 	VoteDirection,
 	voteDirectionFromLikes
 } from "../../api/redditApi";
-import { pushLinkToHistoryComb, PushType } from "../../historyState/historyStateManager";
+import {pushLinkToHistoryComb, PushType} from "../../historyState/historyStateManager";
 import ViewsStack from "../../historyState/viewsStack";
-import { PhEvents } from "../../types/Events";
-import { FlairApiData, RedditApiObj, RedditListingObj, RedditPostData, RedditPostObj } from "../../types/redditTypes";
-import { $css, emojiFlagsToImages, escADQ, escHTML, getLoadingIcon } from "../../utils/htmlStatics";
-import { linksToSpa } from "../../utils/htmlStuff";
+import {PhEvents} from "../../types/Events";
+import {FlairApiData, RedditApiObj, RedditListingObj, RedditPostData, RedditPostObj} from "../../types/redditTypes";
+import {$css, emojiFlagsToImages, escADQ, escHTML, getLoadingIcon} from "../../utils/htmlStatics";
+import {linksToSpa} from "../../utils/htmlStuff";
 import {
 	escRegex,
 	getFullscreenElement,
@@ -28,12 +28,12 @@ import {
 	timePassedSince
 } from "../../utils/utils";
 import Ph_FeedItem from "../feed/feedItem/feedItem";
-import Ph_PhotonSettings, { NsfwPolicy, PhotonSettings } from "../global/photonSettings/photonSettings";
+import Ph_PhotonSettings, {NsfwPolicy, PhotonSettings} from "../global/photonSettings/photonSettings";
 import Ph_AwardsInfo from "../misc/awardsInfo/awardsInfo";
-import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown";
-import Ph_DropDownEntry, { DropDownActionData, DropDownEntryParam } from "../misc/dropDown/dropDownEntry/dropDownEntry";
+import Ph_DropDown, {DirectionX, DirectionY} from "../misc/dropDown/dropDown";
+import Ph_DropDownEntry, {DropDownActionData, DropDownEntryParam} from "../misc/dropDown/dropDownEntry/dropDownEntry";
 import Ph_Flair from "../misc/flair/flair";
-import Ph_Toast, { Level } from "../misc/toast/toast";
+import Ph_Toast, {Level} from "../misc/toast/toast";
 import Ph_VoteButton from "../misc/voteButton/voteButton";
 import Users from "../multiUser/userManagement";
 import Ph_PostBody from "./postBody/postBody";
@@ -302,8 +302,10 @@ export default class Ph_Post extends Ph_FeedItem {
 			this.classList.add("hide");
 
 		this.addEventListener(PhEvents.intersectionChange, this.onIntersectionChange.bind(this));
-		if (!this.postBody.isInitialized)
-			this.addEventListener(PhEvents.almostVisible, () => this.initPostBody(postData), { once: true });
+		if (!this.postBody.isInitialized) {
+			this.addEventListener(PhEvents.almostVisible, () => this.initPostBody(postData), {once: true});
+			this.initPostBody(postData)
+		}
 	}
 
 	private initPostBody(postData: RedditPostObj) {

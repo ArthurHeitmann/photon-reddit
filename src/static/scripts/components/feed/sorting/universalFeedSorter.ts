@@ -1,4 +1,4 @@
-import { redditApiRequest } from "../../../api/redditApi";
+import {redditApiRequest} from "../../../api/redditApi";
 import ViewsStack from "../../../historyState/viewsStack";
 import {
 	NonSortableUserSections,
@@ -8,14 +8,14 @@ import {
 	SortUserPostsOrder,
 	UserSection
 } from "../../../types/misc";
-import { RedditApiObj, RedditListingObj } from "../../../types/redditTypes";
-import { getLoadingIcon } from "../../../utils/htmlStatics";
-import { extractPath, extractQuery, hasParams, splitPathQuery } from "../../../utils/utils";
-import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown";
-import { DropDownActionData, DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry";
-import Ph_Toast, { Level } from "../../misc/toast/toast";
+import {RedditApiObj, RedditListingObj} from "../../../types/redditTypes";
+import {getLoadingIcon} from "../../../utils/htmlStatics";
+import {extractPath, extractQuery, hasParams, splitPathQuery} from "../../../utils/utils";
+import Ph_DropDown, {DirectionX, DirectionY} from "../../misc/dropDown/dropDown";
+import {DropDownActionData, DropDownEntryParam} from "../../misc/dropDown/dropDownEntry/dropDownEntry";
+import Ph_Toast, {Level} from "../../misc/toast/toast";
 import Users from "../../multiUser/userManagement";
-import { FeedType } from "../feedInfo/feedInfo";
+import {FeedType} from "../feedInfo/feedInfo";
 import Ph_UniversalFeed from "../universalFeed/universalFeed";
 
 /** Sorts a universal feed */
@@ -159,7 +159,7 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 		}
 		ViewsStack.changeCurrentUrl(newUrl);
 
-		this.feed.replaceItems(request.data.children, request.data.before, request.data.after);
+		// this.feed.replaceItems(request.data.children, request.data.before, request.data.after);
 	}
 
 	async setUserSection(data: DropDownActionData) {
@@ -175,9 +175,9 @@ export default class Ph_UniversalFeedSorter extends HTMLElement {
 				[],
 				false
 			);
-			this.feed.beforeData = sectionItems.data.before;
-			this.feed.afterData = sectionItems.data.after;
-			this.feed.replaceItems(sectionItems.data.children, sectionItems.data.before, sectionItems.data.after);
+			// this.feed.beforeData = sectionItems.data.before;
+			// this.feed.afterData = sectionItems.data.after;
+			// this.feed.replaceItems(sectionItems.data.children, sectionItems.data.before, sectionItems.data.after);
 			ViewsStack.changeCurrentUrl(this.feed.requestUrl);
 			data.setButtonLabel(section || "Overview");
 			if (isSortable) {
