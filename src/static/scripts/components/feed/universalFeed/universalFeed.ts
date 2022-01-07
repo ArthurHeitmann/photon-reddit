@@ -7,13 +7,17 @@ import {
 	RedditPostObj
 } from "../../../types/redditTypes";
 import {escHTML, isElementInViewport} from "../../../utils/htmlStatics";
-import {hasParams, makeElement} from "../../../utils/utils";
+import {hasParams, makeElement, throttle} from "../../../utils/utils";
 import Ph_Comment from "../../comment/comment";
 import Ph_Message from "../../message/message";
 import Ph_Toast, {Level} from "../../misc/toast/toast";
 import Users from "../../multiUser/userManagement";
 import Ph_Post from "../../post/post";
 import Ph_FeedItem from "../feedItem/feedItem";
+import RedditListingStream from "./redditListingStream";
+import Ph_PhotonBaseElement from "../../photon/photonBaseElement/photonBaseElement";
+import {PhEvents} from "../../../types/Events";
+import {Ph_ViewState} from "../../viewState/viewState";
 
 
 /** Visibility of an item in an infinite scroller (IS) */
@@ -38,18 +42,10 @@ interface ItemISState {
  *  - can be sorted
  *  - automatically loads more (and unloads old) when scrolling to the end
  */
-export default class Ph_UniversalFeed extends HTMLElement {
-	// absoluteFirst: string = null;
-	// beforeData: string = null;
-	// afterData: string = null;
-	// isLoading: boolean = false;
+export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 	requestUrl: string;
-	// hasReachedEndOfFeed = false;
-	// isSearchFeed = false;
 	private allPostFullNames: string[] = [];
-	// private currentlyVisibleItem: Ph_FeedItem;
-	// private currentlyVisibleItemScrollTop: number;
-	// private lastWindowSize = [window.innerWidth, window.innerHeight]
+	private listingStream: RedditListingStream;
 
 	// infinite scroller stuff
 	private allItems: ItemISState[] = [];
@@ -68,31 +64,82 @@ export default class Ph_UniversalFeed extends HTMLElement {
 
 		this.requestUrl = requestUrl;
 		this.classList.add("universalFeed");
+		this.addEventListener("click", this.onBackAreaClick.bind(this));
 
 		this.topPlaceholder = makeElement("div", { class: "itemPlaceholder" });
 		this.bottomPlaceholder = makeElement("div", { class: "itemPlaceholder" });
+		this.topPlaceholder.addEventListener("mousemove", this.forceOnRemToHid.bind(this));
+		this.topPlaceholder.addEventListener("mouseenter", this.forceOnRemToHid.bind(this));
+		this.bottomPlaceholder.addEventListener("mousemove", this.forceOnRemToHid.bind(this));
+		this.bottomPlaceholder.addEventListener("mouseenter", this.forceOnRemToHid.bind(this));
 		this.append(this.topPlaceholder)
+		this.append(this.bottomPlaceholder);
 		this.updatePlaceholderHeight(RemovedItemPlaceholderPosition.top);
 		this.updatePlaceholderHeight(RemovedItemPlaceholderPosition.bottom);
 
-		for (const itemData of items.data.children) {
+		this.initializeIntersectionObservers();
+		window.addEventListener("resize", this.initializeIntersectionObservers.bind(this));
+
+		this.listingStream = new RedditListingStream();
+		this.listingStream.onNewItems = this.onNewItemsLoaded.bind(this);
+		this.listingStream.onLoadingChange = this.onLoadingStateChange.bind(this);
+		this.listingStream.init(requestUrl, items);
+
+		const onScrollRef = throttle(this.onScroll.bind(this), 750);
+		this.addEventListener("wheel", onScrollRef, { passive: true });
+		this.addEventListener("touchmove", onScrollRef, { passive: true });
+		window.addEventListener("scroll", onScrollRef, { passive: true });
+		this.addEventListener(PhEvents.removed, () => window.removeEventListener("scroll", onScrollRef));
+	}
+
+	private onNewItemsLoaded(items: RedditApiObj[]) {
+		console.time("new added");
+		for (const item of items) {
 			try {
-				const itemElement = this.makeFeedItem(itemData, items.data.children.length);
-				this.allItems.push({
+				const itemElement = this.makeFeedItem(item, items.length);
+				const itemIsState: ItemISState = {
 					element: itemElement,
 					visibility: ItemISVisibility.visible
-				});
-				this.append(itemElement);
+				};
+				this.allItems.push(itemIsState);
+				if (Math.round(Math.abs(this.bottomPlaceholderHeight)) < 10) {
+					this.bottomPlaceholder.previousSibling.after(itemElement);
+					this.observeItem(itemIsState);
+				}
+				else {
+					this.bottomPlaceholder.after(itemElement);
+					const elementHeight = itemElement.offsetHeight + 25;
+					this.bottomPlaceholderHeight += elementHeight;
+					this.updatePlaceholderHeight(RemovedItemPlaceholderPosition.bottom);
+					itemElement.remove();
+					itemIsState.visibility = ItemISVisibility.removed;
+					itemIsState.removedPlaceholderPosition = RemovedItemPlaceholderPosition.bottom;
+					itemIsState.removedPlaceholderHeight = elementHeight;
+				}
 			} catch (e) {
 				console.error(e);
 				new Ph_Toast(Level.error, "Error making feed item");
 			}
 		}
+		console.timeEnd("new added");
+	}
 
-		this.initializeIntersectionObservers();
-		window.addEventListener("resize", this.initializeIntersectionObservers.bind(this));
+	private onLoadingStateChange(isLoading: boolean) {
+		this.classList.toggle("isLoading", isLoading);
+	}
 
-		this.append(this.bottomPlaceholder);
+	private onScroll() {
+		if (!this.isVisible())
+			return;
+		const distanceToBottom = document.scrollingElement.scrollHeight - document.scrollingElement.scrollTop - window.innerHeight;
+		if (distanceToBottom < window.innerHeight * 1.5)
+			this.listingStream.loadMore();
+	}
+
+	// item visibility logic
+
+	private isVisible() {
+		return this.isConnected && !Ph_ViewState.getViewOf(this).classList.contains("hide");
 	}
 
 	private initializeIntersectionObservers() {
@@ -110,7 +157,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 		this.hidToVisIntObs = new IntersectionObserver(
 			this.onHidToVis.bind(this),
 			{
-				threshold: [0],
+				threshold: [0, 0.8],
 				rootMargin: `${screenHeight}px 0px ${screenHeight}px 0px`
 			}
 		);
@@ -119,7 +166,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			this.onHidToRem.bind(this),
 			{
 				threshold: [0],
-				rootMargin: `${screenHeight * 2}px 0px ${screenHeight * 2}px 0px`
+				rootMargin: `${screenHeight * 2 + 50}px 0px ${screenHeight * 2 + 50}px 0px`
 			}
 		);
 		this.remToHidIntObs?.disconnect();
@@ -131,23 +178,22 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			}
 		);
 
-		for (const item of this.allItems) {
-			switch (item.visibility) {
-				case ItemISVisibility.visible:
-					this.visToHidIntObs.observe(item.element);
-					break;
-				case ItemISVisibility.hidden:
-					this.hidToRemIntObs.observe(item.element);
-					this.hidToVisIntObs.observe(item.element);
-					break;
-			}
-		}
+		for (const item of this.allItems)
+			this.observeItem(item);
 		this.remToHidIntObs.observe(this.topPlaceholder);
 		this.remToHidIntObs.observe(this.bottomPlaceholder);
 	}
 
-	private indexOfElement(elem: Element): number {
-		return [...this.children].findIndex(e => e === elem);
+	private observeItem(item: ItemISState) {
+		switch (item.visibility) {
+			case ItemISVisibility.visible:
+				this.visToHidIntObs.observe(item.element);
+				break;
+			case ItemISVisibility.hidden:
+				this.hidToRemIntObs.observe(item.element);
+				this.hidToVisIntObs.observe(item.element);
+				break;
+		}
 	}
 
 	private updatePlaceholderHeight(position: RemovedItemPlaceholderPosition) {
@@ -159,7 +205,10 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			throw "impossible!"
 	}
 
-	private onVisToHid(entries: IntersectionObserverEntry[], observer: IntersectionObserver) {
+	private onVisToHid(entries: IntersectionObserverEntry[]) {
+		if (!this.isVisible())
+			return;
+
 		for (const entry of entries) {
 			// continue if item isn't outside of bounds
 			if (
@@ -169,7 +218,6 @@ export default class Ph_UniversalFeed extends HTMLElement {
 				continue;
 			}
 
-			// console.log(`%c onVisToHid ${this.indexOfElement(entry.target)} ${(entry.intersectionRatio).toFixed(2)} ${entry.isIntersecting}`, "background: gray; color: white");
 			const element = entry.target as HTMLElement;
 
 			// update state (hide the element)
@@ -184,13 +232,15 @@ export default class Ph_UniversalFeed extends HTMLElement {
 		}
 	}
 
-	private onHidToVis(entries: IntersectionObserverEntry[], observer: IntersectionObserver) {
+	private onHidToVis(entries: IntersectionObserverEntry[]) {
+		if (!this.isVisible())
+			return;
+
 		for (const entry of entries) {
 			// continue if item isn't inside of bounds
 			if (!(entry.intersectionRatio > 0 && entry.isIntersecting) || !entry.boundingClientRect.height && !entry.boundingClientRect.width)
 				continue;
 
-			// console.log(`%c onHidToVis ${this.indexOfElement(entry.target)} ${(entry.intersectionRatio).toFixed(2)} ${entry.isIntersecting}`, "background: darkgreen; color: white");
 			const element = entry.target as HTMLElement;
 
 			// update state (show the element)
@@ -204,17 +254,19 @@ export default class Ph_UniversalFeed extends HTMLElement {
 		}
 	}
 
-	private onHidToRem(entries: IntersectionObserverEntry[], observer: IntersectionObserver) {
+	private onHidToRem(entries: IntersectionObserverEntry[]) {
+		if (!this.isVisible())
+			return;
+
 		for (const entry of entries) {
 			if (!(entry.intersectionRatio === 0 && !entry.isIntersecting) || !entry.boundingClientRect.height && !entry.boundingClientRect.width)
 				continue;
 
-			// console.log(`%c onHidToRem ${this.indexOfElement(entry.target)} ${(entry.intersectionRatio).toFixed(2)} ${entry.isIntersecting}`, "background: darkred; color: white");
 			const element = entry.target as HTMLElement;
 			const itemState = this.allItems.find(item => item.element === element);
 
 			const itemStyle = getComputedStyle(element);
-			const itemHeight = entry.boundingClientRect.height + parseFloat(itemStyle.marginTop) + parseFloat(itemStyle.marginBottom);
+			const itemHeight = Math.round(entry.boundingClientRect.height + parseFloat(itemStyle.marginTop) + parseFloat(itemStyle.marginBottom));
 			const placeholderPosition = entry.boundingClientRect.top > 0
 				? RemovedItemPlaceholderPosition.bottom
 				: RemovedItemPlaceholderPosition.top;
@@ -235,23 +287,35 @@ export default class Ph_UniversalFeed extends HTMLElement {
 		}
 	}
 
-	private async onRemToHid(entries: IntersectionObserverEntry[], observer: IntersectionObserver) {
+	private onRemToHid(entries: IntersectionObserverEntry[]) {
+		if (!this.isVisible())
+			return;
+
 		const entry = entries[0];
 		if (!(entry.intersectionRatio > 0 && entry.isIntersecting) || entry.boundingClientRect.height === 0)
 			return;
 
-		// console.log(`%c onRemToHid ${this.indexOfElement(entry.target)} ${(entry.intersectionRatio).toFixed(2)} ${entry.isIntersecting}`, "background: orange; color: white");
-
 		const placeholderPosition = entry.target === this.topPlaceholder
 			? RemovedItemPlaceholderPosition.top
 			: RemovedItemPlaceholderPosition.bottom;
-		const placeholder = placeholderPosition === RemovedItemPlaceholderPosition.top
+		this.popPlaceholderItems(placeholderPosition);
+	}
+
+	private forceOnRemToHid(e: InputEvent) {
+		const placeholderPosition = e.currentTarget === this.topPlaceholder
+			? RemovedItemPlaceholderPosition.top
+			: RemovedItemPlaceholderPosition.bottom;
+		this.popPlaceholderItems(placeholderPosition);
+	}
+
+	private popPlaceholderItems(postion: RemovedItemPlaceholderPosition) {
+		const placeholder = postion === RemovedItemPlaceholderPosition.top
 			? this.topPlaceholder
 			: this.bottomPlaceholder;
 
 		let shouldDoNextRun = true;
 		do {
-			const itemState = placeholderPosition === RemovedItemPlaceholderPosition.top
+			const itemState = postion === RemovedItemPlaceholderPosition.top
 				? this.allItems.slice().reverse().find(item => item.removedPlaceholderPosition === RemovedItemPlaceholderPosition.top)
 				: this.allItems.find(item => item.removedPlaceholderPosition === RemovedItemPlaceholderPosition.bottom);
 			if (!itemState)
@@ -267,7 +331,7 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			itemState.removedPlaceholderPosition = undefined;
 			itemState.removedPlaceholderHeight = undefined;
 			element.classList.add("isHidden");
-			if (placeholderPosition === RemovedItemPlaceholderPosition.top)
+			if (postion === RemovedItemPlaceholderPosition.top)
 				placeholder.after(element);
 			else
 				placeholder.before(element);
@@ -278,8 +342,9 @@ export default class Ph_UniversalFeed extends HTMLElement {
 			this.remToHidIntObs.unobserve(placeholder);
 			this.remToHidIntObs.observe(placeholder);
 			const newEntries = this.remToHidIntObs.takeRecords();
-			if (newEntries.length > 0)
+			if (newEntries.length > 0) {
 				shouldDoNextRun = true;
+			}
 		} while (shouldDoNextRun);
 	}
 
