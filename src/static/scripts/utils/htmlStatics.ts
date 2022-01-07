@@ -131,11 +131,14 @@ export function isElementInViewport(elem: Element) {
 	)
 }
 
+let mainScrollbarWidth: number = null;
 export function disableMainScroll() {
-	const initialWidth = document.body.offsetWidth;
-	document.body.style.overflow = "hidden";
-	const widthDiff = document.body.offsetWidth - initialWidth;
-	document.body.style.marginRight = `${widthDiff}px`;
+	if (mainScrollbarWidth === null) {
+		const initialWidth = document.body.offsetWidth;
+		document.body.style.overflow = "hidden";
+		mainScrollbarWidth = document.body.offsetWidth - initialWidth;
+	}
+	document.body.style.marginRight = `${mainScrollbarWidth}px`;
 }
 
 export function enableMainScroll() {
