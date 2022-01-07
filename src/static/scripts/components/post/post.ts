@@ -356,7 +356,7 @@ export default class Ph_Post extends Ph_FeedItem {
 
 	private onSettingsChanged(e: CustomEvent) {
 		const changed: PhotonSettings = e.detail;
-		this.classList.toggle("hide", this.shouldPostBeHidden(false, changed));
+		this.classList.toggle("hide", this.shouldPostBeHidden(changed));
 
 		const nsfwPolicy: NsfwPolicy = changed.nsfwPolicy;
 		if (!nsfwPolicy)		// this setting hasn't been changed
@@ -370,14 +370,14 @@ export default class Ph_Post extends Ph_FeedItem {
 	}
 
 	/** This is a solution with the best UX and least unexpected hidden posts */
-	private shouldPostBeHidden(ignoreSeenSettings: boolean = false, changedSettings?: PhotonSettings): boolean {
+	private shouldPostBeHidden(changedSettings?: PhotonSettings): boolean {
 		const isInUserFeed = /^\/(u|user)\/([^/]+\/?){1,2}$/i.test(this.feedUrl);	// matches /u/user/submitted or /user/x/saved; 1, 2 to exclude multireddits /user/x/m/multi
 		if (changedSettings === undefined) {
 			return (
 				this.isInFeed && (
-					!this.data.stickied && Users.global.d.photonSettings.hideSeenPosts && !isInUserFeed && !ignoreSeenSettings && Users.global.hasPostsBeenSeen(this.data.name)
+					!this.data.stickied && Users.global.d.photonSettings.hideSeenPosts && !isInUserFeed && Users.global.hasPostsBeenSeen(this.data.name)
 					|| this.data.over_18 && Users.global.d.photonSettings.nsfwPolicy === NsfwPolicy.never
-					|| !this.data.stickied && this.shouldPostBeFiltered()
+					|| this.shouldPostBeFiltered()
 				)
 			);
 		}
@@ -387,14 +387,12 @@ export default class Ph_Post extends Ph_FeedItem {
 				return false;
 			if (this.data.over_18 && Users.global.d.photonSettings.nsfwPolicy === NsfwPolicy.never)
 				return true;
-			if (this.data.stickied)
-				return false;
-			if (ignoreSeenSettings)
-				return false
-			if (changedSettings.hideSeenPosts !== undefined)
-				return changedSettings.hideSeenPosts && !isInUserFeed && this.wasInitiallySeen && Users.global.hasPostsBeenSeen(this.data.name);
 			if (this.shouldPostBeFiltered())
 				return true;
+			if (this.data.stickied)
+				return false;
+			if (changedSettings.hideSeenPosts !== undefined)
+				return changedSettings.hideSeenPosts && !isInUserFeed && this.wasInitiallySeen && Users.global.hasPostsBeenSeen(this.data.name);
 			return this.wasInitiallySeen && Users.global.d.photonSettings.hideSeenPosts;
 		}
 	}
@@ -418,11 +416,6 @@ export default class Ph_Post extends Ph_FeedItem {
 		}, { once: true })
 		cover.appendChild(removeBtn);
 		return cover;
-	}
-
-	forceShowWhenSeen() {
-		if (!this.shouldPostBeHidden(true) && this.classList.contains("hide"))
-			this.classList.remove("hide");
 	}
 
 	linkToCommentsClick(e) {
