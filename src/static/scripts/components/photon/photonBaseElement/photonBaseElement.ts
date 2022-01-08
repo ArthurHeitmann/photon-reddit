@@ -1,7 +1,8 @@
-import { PhEvents } from "../../../types/Events";
+import {PhEvents} from "../../../types/Events";
 
 export default class Ph_PhotonBaseElement extends HTMLElement {
-	windowEventListeners: { eventName: string, listener: EventListener }[] = [];
+	private windowEventListeners: { eventName: string, listener: EventListener }[] = [];
+	isCleanupProtected = false;
 
 	constructor() {
 		super();
@@ -9,12 +10,14 @@ export default class Ph_PhotonBaseElement extends HTMLElement {
 		this.toggleAttribute("requiresCleanup", true);
 	}
 
-	addWindowEventListener(eventName: string, f: EventListener, options?: boolean | AddEventListenerOptions) {
+	addWindowEventListener<K extends keyof WindowEventMap>(eventName: K | string, f: EventListener, options?: boolean | AddEventListenerOptions) {
 		this.windowEventListeners.push({ eventName, listener: f });
 		window.addEventListener(eventName, f, options);
 	}
 
 	cleanup() {
+		if (this.isCleanupProtected)
+			return;
 		for (const event of this.windowEventListeners)
 			window.removeEventListener(event.eventName, event.listener);
 		this.windowEventListeners = [];

@@ -78,7 +78,7 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 		this.updatePlaceholderHeight(RemovedItemPlaceholderPosition.bottom);
 
 		this.initializeIntersectionObservers();
-		window.addEventListener("resize", this.initializeIntersectionObservers.bind(this));
+		this.addWindowEventListener("resize", this.onResize.bind(this));
 
 		this.listingStream = new RedditListingStream();
 		this.listingStream.onNewItems = this.onNewItemsLoaded.bind(this);
@@ -88,7 +88,7 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 		const onScrollRef = throttle(this.onScroll.bind(this), 750);
 		this.addEventListener("wheel", onScrollRef, { passive: true });
 		this.addEventListener("touchmove", onScrollRef, { passive: true });
-		window.addEventListener("scroll", onScrollRef, { passive: true });
+		this.addWindowEventListener("scroll", onScrollRef, { passive: true });
 		this.addEventListener(PhEvents.removed, () => window.removeEventListener("scroll", onScrollRef));
 	}
 
@@ -134,6 +134,12 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 		const distanceToBottom = document.scrollingElement.scrollHeight - document.scrollingElement.scrollTop - window.innerHeight;
 		if (distanceToBottom < window.innerHeight * 1.5)
 			this.listingStream.loadMore();
+	}
+
+	private onResize() {
+		if (!this.isVisible())
+			return;
+		this.initializeIntersectionObservers();
 	}
 
 	// item visibility logic
@@ -376,6 +382,14 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 		if (e.clientX + 25 > paddingLeft && e.clientX - 25 < window.innerWidth - paddingRight)
 			return;
 		history.back();
+	}
+
+	cleanup() {
+		for (const item of this.allItems) {
+			item.element.isCleanupProtected = false;
+			item.element.cleanup();
+		}
+		super.cleanup();
 	}
 }
 

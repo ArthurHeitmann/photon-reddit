@@ -74,6 +74,8 @@ export default class Ph_Post extends Ph_FeedItem {
 		this.wasInitiallySeen = Users.global.hasPostsBeenSeen(this.data.name);
 		this.classList.add("post");
 
+		if (isInFeed)
+			this.isCleanupProtected = true;
 		this.addWindowEventListener(PhEvents.settingsChanged, this.onSettingsChanged.bind(this));
 
 		// actions bar
