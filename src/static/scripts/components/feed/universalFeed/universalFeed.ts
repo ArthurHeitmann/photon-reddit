@@ -7,7 +7,7 @@ import {
 	RedditPostObj
 } from "../../../types/redditTypes";
 import {escHTML, isElementInViewport} from "../../../utils/htmlStatics";
-import {hasParams, makeElement, throttle} from "../../../utils/utils";
+import {hasParams, makeElement, sleep, throttle} from "../../../utils/utils";
 import Ph_Comment from "../../comment/comment";
 import Ph_Message from "../../message/message";
 import Ph_Toast, {Level} from "../../misc/toast/toast";
@@ -126,9 +126,10 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 			const item = this.allItems.find(item => item.element === post);
 			if (entry.intersectionRatio >= 0.4) {
 				post.onIsOnScreen();
+				if (Users.global.hasPostsBeenSeen(post.data.name))
+					return;
 				item.postMarkAsSeenTimeout = setTimeout(() => {
-					if (!Users.global.hasPostsBeenSeen(post.data.name))
-						Users.global.markPostAsSeen(post.data.name);
+					Users.global.markPostAsSeen(post.data.name);
 				}, 500);
 			}
 			else {
@@ -166,6 +167,24 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 				console.error(e);
 				new Ph_Toast(Level.error, "Error making feed item");
 			}
+		}
+
+		this.checkIfEnoughPostsVisible();
+	}
+
+	private async checkIfEnoughPostsVisible() {
+		await sleep(500);
+
+		if (!this.listingStream.hasReachedEnd() && this.scrollHeight < window.innerHeight) {
+			new Ph_Toast(
+				Level.warning,
+				"Not enough posts visible. Try to load more?",
+				{
+					timeout: 2500,
+					groupId: `notEnoughPosts_${this.requestUrl}`,
+					onConfirm: () => this.listingStream.loadMore()
+				}
+			)
 		}
 	}
 
@@ -269,17 +288,20 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 				continue;
 			}
 
-			const element = entry.target as HTMLElement;
-
 			// update state (hide the element)
-			const item = this.allItems.find(item => item.element === element);
-			item.visibility = ItemISVisibility.hidden;
-			element.classList.add("isHidden");
+			const itemIndex = this.allItems.findIndex(item => item.element === entry.target);
+			this.changeStateForItemAndHiddenNeighbours(
+				itemIndex,
+				(itemState, element) => {
+					itemState.visibility = ItemISVisibility.hidden;
+					element.classList.add("isHidden");
 
-			// update observers for new bounds
-			this.visToHidIntObs.unobserve(element);
-			this.hidToVisIntObs.observe(element);
-			this.hidToRemIntObs.observe(element);
+					// update observers for new bounds
+					this.visToHidIntObs.unobserve(element);
+					this.hidToVisIntObs.observe(element);
+					this.hidToRemIntObs.observe(element);
+				}
+			)
 
 		}
 	}
@@ -297,16 +319,20 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 				continue;
 			}
 
-			const element = entry.target as HTMLElement;
-
 			// update state (show the element)
-			this.allItems.find(item => item.element === element).visibility = ItemISVisibility.visible;
-			element.classList.remove("isHidden");
+			const itemIndex = this.allItems.findIndex(item => item.element === entry.target);
+			this.changeStateForItemAndHiddenNeighbours(
+				itemIndex,
+				(itemState, element) => {
+					itemState.visibility = ItemISVisibility.visible;
+					element.classList.remove("isHidden");
 
-			// update observers for new bounds
-			this.hidToVisIntObs.unobserve(element);
-			this.hidToRemIntObs.unobserve(element);
-			this.visToHidIntObs.observe(element);
+					// update observers for new bounds
+					this.hidToVisIntObs.unobserve(element);
+					this.hidToRemIntObs.unobserve(element);
+					this.visToHidIntObs.observe(element);
+				}
+			)
 		}
 	}
 
@@ -322,30 +348,35 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 				continue;
 			}
 
-			const element = entry.target as HTMLElement;
-			const itemState = this.allItems.find(item => item.element === element);
-
-			const itemStyle = getComputedStyle(element);
-			let itemHeight = entry.boundingClientRect.height + parseFloat(itemStyle.marginTop) + parseFloat(itemStyle.marginBottom);
-			itemHeight = Math.round(itemHeight);
-			itemHeight = Math.max(1, itemHeight);
 			const placeholderPosition = entry.boundingClientRect.top > 0
 				? RemovedItemPlaceholderPosition.bottom
 				: RemovedItemPlaceholderPosition.top;
-			itemState.removedPlaceholderHeight = itemHeight;
-			itemState.removedPlaceholderPosition = placeholderPosition;
-			if (placeholderPosition === RemovedItemPlaceholderPosition.top)
-				this.topPlaceholderHeight += itemHeight;
-			else
-				this.bottomPlaceholderHeight += itemHeight;
-			this.updatePlaceholderHeight(placeholderPosition)
+			const itemIndex = this.allItems.findIndex(item => item.element === entry.target);
+			this.changeStateForItemAndHiddenNeighbours(
+				itemIndex,
+				(itemState, element) => {
+					let itemHeight = element.offsetHeight;
+					if (itemHeight > 0) {
+						const itemStyle = getComputedStyle(element);
+						itemHeight += parseFloat(itemStyle.marginTop) + parseFloat(itemStyle.marginBottom);
+					}
+					itemHeight = Math.round(itemHeight);
+					itemState.removedPlaceholderHeight = itemHeight;
+					itemState.removedPlaceholderPosition = placeholderPosition;
+					if (placeholderPosition === RemovedItemPlaceholderPosition.top)
+						this.topPlaceholderHeight += itemHeight;
+					else
+						this.bottomPlaceholderHeight += itemHeight;
+					this.updatePlaceholderHeight(placeholderPosition)
 
-			itemState.visibility = ItemISVisibility.removed;
-			element.remove();
-			element.classList.remove("isHidden");
+					itemState.visibility = ItemISVisibility.removed;
+					element.remove();
+					element.classList.remove("isHidden");
 
-			this.hidToVisIntObs.unobserve(element);
-			this.hidToRemIntObs.unobserve(element);
+					this.hidToVisIntObs.unobserve(element);
+					this.hidToRemIntObs.unobserve(element);
+				}
+			)
 		}
 	}
 
@@ -381,37 +412,62 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 
 		let shouldDoNextRun = true;
 		do {
-			const itemState = postion === RemovedItemPlaceholderPosition.top
-				? this.allItems.slice().reverse().find(item => item.removedPlaceholderPosition === RemovedItemPlaceholderPosition.top)
-				: this.allItems.find(item => item.removedPlaceholderPosition === RemovedItemPlaceholderPosition.bottom);
-			if (!itemState)
+			const itemIndex = postion === RemovedItemPlaceholderPosition.top
+				? this.allItems.length - 1 - this.allItems.slice().reverse().findIndex(item => item.removedPlaceholderPosition === RemovedItemPlaceholderPosition.top)
+				: this.allItems.findIndex(item => item.removedPlaceholderPosition === RemovedItemPlaceholderPosition.bottom);
+			if (itemIndex === -1)
 				return;
-			const element = itemState.element;
 
-			itemState.visibility = ItemISVisibility.hidden;
-			if (itemState.removedPlaceholderPosition === RemovedItemPlaceholderPosition.top)
-				this.topPlaceholderHeight -= itemState.removedPlaceholderHeight;
-			else
-				this.bottomPlaceholderHeight -= itemState.removedPlaceholderHeight;
-			this.updatePlaceholderHeight(itemState.removedPlaceholderPosition)
-			itemState.removedPlaceholderPosition = undefined;
-			itemState.removedPlaceholderHeight = undefined;
-			element.classList.add("isHidden");
-			if (postion === RemovedItemPlaceholderPosition.top)
-				placeholder.after(element);
-			else
-				placeholder.before(element);
+			this.changeStateForItemAndHiddenNeighbours(
+				itemIndex,
+				(itemState, element) => {
+					itemState.visibility = ItemISVisibility.hidden;
+					if (itemState.removedPlaceholderPosition === RemovedItemPlaceholderPosition.top)
+						this.topPlaceholderHeight -= itemState.removedPlaceholderHeight;
+					else
+						this.bottomPlaceholderHeight -= itemState.removedPlaceholderHeight;
+					this.updatePlaceholderHeight(itemState.removedPlaceholderPosition)
+					itemState.removedPlaceholderPosition = undefined;
+					itemState.removedPlaceholderHeight = undefined;
+					element.classList.add("isHidden");
+					if (postion === RemovedItemPlaceholderPosition.top)
+						placeholder.after(element);
+					else
+						placeholder.before(element);
 
-			this.hidToVisIntObs.observe(element);
-			this.hidToRemIntObs.observe(element);
-			shouldDoNextRun = false;
+					this.hidToVisIntObs.observe(element);
+					this.hidToRemIntObs.observe(element);
+				},
+				true
+			)
 			this.remToHidIntObs.unobserve(placeholder);
 			this.remToHidIntObs.observe(placeholder);
 			const newEntries = this.remToHidIntObs.takeRecords();
-			if (newEntries.length > 0) {
-				shouldDoNextRun = true;
-			}
+			shouldDoNextRun = newEntries.length > 0;
 		} while (shouldDoNextRun);
+	}
+
+	private changeStateForItemAndHiddenNeighbours(
+		itemIndex: number,
+		changeState: (itemState: ItemISState, element: HTMLElement) => void,
+		isReversed = false
+	) {
+		const sameVisibility = this.allItems[itemIndex].visibility;
+		let firstI = itemIndex;
+		while (this.allItems[firstI - 1]?.visibility === sameVisibility && this.allItems[firstI - 1]?.element.classList.contains("remove"))
+			firstI--;
+		let lastI = itemIndex;
+		while (this.allItems[lastI + 1]?.visibility === sameVisibility && this.allItems[lastI + 1]?.element.classList.contains("remove"))
+			lastI++;
+
+		if (isReversed) {
+			for (let i = lastI; i >= firstI; i--)
+				changeState(this.allItems[i], this.allItems[i].element);
+		}
+		else {
+			for (let i = firstI; i < lastI + 1; i++)
+				changeState(this.allItems[i], this.allItems[i].element);
+		}
 	}
 
 	private makeFeedItem(itemData: RedditApiObj, totalItemCount: number): Ph_FeedItem {

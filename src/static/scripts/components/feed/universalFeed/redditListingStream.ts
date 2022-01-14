@@ -32,4 +32,8 @@ export default class RedditListingStream<T = RedditApiObj> {
 			this.onLoadingChange?.(this.isLoading);
 		}
 	}
+
+	hasReachedEnd(): boolean {
+		return !Boolean(this.afterId);
+	}
 }
