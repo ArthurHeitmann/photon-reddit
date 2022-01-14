@@ -61,9 +61,9 @@
 	}
 }
 
-.debug1 { border: 1px dotted lightcoral }
-.debug2 { border: 1px dotted lightblue }
-.debug3 { border: 1px dotted lightgreen }
+.debug1 { border: 1px dotted lightcoral !important }
+.debug2 { border: 1px dotted lightblue !important }
+.debug3 { border: 1px dotted lightgreen !important }
 .debugPixel {
 	--x: 0;
 	--y: 0;

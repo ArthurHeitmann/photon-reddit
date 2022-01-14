@@ -101,7 +101,7 @@ export default class Ph_Post extends Ph_FeedItem {
 
 		this.postBody = new Ph_PostBody(undefined);
 		if (!isInFeed)
-			this.initPostBody(postData);
+			this.initPostBody();
 
 		// additional actions drop down
 		const dropDownEntries: DropDownEntryParam[] = [
@@ -278,11 +278,8 @@ export default class Ph_Post extends Ph_FeedItem {
 			flair.classList.add(flairText.toLowerCase());
 			mainPart.$class("flairWrapper")[0].appendChild(flair);
 		}
-		if (this.data.over_18) {
+		if (this.data.over_18)
 			this.classList.add("nsfw");
-			if (Users.global.d.photonSettings.nsfwPolicy === NsfwPolicy.never)
-				this.classList.add("hide");
-		}
 		makeFlair("darkred", "NSFW");
 		if (this.data.spoiler)
 			this.classList.add("spoiler");
@@ -301,27 +298,24 @@ export default class Ph_Post extends Ph_FeedItem {
 		};
 
 		if (this.shouldPostBeHidden())
-			this.classList.add("hide");
+			this.classList.add("remove");
 
-		this.addEventListener(PhEvents.intersectionChange, this.onIntersectionChange.bind(this));
-		if (!this.postBody.isInitialized) {
-			this.addEventListener(PhEvents.almostVisible, () => this.initPostBody(postData), {once: true});
-			this.initPostBody(postData)
-		}
+		if (!this.postBody.isInitialized)
+			this.addEventListener(PhEvents.almostVisible, this.initPostBody.bind(this), {once: true});
 	}
 
-	private initPostBody(postData: RedditPostObj) {
+	initPostBody() {
 		try {
-			this.postBody.init(postData);
+			this.postBody.init(this.data);
 		}
 		catch (e) {
-			console.error(`Error making post for ${postData.data.permalink}`);
+			console.error(`Error making post for ${this.data.permalink}`);
 			console.error(e);
 			new Ph_Toast(Level.error, "Error making post");
 		}
 		if (
 			(this.data.spoiler || this.data.over_18 && Users.global.d.photonSettings.nsfwPolicy === NsfwPolicy.covered) &&
-			!this.cover && this.isInFeed && !this.isEmpty(this.postBody)
+			!this.cover && this.isInFeed && !this.isEmpty()
 		) {
 			this.postBody.classList.add("covered");
 			this.cover = this.postBody.appendChild(this.makeContentCover());
@@ -330,63 +324,49 @@ export default class Ph_Post extends Ph_FeedItem {
 			this.cover = null;
 	}
 
-	private isEmpty(element: HTMLElement): boolean {
-		return element.innerHTML === "" || Boolean(element.$css(".postText > *:empty").length > 0)
+	private isEmpty(): boolean {
+		return this.postBody.innerHTML === "" || this.postBody.$css(".postText > *:empty").length > 0
 	}
 
-	private onIntersectionChange(e: CustomEvent) {
-		const isVisible: boolean = e.detail;
-		const focusableChild = this.$css("[tabindex]") as HTMLCollectionOf<HTMLHtmlElement>;
+	onIsOnScreen() {
+		const focusableChild = this.$css("[tabindex]") as HTMLCollectionOf<HTMLElement>;
 		// post became visible
-		if (isVisible) {
-			if (focusableChild.length > 0)
-				focusableChild[0].focus({ preventScroll: true });
-			this.becameVisibleAt = Date.now();
-		}
-		// post got hidden
-		else {
-			if (focusableChild.length > 0 && !getFullscreenElement())
-				focusableChild[0].blur();
-			if (this.becameVisibleAt) {
-				const visibilityDuration = Date.now() - this.becameVisibleAt;
-				this.becameVisibleAt = null;
-				if (visibilityDuration > 450 && Users.global.d.photonSettings.markSeenPosts && this.isInFeed)
-					Users.global.markPostAsSeen(this.data.name);
-			}
-		}
+		if (focusableChild.length > 0)
+			focusableChild[0].focus({ preventScroll: true });
+	}
+
+	onIsOffScreen() {
+		const focusableChild = this.$css("[tabindex]") as HTMLCollectionOf<HTMLElement>;
+		if (focusableChild.length > 0 && !getFullscreenElement())
+			focusableChild[0].blur();
 	}
 
 	private onSettingsChanged(e: CustomEvent) {
 		const changed: PhotonSettings = e.detail;
-		this.classList.toggle("hide", this.shouldPostBeHidden(changed));
+		this.classList.toggle("remove", this.shouldPostBeHidden(changed));
 
 		const nsfwPolicy: NsfwPolicy = changed.nsfwPolicy;
 		if (!nsfwPolicy)		// this setting hasn't been changed
 			return;
 		if (this.cover && !this.data.spoiler && changed.nsfwPolicy !== undefined)
 			this.cover.click();
-		if (this.data.over_18 && nsfwPolicy === NsfwPolicy.covered && this.isInFeed && !this.isEmpty(this.postBody)) {		// add cover
+		if (this.data.over_18 && nsfwPolicy === NsfwPolicy.covered && this.isInFeed && !this.isEmpty()) {		// add cover
 			this.postBody.classList.add("covered");
 			this.cover = this.postBody.appendChild(this.makeContentCover());
 		}
 	}
 
-	/** This is a solution with the best UX and least unexpected hidden posts */
-	private shouldPostBeHidden(changedSettings?: PhotonSettings): boolean {
+	shouldPostBeHidden(changedSettings?: PhotonSettings): boolean {
+		// This is a solution with the best UX and least unexpected hidden posts
 		const isInUserFeed = /^\/(u|user)\/([^/]+\/?){1,2}$/i.test(this.feedUrl);	// matches /u/user/submitted or /user/x/saved; 1, 2 to exclude multireddits /user/x/m/multi
 		if (changedSettings === undefined) {
 			return (
-				this.isInFeed && (
-					!this.data.stickied && Users.global.d.photonSettings.hideSeenPosts && !isInUserFeed && Users.global.hasPostsBeenSeen(this.data.name)
-					|| this.data.over_18 && Users.global.d.photonSettings.nsfwPolicy === NsfwPolicy.never
-					|| this.shouldPostBeFiltered()
-				)
+				!this.data.stickied && Users.global.d.photonSettings.hideSeenPosts && !isInUserFeed && Users.global.hasPostsBeenSeen(this.data.name)
+				|| this.data.over_18 && Users.global.d.photonSettings.nsfwPolicy === NsfwPolicy.never
+				|| this.shouldPostBeFiltered()
 			);
 		}
 		else {
-			// the if notation might be a bit slower but is a lot more readable
-			if (!this.isInFeed)
-				return false;
 			if (this.data.over_18 && Users.global.d.photonSettings.nsfwPolicy === NsfwPolicy.never)
 				return true;
 			if (this.shouldPostBeFiltered())

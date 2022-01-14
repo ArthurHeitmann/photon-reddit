@@ -34,7 +34,8 @@ interface ItemISState {
 	element: Ph_FeedItem,
 	visibility: ItemISVisibility,
 	removedPlaceholderPosition?: RemovedItemPlaceholderPosition,
-	removedPlaceholderHeight?: number
+	removedPlaceholderHeight?: number,
+	postMarkAsSeenTimeout?: any
 }
 
 /**
@@ -44,8 +45,10 @@ interface ItemISState {
  */
 export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 	requestUrl: string;
-	private allPostFullNames: string[] = [];
 	private listingStream: RedditListingStream;
+
+	private postInitIntObs: IntersectionObserver;
+	private postSeenIntObs: IntersectionObserver;
 
 	// infinite scroller stuff
 	private allItems: ItemISState[] = [];
@@ -79,6 +82,21 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 
 		this.initializeIntersectionObservers();
 		this.addWindowEventListener("resize", this.onResize.bind(this));
+		const screenHeight = window.innerHeight;
+		this.postInitIntObs =  new IntersectionObserver(
+			this.onPostInit.bind(this),
+			{
+				threshold: [0.1],
+				rootMargin: `${screenHeight}px 0px ${screenHeight}px 0px`
+			}
+		);
+		this.postSeenIntObs =  new IntersectionObserver(
+			this.onPostSeen.bind(this),
+			{
+				threshold: [0.4],
+				rootMargin: `0px 0px 0px 0px`
+			}
+		);
 
 		this.listingStream = new RedditListingStream();
 		this.listingStream.onNewItems = this.onNewItemsLoaded.bind(this);
@@ -90,10 +108,38 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 		this.addEventListener("touchmove", onScrollRef, { passive: true });
 		this.addWindowEventListener("scroll", onScrollRef, { passive: true });
 		this.addEventListener(PhEvents.removed, () => window.removeEventListener("scroll", onScrollRef));
+
+	}
+
+	private onPostInit(entries: IntersectionObserverEntry[]) {
+		for (const entry of entries) {
+			if (entry.intersectionRatio < 0.1)
+				continue;
+			const post = entry.target as Ph_Post;
+			post.initPostBody();
+		}
+	}
+
+	private onPostSeen(entries: IntersectionObserverEntry[]) {
+		for (const entry of entries) {
+			const post = entry.target as Ph_Post;
+			const item = this.allItems.find(item => item.element === post);
+			if (entry.intersectionRatio >= 0.4) {
+				post.onIsOnScreen();
+				item.postMarkAsSeenTimeout = setTimeout(() => {
+					if (!Users.global.hasPostsBeenSeen(post.data.name))
+						Users.global.markPostAsSeen(post.data.name);
+				}, 500);
+			}
+			else {
+				post.onIsOffScreen();
+				if (item.postMarkAsSeenTimeout)
+					clearTimeout(item.postMarkAsSeenTimeout);
+			}
+		}
 	}
 
 	private onNewItemsLoaded(items: RedditApiObj[]) {
-		console.time("new added");
 		for (const item of items) {
 			try {
 				const itemElement = this.makeFeedItem(item, items.length);
@@ -121,7 +167,6 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 				new Ph_Toast(Level.error, "Error making feed item");
 			}
 		}
-		console.timeEnd("new added");
 	}
 
 	private onLoadingStateChange(isLoading: boolean) {
@@ -227,7 +272,8 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 			const element = entry.target as HTMLElement;
 
 			// update state (hide the element)
-			this.allItems.find(item => item.element === element).visibility = ItemISVisibility.hidden;
+			const item = this.allItems.find(item => item.element === element);
+			item.visibility = ItemISVisibility.hidden;
 			element.classList.add("isHidden");
 
 			// update observers for new bounds
@@ -244,8 +290,12 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 
 		for (const entry of entries) {
 			// continue if item isn't inside of bounds
-			if (!(entry.intersectionRatio > 0 && entry.isIntersecting) || !entry.boundingClientRect.height && !entry.boundingClientRect.width)
+			if (
+				!(entry.intersectionRatio > 0 && entry.isIntersecting) ||
+				!entry.boundingClientRect.height && !entry.boundingClientRect.width
+			) {
 				continue;
+			}
 
 			const element = entry.target as HTMLElement;
 
@@ -265,14 +315,20 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 			return;
 
 		for (const entry of entries) {
-			if (!(entry.intersectionRatio === 0 && !entry.isIntersecting) || !entry.boundingClientRect.height && !entry.boundingClientRect.width)
+			if (
+				!(entry.intersectionRatio === 0 && !entry.isIntersecting) ||
+				!entry.boundingClientRect.height && !entry.boundingClientRect.width
+			) {
 				continue;
+			}
 
 			const element = entry.target as HTMLElement;
 			const itemState = this.allItems.find(item => item.element === element);
 
 			const itemStyle = getComputedStyle(element);
-			const itemHeight = Math.round(entry.boundingClientRect.height + parseFloat(itemStyle.marginTop) + parseFloat(itemStyle.marginBottom));
+			let itemHeight = entry.boundingClientRect.height + parseFloat(itemStyle.marginTop) + parseFloat(itemStyle.marginBottom);
+			itemHeight = Math.round(itemHeight);
+			itemHeight = Math.max(1, itemHeight);
 			const placeholderPosition = entry.boundingClientRect.top > 0
 				? RemovedItemPlaceholderPosition.bottom
 				: RemovedItemPlaceholderPosition.top;
@@ -298,8 +354,12 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 			return;
 
 		const entry = entries[0];
-		if (!(entry.intersectionRatio > 0 && entry.isIntersecting) || entry.boundingClientRect.height === 0)
+		if (
+			!(entry.intersectionRatio > 0 && entry.isIntersecting) ||
+			entry.boundingClientRect.height === 0
+		) {
 			return;
+		}
 
 		const placeholderPosition = entry.target === this.topPlaceholder
 			? RemovedItemPlaceholderPosition.top
@@ -354,12 +414,12 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 		} while (shouldDoNextRun);
 	}
 
-	makeFeedItem(itemData: RedditApiObj, totalItemCount: number): Ph_FeedItem {
+	private makeFeedItem(itemData: RedditApiObj, totalItemCount: number): Ph_FeedItem {
 		switch (itemData.kind) {
 			case "t3":
 				const post = new Ph_Post(itemData as RedditPostObj, true, this.requestUrl);
-				if (!this.allPostFullNames.includes(post.data.name))
-					this.allPostFullNames.push(post.data.name);
+				this.postInitIntObs.observe(post);
+				this.postSeenIntObs.observe(post);
 				return post;
 			case "t1":
 				return new Ph_Comment(itemData as RedditCommentObj, false, true);
@@ -371,7 +431,7 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 		}
 	}
 
-	onBackAreaClick(e: MouseEvent) {
+	private onBackAreaClick(e: MouseEvent) {
 		if (!Users.global.d.photonSettings.emptyAreaClickGoesBack)
 			return;
 		if (e.currentTarget !== e.target || !ViewsStack.hasPreviousLoaded())

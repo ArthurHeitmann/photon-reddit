@@ -1,9 +1,9 @@
-import { getImgurContent, ImgurContent, ImgurContentType } from "../../api/imgurApi";
-import { PhEvents } from "../../types/Events";
-import { RedditPostData, RedditPostObj } from "../../types/redditTypes";
-import { mediaHostsWhiteList } from "../../utils/consts";
-import { nonDraggableElement } from "../../utils/htmlStatics";
-import { linksToSpa } from "../../utils/htmlStuff";
+import {getImgurContent, ImgurContent, ImgurContentType} from "../../api/imgurApi";
+import {PhEvents} from "../../types/Events";
+import {RedditPostData} from "../../types/redditTypes";
+import {mediaHostsWhiteList} from "../../utils/consts";
+import {nonDraggableElement} from "../../utils/htmlStatics";
+import {linksToSpa} from "../../utils/htmlStuff";
 import {
 	attachOnFullscreenChangeListener,
 	enterFullscreen,
@@ -14,16 +14,16 @@ import {
 	makeElement
 } from "../../utils/utils";
 import Ph_ControlsBar from "../misc/controlsBar/controlsBar";
-import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown";
-import { DropDownEntryParam } from "../misc/dropDown/dropDownEntry/dropDownEntry";
+import Ph_DropDown, {DirectionX, DirectionY} from "../misc/dropDown/dropDown";
+import {DropDownEntryParam} from "../misc/dropDown/dropDownEntry/dropDownEntry";
 import Ph_SwitchingImage from "../misc/switchableImage/switchableImage";
-import Ph_Toast, { Level } from "../misc/toast/toast";
+import Ph_Toast, {Level} from "../misc/toast/toast";
 import Users from "../multiUser/userManagement";
 import Ph_PhotonBaseElement from "../photon/photonBaseElement/photonBaseElement";
 import Ph_DraggableWrapper from "../post/postBody/draggableWrapper/draggableWrapper";
-import { Ph_ViewState } from "../viewState/viewState";
+import {Ph_ViewState} from "../viewState/viewState";
 import Ph_ImageViewer from "./imageViewer/imageViewer";
-import { MediaElement } from "./mediaElement";
+import {MediaElement} from "./mediaElement";
 import Ph_GifVideo from "./videoPlayer/gifVideo/gifVideo";
 import Ph_SimpleVideo from "./videoPlayer/simpleVideo/simpleVideo";
 import Ph_VideoPlayer from "./videoPlayer/videoPlayer";
@@ -41,16 +41,16 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	currentIndexDisplay: HTMLDivElement;
 	fallbackUrl: string;
 
-	static fromPostData_Image(postData: RedditPostObj): Ph_MediaViewer {
-		if (postData.data.preview && postData.data.preview.images[0].resolutions.length) {
-			const previews = postData.data.preview.images[0].resolutions;
+	static fromPostData_Image(postData: RedditPostData): Ph_MediaViewer {
+		if (postData.preview && postData.preview.images[0].resolutions.length) {
+			const previews = postData.preview.images[0].resolutions;
 			return new Ph_MediaViewer([new Ph_ImageViewer({
-				originalUrl: postData.data.url,
+				originalUrl: postData.url,
 				previewUrl: previews[previews.length - 1].url
-			})], postData.data.url);
+			})], postData.url);
 		}
 		else {
-			return Ph_MediaViewer.fromUrl_Image(postData.data.url);
+			return Ph_MediaViewer.fromUrl_Image(postData.url);
 		}
 	}
 
@@ -60,8 +60,8 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		})], url);
 	}
 
-	static fromPostData_Video(postData: RedditPostObj): Ph_MediaViewer {
-		const mediaViewer = new Ph_MediaViewer(null, postData.data.url);
+	static fromPostData_Video(postData: RedditPostData): Ph_MediaViewer {
+		const mediaViewer = new Ph_MediaViewer(null, postData.url);
 		const video = Ph_VideoPlayer.fromPostData({ postData })
 		mediaViewer.init([ video]);
 		return mediaViewer;
@@ -74,11 +74,11 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		return mediaViewer;
 	}
 
-	static fromPostData_RedditGallery(postData: RedditPostObj): Ph_MediaViewer {
+	static fromPostData_RedditGallery(postData: RedditPostData): Ph_MediaViewer {
 		const mediaElements: MediaElement[] = [];
-		const items = postData.data.gallery_data.items;
+		const items = postData.gallery_data.items;
 		for (const item of items) {
-			const itemData = postData.data.media_metadata[item.media_id];
+			const itemData = postData.media_metadata[item.media_id];
 			if (itemData.status === "failed") {
 				new Ph_Toast(Level.warning, "Couldn't load a gallery image");
 				continue;
@@ -94,7 +94,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 					}))
 					break;
 				case "AnimatedImage":
-					const videoPlayer = new Ph_VideoPlayer(item.outbound_url || postData.data.url);
+					const videoPlayer = new Ph_VideoPlayer(item.outbound_url || postData.url);
 					mediaElements.push(videoPlayer);
 					if ("mp4" in itemData.s) {
 						videoPlayer.init(new Ph_SimpleVideo([{
@@ -112,7 +112,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 			}
 		}
 
-		return  new Ph_MediaViewer(mediaElements, postData.data.url);
+		return  new Ph_MediaViewer(mediaElements, postData.url);
 	}
 
 	static fromUrl(url: string): Ph_MediaViewer | null {
@@ -331,7 +331,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		this.draggableWrapper.addEventListener("dblclick", this.toggleFullscreen.bind(this));
 		for (const media of this.mediaElements) {
 			media.element.addEventListener(PhEvents.controlsChanged,
-				e => this.controls.updateSlotsWith(media.controls));
+				() => this.controls.updateSlotsWith(media.controls));
 		}
 
 		linksToSpa(this);
