@@ -2,23 +2,23 @@
  * This files extends the functionality of ViewStack
  */
 
-import { redditApiRequest } from "../api/redditApi";
+import {redditApiRequest} from "../api/redditApi";
 import Ph_FeedInfoPage from "../components/feed/feedInfo/feedInfoPage";
 import Ph_UniversalFeed from "../components/feed/universalFeed/universalFeed";
 import Ph_MessageCompose from "../components/message/messageCompose/messageCompose";
 import Ph_RandomHub from "../components/misc/randomHub/randomHub";
-import Ph_Toast, { Level } from "../components/misc/toast/toast";
+import Ph_Toast, {Level} from "../components/misc/toast/toast";
 import Ph_About from "../components/photon/about/about";
 import Ph_PostCrossposts from "../components/post/postCrossposts/postCrossPosts";
 import PostDoubleLink from "../components/post/postDoubleLink/postDoubleLink";
 import Ph_SubmitPostForm from "../components/post/submit/submitPostForm";
-import Ph_PostAndComments, { PostCommentsListings } from "../components/postAndComments/postAndComments";
+import Ph_PostAndComments, {PostCommentsListings} from "../components/postAndComments/postAndComments";
 import Ph_CommentsViewStateLoader from "../components/viewState/commentsViewStateLoader/commentsViewStateLoader";
-import { Ph_ViewState } from "../components/viewState/viewState";
+import {Ph_ViewState} from "../components/viewState/viewState";
 import Ph_ViewStateLoader from "../components/viewState/viewStateLoader/viewStateLoader";
 import Ph_Wiki from "../components/wiki/wiki";
-import { $id } from "../utils/htmlStatics";
-import { deepClone, exitFullscreen, extractHash, isFullscreen, makeElement, splitPathQuery } from "../utils/utils";
+import {$id} from "../utils/htmlStatics";
+import {deepClone, exitFullscreen, extractHash, isFullscreen, makeElement, splitPathQuery} from "../utils/utils";
 import ViewsStack from "./viewsStack";
 
 ViewsStack.setNextIsReplace();
@@ -82,7 +82,7 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 		return;
 	}
 
-	const historyState = ViewsStack.makeHistoryState(path, path + query);
+	const historyState = ViewsStack.makeHistoryState(path, path + query, pushType === PushType.pushAfter ? 1 : -1);
 	let postHintState: PostHintState;
 	let stateLoader: Ph_ViewState;
 	if (postHint && postHint.commentsViewStateLoader) {
@@ -145,7 +145,6 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 		// result is some sort of generic feed
 		else if (requestData.kind === "Listing") {
 			stateLoader.finishWith(new Ph_UniversalFeed(requestData, path + query));
-			newTabTitle = `${(path.length > 3) ? path.slice(1) : "Home"} - Photon`;
 		}
 		// result is a wiki page
 		else if (requestData.kind === "wikipage") {

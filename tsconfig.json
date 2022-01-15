@@ -5,6 +5,7 @@
     "target": "esnext",
     "moduleResolution": "node",
     "sourceMap": true,
+    "noImplicitThis": true,
     "lib": [
       "DOM",
       "DOM.Iterable",

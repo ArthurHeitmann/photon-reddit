@@ -4,6 +4,7 @@ import {
 	RedditCommentObj,
 	RedditListingObj,
 	RedditMessageObj,
+	RedditPostData,
 	RedditPostObj
 } from "../../../types/redditTypes";
 import {escHTML, isElementInViewport} from "../../../utils/htmlStatics";
@@ -18,6 +19,7 @@ import RedditListingStream from "./redditListingStream";
 import Ph_PhotonBaseElement from "../../photon/photonBaseElement/photonBaseElement";
 import {PhEvents} from "../../../types/Events";
 import {Ph_ViewState} from "../../viewState/viewState";
+import makeFeedHeaderElements from "./feedHeaderElements";
 
 
 /** Visibility of an item in an infinite scroller (IS) */
@@ -51,6 +53,7 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 	private postSeenIntObs: IntersectionObserver;
 
 	// infinite scroller stuff
+	private allLoadedIds: Set<string> = new Set();
 	private allItems: ItemISState[] = [];
 	private visToHidIntObs: IntersectionObserver;
 	private hidToVisIntObs: IntersectionObserver;
@@ -100,7 +103,9 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 
 		this.listingStream = new RedditListingStream();
 		this.listingStream.onNewItems = this.onNewItemsLoaded.bind(this);
+		this.listingStream.onItemsCleared = this.onItemsCleared.bind(this);
 		this.listingStream.onLoadingChange = this.onLoadingStateChange.bind(this);
+		this.listingStream.onUrlChange = this.onUrlChange.bind(this);
 		this.listingStream.init(requestUrl, items);
 
 		const onScrollRef = throttle(this.onScroll.bind(this), 750);
@@ -109,6 +114,9 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 		this.addWindowEventListener("scroll", onScrollRef, { passive: true });
 		this.addEventListener(PhEvents.removed, () => window.removeEventListener("scroll", onScrollRef));
 
+		this.addEventListener(PhEvents.added, () => {
+				Ph_ViewState.getViewOf(this).setHeaderElements(makeFeedHeaderElements(this.requestUrl, this.listingStream));
+		}, { once: true });
 	}
 
 	private onPostInit(entries: IntersectionObserverEntry[]) {
@@ -117,6 +125,7 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 				continue;
 			const post = entry.target as Ph_Post;
 			post.initPostBody();
+			this.postInitIntObs.unobserve(entry.target);
 		}
 	}
 
@@ -126,7 +135,7 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 			const item = this.allItems.find(item => item.element === post);
 			if (entry.intersectionRatio >= 0.4) {
 				post.onIsOnScreen();
-				if (Users.global.hasPostsBeenSeen(post.data.name))
+				if (!Users.global.d.photonSettings.markSeenPosts || Users.global.hasPostsBeenSeen(post.data.name))
 					return;
 				item.postMarkAsSeenTimeout = setTimeout(() => {
 					Users.global.markPostAsSeen(post.data.name);
@@ -143,7 +152,10 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 	private onNewItemsLoaded(items: RedditApiObj[]) {
 		for (const item of items) {
 			try {
+				if (item.kind === "t3" && this.allLoadedIds.has((item.data as RedditPostData).name))
+					continue;
 				const itemElement = this.makeFeedItem(item, items.length);
+				this.allLoadedIds.add(itemElement.itemId);
 				const itemIsState: ItemISState = {
 					element: itemElement,
 					visibility: ItemISVisibility.visible
@@ -172,20 +184,49 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 		this.checkIfEnoughPostsVisible();
 	}
 
+	private onItemsCleared() {
+		for (const item of this.allItems) {
+			this.visToHidIntObs.unobserve(item.element);
+			this.hidToVisIntObs.unobserve(item.element);
+			this.hidToRemIntObs.unobserve(item.element);
+			this.remToHidIntObs.unobserve(item.element);
+			this.postSeenIntObs.unobserve(item.element);
+			this.postInitIntObs.unobserve(item.element);
+			if (item.postMarkAsSeenTimeout)
+				clearTimeout(item.postMarkAsSeenTimeout)
+			item.element.isCleanupProtected = false;
+			item.element.remove();
+		}
+		this.allItems = [];
+		this.allLoadedIds.clear();
+		this.topPlaceholderHeight = 0;
+		this.bottomPlaceholderHeight = 0;
+		this.updatePlaceholderHeight(RemovedItemPlaceholderPosition.top);
+		this.updatePlaceholderHeight(RemovedItemPlaceholderPosition.bottom);
+		document.scrollingElement.scrollTo(0, 0);
+	}
+
+	private onUrlChange(newUrl: string) {
+		this.requestUrl = newUrl;
+	}
+
 	private async checkIfEnoughPostsVisible() {
 		await sleep(500);
-
-		if (!this.listingStream.hasReachedEnd() && this.scrollHeight < window.innerHeight) {
-			new Ph_Toast(
-				Level.warning,
-				"Not enough posts visible. Try to load more?",
-				{
-					timeout: 2500,
-					groupId: `notEnoughPosts_${this.requestUrl}`,
-					onConfirm: () => this.listingStream.loadMore()
-				}
-			)
-		}
+		if (this.childElementCount === 0)
+			return;
+		if (this.scrollHeight > window.innerHeight)
+			return;
+		if (Ph_ViewState.getViewOf(this).classList.contains("hide"))
+			return;
+		new Ph_Toast(
+			Level.warning,
+			"Not enough posts visible. Try to load more?",
+			{
+				timeout: 2500,
+				groupId: `notEnoughPosts_${this.requestUrl}`,
+				onConfirm: () => this.listingStream.loadMore()
+			}
+		);
 	}
 
 	private onLoadingStateChange(isLoading: boolean) {
@@ -355,12 +396,7 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 			this.changeStateForItemAndHiddenNeighbours(
 				itemIndex,
 				(itemState, element) => {
-					let itemHeight = element.offsetHeight;
-					if (itemHeight > 0) {
-						const itemStyle = getComputedStyle(element);
-						itemHeight += parseFloat(itemStyle.marginTop) + parseFloat(itemStyle.marginBottom);
-					}
-					itemHeight = Math.round(itemHeight);
+					const itemHeight = this.getItemHeight(element);
 					itemState.removedPlaceholderHeight = itemHeight;
 					itemState.removedPlaceholderPosition = placeholderPosition;
 					if (placeholderPosition === RemovedItemPlaceholderPosition.top)
@@ -422,18 +458,27 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 				itemIndex,
 				(itemState, element) => {
 					itemState.visibility = ItemISVisibility.hidden;
+					const shouldTryFixScroll = postion === RemovedItemPlaceholderPosition.top && itemState.removedPlaceholderHeight === 0;
+					const beforeTopScroll = document.scrollingElement.scrollTop;
 					if (itemState.removedPlaceholderPosition === RemovedItemPlaceholderPosition.top)
 						this.topPlaceholderHeight -= itemState.removedPlaceholderHeight;
 					else
 						this.bottomPlaceholderHeight -= itemState.removedPlaceholderHeight;
 					this.updatePlaceholderHeight(itemState.removedPlaceholderPosition)
-					itemState.removedPlaceholderPosition = undefined;
-					itemState.removedPlaceholderHeight = undefined;
+					delete itemState.removedPlaceholderPosition;
+					delete itemState.removedPlaceholderHeight;
 					element.classList.add("isHidden");
 					if (postion === RemovedItemPlaceholderPosition.top)
 						placeholder.after(element);
 					else
 						placeholder.before(element);
+
+					if (shouldTryFixScroll) {
+						const newHeight = this.getItemHeight(element);
+						const scrollDiff = document.scrollingElement.scrollTop - beforeTopScroll;
+						if (newHeight > 0 && Math.abs(newHeight - scrollDiff) > 10)
+							document.scrollingElement.scrollBy(0, newHeight - scrollDiff);
+					}
 
 					this.hidToVisIntObs.observe(element);
 					this.hidToRemIntObs.observe(element);
@@ -447,6 +492,15 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 		} while (shouldDoNextRun);
 	}
 
+	private getItemHeight(element: HTMLElement): number {
+		let itemHeight = element.offsetHeight;
+		if (itemHeight > 0) {
+			const itemStyle = getComputedStyle(element);
+			itemHeight += parseFloat(itemStyle.marginTop) + parseFloat(itemStyle.marginBottom);
+		}
+		return Math.round(itemHeight);
+	}
+
 	private changeStateForItemAndHiddenNeighbours(
 		itemIndex: number,
 		changeState: (itemState: ItemISState, element: HTMLElement) => void,
@@ -454,10 +508,10 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 	) {
 		const sameVisibility = this.allItems[itemIndex].visibility;
 		let firstI = itemIndex;
-		while (this.allItems[firstI - 1]?.visibility === sameVisibility && this.allItems[firstI - 1]?.element.classList.contains("remove"))
+		while (this.isItemHiddenNeighbour(firstI - 1, sameVisibility))
 			firstI--;
 		let lastI = itemIndex;
-		while (this.allItems[lastI + 1]?.visibility === sameVisibility && this.allItems[lastI + 1]?.element.classList.contains("remove"))
+		while (this.isItemHiddenNeighbour(lastI + 1, sameVisibility))
 			lastI++;
 
 		if (isReversed) {
@@ -468,6 +522,13 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 			for (let i = firstI; i < lastI + 1; i++)
 				changeState(this.allItems[i], this.allItems[i].element);
 		}
+	}
+
+	private isItemHiddenNeighbour(index: number, targetVisibility: ItemISVisibility): boolean {
+		return this.allItems[index]?.visibility === targetVisibility && (
+			this.allItems[index]?.element.classList.contains("remove") ||
+			this.allItems[index]?.removedPlaceholderHeight < 1
+		);
 	}
 
 	private makeFeedItem(itemData: RedditApiObj, totalItemCount: number): Ph_FeedItem {

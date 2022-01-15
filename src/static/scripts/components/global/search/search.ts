@@ -1,19 +1,20 @@
-import { getSubFlairs, searchSubreddits, searchUser } from "../../../api/redditApi";
-import { pushLinkToHistoryComb, pushLinkToHistorySep } from "../../../historyState/historyStateManager";
-import { ViewChangeData } from "../../../historyState/viewsStack";
-import { PhEvents } from "../../../types/Events";
-import { SortPostsTimeFrame, SortSearchOrder } from "../../../types/misc";
-import { RedditApiObj, RedditListingObj, RedditSubredditObj } from "../../../types/redditTypes";
-import { escADQ, getLoadingIcon } from "../../../utils/htmlStatics";
-import { elementWithClassInTree, isElementIn } from "../../../utils/htmlStuff";
-import { extractPath, extractQuery, hasHTML, isParamRedditTruthy, throttle } from "../../../utils/utils";
+import {getSubFlairs, searchSubreddits, searchUser} from "../../../api/redditApi";
+import {pushLinkToHistoryComb, pushLinkToHistorySep} from "../../../historyState/historyStateManager";
+import {ViewChangeData} from "../../../historyState/viewsStack";
+import {PhEvents} from "../../../types/Events";
+import {SortPostsTimeFrame, SortSearchOrder} from "../../../types/misc";
+import {RedditApiObj, RedditListingObj, RedditSubredditObj} from "../../../types/redditTypes";
+import {escADQ, getLoadingIcon} from "../../../utils/htmlStatics";
+import {elementWithClassInTree, isElementIn} from "../../../utils/htmlStuff";
+import {extractPath, extractQuery, hasHTML, isParamRedditTruthy, throttle} from "../../../utils/utils";
 import Ph_FeedLink from "../../link/feedLink/feedLink";
-import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown";
-import { DropDownActionData, DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry";
+import Ph_DropDown, {DirectionX, DirectionY} from "../../misc/dropDown/dropDown";
+import {DropDownActionData, DropDownEntryParam} from "../../misc/dropDown/dropDownEntry/dropDownEntry";
 import Ph_Flair from "../../misc/flair/flair";
-import Ph_Toast, { Level } from "../../misc/toast/toast";
+import Ph_Toast, {Level} from "../../misc/toast/toast";
 import Users from "../../multiUser/userManagement";
 import Ph_Header from "../header/header";
+import {makeSearchSortSectionEntries} from "../../feed/universalFeed/sortingDropdownParams";
 
 /**
  * A search field to search reddit for subreddits, user, and posts; child of Ph_Header
@@ -119,41 +120,9 @@ export default class Ph_Search extends HTMLElement {
 			curSortStr = `Sort - ${curSort.get("sort") || "relevance"}${curSort.get("t") ? `/${curSort.get("t")}` : ""}`;
 		else
 			curSortStr = `Sort - relevance/all`;
-		this.sortBy = new Ph_DropDown([
-			{ label: "Relevance", labelImgUrl: "/img/relevance.svg", value: SortSearchOrder.relevance, nestedEntries: [
-				{ label: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.setSortOrder.bind(this) },
-				{ label: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.setSortOrder.bind(this) },
-				{ label: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.setSortOrder.bind(this) },
-				{ label: "Month", value: SortPostsTimeFrame.month, onSelectCallback: this.setSortOrder.bind(this) },
-				{ label: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.setSortOrder.bind(this) },
-				{ label: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.setSortOrder.bind(this) },
-			] },
-			{ label: "Hot", labelImgUrl: "/img/hot.svg", value: SortSearchOrder.hot, nestedEntries: [
-				{ label: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.setSortOrder.bind(this) },
-				{ label: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.setSortOrder.bind(this) },
-				{ label: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.setSortOrder.bind(this) },
-				{ label: "Month", value: SortPostsTimeFrame.month, onSelectCallback: this.setSortOrder.bind(this) },
-				{ label: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.setSortOrder.bind(this) },
-				{ label: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.setSortOrder.bind(this) },
-			] },
-			{ label: "top", labelImgUrl: "/img/top.svg", value: SortSearchOrder.top, nestedEntries: [
-				{ label: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.setSortOrder.bind(this) },
-				{ label: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.setSortOrder.bind(this) },
-				{ label: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.setSortOrder.bind(this) },
-				{ label: "Month", value: SortPostsTimeFrame.month, onSelectCallback: this.setSortOrder.bind(this) },
-				{ label: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.setSortOrder.bind(this) },
-				{ label: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.setSortOrder.bind(this) },
-			] },
-			{ label: "New", labelImgUrl: "/img/new.svg", value: SortSearchOrder.new, onSelectCallback: this.setSortOrder.bind(this) },
-			{ label: "Comments", labelImgUrl: "/img/commentEmpty.svg", value: SortSearchOrder.comments, nestedEntries: [
-				{ label: "Hour", value: SortPostsTimeFrame.hour, onSelectCallback: this.setSortOrder.bind(this) },
-				{ label: "Day", value: SortPostsTimeFrame.day, onSelectCallback: this.setSortOrder.bind(this) },
-				{ label: "Week", value: SortPostsTimeFrame.week, onSelectCallback: this.setSortOrder.bind(this) },
-				{ label: "Month", value: SortPostsTimeFrame.month, onSelectCallback: this.setSortOrder.bind(this) },
-				{ label: "Year", value: SortPostsTimeFrame.year, onSelectCallback: this.setSortOrder.bind(this) },
-				{ label: "All Time", value: SortPostsTimeFrame.all, onSelectCallback: this.setSortOrder.bind(this) },
-			] },
-		], curSortStr, DirectionX.right, DirectionY.bottom, false);
+		this.sortBy = new Ph_DropDown(
+			makeSearchSortSectionEntries(this.setSortOrder.bind(this)),
+			curSortStr, DirectionX.right, DirectionY.bottom, false);
 		expandedOptions.append(this.sortBy);
 
 		function makeLabelCheckboxPair(labelText: string, checkboxId: string, defaultChecked: boolean, appendTo: HTMLElement): { checkbox: HTMLInputElement, label: HTMLLabelElement } {
@@ -265,7 +234,6 @@ export default class Ph_Search extends HTMLElement {
 	}
 
 	async quickSearch() {
-		this.resultsWrapper.innerText = "";
 		if (!this.searchBar.value || /^\/?(r|u|user)\/$/i.test(this.searchBar.value)) {		// prefix r/ or u/ or user/
 			return;
 		}

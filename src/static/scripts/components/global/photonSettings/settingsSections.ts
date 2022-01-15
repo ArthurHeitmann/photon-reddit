@@ -131,7 +131,7 @@ export const getSettingsSections = (): SettingsSection[] => [
 					onclick: async () => {
 						const seenPostsCount = Object.keys(Users.global.d.seenPosts).length;
 						await Users.global.clearSeenPosts();
-						new Ph_Toast(Level.success, `Cleared ${seenPostsCount} seen posts`);
+						new Ph_Toast(Level.success, `Cleared ${seenPostsCount} seen posts`, { timeout: 1500 });
 					}
 				}, "Clear seen posts"),
 				makeElement("button", { class: "button", onclick: () => Ph_Changelog.show() }, "Show Changelog"),

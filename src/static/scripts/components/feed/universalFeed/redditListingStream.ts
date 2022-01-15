@@ -1,11 +1,14 @@
 import {RedditApiObj, RedditListingObj} from "../../../types/redditTypes";
 import {redditApiRequest} from "../../../api/redditApi";
+import Ph_Toast, {Level} from "../../misc/toast/toast";
 
 export default class RedditListingStream<T = RedditApiObj> {
 	onNewItems: (items: T[]) => void;
+	onItemsCleared: () => void;
 	onLoadingChange: (isLoading: boolean) => void;
+	onUrlChange: (url: string) => void;
 
-	private url: string;
+	url: string;
 	private afterId: string;
 	private isLoading = false;
 
@@ -35,5 +38,21 @@ export default class RedditListingStream<T = RedditApiObj> {
 
 	hasReachedEnd(): boolean {
 		return !Boolean(this.afterId);
+	}
+
+	async setNewUrl(url: string, _isSecondsAttempt = false) {
+		this.url = url;
+		try {
+			const initialData = await redditApiRequest(url, [], false);
+			this.onItemsCleared?.();
+			this.onNewItems?.(initialData.data.children);
+		} catch (err) {
+			console.error(err);
+			new Ph_Toast(
+				Level.error,
+				`Error changing url!${_isSecondsAttempt ? "" : ` Try again?`}`,
+				{ onConfirm: _isSecondsAttempt ? null : () => this.setNewUrl(url, true) });
+			throw err;
+		}
 	}
 }
