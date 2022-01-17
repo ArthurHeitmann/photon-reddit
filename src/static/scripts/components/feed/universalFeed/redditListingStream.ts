@@ -2,6 +2,7 @@ import {RedditApiObj, RedditListingObj} from "../../../types/redditTypes";
 import {redditApiRequest} from "../../../api/redditApi";
 import Ph_Toast, {Level} from "../../misc/toast/toast";
 
+/** Loads reddit thing from a listing url */
 export default class RedditListingStream<T = RedditApiObj> {
 	onNewItems: (items: T[]) => void;
 	onItemsCleared: () => void;

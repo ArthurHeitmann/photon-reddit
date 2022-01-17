@@ -41,18 +41,26 @@ interface ItemISState {
 }
 
 /**
- * A list of reddit things (can be posts, comments, messages)
- *  - can be sorted
- *  - automatically loads more (and unloads old) when scrolling to the end
+ * An infinite scroller (IS) for reddit things (posts, comments, messages).
+ *
+ * IS basic logic: Only minimal amount of items is kept in the DOM. Items have 3 visibility stages.
+ * Initially they normally visible. Once they are more than 1 screen height away from the viewport they are hidden.
+ * If they are more than 2 screen heights away from the viewport, they get removed from the DOM. To compensate for
+ * the missing items' height, its height is added to a placeholder element.
+ * The visibility state changes are detected with an IntersectionObservers.
  */
 export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 	requestUrl: string;
+	/** Loads more and more reddit things from an url (like /r/all) */
 	private listingStream: RedditListingStream;
 
+	/** Triggers once for posts if they are (almost) visible to initialize them. */
 	private postInitIntObs: IntersectionObserver;
+	/** Triggers for posts if they visible and marks them as read */
 	private postSeenIntObs: IntersectionObserver;
 
 	// infinite scroller stuff
+	/** List of all item ids to avoid duplicates */
 	private allLoadedIds: Set<string> = new Set();
 	private allItems: ItemISState[] = [];
 	private visToHidIntObs: IntersectionObserver;
@@ -233,6 +241,7 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 		this.classList.toggle("isLoading", isLoading);
 	}
 
+	/** On scroll check if close to end of feed. If yes, load more items from listingStream */
 	private onScroll() {
 		if (!this.isVisible())
 			return;
@@ -241,6 +250,8 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 			this.listingStream.loadMore();
 	}
 
+	/** Reinitialize IntersectionObservers on resize, because they should be relative to the screen height, but are
+	 * constructed with pixels. */
 	private onResize() {
 		if (!this.isVisible())
 			return;
@@ -253,6 +264,7 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 		return this.isConnected && !Ph_ViewState.getViewOf(this).classList.contains("hide");
 	}
 
+	/** Construct IS related IntersectionObservers relative to screen height and observe feed items. */
 	private initializeIntersectionObservers() {
 		const screenHeight = window.innerHeight;
 
@@ -316,6 +328,7 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 			throw "impossible!"
 	}
 
+	/** If an items is more than 1 screen height away from the viewport, it is hidden and hid --> X observers are applied */
 	private onVisToHid(entries: IntersectionObserverEntry[]) {
 		if (!this.isVisible())
 			return;
@@ -347,6 +360,7 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 		}
 	}
 
+	/** If an items is less than 1 screen height away from the viewport, it is visible and vis --> X observers are applied */
 	private onHidToVis(entries: IntersectionObserverEntry[]) {
 		if (!this.isVisible())
 			return;
@@ -377,11 +391,14 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 		}
 	}
 
+	/** If an items is more than 2 screen height away from the viewport, it is removed from the DOM,
+	 * and it's height is added to a placeholder element. No observers are applied. Observers are already applied to placeholders. */
 	private onHidToRem(entries: IntersectionObserverEntry[]) {
 		if (!this.isVisible())
 			return;
 
 		for (const entry of entries) {
+			// continue if item isn't inside of bounds
 			if (
 				!(entry.intersectionRatio === 0 && !entry.isIntersecting) ||
 				!entry.boundingClientRect.height && !entry.boundingClientRect.width
@@ -389,6 +406,7 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 				continue;
 			}
 
+			// determine placeholder position to which the items' height will be added
 			const placeholderPosition = entry.boundingClientRect.top > 0
 				? RemovedItemPlaceholderPosition.bottom
 				: RemovedItemPlaceholderPosition.top;
@@ -416,11 +434,14 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 		}
 	}
 
+	/** If a placeholder is less than 2 screen height away from the viewport, items are added back to the DOM and their
+	 * old height is removed from the placeholder. And hid --> X observers are applied */
 	private onRemToHid(entries: IntersectionObserverEntry[]) {
 		if (!this.isVisible())
 			return;
 
 		const entry = entries[0];
+		// continue if item isn't inside of bounds
 		if (
 			!(entry.intersectionRatio > 0 && entry.isIntersecting) ||
 			entry.boundingClientRect.height === 0
@@ -434,6 +455,7 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 		this.popPlaceholderItems(placeholderPosition);
 	}
 
+	/** IntersectionObservers are sometimes unreliable, therefore force transition on certain events */
 	private forceOnRemToHid(e: InputEvent) {
 		const placeholderPosition = e.currentTarget === this.topPlaceholder
 			? RemovedItemPlaceholderPosition.top
@@ -441,15 +463,20 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 		this.popPlaceholderItems(placeholderPosition);
 	}
 
+	/** Items are added back to the DOM and its old height is removed from the placeholder, until the placeholder is
+	 * more than 2 screen heights away. And hid --> X observers are applied */
 	private popPlaceholderItems(postion: RemovedItemPlaceholderPosition) {
 		const placeholder = postion === RemovedItemPlaceholderPosition.top
 			? this.topPlaceholder
 			: this.bottomPlaceholder;
 
 		let shouldDoNextRun = true;
+		// do while placeholder is less than 2 screen heights away
 		do {
 			const itemIndex = postion === RemovedItemPlaceholderPosition.top
+				// last item in top placeholder
 				? this.allItems.length - 1 - this.allItems.slice().reverse().findIndex(item => item.removedPlaceholderPosition === RemovedItemPlaceholderPosition.top)
+				// first item in bottom placeholder
 				: this.allItems.findIndex(item => item.removedPlaceholderPosition === RemovedItemPlaceholderPosition.bottom);
 			if (itemIndex === -1)
 				return;
@@ -458,8 +485,11 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 				itemIndex,
 				(itemState, element) => {
 					itemState.visibility = ItemISVisibility.hidden;
+					// If items height is 0 when removing and > 0 when adding back, and it's in the top placeholder
+					// the scroll position will jump around in firefox, so it needs to be compensated
 					const shouldTryFixScroll = postion === RemovedItemPlaceholderPosition.top && itemState.removedPlaceholderHeight === 0;
 					const beforeTopScroll = document.scrollingElement.scrollTop;
+
 					if (itemState.removedPlaceholderPosition === RemovedItemPlaceholderPosition.top)
 						this.topPlaceholderHeight -= itemState.removedPlaceholderHeight;
 					else
@@ -474,6 +504,7 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 						placeholder.before(element);
 
 					if (shouldTryFixScroll) {
+						// if needed, scroll by height/scroll difference
 						const newHeight = this.getItemHeight(element);
 						const scrollDiff = document.scrollingElement.scrollTop - beforeTopScroll;
 						if (newHeight > 0 && Math.abs(newHeight - scrollDiff) > 10)
@@ -485,6 +516,7 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 				},
 				true
 			)
+			// re-trigger observer and see if it's still intersecting
 			this.remToHidIntObs.unobserve(placeholder);
 			this.remToHidIntObs.observe(placeholder);
 			const newEntries = this.remToHidIntObs.takeRecords();
@@ -501,6 +533,8 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 		return Math.round(itemHeight);
 	}
 
+	/** Apply state transition function to item and its hidden (display: none, because of settings like hide nsfw, hide seen, filters)
+	 * neighbours. Transition is applied to hidden items, because they otherwise don't interact with the intersection observers. */
 	private changeStateForItemAndHiddenNeighbours(
 		itemIndex: number,
 		changeState: (itemState: ItemISState, element: HTMLElement) => void,

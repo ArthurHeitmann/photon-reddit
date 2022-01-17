@@ -1,3 +1,7 @@
+/**
+ * Handle universal feed header items and sorting changes
+ */
+
 import Ph_FeedInfo, {FeedType} from "../feedInfo/feedInfo";
 import {fakeSubreddits} from "../../../utils/consts";
 import FeedInfoFactory from "../feedInfo/feedInfoFactory";
@@ -37,10 +41,10 @@ export default function makeFeedHeaderElements(feedUrl: string, listingSteam: Re
 	return headerElementsMaker.makeHeaderElements();
 }
 
+/** Utility for making header elements (title, sorting, ...) and tab title for different feed types (subreddit, user, ...) */
 abstract class HeaderElementsMaker {
 	protected listingStream: RedditListingStream;
 	protected feedType: FeedType;
-	private title: HTMLElement;
 
 	public constructor(listingStream: RedditListingStream, feedType: FeedType) {
 		this.listingStream = listingStream;
@@ -51,6 +55,7 @@ abstract class HeaderElementsMaker {
 		return this.listingStream.url;
 	}
 
+	/** Callback when selecting something from dropdown (to change sorting). Updates the feeds url to load new items. */
 	protected async onSelect(data: DropDownActionData): Promise<void> {
 		data.setButtonLabel(getLoadingIcon());
 		const params = data.valueChain as string[];
@@ -67,11 +72,11 @@ abstract class HeaderElementsMaker {
 	}
 
 	public makeHeaderElements(): HTMLElement[] {
-		this.title = makeElement("div", { class: "feedTitle" }, this.getHeaderTitle());
+		const title = makeElement("div", { class: "feedTitle" }, this.getHeaderTitle());
 		return [
-			this.title,
+			title,
 			...this.makeAdditionalElements()
-		]
+		];
 	}
 
 	protected makeUrlChangeDropdown(entries: DropDownEntryParam[]): Ph_DropDown {
@@ -79,6 +84,7 @@ abstract class HeaderElementsMaker {
 	}
 
 	protected abstract makeAdditionalElements(): HTMLElement[];
+	/** Make new feed url (/r/all --> /r/all/top?t=week) based on dropdown selection */
 	protected abstract makeNewUrl(...params: string[]): string;
 	protected abstract makeBaseUrl(): string;
 	protected abstract getHeaderTitle(): string;
@@ -96,7 +102,6 @@ function getHeaderElementsMaker(listingStream: RedditListingStream, feedType: Fe
 	else
 		return new GeneralElementsMaker(listingStream, feedType);
 }
-
 
 class GeneralElementsMaker extends HeaderElementsMaker {
 	makeAdditionalElements(): HTMLElement[] {
@@ -162,7 +167,7 @@ class GeneralElementsMaker extends HeaderElementsMaker {
 			case FeedType.user:
 				return `u/${this.url.match(/\/(u|user)\/([^/?#]+)/i)[2]}`
 			default:
-				if (/^\/r\/[\w_-]+/)
+				if (/^\/r\/[\w_-]+/.test(this.url))
 					return this.url.match(/r\/[\w_-]+/)[0];
 				else
 					return "";
@@ -333,7 +338,7 @@ function getFeedType(url: string) {
 		return FeedType.multireddit;
 	else if (/^\/(u|user)\/[^/]+/i.test(url))				// user
 		return FeedType.user;
-	else if (/^\/message\//i.test(url))
+	else if (/^\/message\//i.test(url))						// message(s)
 		return FeedType.messages;
 	else
 		return FeedType.misc;

@@ -5,7 +5,6 @@ export default class Ph_FeedItem extends Ph_PhotonBaseElement {
 	itemId: string;
 	link: string;
 	isInFeed: boolean;
-	hasBeenOrAlmostVisible = false;
 
 	constructor(id: string, link: string, isInFeed: boolean) {
 		super();
