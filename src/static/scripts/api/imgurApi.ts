@@ -17,6 +17,7 @@ export interface ImgurContent {
 	type: ImgurContentType,
 	link: string,
 	preview?: string,
+	heightHint?: number,
 	caption: string
 }
 
@@ -24,6 +25,7 @@ function makeContentData(data): ImgurContent {
 	const content: ImgurContent = {
 		type: undefined,
 		link: undefined,
+		heightHint: data.height,
 		caption: data.description || ""
 	};
 	if (/(^video\/)/.test(data.type) || /(^image\/gif)/.test(data.type) && data.mp4) {

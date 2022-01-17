@@ -46,7 +46,8 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 			const previews = postData.preview.images[0].resolutions;
 			return new Ph_MediaViewer([new Ph_ImageViewer({
 				originalUrl: postData.url,
-				previewUrl: previews[previews.length - 1].url
+				previewUrl: previews[previews.length - 1].url,
+				heightHint: previews[previews.length - 1].height
 			})], postData.url);
 		}
 		else {
@@ -89,6 +90,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 					mediaElements.push(new Ph_ImageViewer({
 						originalUrl: itemData.s.u,
 						previewUrl: previews.length > 0 && previews[previews.length - 1].u || undefined,
+						heightHint: previews.length > 0 && previews[previews.length - 1].y || itemData.s.y,
 						caption: item.caption || "",
 						displayUrl: item.outbound_url
 					}))
@@ -148,6 +150,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		return new Ph_ImageViewer({
 			originalUrl: data.link,
 			previewUrl: data.preview,
+			heightHint: data.heightHint,
 			caption: data.caption,
 			displayUrl: url
 		});
