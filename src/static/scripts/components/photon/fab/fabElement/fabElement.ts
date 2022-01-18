@@ -1,8 +1,8 @@
-import { disableMainScroll, enableMainScroll, nonDraggableElement } from "../../../../utils/htmlStatics";
-import { elementWithClassInTree, linksToSpa } from "../../../../utils/htmlStuff";
-import { bufferedMouseLeave, clientXOfEvent, clientYOfEvent, makeElement } from "../../../../utils/utils";
+import {disableMainScroll, enableMainScroll, nonDraggableElement} from "../../../../utils/htmlStatics";
+import {elementWithClassInTree, linksToSpa} from "../../../../utils/htmlStuff";
+import {bufferedMouseLeave, clientXOfEvent, clientYOfEvent, makeElement} from "../../../../utils/utils";
 import Ph_Fab from "../fab";
-import { FabPreset, FunctionActions } from "../fabElementConfig";
+import {FabPreset, FunctionActions} from "../fabElementConfig";
 import Ph_FabElementEditPane from "../fabElementEditPane/fabElementEditPane";
 
 export type OnClickAction = string | (() => boolean | void);
@@ -37,15 +37,20 @@ export default class Ph_FabElement extends HTMLElement {
 		this.calculateXY();
 
 		if (size === FabElementSize.normal) {
-			this.editPane = new Ph_FabElementEditPane(this);
 			const editButton = makeElement("button", { class: "subFab shadow-diffuse", onclick: () => {
+				if (!this.editPane) {
+					// only initialize edit pane on demand
+					this.editPane = new Ph_FabElementEditPane(this);
+					this.editPane?.setActivePreset(this.activePreset);
+					this.append(this.editPane);
+				}
 				this.classList.add("editPaneOpen");
 				this.editPane.show();
 			}},
 				[makeElement("img", { "src": "/img/edit.svg", "alt": "edit" })]);
 			bufferedMouseLeave(this, 400, () => {
 				this.classList.remove("editPaneOpen");
-				this.editPane.hide();
+				this.editPane?.hide();
 			});
 			const moveButton = makeElement("button", { class: "subFab shadow-diffuse", onmousedown: this.startDrag.bind(this) },
 				[nonDraggableElement(makeElement("img", { "src": "/img/drag.svg", "alt": "move", "draggable": "false" }) as HTMLImageElement)]);
@@ -55,7 +60,6 @@ export default class Ph_FabElement extends HTMLElement {
 			const deleteButton = makeElement("button", { class: "subFab shadow-diffuse", onclick: this.delete.bind(this) },
 				[makeElement("img", { "src": "/img/delete.svg", "alt": "delete" })]);
 			this.append(moveButton, deleteButton, editButton);
-			this.append(this.editPane);
 		}
 
 		this.iconWrapper = makeElement("div", { class: "iconWrapper" });
@@ -82,12 +86,9 @@ export default class Ph_FabElement extends HTMLElement {
 	}
 
 	loadPreset(preset: FabPreset) {
-		if (!this.activePreset) {
-			this.activePreset = preset;
-			this.editPane.setActivePreset(preset);
-		}
-		else
-			this.activePreset = preset;
+		this.activePreset = preset;
+		if (!this.activePreset)
+			this.editPane?.setActivePreset(preset);
 		this.setIcon(preset.icon.url);
 		this.setAction(preset.action.type === "url" ? preset.action.action : FunctionActions[preset.action.action])
 	}
