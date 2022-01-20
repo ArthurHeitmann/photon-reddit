@@ -1,4 +1,4 @@
-import { makeElement } from "../../../utils/utils";
+import {hasParams, makeElement} from "../../../utils/utils";
 import Ph_MarkdownForm from "../markdownForm/markdownForm";
 import Ph_ModalPane from "../modalPane/modalPane";
 
@@ -19,6 +19,7 @@ export default class Ph_MultiCreateOrEdit extends Ph_ModalPane {
 
 	constructor(titleText: string, actionText: string, onSubmitCallback: OnMultiSubmitCallback, existingInfo?: MultiBasicInfo ) {
 		super();
+		if (!hasParams(arguments)) return;
 
 		this.hide();
 
