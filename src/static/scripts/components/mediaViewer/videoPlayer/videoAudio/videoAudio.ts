@@ -1,8 +1,8 @@
-import { PhEvents } from "../../../../types/Events";
-import { escADQ } from "../../../../utils/htmlStatics";
-import { clamp, hasParams, urlWithHttps } from "../../../../utils/utils";
+import {PhEvents} from "../../../../types/Events";
+import {escADQ} from "../../../../utils/htmlStatics";
+import {clamp, hasParams, urlWithHttps} from "../../../../utils/utils";
 import Users from "../../../multiUser/userManagement";
-import Ph_VideoWrapper, { BasicVideoData, SourceData, VideoTrackInfo } from "../videoWrapper";
+import Ph_VideoWrapper, {BasicVideoData, SourceData, VideoTrackInfo} from "../videoWrapper";
 
 /**
  * Use this when you have 2 mp4s, 1 for video & 1 for audio. This will play, pause, seek, ... them together
@@ -90,8 +90,8 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 			setTimeout(() => this.dispatchEvent(new Event(PhEvents.noAudio)), 0);
 		}
 		this.video.addEventListener("timeupdate", () => {
-			// this mess is needed in order to know if the video has audio
-			if (!this.audioCheckCompleted && this.video.currentTime > 0.1) {
+			// this mess is needed in order to know if the video has no audio
+			if (!this.audioCheckCompleted && this.video.currentTime > 0.2) {
 				this.audioCheckCompleted = true;
 				if (
 					this.audio["webkitAudioDecodedByteCount"] === 0
@@ -100,6 +100,7 @@ export default class Ph_VideoAudio extends Ph_VideoWrapper {
 				) {
 					this.dispatchEvent(new Event(PhEvents.noAudio));
 					this.hasAudio = false;
+					this.audio.muted = true;
 				}
 			}
 			if (!this.hasAudio)
