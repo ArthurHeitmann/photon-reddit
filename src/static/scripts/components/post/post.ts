@@ -411,6 +411,13 @@ export default class Ph_Post extends Ph_FeedItem {
 		return false;
 	}
 
+	updateWithData(postData: RedditPostData) {
+		this.totalVotes = postData.ups + -parseInt(this.currentVoteDirection);
+		this.setVotesState(this.currentVoteDirection);
+		const commentsText = this.$css(".commentsLink div")[0] as HTMLElement;
+		commentsText.innerText = numberToShort(postData.num_comments);
+	}
+
 	async vote(dir: VoteDirection): Promise<void> {
 		const prevDir = this.currentVoteDirection;
 		this.setVotesState(dir === this.currentVoteDirection ? VoteDirection.none : dir);

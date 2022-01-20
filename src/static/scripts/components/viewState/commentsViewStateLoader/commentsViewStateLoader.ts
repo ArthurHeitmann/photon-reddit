@@ -1,12 +1,12 @@
 import ViewsStack from "../../../historyState/viewsStack";
-import { HistoryState } from "../../../types/misc";
-import { RedditApiObj } from "../../../types/redditTypes";
-import { hasParams } from "../../../utils/utils";
+import {HistoryState} from "../../../types/misc";
+import {RedditApiObj, RedditListing, RedditPostObj} from "../../../types/redditTypes";
+import {hasParams} from "../../../utils/utils";
 import Users from "../../multiUser/userManagement";
 import Ph_Post from "../../post/post";
 import PostDoubleLink from "../../post/postDoubleLink/postDoubleLink";
-import Ph_PostAndComments, { PostCommentsListings } from "../../postAndComments/postAndComments";
-import { Ph_ViewState } from "../viewState";
+import Ph_PostAndComments, {PostCommentsListings} from "../../postAndComments/postAndComments";
+import {Ph_ViewState} from "../viewState";
 
 /**
  * A Ph_ViewState with a loading screen
@@ -32,6 +32,7 @@ export default class Ph_CommentsViewStateLoader extends Ph_ViewState {
 
 	finishWith(postAndCommentsData: RedditApiObj[]) {
 		this.postAndComments.initWithData(postAndCommentsData as PostCommentsListings);
+		this.post.updateWithData((postAndCommentsData[0].data as RedditListing<RedditPostObj>).children[0].data);
 	}
 
 	error() {
