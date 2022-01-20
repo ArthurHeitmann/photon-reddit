@@ -1,8 +1,8 @@
-import { nonDraggableElement } from "../../../utils/htmlStatics";
-import { deepClone, hasParams, isJsonEqual } from "../../../utils/utils";
+import {nonDraggableElement} from "../../../utils/htmlStatics";
+import {hasParams, isJsonEqual} from "../../../utils/utils";
 import Ph_DropDown from "../dropDown/dropDown";
 import Ph_DropDownArea from "../dropDown/dropDownArea/dropDownArea";
-import Ph_DropDownEntry, { DropDownEntryParam } from "../dropDown/dropDownEntry/dropDownEntry";
+import Ph_DropDownEntry, {DropDownEntryParam} from "../dropDown/dropDownEntry/dropDownEntry";
 import Ph_ProgressBar from "../progressBar/progressBar";
 import Ph_SwitchingImage from "../switchableImage/switchableImage";
 
@@ -11,7 +11,6 @@ export interface ControlsLayoutSlots {
 	leftItems?: HTMLElement[],
 	rightItems?: HTMLElement[],
 	settingsEntries?: DropDownEntryParam[],
-	settingsEntriesElements?: Ph_DropDownEntry[],
 	settingsEntriesCurrent?: DropDownEntryParam[],
 	progressBar?: Ph_ProgressBar,
 }
@@ -73,20 +72,29 @@ export default class Ph_ControlsBar extends HTMLElement {
 		if (this.progressBar)
 			this.append(this.progressBar);
 		const dropDown = this.$class("dropDown")[0] as Ph_DropDown;
+		const dropDownArea = dropDown.$class("dropDownArea ")[0] as Ph_DropDownArea;
 		if (newElements.settingsEntries === undefined)
 			newElements.settingsEntries = [];
-		if (!newElements.settingsEntriesElements || !isJsonEqual(newElements.settingsEntries, newElements.settingsEntriesCurrent)) {
-			const dropDownArea = dropDown.$class("dropDownArea ")[0] as Ph_DropDownArea;
-			newElements.settingsEntriesCurrent = deepClone(newElements.settingsEntries);
-			newElements.settingsEntriesElements = (newElements.settingsEntries)
-				.filter(param => Boolean(param))
-				.map(param => new Ph_DropDownEntry(param, dropDown, dropDownArea));
+		if (newElements.settingsEntriesCurrent === undefined)
+			newElements.settingsEntriesCurrent = [];
+		// add new entry
+		const newEntries = newElements.settingsEntries
+			.filter(entry => Boolean(entry))
+			.filter(entry => !newElements.settingsEntriesCurrent
+				.find(curEntry => entry === curEntry));
+		newElements.settingsEntriesCurrent.push(...newEntries);
+		dropDownArea.addEntries(newEntries);
+		// remove old entries
+		const removedEntries = newElements.settingsEntriesCurrent
+			.filter(entry => Boolean(entry))
+			.filter(entry => !newElements.settingsEntries
+				.find(curEntry => isJsonEqual(entry, curEntry)));
+		for (const entry of removedEntries) {
+			const entryI = newElements.settingsEntriesCurrent.findIndex(e => entry === e);
+			if (entryI !== -1)
+				newElements.settingsEntriesCurrent.splice(entryI, 1);
+			dropDownArea.removeParam(entry);
 		}
-		const entriesRoot = dropDown.$class("dropDownArea")[0];
-		Array.from(entriesRoot.children)
-			.filter((entry: Ph_DropDownEntry) => !this.initialDropdownEntries.includes(entry))
-			.forEach(entry => entry.remove());
-		entriesRoot.append(...newElements.settingsEntriesElements);
 	}
 
 	private replaceSlotElements(slot: HTMLElement, newElements: HTMLElement[]) {

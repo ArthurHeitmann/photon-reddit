@@ -560,7 +560,7 @@ export default class Ph_Post extends Ph_FeedItem {
 				onSelectCallback: this.selectFlair.bind(this)
 			};
 		});
-		data.source.nextDropDown.setEntries(flairSelection, data.source.dropDown);
+		data.source.nextDropDown.setEntries(flairSelection);
 	}
 
 	async selectFlair(data: DropDownActionData) {
