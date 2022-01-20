@@ -90,6 +90,7 @@ export const getSettingsSections = (): SettingsSection[] => [
 				makeElement("a", {
 					href: "https://old.reddit.com/prefs",
 					target: "_blank",
+					rel: "noopener",
 					excludeLinkFromSpa: ""
 				}, "https://old.reddit.com/prefs")
 			])),
