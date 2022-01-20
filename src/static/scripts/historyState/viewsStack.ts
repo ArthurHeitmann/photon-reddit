@@ -5,11 +5,11 @@
  */
 
 import Users from "../components/multiUser/userManagement";
-import { Ph_ViewState } from "../components/viewState/viewState";
-import { PhEvents } from "../types/Events";
-import { HistoryState } from "../types/misc";
-import { $tag } from "../utils/htmlStatics";
-import { pushLinkToHistoryComb, PushType } from "./historyStateManager";
+import {Ph_ViewState} from "../components/viewState/viewState";
+import {PhEvents} from "../types/Events";
+import {HistoryState} from "../types/misc";
+import {$tag} from "../utils/htmlStatics";
+import {pushLinkToHistoryComb, PushType} from "./historyStateManager";
 
 interface ViewType {
 	/** index will technically be stored as a string, but that shouldn't affect anything */
@@ -114,6 +114,7 @@ export default class ViewsStack {
 		ViewsStack.views[ViewsStack.pos++].classList.add("hide");
 		ViewsStack.views[ViewsStack.pos].classList.remove("hide");
 		ViewsStack.views[ViewsStack.pos].loadScroll();
+		document.title = ViewsStack.views[ViewsStack.pos].state.title;
 
 		window.dispatchEvent(new CustomEvent(PhEvents.viewChange, {
 			detail: <ViewChangeData> {
@@ -140,6 +141,7 @@ export default class ViewsStack {
 		ViewsStack.views[ViewsStack.pos--].classList.add("hide");
 		ViewsStack.views[ViewsStack.pos].classList.remove("hide");
 		ViewsStack.views[ViewsStack.pos].loadScroll();
+		document.title = ViewsStack.views[ViewsStack.pos].state.title;
 
 		window.dispatchEvent(new CustomEvent(PhEvents.viewChange, {
 			detail: <ViewChangeData> {
@@ -155,14 +157,20 @@ export default class ViewsStack {
 
 	/** Changes the title of the browser tab & history state */
 	static setCurrentStateTitle(title: string) {
-		document.title = Users.global.d.photonSettings.isIncognitoEnabled ? `${ViewsStack.randomUrl()} - Photon` : title;
+		if (Users.global.d.photonSettings.isIncognitoEnabled)
+			title = ViewsStack.randomUrl();
+		document.title = title;
 		history.state.title = title;
+		ViewsStack.views[ViewsStack.pos].state.title = title;
 	}
 
 	static setStateTitle(state: Ph_ViewState, title: string) {
+		if (Users.global.d.photonSettings.isIncognitoEnabled)
+			title = ViewsStack.randomUrl();
 		history.state.title = title;
+		state.state.title = title;
 		if (state === ViewsStack.getCurrentState())
-			document.title = Users.global.d.photonSettings.isIncognitoEnabled ? `${ViewsStack.randomUrl()} - Photon` : title;
+			document.title = title;
 	}
 
 	static getNextState(): Ph_ViewState {
