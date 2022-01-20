@@ -1,15 +1,15 @@
-import { updateUserPreferences } from "../../../api/redditApi";
-import { PhEvents } from "../../../types/Events";
-import { RedditPreferences } from "../../../types/redditTypes";
-import { escHTML } from "../../../utils/htmlStatics";
+import {updateUserPreferences} from "../../../api/redditApi";
+import {PhEvents} from "../../../types/Events";
+import {RedditPreferences} from "../../../types/redditTypes";
+import {escHTML} from "../../../utils/htmlStatics";
 import "../../../utils/htmlStuff";
-import { broadcastMessage, MessageFormat, onMessageBroadcast } from "../../../utils/messageCommunication";
-import { deepClone, ensurePageLoaded, isJsonEqual, isObjectEmpty, makeElement } from "../../../utils/utils";
+import {broadcastMessage, MessageFormat, onMessageBroadcast} from "../../../utils/messageCommunication";
+import {deepClone, ensurePageLoaded, isJsonEqual, isObjectEmpty, makeElement} from "../../../utils/utils";
 import Ph_ModalPane from "../../misc/modalPane/modalPane";
-import Ph_Toast, { Level } from "../../misc/toast/toast";
+import Ph_Toast, {Level} from "../../misc/toast/toast";
 import Users from "../../multiUser/userManagement";
-import { SettingConfig, SettingsApi, SettingsSection } from "./photonSettingsData";
-import { getSettingsSections } from "./settingsSections";
+import {SettingConfig, SettingsApi, SettingsSection} from "./photonSettingsData";
+import {getSettingsSections} from "./settingsSections";
 import "./styleSettingsListener";
 
 export enum ImageLoadingPolicy {
@@ -63,7 +63,7 @@ export const defaultSettings: PhotonSettings = {
 	imageLimitedHeight: 70,
 	preferHigherVideoQuality: true,
 	autoplayVideos: true,
-	globalVideoVolume: false,
+	globalVideoVolume: true,
 	nsfwPolicy: NsfwPolicy.covered,
 	markSeenPosts: true,
 	hideSeenPosts: false,
