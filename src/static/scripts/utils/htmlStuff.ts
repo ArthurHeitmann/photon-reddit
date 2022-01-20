@@ -4,17 +4,18 @@
  * Might import other files
  */
 
-import { PhotonSettings } from "../components/global/photonSettings/photonSettings";
+import {PhotonSettings} from "../components/global/photonSettings/photonSettings";
 import Ph_MediaViewer from "../components/mediaViewer/mediaViewer";
 import Users from "../components/multiUser/userManagement";
-import { pushLinkToHistoryComb } from "../historyState/historyStateManager";
-import { PhEvents } from "../types/Events";
-import { RedditCommentData } from "../types/redditTypes";
-import { $classAr } from "./htmlStatics";
-import { makeElement } from "./utils";
+import {pushLinkToHistoryComb} from "../historyState/historyStateManager";
+import {PhEvents} from "../types/Events";
+import {RedditCommentData} from "../types/redditTypes";
+import {$classAr} from "./htmlStatics";
+import {makeElement} from "./utils";
 
 /** Converts all same origin links of an element to SPA (single page application) links */
 export function linksToSpa(elem: HTMLElement, inlineMedia: boolean = false) {
+	fixLinks(elem);
 	if (inlineMedia)
 		_linksToInlineMedia(elem);
 	_replaceRedditLinks(elem);
@@ -27,6 +28,22 @@ function _linksToSpa(elem: HTMLElement): void {
 	}
 	for (const a of elem.getElementsByTagName("a")) {
 		setLinkOnClick(a);
+	}
+}
+
+function fixLinks(elem) {
+	if (elem instanceof HTMLAnchorElement)
+		fixBackslashUnderscore(elem);
+	for (const a of elem.$tag("a") as HTMLCollectionOf<HTMLAnchorElement>) {
+		fixBackslashUnderscore(a);
+	}
+}
+
+function fixBackslashUnderscore(a: HTMLAnchorElement) {
+	// replace \_ with _
+	if (a.href.includes("%5C_")) {
+		a.href = a.href.replace(/%5C_/g, "_");
+		a.innerHTML = a.innerHTML.replace(/\\_/g, "_");
 	}
 }
 
