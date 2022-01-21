@@ -40,7 +40,7 @@ describe("Basic Navigation", () => {
 		});
 
 		// open same feed info again
-		cy.wait(600);
+		cy.wait(1000);
 		showHeader();
 		cy.get("ph-header .showInfo[data-feed-type=subreddit]").click();
 		cy.get("ph-feed-info-subreddit:not(.remove) .title").invoke("text")
