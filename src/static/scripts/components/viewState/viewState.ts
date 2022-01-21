@@ -1,8 +1,8 @@
-import { PhEvents } from "../../types/Events";
-import { HistoryState } from "../../types/misc";
-import { $tag } from "../../utils/htmlStatics";
-import { elementWithClassInTree } from "../../utils/htmlStuff";
-import { hasParams } from "../../utils/utils";
+import {PhEvents} from "../../types/Events";
+import {HistoryState} from "../../types/misc";
+import {$tag} from "../../utils/htmlStatics";
+import {elementWithClassInTree} from "../../utils/htmlStuff";
+import {hasParams} from "../../utils/utils";
 import Ph_Header from "../global/header/header";
 import Ph_PhotonBaseElement from "../photon/photonBaseElement/photonBaseElement";
 
@@ -31,7 +31,8 @@ export abstract class Ph_ViewState extends Ph_PhotonBaseElement {
 
 	setHeaderElements(elements: HTMLElement[]) {
 		this.headerElements = elements;
-		this.header.setFeedElements(this.headerElements);
+		if (this.state.index === history.state?.index && this.state.url === history.state?.url)
+			this.header.setFeedElements(this.headerElements);
 	}
 
 	abstract finishWith(result: any);

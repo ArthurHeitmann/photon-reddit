@@ -20,11 +20,6 @@ export interface HistoryState {
 	optionalData: any
 }
 
-export interface PostSorting {
-	order: SortPostsOrder,
-	timeFrame?: SortPostsTimeFrame
-}
-
 export enum SortPostsOrder {
 	default = "",
 	best = "best",
@@ -76,7 +71,51 @@ export enum SortCommentsOrder {
 	random = "random",
 }
 
-export const SortCommentsOrderNamed = {
+export enum SortSearchOrder {
+	relevance = "relevance",
+	hot = "hot",
+	top = "top",
+	new = "new",
+	comments = "comments",
+}
+
+export enum MessageSection {
+	all = "inbox",
+	unread = "unread",
+	messages = "messages",
+	commentReplies = "comments",
+	postReplies = "selfreply",
+	mentions = "mentions",
+	sent = "sent",
+}
+
+
+type SectionToDisplayNameMap<T> = {
+	[key in (T & string)]: string;
+};
+
+export const MessageSectionsNamed: SectionToDisplayNameMap<MessageSection> = {
+	inbox: "Inbox",
+	unread: "Unread",
+	messages: "Messages",
+	comments: "Comment Replies",
+	selfreply: "Post Replies",
+	mentions: "Username Mentions",
+	sent: "Sent",
+};
+
+export const SortPostsOrderNamed: SectionToDisplayNameMap<SortPostsOrder> = {
+	best: "Best",
+	top: "Top",
+	new: "New",
+	controversial: "Controversial",
+	"": "Default",
+	hot: "Hot",
+	gilded: "Gilded",
+	rising: "Rising"
+}
+
+export const SortCommentsOrderNamed: SectionToDisplayNameMap<SortCommentsOrder> = {
 	best: "Best",
 	top: "Top",
 	new: "New",
@@ -86,12 +125,40 @@ export const SortCommentsOrderNamed = {
 	random: "Random",
 }
 
-export enum SortSearchOrder {
-	relevance = "relevance",
-	hot = "hot",
-	top = "top",
-	new = "new",
-	comments = "comments",
+export const SortUserPostsOrderNamed: SectionToDisplayNameMap<SortUserPostsOrder> = {
+	top: "Top",
+	new: "New",
+	controversial: "Controversial",
+	"": "Default",
+	hot: "Hot",
+}
+
+export const UserSectionsNamed: SectionToDisplayNameMap<UserSection> = {
+	"": "Overview",
+	comments: "Comments",
+	gilded: "Gilded",
+	upvoted: "Upvoted",
+	downvoted: "Downvoted",
+	hidden: "Hidden",
+	saved: "Saved",
+	submitted: "Posts",
+}
+
+export const SortPostsTimeframeNamed: SectionToDisplayNameMap<SortPostsTimeFrame> = {
+	hour: "Hour",
+	day: "Day",
+	week: "Week",
+	month: "Month",
+	year: "Year",
+	all: "All",
+}
+
+export const SortSearchOrderNamed: SectionToDisplayNameMap<SortSearchOrder> = {
+	relevance: "Relevance",
+	hot: "Hot",
+	top: "Top",
+	new: "New",
+	comments: "Comments",
 }
 
 export interface Changelog {

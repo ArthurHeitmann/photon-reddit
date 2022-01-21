@@ -6,11 +6,41 @@
 	@media (orientation: portrait) {
 		padding: 0 0.4rem 0 2.2rem;
 	}
+	min-height: 70vh;
 	display: flex;
 	flex-flow: column;
 
 	> * {
 		margin: .75rem 0;
+	}
+
+	> .itemPlaceholder {
+		--height: 0;
+		width: 100%;
+		height: var(--height);
+		margin: 0;
+
+		&::after {
+			content: "";
+			position: absolute;
+			left: 0;
+			width: 100%;
+			height: var(--height);
+		}
+	}
+
+	&.isLoading {
+		&::after {
+			content: "";
+			position: absolute;
+			bottom: 0;
+			left: 50%;
+			transform: translateX(-50%);
+			width: 5rem;
+			height: 5rem;
+			background-image: url("/img/loading3.svg");
+			background-size: contain;
+		}
 	}
 }
 

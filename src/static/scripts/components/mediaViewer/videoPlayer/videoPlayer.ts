@@ -1,25 +1,25 @@
-import { getGfycatMp4SrcFromUrl, GfycatDomain } from "../../../api/gfycatApi";
-import { youtubeDlUrl } from "../../../api/photonApi";
-import { getStreamableUrl } from "../../../api/streamableApi";
-import { PhEvents } from "../../../types/Events";
-import { RedditPostObj } from "../../../types/redditTypes";
-import { $tagAr, escHTML } from "../../../utils/htmlStatics";
-import { classInElementTree, isElementIn } from "../../../utils/htmlStuff";
-import { getFullscreenElement, hasParams, isFullscreen, isJsonEqual, secondsToVideoTime } from "../../../utils/utils";
-import Ph_ControlsBar, { ControlsLayoutSlots } from "../../misc/controlsBar/controlsBar";
-import { DropDownActionData } from "../../misc/dropDown/dropDownEntry/dropDownEntry";
+import {getGfycatMp4SrcFromUrl, GfycatDomain} from "../../../api/gfycatApi";
+import {youtubeDlUrl} from "../../../api/photonApi";
+import {getStreamableUrl} from "../../../api/streamableApi";
+import {PhEvents} from "../../../types/Events";
+import {RedditPostData} from "../../../types/redditTypes";
+import {$tagAr, escHTML} from "../../../utils/htmlStatics";
+import {classInElementTree, isElementIn} from "../../../utils/htmlStuff";
+import {getFullscreenElement, hasParams, isFullscreen, isJsonEqual, secondsToVideoTime} from "../../../utils/utils";
+import Ph_ControlsBar, {ControlsLayoutSlots} from "../../misc/controlsBar/controlsBar";
+import {DropDownActionData} from "../../misc/dropDown/dropDownEntry/dropDownEntry";
 import Ph_ProgressBar from "../../misc/progressBar/progressBar";
 import Ph_SwitchingImage from "../../misc/switchableImage/switchableImage";
-import Ph_Toast, { Level } from "../../misc/toast/toast";
+import Ph_Toast, {Level} from "../../misc/toast/toast";
 import Users from "../../multiUser/userManagement";
 import Ph_PhotonBaseElement from "../../photon/photonBaseElement/photonBaseElement";
-import { MediaElement } from "../mediaElement";
+import {MediaElement} from "../mediaElement";
 import Ph_GifVideo from "./gifVideo/gifVideo";
 import Ph_PlayImage from "./icons/playImage";
 import Ph_SimpleVideo from "./simpleVideo/simpleVideo";
 import Ph_SpeedChanger from "./speedChanger/speedChanger";
 import Ph_VideoAudio from "./videoAudio/videoAudio";
-import Ph_VideoWrapper, { SourceData } from "./videoWrapper";
+import Ph_VideoWrapper, {SourceData} from "./videoWrapper";
 
 /**
  * A custom video player with custom controls
@@ -39,11 +39,11 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 	static isVideoPlayAllowed = false;
 
 	/** Creates a video player from a reddit post (with a video link) */
-	static fromPostData({ postData, url }: { postData?: RedditPostObj, url?: string }): Ph_VideoPlayer {
+	static fromPostData({ postData, url }: { postData?: RedditPostData, url?: string }): Ph_VideoPlayer {
 		if (!(postData || url))
 			throw "either postData or url is needed";
 		if (postData)
-			url = postData.data.url;
+			url = postData.url;
 
 		const videoOut = new Ph_VideoPlayer(url);
 
@@ -73,14 +73,14 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 			case "gfycat.com":
 				// gfycats paths are case sensitive, but the urls usually are all lower case
 				// however in the media oembed property there is a correctly capitalized path
-				if (postData?.data.media) {
+				if (postData?.media) {
 					let capitalizedPath;
-					if (/^https?:\/\/thumbs\.gfycat\.com\/./.test(postData.data.media.oembed.thumbnail_url)) {
-						capitalizedPath = postData.data.media.oembed.thumbnail_url.match(/^https?:\/\/thumbs\.gfycat\.com\/(\w+)/)[1];
-					} else if (/^https?:\/\/i.embed.ly\/./.test(postData.data.media.oembed.thumbnail_url)) {
-						capitalizedPath = postData.data.media.oembed.thumbnail_url.match(/thumbs\.gfycat\.com%2F(\w+)/)[1];
+					if (/^https?:\/\/thumbs\.gfycat\.com\/./.test(postData.media.oembed.thumbnail_url)) {
+						capitalizedPath = postData.media.oembed.thumbnail_url.match(/^https?:\/\/thumbs\.gfycat\.com\/(\w+)/)[1];
+					} else if (/^https?:\/\/i.embed.ly\/./.test(postData.media.oembed.thumbnail_url)) {
+						capitalizedPath = postData.media.oembed.thumbnail_url.match(/thumbs\.gfycat\.com%2F(\w+)/)[1];
 					} else {
-						throw `Invalid gfycat oembed link ${postData.data.media.oembed.thumbnail_url}`;
+						throw `Invalid gfycat oembed link ${postData.media.oembed.thumbnail_url}`;
 					}
 					videoOut.init(new Ph_SimpleVideo([
 						{src: `https://giant.gfycat.com/${capitalizedPath}.mp4`, type: "video/mp4", label: "Default"},
@@ -130,10 +130,10 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 					// gets videoId from https://v.redd.it/[videoId] or https://reddit.com/link/[postId]/video/[videoId]
 					const vReddItId = url.match(/(https:\/\/v\.redd\.it\/|https?:\/\/(?:www\.)?reddit\.com\/link\/\w+\/video\/)([^/?#]+)|/)[2];
 					const vReddItUrl = `https://v.redd.it/${vReddItId}`;
-					const redditVideoData = postData?.data.media?.reddit_video;
+					const redditVideoData = postData?.media?.reddit_video;
 					if (redditVideoData)
 						redditVideoData.fallback_url = redditVideoData.fallback_url.replace(/\?.*/, "")
-					if (postData && postData.data.media && redditVideoData)
+					if (postData && postData.media && redditVideoData)
 						dashUrl = redditVideoData.dash_url;
 					else
 						dashUrl = `${vReddItUrl}/DASHPlaylist.mpd`;
@@ -178,14 +178,14 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 
 						videoOut.init(new Ph_VideoAudio(videoSources, audioSrc), true);
 					})
-						.catch((e) => vReddItFallBack());
+						.catch(() => vReddItFallBack());
 				}
 				break;
 			case "i.redd.it":
 				// from i.reddit only gifs come; try to get the mp4 preview
-				if (postData && postData.data.preview && postData.data.preview.images[0].variants.mp4) {
+				if (postData && postData.preview && postData.preview.images[0].variants.mp4) {
 					videoOut.init(new Ph_SimpleVideo([{
-						src: postData.data.preview.images[0].variants.mp4.source.url,
+						src: postData.preview.images[0].variants.mp4.source.url,
 						type: "video/mp4"
 					}]));
 				}
@@ -195,10 +195,10 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 			case "clips.twitch.tv":
 				// try to get mp4 url from oembed data
 				let twitchMp4Found = false;
-				if (postData && postData.data.media && postData.data.media.oembed) {
+				if (postData && postData.media && postData.media.oembed) {
 					// if present the thumbnail url looks like 	https://clips-media-assets2.twitch.tv/AT-cm|1155435256-social-preview.jpg
 					// the mp4 url is 							https://clips-media-assets2.twitch.tv/AT-cm|1155435256.mp4
-					const twitchUrlMatches = postData.data.media.oembed.thumbnail_url.match(/(.*)-social-preview.jpg$/);
+					const twitchUrlMatches = postData.media.oembed.thumbnail_url.match(/(.*)-social-preview.jpg$/);
 					if (twitchUrlMatches && twitchUrlMatches.length == 2) {
 						videoOut.init(new Ph_SimpleVideo([{src: twitchUrlMatches[1] + ".mp4", type: "video/mp4"}]));
 						twitchMp4Found = true;
@@ -383,7 +383,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				this.video.getVideoTracks().length > 1 && {
 				label: "Quality",
 				labelImgUrl: "/img/hd.svg",
-				nestedEntries: this.video.getVideoTracks().map((track, i) => ({
+				nestedEntries: this.video.getVideoTracks().map((track) => ({
 					label: track.label,
 					labelImgUrl: "/img/circle.svg",
 					value: track.src,

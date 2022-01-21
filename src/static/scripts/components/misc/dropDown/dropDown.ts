@@ -1,6 +1,6 @@
-import { hasParams } from "../../../utils/utils";
+import {hasParams} from "../../../utils/utils";
 import Ph_DropDownArea from "./dropDownArea/dropDownArea";
-import { DropDownEntryParam } from "./dropDownEntry/dropDownEntry";
+import {DropDownEntryParam} from "./dropDownEntry/dropDownEntry";
 
 /**
  * A drop down menu. Can have infinite sub drop downds
@@ -32,12 +32,12 @@ export default class Ph_DropDown extends HTMLElement {
 
 		const dropDownArea = new Ph_DropDownArea(entryParams, this)
 		areaWrapper.appendChild(dropDownArea);
-		if (this.toggleButton)
-			this.toggleButton.addEventListener("click", dropDownArea.toggleMenu.bind(dropDownArea));
+
+		this.toggleButton.addEventListener("click", dropDownArea.toggleMenu.bind(dropDownArea));
 	}
 
 	setEntries(params: DropDownEntryParam[]) {
-		(this.$class("dropDownArea")[0] as Ph_DropDownArea).setEntries(params, this);
+		(this.$class("dropDownArea")[0] as Ph_DropDownArea).setEntries(params);
 	}
 
 	setLabel(newLabel: ButtonLabel) {

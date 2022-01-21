@@ -113,7 +113,7 @@ export function nonDraggableElement(img: HTMLElement): HTMLElement {
 	return img;
 }
 
-export function isElementInViewport(elem: HTMLElement) {
+export function isElementInViewport(elem: Element) {
 	const rect = elem.getBoundingClientRect();
 	return (
 		(	// either the top or bottom edge has to be in the viewport
@@ -131,11 +131,14 @@ export function isElementInViewport(elem: HTMLElement) {
 	)
 }
 
+let mainScrollbarWidth: number = null;
 export function disableMainScroll() {
-	const initialWidth = document.body.offsetWidth;
-	document.body.style.overflow = "hidden";
-	const widthDiff = document.body.offsetWidth - initialWidth;
-	document.body.style.marginRight = `${widthDiff}px`;
+	if (mainScrollbarWidth === null) {
+		const initialWidth = document.body.offsetWidth;
+		document.body.style.overflow = "hidden";
+		mainScrollbarWidth = document.body.offsetWidth - initialWidth;
+	}
+	document.body.style.marginRight = `${mainScrollbarWidth}px`;
 }
 
 export function enableMainScroll() {

@@ -1,11 +1,11 @@
-import { $class } from "../../../utils/htmlStatics";
-import { makeElement } from "../../../utils/utils";
-import { photonWebVersion } from "../../../utils/version";
+import {$class} from "../../../utils/htmlStatics";
+import {makeElement} from "../../../utils/utils";
+import {photonWebVersion} from "../../../utils/version";
 import Users from "../../multiUser/userManagement";
 import Ph_Changelog from "../../photon/changelog/changelog";
 import Ph_Tutorial from "../../photon/tutorial/tutorial";
-import { FiltersSetting } from "./filtersSetting";
-import Ph_PhotonSettings, { ImageLoadingPolicy, NsfwPolicy } from "./photonSettings";
+import {FiltersSetting} from "./filtersSetting";
+import Ph_PhotonSettings, {ImageLoadingPolicy, NsfwPolicy} from "./photonSettings";
 import {
 	BooleanSetting,
 	HTMLElementSetting,
@@ -15,6 +15,7 @@ import {
 	SettingsSection,
 	TimeSetting
 } from "./photonSettingsData";
+import Ph_Toast, {Level} from "../../misc/toast/toast";
 
 export const getSettingsSections = (): SettingsSection[] => [
 	{
@@ -89,6 +90,7 @@ export const getSettingsSections = (): SettingsSection[] => [
 				makeElement("a", {
 					href: "https://old.reddit.com/prefs",
 					target: "_blank",
+					rel: "noopener",
 					excludeLinkFromSpa: ""
 				}, "https://old.reddit.com/prefs")
 			])),
@@ -127,7 +129,11 @@ export const getSettingsSections = (): SettingsSection[] => [
 			new HTMLElementSetting(makeElement("div", null, [
 				makeElement("button", {
 					class: "button",
-					onclick: () => Users.global.clearSeenPosts()
+					onclick: async () => {
+						const seenPostsCount = Object.keys(Users.global.d.seenPosts).length;
+						await Users.global.clearSeenPosts();
+						new Ph_Toast(Level.success, `Cleared ${seenPostsCount} seen posts`, { timeout: 1500 });
+					}
 				}, "Clear seen posts"),
 				makeElement("button", { class: "button", onclick: () => Ph_Changelog.show() }, "Show Changelog"),
 				makeElement("button", {

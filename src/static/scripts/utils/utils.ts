@@ -2,10 +2,10 @@
  * Some general purpose utility funcitons
  */
 
-import Ph_Toast, { Level } from "../components/misc/toast/toast";
-import { PhEvents } from "../types/Events";
-import { RedditMultiInfo, RedditUserInfo, SubredditInfoBase } from "../types/redditTypes";
-import { fakeSubreddits } from "./consts";
+import Ph_Toast, {Level} from "../components/misc/toast/toast";
+import {PhEvents} from "../types/Events";
+import {RedditMultiInfo, RedditUserInfo, SubredditInfoBase} from "../types/redditTypes";
+import {fakeSubreddits} from "./consts";
 
 /** */
 function _numberToShort(num: number): { n: number, s?: string } {
@@ -133,7 +133,7 @@ export function throttle(func: (...any) => any, wait: number, options: { leading
 			context = args = null;
 		}
 	};
-	return function(..._: any) {
+	return function(this: any, ..._: any) {
 		const now = Date.now();
 		if (!previous && options.leading === false) previous = now;
 		const remaining = wait - (now - previous);
@@ -210,7 +210,7 @@ export async function sleep(ms: number): Promise<void> {
 }
 
 export function waitForFullScreenExit(): Promise<boolean> {
-	return new Promise<boolean>((resolve, reject) => {
+	return new Promise<boolean>((resolve) => {
 		if (!isFullscreen()) {
 			return resolve(false);
 		}
@@ -512,4 +512,8 @@ export function ensurePageLoaded(): Promise<void> {
 
 export function escRegex(strToEscape: string): string {
 	return strToEscape.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+export function capitalizeFirstLetter(str: string) {
+	return (str[0] ?? "").toUpperCase() + str.slice(1);
 }

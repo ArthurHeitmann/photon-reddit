@@ -1,5 +1,5 @@
-import Ph_Toast, { Level } from "../components/misc/toast/toast";
-import { photonWebVersion } from "./version";
+import Ph_Toast, {Level} from "../components/misc/toast/toast";
+import {photonWebVersion} from "./version";
 import VersionNumber from "./versionNumber";
 
 let pendingNewVersionNotification = false;
@@ -39,6 +39,7 @@ function showNewVersionToast() {
 
 function updateVersion() {
 	waitingServiceWorker.postMessage({ action: "updateAll" });
+	setTimeout(() => new Ph_Toast(Level.info, "This is taking longer than expected... Maybe try manually reloading"), 7500);
 }
 
 navigator.serviceWorker?.addEventListener("message", (e: MessageEvent) => {

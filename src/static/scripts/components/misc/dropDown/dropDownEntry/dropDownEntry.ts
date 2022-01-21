@@ -1,6 +1,6 @@
-import { isElementIn } from "../../../../utils/htmlStuff";
-import { hasParams } from "../../../../utils/utils";
-import Ph_DropDown, { ButtonLabel } from "../dropDown";
+import {isElementIn} from "../../../../utils/htmlStuff";
+import {hasParams} from "../../../../utils/utils";
+import Ph_DropDown, {ButtonLabel} from "../dropDown";
 import Ph_DropDownArea from "../dropDownArea/dropDownArea";
 
 export default class Ph_DropDownEntry extends HTMLElement {
@@ -64,7 +64,7 @@ export default class Ph_DropDownEntry extends HTMLElement {
 		}
 
 		if (param.nonSelectable !== true) {
-			this.addEventListener("click", e => {
+			this.addEventListener("click", () => {
 				// if inside this entry is a focused <input> ignore
 				if (document.activeElement?.tagName === "INPUT" && isElementIn(this, document.activeElement as HTMLElement))
 					return;
@@ -114,6 +114,8 @@ export default class Ph_DropDownEntry extends HTMLElement {
 	}
 }
 
+export type DropDownCallback = (data: DropDownActionData) => boolean | Promise<any> | void;
+
 export interface DropDownEntryParam {
 	labelImgUrl?: string,
 	/** innerText or HTMLElement of the label */
@@ -126,7 +128,7 @@ export interface DropDownEntryParam {
 	 * @param valueChain values of this and all previous entries
 	 * @return if true the dropdown should NOT be closed after the click, Promise is equal to false
 	 */
-	onSelectCallback?: (data: DropDownActionData) => boolean | Promise<any> | void,
+	onSelectCallback?: DropDownCallback,
 	/** When clicking this entry don't execute an action, instead show the next nested drop down */
 	nestedEntries?: DropDownEntryParam[],
 	/** if true --> this entry will not be clickable */

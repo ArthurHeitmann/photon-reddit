@@ -1,12 +1,12 @@
-import { PhEvents } from "../../../types/Events";
-import { nonDraggableElement } from "../../../utils/htmlStatics";
-import { elementWithClassInTree } from "../../../utils/htmlStuff";
-import { bufferedMouseLeave, deepClone, makeElement, sleep } from "../../../utils/utils";
-import { PhotonSettings } from "../../global/photonSettings/photonSettings";
-import Ph_Toast, { Level } from "../../misc/toast/toast";
+import {PhEvents} from "../../../types/Events";
+import {nonDraggableElement} from "../../../utils/htmlStatics";
+import {elementWithClassInTree} from "../../../utils/htmlStuff";
+import {bufferedMouseLeave, deepClone, makeElement, sleep} from "../../../utils/utils";
+import {PhotonSettings} from "../../global/photonSettings/photonSettings";
+import Ph_Toast, {Level} from "../../misc/toast/toast";
 import Users from "../../multiUser/userManagement";
-import Ph_FabElement, { FabElementSize } from "./fabElement/fabElement";
-import { defaultFabPresets, initialDefaultFabPresets } from "./fabElementConfig";
+import Ph_FabElement, {FabElementSize} from "./fabElement/fabElement";
+import {defaultFabPresets, initialDefaultFabPresets} from "./fabElementConfig";
 
 interface LayerConfiguration {
 	distance: number;
@@ -38,9 +38,9 @@ export default class Ph_Fab extends HTMLElement {
 				this.toggleEditing();
 			}
 		}, [
-			nonDraggableElement(makeElement("img", { "src": "/img/logo.png", class: "bg", "draggable": "false" }) as HTMLImageElement),
-			nonDraggableElement(makeElement("img", { "src": "/img/edit.svg", class: "edit start", "draggable": "false" }) as HTMLImageElement),
-			nonDraggableElement(makeElement("img", { "src": "/img/check.svg", class: "edit end", "draggable": "false" }) as HTMLImageElement),
+			nonDraggableElement(makeElement("img", { "src": "/img/logo.png", alt: "FAB", class: "bg", "draggable": "false" }) as HTMLImageElement),
+			nonDraggableElement(makeElement("img", { "src": "/img/edit.svg", alt: "edit", class: "edit start", "draggable": "false" }) as HTMLImageElement),
+			nonDraggableElement(makeElement("img", { "src": "/img/check.svg", alt: "save", class: "edit end", "draggable": "false" }) as HTMLImageElement),
 		]));
 
 		const addElementButton = new Ph_FabElement(null, "/img/add.svg", this.addElement.bind(this), -45, 3.75, FabElementSize.small);

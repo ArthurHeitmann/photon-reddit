@@ -1,4 +1,4 @@
-import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager";
+import {pushLinkToHistoryComb} from "../../../historyState/historyStateManager";
 import {
 	$class,
 	$css,
@@ -7,10 +7,10 @@ import {
 	enableMainPointerEvents,
 	enableMainScroll
 } from "../../../utils/htmlStatics";
-import { hasHTML } from "../../../utils/utils";
+import {hasHTML} from "../../../utils/utils";
 import Ph_Header from "../../global/header/header";
 import Ph_UserDropDown from "../../global/userDropDown/userDropDown";
-import Ph_Toast, { Level } from "../../misc/toast/toast";
+import Ph_Toast, {Level} from "../../misc/toast/toast";
 import Users from "../../multiUser/userManagement";
 
 type textPosition = "TL" | "TR" | "BL" | "BR";
@@ -202,11 +202,11 @@ const tutorialDescription: TutorialDescription = {
 			},
 		},
 		{
-			highlightElementSelector: "ph-header .feedSorter",
+			highlightElementSelector: "ph-header .feedSpecific .dropDown",
 			updateHighlightForMs: 300,
 			displayText: [ "Sort subreddits and posts" ],
-			beginAction: () => $css("ph-header .feedSpecific .feedSorter .dropDownButton")[0].click(),
-			endAction: () => $css("ph-header .feedSpecific .feedSorter .dropDownButton")[0].click(),
+			beginAction: () => $css("ph-header .feedSpecific .dropDownButton")[0].click(),
+			endAction: () => $css("ph-header .feedSpecific .dropDownButton")[0].click(),
 		},
 		{
 			highlightElementSelector: null,

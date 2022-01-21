@@ -93,6 +93,14 @@
 		border-radius: vars.$border-radius;
 		@extend %shadow-diffuse;
 
+		&.isHidden {
+			visibility: hidden;
+		}
+
+		&.remove {
+			display: none;
+		}
+
 		.backgroundLink {
 			position: absolute;
 			top: 0;

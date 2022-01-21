@@ -1,25 +1,27 @@
-import Ph_DropDown, { DirectionX, DirectionY } from "../../scripts/components/misc/dropDown/dropDown";
+import Ph_DropDown, {DirectionX, DirectionY} from "../../scripts/components/misc/dropDown/dropDown";
 import {
 	DropDownActionData,
 	DropDownEntryParam
 } from "../../scripts/components/misc/dropDown/dropDownEntry/dropDownEntry";
-import { $class, $css, $id, escHTML } from "../../scripts/utils/htmlStatics";
-import { numberToShort } from "../../scripts/utils/utils";
+import {$class, $css, $id, escHTML} from "../../scripts/utils/htmlStatics";
+import {numberToShort} from "../../scripts/utils/utils";
 
-let timeFrame = 1000 * 60 * 60 * 24;
-const timeFrameLabels = [
-	["hour", 1000 * 60 * 60],
-	["day",  1000 * 60 * 60 * 24],
-	["week", 1000 * 60 * 60 * 24 * 7],
-	["month",1000 * 60 * 60 * 24 * 30],
-	["year", 1000 * 60 * 60 * 24 * 365],
+const timeFrameConfig = [
+	["hour", 1000 * 60 * 60, 12],
+	["day",  1000 * 60 * 60 * 24, 12],
+	["week", 1000 * 60 * 60 * 24 * 7, 14],
+	["month",1000 * 60 * 60 * 24 * 30, 30],
+	["year", 1000 * 60 * 60 * 24 * 365, 52],
 ];
+let timeFrame = timeFrameConfig[1][1];
+let resolution = timeFrameConfig[1][2];
 let timeFrameIndicator: HTMLElement;
 
 function setTimeFrame(data: DropDownActionData) {
-	const millis = data.valueChain[0] as number;
-	timeFrame = millis;
-	timeFrameIndicator.innerText = timeFrameLabels.find(value => value[1] === millis)[0].toString();
+	const config = data.valueChain[0] as any[];
+	timeFrame = config[1];
+	resolution = config[2];
+	timeFrameIndicator.innerText = timeFrameConfig.find(value => value[1] === timeFrame)[0].toString();
 	loadUniqueClients();
 	loadEventsGraph();
 	loadPopularPaths();
@@ -32,7 +34,6 @@ async function loadUniqueClients() {
 }
 
 async function loadEventsGraph() {
-	const resolution = 15;
 	const r = await fetch(`/data/events?timeFrame=${timeFrame}&resolution=${resolution}`);
 	const uniqueClients: number[] = await r.json();
 
@@ -96,9 +97,9 @@ window.addEventListener("load", () => {
 	timeFrameIndicator.className = "timeFrameIndicator";
 	timeFrameIndicator.innerText = "day";
 	$id("optionsRow").append(new Ph_DropDown(
-		timeFrameLabels.map(label => ( <DropDownEntryParam> {
+		timeFrameConfig.map(label => ( <DropDownEntryParam> {
 			label: label[0],
-			value: label[1],
+			value: label,
 			onSelectCallback: setTimeFrame
 		})),
 		"Time frame",
@@ -108,5 +109,5 @@ window.addEventListener("load", () => {
 	));
 
 	// @ts-ignore
-	setTimeFrame( { valueChain: [timeFrame] });
+	setTimeFrame( { valueChain: [timeFrameConfig[1]] });
 });

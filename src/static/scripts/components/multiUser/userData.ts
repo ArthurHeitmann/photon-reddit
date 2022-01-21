@@ -38,7 +38,6 @@ export default class UserData extends DataAccessor<_UserData> {
 	multireddits = new MultiManager();
 	name: string;
 	inboxUnreadIds: Set<string> = new Set();
-	isLockOwner = false;
 	isGuest: boolean;
 
 	constructor(name: string) {

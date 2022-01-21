@@ -1,14 +1,17 @@
-import { hasParams } from "../../../../utils/utils";
+import {hasParams} from "../../../../utils/utils";
 import Ph_DropDown from "../dropDown";
-import Ph_DropDownEntry, { DropDownEntryParam } from "../dropDownEntry/dropDownEntry";
+import Ph_DropDownEntry, {DropDownEntryParam} from "../dropDownEntry/dropDownEntry";
 
 /**
  * Contains one level of drop down entries
  */
 export default class Ph_DropDownArea extends HTMLElement {
-	parentEntry: Ph_DropDownEntry = null;
-	isExpanded = false;
-	cancelMenuFuncRef: (e) => void;
+	private parentEntry: Ph_DropDownEntry = null;
+	private isExpanded = false;
+	private cancelMenuFuncRef: (e) => void;
+	private isInitialized = false;
+	private params: DropDownEntryParam[] = [];
+	private dropdown: Ph_DropDown;
 
 	constructor(entryParams: DropDownEntryParam[], dropDown: Ph_DropDown, parentEntry?: Ph_DropDownEntry) {
 		super();
@@ -20,18 +23,57 @@ export default class Ph_DropDownArea extends HTMLElement {
 
 		if (parentEntry)
 			this.parentEntry = parentEntry;
-
-		this.setEntries(entryParams, dropDown);
+		this.params = entryParams;
+		this.dropdown = dropDown;
 	}
 
-	setEntries(entryParams: DropDownEntryParam[], dropDown: Ph_DropDown) {
+	setEntries(entryParams: DropDownEntryParam[]) {
+		this.params = entryParams;
+		if (this.isInitialized)
+			this.initializeParams(entryParams);
+	}
+
+	addEntries(entryParams: DropDownEntryParam[]) {
+		this.params.push(...entryParams);
+		if (this.isInitialized) {
+			for (const param of entryParams)
+				this.initializeParam(param);
+		}
+	}
+
+	removeParam(entryParam: DropDownEntryParam) {
+		const paramIndex = this.params.findIndex(p => p === entryParam);
+		if (paramIndex === -1)
+			return;
+		this.params.splice(paramIndex, 1);
+		if (this.isInitialized)
+			this.children[paramIndex].remove();
+	}
+
+	private initializeParams(entryParams: DropDownEntryParam[]) {
 		this.innerText = "";
 
 		for (const param of entryParams) {
 			if (!param)
 				continue;
-			this.appendChild(new Ph_DropDownEntry(param, dropDown, this, this.parentEntry));
+			this.appendChild(new Ph_DropDownEntry(param, this.dropdown, this, this.parentEntry));
 		}
+	}
+
+	private initializeParam(entryParam: DropDownEntryParam) {
+		this.innerText = "";
+		if (!entryParam)
+			return;
+		this.appendChild(new Ph_DropDownEntry(entryParam, this.dropdown, this, this.parentEntry));
+	}
+
+	private checkInitialization() {
+		if (this.isInitialized)
+			return;
+
+		this.initializeParams(this.params);
+		this.isInitialized = true;
+		this.dropdown = null;
 	}
 
 	toggleMenu() {
@@ -42,6 +84,8 @@ export default class Ph_DropDownArea extends HTMLElement {
 	}
 
 	showMenu() {
+		this.checkInitialization();
+
 		this.isExpanded = true;
 		this.classList.add("show");
 		this.classList.remove("remove");

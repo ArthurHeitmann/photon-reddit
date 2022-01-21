@@ -17,6 +17,7 @@ export interface ImgurContent {
 	type: ImgurContentType,
 	link: string,
 	preview?: string,
+	heightHint?: number,
 	caption: string
 }
 
@@ -24,6 +25,7 @@ function makeContentData(data): ImgurContent {
 	const content: ImgurContent = {
 		type: undefined,
 		link: undefined,
+		heightHint: data.height,
 		caption: data.description || ""
 	};
 	if (/(^video\/)/.test(data.type) || /(^image\/gif)/.test(data.type) && data.mp4) {
@@ -54,10 +56,17 @@ export async function getImgurContent(link: string): Promise<ImgurContent[]> {
 		]
 	}
 	const response = await fetch(`https://api.imgur.com/3/${linkType}/${id}`, options);
-	const data = await response.json();
+	let data: any;
+	try {
+		data = await response.json();
+	} catch (e) {
+		return [];
+	}
 
-	if ("images" in data.data)
-		return data.data.images.map(img => makeContentData(img));
+	if (data["status"] === 500 && data["success"] === false)
+		return [];
+	else if ("images" in data.data)
+		return data.data.images.map((img) => makeContentData(img));
 	else
-		return [ makeContentData(data.data) ];
+		return [makeContentData(data.data)];
 }

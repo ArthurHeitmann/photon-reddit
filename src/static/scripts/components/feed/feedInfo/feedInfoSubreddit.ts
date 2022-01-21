@@ -14,13 +14,13 @@ import {
 	SubredditModerator,
 	SubredditRule
 } from "../../../types/redditTypes";
-import { emojiFlagsToImages, escHTML } from "../../../utils/htmlStatics";
-import { linksToSpa } from "../../../utils/htmlStuff";
-import { getSubredditIconUrl, makeElement, numberToShort } from "../../../utils/utils";
-import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown";
-import { DropDownActionData, DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry";
+import {emojiFlagsToImages, escHTML} from "../../../utils/htmlStatics";
+import {linksToSpa} from "../../../utils/htmlStuff";
+import {getSubredditIconUrl, makeElement, numberToShort} from "../../../utils/utils";
+import Ph_DropDown, {DirectionX, DirectionY} from "../../misc/dropDown/dropDown";
+import {DropDownActionData, DropDownEntryParam} from "../../misc/dropDown/dropDownEntry/dropDownEntry";
 import Ph_Flair from "../../misc/flair/flair";
-import Ph_Toast, { Level } from "../../misc/toast/toast";
+import Ph_Toast, {Level} from "../../misc/toast/toast";
 import Users from "../../multiUser/userManagement";
 import Ph_FeedInfo from "./feedInfo";
 
@@ -193,7 +193,7 @@ export default class Ph_FeedInfoSubreddit extends Ph_FeedInfo<AllSubData> {
 		linksToSpa(rules);
 		const createdDate = new Date(this.loadedInfo.data.created_utc * 1000);
 		const miscText = makeElement("div", {}, [
-			makeElement("div", { "data-tooltip": createdDate.toString }, `Created: ${createdDate.toDateString()}`),
+			makeElement("div", { "data-tooltip": createdDate.toString() }, `Created: ${createdDate.toDateString()}`),
 			makeElement("div", {}, "Moderators:"),
 			...this.loadedInfo.data.mods.map(mod => makeElement("div", {},[
 				makeElement("a", { href: `/user/${mod.name}` }, mod.name)]))]

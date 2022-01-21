@@ -1,26 +1,28 @@
+"use strict";
+
 /**
  * Entrypoint
  *
- * This file gets loaded from index.html and imports all other files
+ * This file gets loaded from index.html and imports all the other files
  */
 
-import { AuthState, checkAuthOnPageLoad, checkTokenRefresh } from "./auth/auth";
+import {AuthState, checkAuthOnPageLoad, checkTokenRefresh} from "./auth/auth";
 import Ph_Header from "./components/global/header/header";
-import Ph_Toast, { Level } from "./components/misc/toast/toast";
+import Ph_Toast, {Level} from "./components/misc/toast/toast";
 import Users from "./components/multiUser/userManagement";
 import Ph_Changelog from "./components/photon/changelog/changelog";
 import Ph_Tutorial from "./components/photon/tutorial/tutorial";
-import { pushLinkToHistorySep } from "./historyState/historyStateManager";
+import {pushLinkToHistorySep} from "./historyState/historyStateManager";
 import ViewsStack from "./historyState/viewsStack";
-import { PhEvents } from "./types/Events";
-import { isFirefoxEtpBlocking } from "./utils/browserFeatures";
-import { loginSubredditFullName, loginSubredditName } from "./utils/consts";
-import { $css, $id } from "./utils/htmlStatics";
-import { linksToSpa } from "./utils/htmlStuff";
+import {PhEvents} from "./types/Events";
+import {isFirefoxEtpBlocking} from "./utils/browserFeatures";
+import {loginSubredditFullName, loginSubredditName} from "./utils/consts";
+import {$css, $id} from "./utils/htmlStatics";
+import {linksToSpa} from "./utils/htmlStuff";
 import "./utils/sideEffectImports";
-import { extractHash, extractPath, extractQuery, makeElement } from "./utils/utils";
-import { photonWebVersion } from "./utils/version";
-import { setWaitingServiceWorker } from "./utils/versionManagement";
+import {extractHash, extractPath, extractQuery, makeElement} from "./utils/utils";
+import {photonWebVersion} from "./utils/version";
+import {setWaitingServiceWorker} from "./utils/versionManagement";
 import VersionNumber from "./utils/versionNumber";
 
 async function init(): Promise<void> {

@@ -218,3 +218,7 @@
 		}
 	}
 }
+
+main.pinned {
+	transform: translateY(vars.$header-height);
+}
