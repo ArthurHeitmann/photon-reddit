@@ -1,6 +1,17 @@
-export const photonVersion = "1.0.5";		/// <change version script>
+export const photonVersion = "1.1.0";		/// <change version script>
 
 export const photonChangelog = {
+	"1.1.0": {
+		"New": [
+			"Reworked infinite scrolling feed",
+			"When loading new posts, old posts won't be completely removed",
+			"This should fix scroll position jumping",
+			"And maybe improve performance a bit"
+		],
+		"Fixed": [
+			"Many small changes & fixes"
+		],
+	},
 	"1.0.5": {
 		"Fixed": [
 			"Fixed some old gfycat videos not working",
