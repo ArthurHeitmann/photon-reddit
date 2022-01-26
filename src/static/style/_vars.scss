@@ -12,6 +12,8 @@
 	--primary-contrast: #e65d5d;
 	--image-height-limited: 70vh;
 	--border-color: rgb(128 128 128 / 14%);
+	--v-widthM: 50rem;
+	--v-widthL: 60rem;
 }
 
 /** default background color */
@@ -41,9 +43,9 @@ $primary-transparent: #f07f7f80;
 /** view state width in portrait */
 $widthP: calc(100vw - 3.4rem);
 /** view state width in landscape */
-$widthM: min(50rem, calc(100vw - 6rem));
+$widthM: min(var(--v-widthM), calc(100vw - 6rem));
 /** view state width+ in landscape */
-$widthL: min(60rem, calc(100vw - 6rem));
+$widthL: min(var(--v-widthL), calc(100vw - 6rem));
 $link-color: #7da3f9;
 $border-color: var(--border-color);
 $border-heavy-color: rgb(128 128 128 / 22%);

@@ -138,6 +138,8 @@ export function disableMainScroll() {
 		document.body.style.overflow = "hidden";
 		mainScrollbarWidth = document.body.offsetWidth - initialWidth;
 	}
+	else
+		document.body.style.overflow = "hidden";
 	document.body.style.marginRight = `${mainScrollbarWidth}px`;
 }
 

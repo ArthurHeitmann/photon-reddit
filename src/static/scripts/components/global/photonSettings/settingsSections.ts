@@ -71,6 +71,8 @@ export const getSettingsSections = (): SettingsSection[] => [
 		settings: [
 			new BooleanSetting("loadInlineMedia", "Expand media previews", "Expand previews for links with media (e.g. imgur.com/..., reddit.com/.../.png).", SettingsApi.Photon),
 			new NumberSetting({ allowRange: [0, Number.MAX_SAFE_INTEGER] }, "imageLimitedHeight", "Max media height", "Set the maximum height for images/videos in % of screen height. Set height to \"0\" to disable height limits.", SettingsApi.Photon),
+			new NumberSetting({ allowRange: [10, 200], allowFloats: true }, "feedWidth", "Posts feed width", "Width of posts in your feed. (Also used for messages, comments, etc.) (Unit is absolute)", SettingsApi.Photon),
+			new NumberSetting({ allowRange: [10, 200], allowFloats: true }, "postAndCommentsWidth", "Comments view width", "Width when viewing a posts comments. (Unit is absolute)", SettingsApi.Photon),
 			new BooleanSetting("displayRedditEmojis", "Display Reddit Emojis", "", SettingsApi.Photon),
 			new BooleanSetting("firstShowControlBar", "Initially show bottom bar", "Initially show or hide controls bar on the bottom of images and videos.", SettingsApi.Photon),
 			new BooleanSetting("enableFab", "Enable FAB", "Enable Floating Action Button (bottom left corner).", SettingsApi.Photon),

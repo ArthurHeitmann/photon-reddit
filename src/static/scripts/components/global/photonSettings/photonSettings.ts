@@ -54,6 +54,8 @@ export interface PhotonSettings {
 	hidePostLeftBar?: boolean,
 	hideCrosspostInfo?: boolean,
 	hideSubredditMiniIcon?: boolean,
+	feedWidth?: number
+	postAndCommentsWidth?: number
 }
 
 // default config
@@ -86,7 +88,9 @@ export const defaultSettings: PhotonSettings = {
 	hidePostTopInfo: false,
 	hidePostLeftBar: false,
 	hideCrosspostInfo: false,
-	hideSubredditMiniIcon: false
+	hideSubredditMiniIcon: false,
+	feedWidth: 50,
+	postAndCommentsWidth: 60
 };
 
 /** Stores and manages global settings */

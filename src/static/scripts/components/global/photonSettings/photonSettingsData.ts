@@ -1,7 +1,7 @@
-import { RedditPreferences } from "../../../types/redditTypes";
-import { editableTimeStrToMs, makeElement, timeMsToEditableTimeStr } from "../../../utils/utils";
+import {RedditPreferences} from "../../../types/redditTypes";
+import {editableTimeStrToMs, makeElement, timeMsToEditableTimeStr} from "../../../utils/utils";
 import Users from "../../multiUser/userManagement";
-import { defaultSettings, PhotonSettings } from "./photonSettings";
+import {defaultSettings, PhotonSettings} from "./photonSettings";
 
 export interface SettingsSection {
 	name: string,
@@ -18,6 +18,7 @@ export enum SettingsApi {
 	Photon, Reddit
 }
 
+export type PhotonSettingsKey = keyof PhotonSettings;
 export type SettingsKey = keyof PhotonSettings | keyof RedditPreferences;
 
 export abstract class SettingConfig {
