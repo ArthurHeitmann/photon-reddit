@@ -220,6 +220,8 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 
 	private async checkIfEnoughPostsVisible() {
 		await sleep(500);
+		if (this.listingStream.hasReachedEnd())
+			return;
 		if (this.childElementCount === 0)
 			return;
 		if (this.scrollHeight > window.innerHeight)
