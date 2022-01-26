@@ -112,7 +112,7 @@
 			filter: initial;
 		}
 
-		a:not(.backgroundLink), .content > * {
+		a:not(.backgroundLink), .content > *, .time {
 			position: relative;
 		}
 	}
