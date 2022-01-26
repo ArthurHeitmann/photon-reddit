@@ -1,4 +1,4 @@
-import {isElementIn} from "../../../../utils/htmlStuff";
+import {isElementIn, linksToSpa} from "../../../../utils/htmlStuff";
 import {hasParams} from "../../../../utils/utils";
 import Ph_DropDown, {ButtonLabel} from "../dropDown";
 import Ph_DropDownArea from "../dropDownArea/dropDownArea";
@@ -87,6 +87,8 @@ export default class Ph_DropDownEntry extends HTMLElement {
 				}
 			});
 		}
+
+		linksToSpa(this);
 	}
 
 	connectedCallback() {
