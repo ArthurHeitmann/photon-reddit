@@ -5,7 +5,14 @@ import {PhEvents} from "../../../types/Events";
 import {RedditPostData} from "../../../types/redditTypes";
 import {$tagAr, escHTML} from "../../../utils/htmlStatics";
 import {classInElementTree, isElementIn} from "../../../utils/htmlStuff";
-import {getFullscreenElement, hasParams, isFullscreen, isJsonEqual, secondsToVideoTime} from "../../../utils/utils";
+import {
+	clamp,
+	getFullscreenElement,
+	hasParams,
+	isFullscreen,
+	isJsonEqual,
+	secondsToVideoTime
+} from "../../../utils/utils";
 import Ph_ControlsBar, {ControlsLayoutSlots} from "../../misc/controlsBar/controlsBar";
 import {DropDownActionData} from "../../misc/dropDown/dropDownEntry/dropDownEntry";
 import Ph_ProgressBar from "../../misc/progressBar/progressBar";
@@ -400,7 +407,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 		// progress bar
 		this.controls.progressBar = new Ph_ProgressBar(true);
 		this.controls.progressBar.addEventListener(PhEvents.drag, (e: CustomEvent) => {
-			this.video.seekTo(e.detail * this.video.getMaxTime());
+			this.video.seekTo(clamp(e.detail * this.video.getMaxTime(), 0, this.video.getMaxTime() - 0.001));
 		});
 		this.controls.progressBar.addEventListener("wheel", e => {
 			e.preventDefault();

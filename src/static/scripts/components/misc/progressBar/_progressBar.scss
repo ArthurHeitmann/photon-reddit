@@ -5,6 +5,10 @@
 	position: relative;
 	transition: all .25s ease;
 
+	&.isDragging {
+		transition: all .125s ease;
+	}
+
 	> .progress {
 		height: 100%;
 		width: calc(100% * var(--progress));
@@ -16,6 +20,6 @@
 		top: 0;
 		width: 100%;
 		height: 100%;
-		transform: scaleY(2.5);
+		transform: scaleY(1.5);
 	}
 }

@@ -1,5 +1,5 @@
-import { PhEvents } from "../../../types/Events";
-import { hasParams, throttle } from "../../../utils/utils";
+import {PhEvents} from "../../../types/Events";
+import {clamp, hasParams, throttle} from "../../../utils/utils";
 
 /**
  * A progress bar that can optionally be changed/dragged by the user
@@ -29,25 +29,25 @@ export default class Ph_ProgressBar extends HTMLElement {
 	}
 
 	private dragStart(e) {
+		this.classList.add("isDragging");
 		this.sendEvent(e);
-		this.addEventListener("mousemove", this.dragMoveRef);
-		this.addEventListener("mouseup", this.dragEndRef);
-		this.addEventListener("mouseleave", this.dragEndRef);
+		window.addEventListener("mousemove", this.dragMoveRef);
+		window.addEventListener("mouseup", this.dragEndRef);
 	}
 
 	private dragMove(e) {
 		this.sendEvent(e);
 	}
 
-	private endDrag(e) {
-		this.removeEventListener("mousemove", this.dragMoveRef);
-		this.removeEventListener("mouseup", this.dragEndRef);
-		this.removeEventListener("mouseleave", this.dragEndRef);
+	private endDrag() {
+		this.classList.remove("isDragging");
+		window.removeEventListener("mousemove", this.dragMoveRef);
+		window.removeEventListener("mouseup", this.dragEndRef);
 	}
 
 	private sendEvent(e: MouseEvent) {
 		const bounds = this.getBoundingClientRect();
-		const progress = (e.clientX - bounds.left) / this.offsetWidth;
+		const progress = clamp((e.clientX - bounds.left) / this.offsetWidth, 0, 1);
 		this.dispatchEvent(new CustomEvent(PhEvents.drag, {detail: progress}));
 		this.setProgress(progress);
 	}

@@ -29,6 +29,7 @@ $post-padding: 1.75rem;
 $border-radius: math.div($post-padding, 2);
 $controls-height: 3rem;
 $controls-bg: #121212ad;
+$progress-bar-hover-scale: 3;
 /** primary accent */
 $primary: var(--primary);
 /** equal to $primary; should be used like rgba($primary-var, 0.5) */

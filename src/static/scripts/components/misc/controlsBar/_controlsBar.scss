@@ -49,9 +49,9 @@
 		height: .25rem;
 		cursor: pointer;
 
-		&:hover {
+		&:hover, &.isDragging {
 			background: vars.$primary-transparent;
-			transform: scaleY(3);
+			transform: scaleY(vars.$progress-bar-hover-scale);
 
 			.accessibilitySpacer {
 				transform: scaleY(2);
@@ -66,6 +66,8 @@
 
 	&, > .slot {
 		> button, > * > button {
+			display: flex;
+
 			> :is(img, svg), > .imgWrapper > :is(img, svg) {
 				height: 2.5rem;
 				width: 2.5rem;
