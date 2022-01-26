@@ -8,7 +8,7 @@ import {
 	SubredditExpanded,
 	SubredditInfoBase
 } from "../../../types/redditTypes";
-import { linksToSpa } from "../../../utils/htmlStuff";
+import {linksToSpa} from "../../../utils/htmlStuff";
 import {
 	getMultiIconUrl,
 	getSubredditIconUrl,
@@ -50,7 +50,7 @@ export default class Ph_FeedLink extends HTMLElement {
 			case "t5":	// subreddit
 				this.name = feedData.data.display_name;
 				this.url = feedData.data.url;
-				if (showSubscribers) {
+				if (showSubscribers && feedData.data.subscribers !== null) {
 					linkText.append(
 						makeElement("div", { class: "subName" }, `r/${feedData.data.display_name}`),
 						makeElement("div", { class: "subCount" },
@@ -67,7 +67,7 @@ export default class Ph_FeedLink extends HTMLElement {
 					imageWrapper.innerHTML = `<img src="${subIconImg}" alt="sub">`
 				else
 					imageWrapper.classList.add("default");
-				imageWrapper.classList.toggle("nsfw", blurNsfw && ((feedData.data as SubredditDetails).over18 ?? (feedData.data as SubredditExpanded).over_18));
+				imageWrapper.classList.toggle("nsfw", blurNsfw && Boolean((feedData.data as SubredditDetails).over18 ?? (feedData.data as SubredditExpanded).over_18));
 				this.classList.add("subreddit");
 				break;
 			case "t2":	// user
