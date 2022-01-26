@@ -1,7 +1,7 @@
-import { PhEvents } from "../../../types/Events";
-import { ensurePageLoaded } from "../../../utils/utils";
+import {PhEvents} from "../../../types/Events";
+import {ensurePageLoaded} from "../../../utils/utils";
 import Users from "../../multiUser/userManagement";
-import { PhotonSettings } from "./photonSettings";
+import {PhotonSettings} from "./photonSettings";
 import {SettingsKey} from "./photonSettingsData";
 
 const settingToCssClassMap: { [setting in SettingsKey]?: string } = {
@@ -10,6 +10,7 @@ const settingToCssClassMap: { [setting in SettingsKey]?: string } = {
 	hidePostFlairs: "hidePostFlairs",
 	hidePostLeftBar: "hidePostLeftBar",
 	hideCrosspostInfo: "hideCrosspostInfo",
+	hideSubredditMiniIcon: "hideSubredditMiniIcon",
 }
 
 window.addEventListener(PhEvents.settingsChanged, (e: CustomEvent) => handleSettings(e.detail));
@@ -34,4 +35,7 @@ function setClassOnBody(className: string, state: boolean, invert: boolean = fal
 	}
 }
 
-ensurePageLoaded().then(() => handleSettings(Users.global.d.photonSettings));
+window.addEventListener("load", () => {
+	Users.ensureDataHasLoaded().then(() => handleSettings(Users.global.d.photonSettings));
+	ensurePageLoaded().then(() => handleSettings(Users.global.d.photonSettings));
+});

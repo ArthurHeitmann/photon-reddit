@@ -225,6 +225,7 @@ export interface RedditPostData extends RedditApiData {
 	selftext: string,
 	send_replies: boolean,
 	spoiler: boolean,
+	sr_detail?: SubredditInfoBase,
 	stickied: boolean,
 	subreddit_id: string,
 	subreddit_name_prefixed: string,

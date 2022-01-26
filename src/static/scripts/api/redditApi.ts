@@ -2,10 +2,10 @@
  * For communication with reddit
  */
 
-import { checkTokenRefresh } from "../auth/auth";
-import { initiateLogin } from "../auth/loginHandler";
+import {checkTokenRefresh} from "../auth/auth";
+import {initiateLogin} from "../auth/loginHandler";
 import Ph_Flair from "../components/misc/flair/flair";
-import Ph_Toast, { Level } from "../components/misc/toast/toast";
+import Ph_Toast, {Level} from "../components/misc/toast/toast";
 import Users from "../components/multiUser/userManagement";
 import {
 	FlairApiData,
@@ -17,7 +17,8 @@ import {
 	RedditSubredditObj,
 	RedditUserObj
 } from "../types/redditTypes";
-import { isObjectEmpty, splitPathQuery, throttle } from "../utils/utils";
+import {isObjectEmpty, splitPathQuery, throttle} from "../utils/utils";
+import {SortPostsOrder, UserSection} from "../types/misc";
 
 /**
  * Use this to make requests to reddit
@@ -52,9 +53,10 @@ async function oauth2Request(pathAndQuery, params: string[][] | any, options: Re
 	if (params instanceof Array) {
 		parameters = new URLSearchParams(query);
 		useUrlParams = true;
-		for (const param of params) {
+		if (isPostsFeed(path))
+			params.push(["sr_detail", "true"])
+		for (const param of params)
 			parameters.append(param[0], param[1]);
-		}
 		parameters.append("raw_json", "1");
 	}
 	if (fetchOptions.method && fetchOptions.method.toUpperCase() !== "GET") {
@@ -92,6 +94,25 @@ function fixUrl(url: string) {
 	if (new RegExp(`^/(u|user)/${Users.current.name}/m/([^/]+)`, "i").test(url))					// private multireddits have CORS problems
 		url = url.replace(/^\/user\/[^/]+\/m\//, "/me/m/")									// /user/thisUser/m/... --> /me/m/...
 	return url;
+}
+
+const isFrontpageRegex = new RegExp(`^(\/(${Object.values(SortPostsOrder).join("|")}))?/?$`, "i");
+const isSubredditRegex = new RegExp(`^\/r\/[^#/?]+(\/(${Object.values(SortPostsOrder).join("|")}))?/?$`, "i");
+const isUserRegex = new RegExp(`^\/user\/[^#/?]+(\/(${Object.values(UserSection).join("|")}))?/?$`, "i");
+const isSearchRegex = new RegExp(`^(\/r\/[^#/?]+)?\/search/?$`, "i");
+const isMultiRegex = new RegExp(`^\/(me|user\/[^#/?]+)\/m\/[^#?/]+(\/(${Object.values(SortPostsOrder).join("|")}))?/?$`, "i");
+const isPostRegex = new RegExp(`^(\/r\/[^#/?]+)?/comments/\\w+`, "i");
+const isDuplicatesRegex = new RegExp(`^(\/r\/[^#/?]+)?/duplicates/\\w+?`, "i");
+function isPostsFeed(path: string): boolean {
+	return (
+		isFrontpageRegex.test(path) ||
+		isSubredditRegex.test(path) ||
+		isUserRegex.test(path) ||
+		isSearchRegex.test(path) ||
+		isMultiRegex.test(path) ||
+		isPostRegex.test(path) ||
+		isDuplicatesRegex.test(path)
+	)
 }
 
 function rateLimitCheck(headers: Headers) {

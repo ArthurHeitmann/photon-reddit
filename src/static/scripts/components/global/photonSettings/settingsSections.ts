@@ -29,7 +29,8 @@ export const getSettingsSections = (): SettingsSection[] => [
 				{ text: "Hide NSFW", value: NsfwPolicy.never },
 				{ text: "Blur NSFW", value: NsfwPolicy.covered },
 				{ text: "Show NSFW", value: NsfwPolicy.always },
-			], "nsfwPolicy", "NSFW post visibility", "NSFW post visibility when viewing in feed. 1. Completely hidden 2. Blur + Warning on post 3. Normal visibility", SettingsApi.Photon)
+			], "nsfwPolicy", "NSFW post visibility", "NSFW post visibility when viewing in feed. 1. Completely hidden 2. Blur + Warning on post 3. Normal visibility", SettingsApi.Photon),
+			new BooleanSetting("hideSubredditMiniIcon", "Hide small subreddit icon", "Enable to Hide a small icon next to the subreddit name", SettingsApi.Photon),
 		]
 	},
 	{

@@ -470,8 +470,8 @@ export function isFakeSubreddit(subreddit: string): boolean {
 	return (new RegExp(fakeSubreddits.join("|"), "i")).test(subreddit)
 }
 
-export function getSubredditIconUrl(subData: SubredditInfoBase): string {
-	return subData.community_icon || subData.icon_img || "/img/rSlash.svg";
+export function getSubredditIconUrl(subData: SubredditInfoBase, useFallback = false): string | null {
+	return subData.community_icon || subData.icon_img || (useFallback ? "/img/rSlash.svg" : null);
 }
 
 export function getUserIconUrl(userData: RedditUserInfo): string {

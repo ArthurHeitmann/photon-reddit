@@ -53,6 +53,7 @@ export interface PhotonSettings {
 	hidePostTopInfo?: boolean,
 	hidePostLeftBar?: boolean,
 	hideCrosspostInfo?: boolean,
+	hideSubredditMiniIcon?: boolean,
 }
 
 // default config
@@ -85,6 +86,7 @@ export const defaultSettings: PhotonSettings = {
 	hidePostTopInfo: false,
 	hidePostLeftBar: false,
 	hideCrosspostInfo: false,
+	hideSubredditMiniIcon: false
 };
 
 /** Stores and manages global settings */

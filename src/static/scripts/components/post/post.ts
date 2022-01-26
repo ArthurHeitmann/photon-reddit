@@ -21,6 +21,7 @@ import {
 	escRegex,
 	getFullscreenElement,
 	getPostIdFromUrl,
+	getSubredditIconUrl,
 	hasParams,
 	isObjectEmpty,
 	makeElement,
@@ -183,17 +184,18 @@ export default class Ph_Post extends Ph_FeedItem {
 		else if (postData.data.distinguished === "admin") {
 			userAdditionClasses += " admin";
 		}
+		const subredditIconUrl = postData.data.sr_detail && getSubredditIconUrl(postData.data.sr_detail, false);
 		const mainPart = document.createElement("div");
 		mainPart.className = "w100";
 		mainPart.innerHTML = `
 			<div class="header">
 				<div class="top flex">
 					${ this.data.stickied ? `<img class="pinned" src="/img/pin.svg" alt="pinned" draggable="false">` : "" }
-					<span>Posted in</span>
 					<a href="/${escADQ(postData.data.subreddit_name_prefixed)}" class="subreddit">
+						${subredditIconUrl ? `<img src="${escADQ(subredditIconUrl)}" alt="${postData.data.subreddit}" class="srIcon">` : ""}
 						<span>${escHTML(postData.data.subreddit_name_prefixed)}</span>
 					</a>
-					<span>by</span>
+					<span>Posted by</span>
 					<a href="/user/${escADQ(postData.data.author)}" class="user${userAdditionClasses}">
 						<span>u/${escHTML(postData.data.author)}</span>
 						${ postData.data.author_cakeday ? `<img src="/img/cake.svg" class="cakeDay" alt="cake day">` : "" }

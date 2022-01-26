@@ -189,6 +189,18 @@
 				display: flex;
 				gap: .5rem;
 			}
+
+			.subreddit {
+				display: flex;
+				align-items: center;
+			}
+
+			.srIcon {
+				height: 1rem;
+				border-radius: 50%;
+				margin-right: 0.25rem;
+				transform: scale(1.15);
+			}
 		}
 
 		.title {
@@ -386,4 +398,8 @@
 	.post.isInFeed .miniPost {
 		display: none;
 	}
+}
+
+body.hideSubredditMiniIcon .post .header .srIcon {
+	display: none;
 }
