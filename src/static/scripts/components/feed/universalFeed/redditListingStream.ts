@@ -44,7 +44,8 @@ export default class RedditListingStream<T = RedditApiObj> {
 	async setNewUrl(url: string, _isSecondsAttempt = false) {
 		this.url = url;
 		try {
-			const initialData = await redditApiRequest(url, [], false);
+			const initialData = await redditApiRequest(url, [], false) as RedditListingObj<T>;
+			this.afterId = initialData.data.after;
 			this.onItemsCleared?.();
 			this.onNewItems?.(initialData.data.children);
 		} catch (err) {
