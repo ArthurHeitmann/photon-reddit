@@ -123,6 +123,7 @@ export const getSettingsSections = (): SettingsSection[] => [
 		settings: [
 			new BooleanSetting("emptyAreaClickGoesBack", "Click empty area to go back", "", SettingsApi.Photon),
 			new BooleanSetting("isIncognitoEnabled", "Incognito mode", "Randomize the tab title & url.", SettingsApi.Photon),
+			new BooleanSetting("beforeExitConfirmation", "Require exit confirmation", "Display warning when trying to leave page", SettingsApi.Photon),
 			new TimeSetting({ allowRange: [1, Number.MAX_SAFE_INTEGER] }, "clearFeedCacheAfterMs", "Subreddit info cache duration", "", SettingsApi.Photon),
 			new TimeSetting({ allowRange: [1, Number.MAX_SAFE_INTEGER] }, "userShortCacheTTLMs", "Short Cache Duration", "For your subscriptions", SettingsApi.Photon),
 			new TimeSetting({

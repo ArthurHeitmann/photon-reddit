@@ -20,6 +20,7 @@ import Ph_Wiki from "../components/wiki/wiki";
 import {$id} from "../utils/htmlStatics";
 import {deepClone, exitFullscreen, extractHash, isFullscreen, makeElement, splitPathQuery} from "../utils/utils";
 import ViewsStack from "./viewsStack";
+import Users from "../components/multiUser/userManagement";
 
 ViewsStack.setNextIsReplace();
 
@@ -53,10 +54,10 @@ window.addEventListener("popstate", (e: PopStateEvent) => {
 	}
 });
 
-// TODO Make this an option
-// window.onbeforeunload = () => {
-// 	return "Are you sure you want to Exit?";
-// };
+window.onbeforeunload = () => {
+	if (Users.global.d.photonSettings.beforeExitConfirmation)
+		return "Are you sure you want to Exit?";
+};
 
 /** Whether a new history state should be inserted before or after the current one */
 export enum PushType {
@@ -135,10 +136,10 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 			newTabTitle = `${postHint.post.data.title} - Photon`;
 		}
 		// result is a posts comments or post crosspost list
-		else if (requestData instanceof Array) {		// --> [0]: post [1]: comments/posts
-			if (requestData[1].data.children[0]?.kind === "t3")
+		else if (requestData instanceof Array) {
+			if (requestData[1].data.children[0]?.kind === "t3")		// --> [0]: post [1]: post, [...]: post
 				stateLoader.finishWith(new Ph_PostCrossposts(requestData));
-			else
+			else													// --> [0]: post [1]: comments
 				stateLoader.finishWith(new Ph_PostAndComments(requestData as PostCommentsListings));
 			newTabTitle = `${requestData[0].data.children[0].data.title} - Photon`;
 		}
@@ -150,7 +151,9 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 		else if (requestData.kind === "wikipage") {
 			stateLoader.finishWith(new Ph_Wiki(requestData));
 			newTabTitle = `${path.match(/r\/[^/?#]+/i)[0]} Wiki - Photon`;
-		} else if (requestData["message"] && requestData["reason"]) {
+		}
+		// some sort of error
+		else if (requestData["message"] && requestData["reason"]) {
 			stateLoader.finishWith(makeElement("div", null, [
 				makeElement("p", null, requestData["message"]),
 				makeElement("p", null, requestData["reason"]),

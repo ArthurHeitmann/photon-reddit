@@ -55,7 +55,8 @@ export interface PhotonSettings {
 	hideCrosspostInfo?: boolean,
 	hideSubredditMiniIcon?: boolean,
 	feedWidth?: number
-	postAndCommentsWidth?: number
+	postAndCommentsWidth?: number,
+	beforeExitConfirmation?: boolean,
 }
 
 // default config
@@ -90,7 +91,8 @@ export const defaultSettings: PhotonSettings = {
 	hideCrosspostInfo: false,
 	hideSubredditMiniIcon: false,
 	feedWidth: 50,
-	postAndCommentsWidth: 60
+	postAndCommentsWidth: 60,
+	beforeExitConfirmation: false,
 };
 
 /** Stores and manages global settings */
