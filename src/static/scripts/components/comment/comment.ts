@@ -7,7 +7,7 @@ import {
 	VoteDirection,
 	voteDirectionFromLikes
 } from "../../api/redditApi";
-import { PhEvents } from "../../types/Events";
+import {PhEvents} from "../../types/Events";
 import {
 	RedditCommentData,
 	RedditCommentObj,
@@ -15,8 +15,8 @@ import {
 	RedditMessageObj,
 	RedditMoreCommentsObj
 } from "../../types/redditTypes";
-import { emojiFlagsToImages } from "../../utils/htmlStatics";
-import { addRedditEmojis, elementWithClassInTree, linksToSpa } from "../../utils/htmlStuff";
+import {emojiFlagsToImages} from "../../utils/htmlStatics";
+import {addRedditEmojis, elementWithClassInTree, linksToSpa} from "../../utils/htmlStuff";
 import {
 	hasParams,
 	isObjectEmpty,
@@ -28,12 +28,12 @@ import {
 import Ph_CommentsFeed from "../feed/commentsFeed/commentsFeed";
 import Ph_Readable from "../feed/feedItem/readable/readable";
 import Ph_AwardsInfo from "../misc/awardsInfo/awardsInfo";
-import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown";
-import Ph_DropDownEntry, { DropDownActionData, DropDownEntryParam } from "../misc/dropDown/dropDownEntry/dropDownEntry";
+import Ph_DropDown, {DirectionX, DirectionY} from "../misc/dropDown/dropDown";
+import Ph_DropDownEntry, {DropDownActionData, DropDownEntryParam} from "../misc/dropDown/dropDownEntry/dropDownEntry";
 import Ph_Flair from "../misc/flair/flair";
 import Ph_CommentForm from "../misc/markdownForm/commentForm/commentForm";
 import Ph_MarkdownForm from "../misc/markdownForm/markdownForm";
-import Ph_Toast, { Level } from "../misc/toast/toast";
+import Ph_Toast, {Level} from "../misc/toast/toast";
 import Ph_VoteButton from "../misc/voteButton/voteButton";
 import Users from "../multiUser/userManagement";
 import Ph_Post from "../post/post";
@@ -144,13 +144,13 @@ export default class Ph_Comment extends Ph_Readable {
 		this.appendChild(actionBar);
 		// vote up button
 		this.voteUpButton = new Ph_VoteButton(true);
-		this.voteUpButton.addEventListener("click", e => this.vote(VoteDirection.up));
+		this.voteUpButton.addEventListener("click", () => this.vote(VoteDirection.up));
 		actionBar.appendChild(this.voteUpButton);
 		// current votes
 		actionBar.append(this.currentUpvotes = makeElement("div", { class: "upvotes" }));
 		// vote down button
 		this.voteDownButton = new Ph_VoteButton(false);
-		this.voteDownButton.addEventListener("click", e => this.vote(VoteDirection.down));
+		this.voteDownButton.addEventListener("click", () => this.vote(VoteDirection.down));
 		actionBar.appendChild(this.voteDownButton);
 		this.setVotesState(this.currentVoteDirection);
 		// additional actions drop down
@@ -181,7 +181,7 @@ export default class Ph_Comment extends Ph_Readable {
 		actionBar.appendChild(moreDropDown);
 		// comment collapser
 		const commentCollapser = makeElement("div", { class: "commentCollapser" }, [makeElement("div")]);
-		commentCollapser.addEventListener("click", e => this.collapse(e));
+		commentCollapser.addEventListener("click", () => this.collapse());
 		actionBar.appendChild(commentCollapser);
 
 		// special user distinctions
@@ -261,12 +261,12 @@ export default class Ph_Comment extends Ph_Readable {
 		linksToSpa(this, true);
 	}
 
-	collapse(e: MouseEvent) {
+	collapse() {
+		const shouldAdjustScroll = this.getBoundingClientRect().top < 0;
 		this.classList.toggle("isCollapsed");
 
-		const top = this.getBoundingClientRect().top;
-		if (top < 0)
-			document.scrollingElement.scrollBy(0, top);
+		if (shouldAdjustScroll)
+			document.scrollingElement.scrollBy(0, this.getBoundingClientRect().top);
 	}
 
 	showReplyForm() {
