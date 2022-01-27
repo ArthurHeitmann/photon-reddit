@@ -1,6 +1,17 @@
-export const photonVersion = "1.1.0";		/// <change version script>
+export const photonVersion = "1.1.1";		/// <change version script>
 
 export const photonChangelog = {
+	"1.1.1": {
+		"New": [
+			"Added subreddit message when viewing a private subreddit",
+			"Added small icon next to subreddit name (can be disabled in the settings)",
+			"Added setting to adjust width of posts",
+			"Added setting for optional before exit confirmation",
+		],
+		"Fixed": [
+			"Many small changes & fixes"
+		],
+	},
 	"1.1.0": {
 		"New": [
 			"Reworked infinite scrolling feed",
