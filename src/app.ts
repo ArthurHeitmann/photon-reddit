@@ -3,17 +3,18 @@ import compression from "compression";
 import express from "express";
 import RateLimit from "express-rate-limit";
 import helmet from "helmet";
-import { analyticsRouter } from "./serverScripts/analytics";
-import { __dirname, basicRateLimitConfig, port, } from "./serverScripts/consts";
-import { photonApiRouter } from "./serverScripts/photonApi";
-import { cacheControl, checkSslAndWww, safeExc } from "./serverScripts/utils";
+import {analyticsRouter} from "./serverScripts/analytics";
+import {__dirname, basicRateLimitConfig, port,} from "./serverScripts/consts";
+import {photonApiRouter} from "./serverScripts/photonApi";
+import {cacheControl, checkSslAndWww, safeExc} from "./serverScripts/utils";
 
 const app = express();
 // middlewares
 
 app.use(compression())
 app.use(helmet({
-	contentSecurityPolicy: false
+	contentSecurityPolicy: false,
+	crossOriginEmbedderPolicy: false,
 }));
 app.use(safeExc(checkSslAndWww));
 app.use(safeExc(cacheControl));
