@@ -1,8 +1,8 @@
-import { getMySubs, redditInfo, subscribe } from "../api/redditApi";
-import Ph_Toast, { Level } from "../components/misc/toast/toast";
-import { RedditSubredditObj } from "../types/redditTypes";
-import { UserSubscriptions } from "./UserSubscriptions";
-import { stringSortComparer } from "./utils";
+import {getMySubs, redditInfo, subscribe} from "../api/redditApi";
+import Ph_Toast, {Level} from "../components/misc/toast/toast";
+import {RedditSubredditObj} from "../types/redditTypes";
+import {UserSubscriptions} from "./UserSubscriptions";
+import {stringSortComparer} from "./utils";
 
 export interface SubsChangeEvent {
 	subreddit: RedditSubredditObj,
@@ -48,7 +48,7 @@ export class SubredditManager extends UserSubscriptions<RedditSubredditObj, Subs
 		if (!r)
 			return false;
 		if (isSubscribed) {
-			const subInfo = await redditInfo(subredditFullName) as RedditSubredditObj;
+			const subInfo = await redditInfo({ fullName: subredditFullName }) as RedditSubredditObj;
 			if (!subInfo)
 				return false;
 			this.userContent.push(subInfo);

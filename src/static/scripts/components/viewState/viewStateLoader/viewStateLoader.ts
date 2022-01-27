@@ -1,8 +1,8 @@
 import ViewsStack from "../../../historyState/viewsStack";
-import { HistoryState } from "../../../types/misc";
-import { hasParams } from "../../../utils/utils";
+import {HistoryState} from "../../../types/misc";
+import {hasParams} from "../../../utils/utils";
 import Users from "../../multiUser/userManagement";
-import { Ph_ViewState } from "../viewState";
+import {Ph_ViewState} from "../viewState";
 
 /**
  * A Ph_ViewState with a loading screen
@@ -20,7 +20,7 @@ export default class Ph_ViewStateLoader extends Ph_ViewState {
 		this.appendChild(elem);
 	}
 
-	error() {
+	error(errorInfo?: HTMLElement) {
 		this.innerHTML = `
 			<div>
 				<h2>Oh no an error occurred!</h2>
@@ -34,6 +34,8 @@ export default class Ph_ViewStateLoader extends Ph_ViewState {
 				</ul>
 			</div>
 		`;
+		if (errorInfo)
+			this.children[0].append(errorInfo);
 	}
 
 	onBackAreaClick(e: MouseEvent) {

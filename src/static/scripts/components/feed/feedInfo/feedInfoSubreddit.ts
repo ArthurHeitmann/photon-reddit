@@ -5,6 +5,7 @@ import {
 	getSubModerators,
 	getSubRules,
 	getSubUserFlairs,
+	redditInfo,
 	setUserFlair
 } from "../../../api/redditApi";
 import {
@@ -16,7 +17,7 @@ import {
 } from "../../../types/redditTypes";
 import {emojiFlagsToImages, escHTML} from "../../../utils/htmlStatics";
 import {linksToSpa} from "../../../utils/htmlStuff";
-import {getSubredditIconUrl, makeElement, numberToShort} from "../../../utils/utils";
+import {getSubredditIconUrl, makeElement, numberToShort, stringSortComparer} from "../../../utils/utils";
 import Ph_DropDown, {DirectionX, DirectionY} from "../../misc/dropDown/dropDown";
 import {DropDownActionData, DropDownEntryParam} from "../../misc/dropDown/dropDownEntry/dropDownEntry";
 import Ph_Flair from "../../misc/flair/flair";
@@ -27,22 +28,28 @@ import Ph_FeedInfo from "./feedInfo";
 interface AllSubData extends SubredditDetails {
 	rules: SubredditRule[],
 	mods: SubredditModerator[],
-	flairs: FlairApiData[]
+	flairs: FlairApiData[],
+	errorReason?: string
+	errorFallbackText?: string
 }
 
 export default class Ph_FeedInfoSubreddit extends Ph_FeedInfo<AllSubData> {
 	 async loadInfo() {
 		let feedAbout: RedditSubredditObj;
-		let rules: SubredditRule[];
-		let mods: SubredditModerator[];
+		let rules: SubredditRule[] = [];
+		let mods: SubredditModerator[] = [];
 		let flairs: FlairApiData[] = [];
+		let errorReason: string;
+		let errorFallbackText: string;
 		try {
 			feedAbout = await getSubInfo(this.feedUrl);
-			if (feedAbout["error"] || !(feedAbout.kind && feedAbout.data))
-				throw `Invalid about response ${JSON.stringify(feedAbout)}`;
+			if (feedAbout["error"] || !(feedAbout.kind && feedAbout.data)) {
+				errorReason = feedAbout["reason"];
+				throw Error(`Invalid about response ${JSON.stringify(feedAbout)}`);
+			}
 			const tmpRules = await getSubRules(this.feedUrl);
 			if (tmpRules["error"] || !tmpRules.rules)
-				throw `Invalid rules response ${JSON.stringify(tmpRules)}`;
+				throw Error(`Invalid rules response ${JSON.stringify(tmpRules)}`);
 			rules = tmpRules.rules;
 			let tmpMods = await getSubModerators(this.feedUrl);
 			if (tmpMods["error"] || !(tmpMods.kind === "UserList" && tmpMods.data))
@@ -51,15 +58,20 @@ export default class Ph_FeedInfoSubreddit extends Ph_FeedInfo<AllSubData> {
 			if (Users.current.d.auth.isLoggedIn)
 				flairs = await getSubUserFlairs(this.feedUrl);
 		} catch (e) {
+			const subFallbackInfo = (await redditInfo({ subreddit: this.feedUrl.match(/r\/(.+)/)[1] })) as RedditSubredditObj;
+			errorFallbackText = subFallbackInfo?.data?.public_description;
+			feedAbout.data = subFallbackInfo.data;
 			new Ph_Toast(Level.error, "Error getting subreddit info");
 			console.error(`Error getting subreddit info for ${this.feedUrl}`);
 			console.error(e);
 		}
 		this.loadedInfo.data = {
 			...feedAbout.data as SubredditDetails,
-			rules: rules,
-			mods: mods,
-			flairs: flairs,
+			rules,
+			mods,
+			flairs,
+			errorReason,
+			errorFallbackText
 		};
 		this.loadedInfo.lastUpdatedMsUTC = Date.now();
 		this.saveInfo();
@@ -165,10 +177,10 @@ export default class Ph_FeedInfoSubreddit extends Ph_FeedInfo<AllSubData> {
 		))
 			.$class("dropDownButton")[0].classList.add("transparentButtonAlt");
 		overviewBar.insertAdjacentHTML("beforeend", `
-			<div data-tooltip="${this.loadedInfo.data.subscribers}">
+			<div data-tooltip="${this.loadedInfo.data.subscribers ?? ""}">
 				Subscribers: ${numberToShort(this.loadedInfo.data.subscribers)}
 			</div>
-			<div data-tooltip="${this.loadedInfo.data.active_user_count}">
+			<div data-tooltip="${this.loadedInfo.data.active_user_count ?? ""}">
 				Online: ${numberToShort(this.loadedInfo.data.active_user_count)} 
 				${this.loadedInfo.data.subscribers > 0
 					? `&nbsp; — &nbsp;${(this.loadedInfo.data.active_user_count / this.loadedInfo.data.subscribers * 100).toFixed(1)} %`
@@ -178,14 +190,20 @@ export default class Ph_FeedInfoSubreddit extends Ph_FeedInfo<AllSubData> {
 		headerBar.appendChild(overviewBar);
 		const title = document.createElement("h1");
 		title.className = "title";
-		title.innerText = this.loadedInfo.data.title || this.loadedInfo.data.display_name;
+		title.innerText = this.loadedInfo.data.title || this.loadedInfo.data.display_name || this.feedUrl;
 		this.appendChild(title);
 
 		const description = document.createElement("div");
-		description.innerHTML = this.loadedInfo.data.description_html;
+		description.innerHTML = this.loadedInfo.data.description_html ?? "";
+		if (this.loadedInfo.data.errorReason) {
+			description.append(
+				makeElement("h3", {}, `Error Reason: ${this.loadedInfo.data.errorReason}`),
+				makeElement("p", {}, this.loadedInfo.data.errorFallbackText),
+			);
+		}
 		emojiFlagsToImages(description);
 		const publicDescription = document.createElement("div");
-		publicDescription.innerHTML = this.loadedInfo.data.public_description_html;
+		publicDescription.innerHTML = this.loadedInfo.data.public_description_html ?? "";
 		emojiFlagsToImages(publicDescription);
 		linksToSpa(publicDescription);
 		const rules = document.createElement("div");
@@ -195,8 +213,10 @@ export default class Ph_FeedInfoSubreddit extends Ph_FeedInfo<AllSubData> {
 		const miscText = makeElement("div", {}, [
 			makeElement("div", { "data-tooltip": createdDate.toString() }, `Created: ${createdDate.toDateString()}`),
 			makeElement("div", {}, "Moderators:"),
-			...this.loadedInfo.data.mods.map(mod => makeElement("div", {},[
-				makeElement("a", { href: `/user/${mod.name}` }, mod.name)]))]
+			...this.loadedInfo.data.mods
+				.sort((m1, m2) => stringSortComparer(m1.name, m2.name))
+				.map(mod => makeElement("div", {},[
+					makeElement("a", { href: `/user/${mod.name}` }, mod.name)]))]
 		);
 		linksToSpa(miscText);
 		this.appendChild(this.makeSwitchableBar([

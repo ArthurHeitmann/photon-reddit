@@ -2,9 +2,9 @@ import express from "express";
 import RateLimit from "express-rate-limit";
 import fetch from "node-fetch";
 import youtube_dl from "youtube-dl-exec";
-import { basicRateLimitConfig, youtube_dlRateLimitConfig } from "./consts";
-import { safeExc, safeExcAsync } from "./utils";
-import { photonChangelog, photonVersion } from "./version";
+import {basicRateLimitConfig, youtube_dlRateLimitConfig} from "./consts";
+import {safeExc, safeExcAsync} from "./utils";
+import {photonChangelog, photonVersion} from "./version";
 
 export const photonApiRouter = express.Router();
 
@@ -109,5 +109,3 @@ photonApiRouter.get("/isRedditApiAvailable", safeExcAsync(async (req, res) => {
 		lastApiStatus = false;
 	}
 }));
-
-

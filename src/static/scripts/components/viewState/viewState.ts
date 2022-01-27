@@ -36,7 +36,7 @@ export abstract class Ph_ViewState extends Ph_PhotonBaseElement {
 	}
 
 	abstract finishWith(result: any);
-	abstract error();
+	abstract error(errorInfo?: HTMLElement);
 
 	onRemoved() {
 		const cleanupElements = this.$css("[requiresCleanup]") as HTMLCollectionOf<Ph_PhotonBaseElement>;

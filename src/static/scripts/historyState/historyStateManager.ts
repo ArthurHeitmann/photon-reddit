@@ -124,7 +124,10 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 	// make request to reddit
 	const requestData = await redditApiRequest(path, params, false);
 	if (requestData["error"]) {
-		stateLoader.error();
+		if (requestData["reason"] && /^\/r\/[^#?/]+(\/\w+)?\/?$/i.test(path))
+			stateLoader.error(new Ph_FeedInfoPage(path));
+		else
+			stateLoader.error();
 		new Ph_Toast(Level.error, "Error making request to reddit");
 		throw `Error making request to reddit (${path}, ${JSON.stringify(params)})`;
 	}

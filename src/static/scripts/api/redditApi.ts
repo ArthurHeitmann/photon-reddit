@@ -187,8 +187,15 @@ export async function comment(fullname: string, text: string): Promise<RedditJso
 	], true, { method: "POST" });
 }
 
-export async function redditInfo(fullName: string): Promise<RedditApiObj> {
-	return (await redditApiRequest("/api/info", [["id", fullName]], false)).data.children[0];
+export async function redditInfo(options: { fullName?: string, subreddit?: string }): Promise<RedditApiObj> {
+	if (("fullName" in options) === ("subreddit" in options))
+		throw "only fullName or subreddit is allowed!";
+	const params: string[][] = [];
+	if (options.fullName)
+		params.push(["id", options.fullName]);
+	if (options.subreddit)
+		params.push(["sr_name", options.subreddit]);
+	return (await redditApiRequest("/api/info", params, false)).data.children[0];
 }
 
 export async function edit(fullname: string, bodyMd: string) {
