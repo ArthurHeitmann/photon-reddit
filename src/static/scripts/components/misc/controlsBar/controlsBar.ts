@@ -48,11 +48,10 @@ export default class Ph_ControlsBar extends HTMLElement {
 	addShowHideListeners(contentElem: HTMLElement) {
 		this.contentElement = contentElem;
 
-		contentElem.addEventListener("mouseenter", this.showControls.bind(this));
-		contentElem.addEventListener("mousemove", this.restartHideTimeout.bind(this));
-		this.addEventListener("mouseenter", this.clearHideTimeout.bind(this))
-		this.addEventListener("mouseleave",
-				e => this.contentElement.contains(e.relatedTarget as HTMLElement) || this.restartHideTimeout());
+		contentElem.addEventListener("mouseenter", this.onMouseEnterContent.bind(this));
+		contentElem.addEventListener("mousemove", this.onMouseMoveContent.bind(this));
+		this.addEventListener("mouseenter", this.onMouseEnterThis.bind(this))
+		this.addEventListener("mouseleave", this.onMouseLeaveThis.bind(this));
 	}
 
 	setupSlots(elements: HTMLElement[]) {
@@ -127,13 +126,34 @@ export default class Ph_ControlsBar extends HTMLElement {
 		return spacer;
 	}
 
-	showControls() {
-		this.parentElement.classList.add("controlsVisible");
+	private onMouseEnterContent() {
+		this.showControls();
+		this.setHideTimeout();
+	}
 
+	private onMouseMoveContent() {
+		this.restartHideTimeout();
+	}
+
+	private onMouseEnterThis() {
+		this.showControls();
+		this.clearHideTimeout();
+	}
+
+	private onMouseLeaveThis() {
+		this.restartHideTimeout();
+	}
+
+	private showControls() {
+		this.parentElement.classList.add("controlsVisible");
+	}
+
+	private setHideTimeout() {
+		this.clearHideTimeout();
 		this.hideTimeout = setTimeout(this.hideControls.bind(this), 2000);
 	}
 
-	restartHideTimeout() {
+	private restartHideTimeout() {
 		if (!this.parentElement.classList.contains("controlsVisible")) {
 			this.clearHideTimeout();
 			this.showControls();
@@ -145,7 +165,7 @@ export default class Ph_ControlsBar extends HTMLElement {
 		this.hideTimeout = setTimeout(this.hideControls.bind(this), 2000);
 	}
 
-	clearHideTimeout() {
+	private clearHideTimeout() {
 		if (this.hideTimeout !== null) {
 			clearTimeout(this.hideTimeout);
 			this.hideTimeout = null;
