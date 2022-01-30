@@ -50,6 +50,14 @@ export default class Ph_DropDownArea extends HTMLElement {
 			this.children[paramIndex].remove();
 	}
 
+	updateParam(entryParam: DropDownEntryParam) {
+		const paramIndex = this.params.findIndex(p => p === entryParam);
+		if (paramIndex === -1)
+			return;
+		if (this.isInitialized)
+			(this.children[paramIndex] as Ph_DropDownEntry)?.updateParam(entryParam);
+	}
+
 	private initializeParams(entryParams: DropDownEntryParam[]) {
 		this.innerText = "";
 

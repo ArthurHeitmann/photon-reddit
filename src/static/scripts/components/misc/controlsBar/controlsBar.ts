@@ -81,6 +81,8 @@ export default class Ph_ControlsBar extends HTMLElement {
 			.filter(entry => Boolean(entry))
 			.filter(entry => !newElements.settingsEntriesCurrent
 				.find(curEntry => entry === curEntry));
+		for (const entry of newEntries)
+			entry["lastState"] = this.entryToString(entry);
 		newElements.settingsEntriesCurrent.push(...newEntries);
 		dropDownArea.addEntries(newEntries);
 		// remove old entries
@@ -94,6 +96,18 @@ export default class Ph_ControlsBar extends HTMLElement {
 				newElements.settingsEntriesCurrent.splice(entryI, 1);
 			dropDownArea.removeParam(entry);
 		}
+		// changed entries
+		const changedEntries = newElements.settingsEntries
+			.filter(entry => Boolean(entry))
+			.filter(entry => entry["lastState"] !== this.entryToString(entry));
+		for (const entry of changedEntries) {
+			dropDownArea.updateParam(entry);
+			entry["lastState"] = this.entryToString(entry);
+		}
+	}
+
+	private entryToString(entry: DropDownEntryParam): string {
+		return  JSON.stringify({ ...entry, lastState: null });
 	}
 
 	private replaceSlotElements(slot: HTMLElement, newElements: HTMLElement[]) {

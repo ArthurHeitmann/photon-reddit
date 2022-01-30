@@ -114,6 +114,16 @@ export default class Ph_DropDownEntry extends HTMLElement {
 			this.insertAdjacentElement("afterbegin", this.labelImg);
 		this.labelImg.style.setProperty("--img-url", `url("${url}")`);
 	}
+
+	updateParam(param: DropDownEntryParam) {
+		this.setLabel(param.label);
+		if (param.labelImgUrl)
+			this.setLabelImg(param.labelImgUrl)
+		if (this.nextDropDown && param.nestedEntries?.length > 0) {
+			for (const entry of param.nestedEntries)
+				this.nextDropDown.updateParam(entry);
+		}
+	}
 }
 
 export type DropDownCallback = (data: DropDownActionData) => boolean | Promise<any> | void;
@@ -134,7 +144,7 @@ export interface DropDownEntryParam {
 	/** When clicking this entry don't execute an action, instead show the next nested drop down */
 	nestedEntries?: DropDownEntryParam[],
 	/** if true --> this entry will not be clickable */
-	nonSelectable?: boolean
+	nonSelectable?: boolean,
 }
 
 export interface DropDownActionData {
