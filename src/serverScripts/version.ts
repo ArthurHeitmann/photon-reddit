@@ -1,6 +1,11 @@
-export const photonVersion = "1.1.1";		/// <change version script>
+export const photonVersion = "1.1.2";		/// <change version script>
 
 export const photonChangelog = {
+	"1.1.2": {
+		"Fixed": [
+			"Some small changes & fixes",
+		],
+	},
 	"1.1.1": {
 		"New": [
 			"Added subreddit message when viewing a private subreddit",
