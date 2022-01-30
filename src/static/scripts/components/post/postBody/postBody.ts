@@ -11,7 +11,7 @@ import Ph_PostText from "./postText/postText";
 export default class Ph_PostBody extends HTMLElement {
 	isInitialized = false;
 
-	constructor(postData: RedditPostData | undefined) {
+	constructor(postData: RedditPostData | undefined, preferSmallerPost = false) {
 		super();
 		if (!hasParams(arguments)) return;
 
@@ -19,17 +19,17 @@ export default class Ph_PostBody extends HTMLElement {
 		this.classList.add("aspect-ratio-16-9-wrapper");
 
 		if (postData)
-			this.init(postData);
+			this.init(postData, preferSmallerPost);
 	}
 
-	init(postData: RedditPostData) {
+	init(postData: RedditPostData, preferSmallerPost = false) {
 		if (!hasParams(arguments)) return;
 		if (this.isInitialized)
 			return;
 		this.isInitialized = true;
 		this.classList.remove("aspect-ratio-16-9-wrapper");
 
-		const postType = this.getPostType(postData);
+		const postType = this.getPostType(postData, preferSmallerPost);
 		switch (postType) {
 			case PostType.image:
 				this.makeImageBody(postData);
@@ -63,8 +63,10 @@ export default class Ph_PostBody extends HTMLElement {
 		linksToSpa(this, postType === PostType.text);
 	}
 
-	private getPostType(postData: RedditPostData): PostType {
-		if (postData.is_self)
+	private getPostType(postData: RedditPostData, preferSmallerPost): PostType {
+		if (preferSmallerPost)
+			return PostType.link;
+		else if (postData.is_self)
 			return PostType.text;
 		else if (Ph_MediaViewer.isUrlImgur(postData.url))
 			return PostType.imgur;
@@ -136,7 +138,7 @@ export default class Ph_PostBody extends HTMLElement {
 
 	private makeDefaultBody(postData: RedditPostData) {
 		this.classList.add("padded");
-		this.innerText = `Unknown post type ${this.getPostType(postData)}`;
+		this.innerText = `Unknown post type ${this.getPostType(postData, false)}`;
 	}
 }
 

@@ -41,27 +41,39 @@ import Ph_PostBody from "./postBody/postBody";
 import Ph_PostText from "./postBody/postText/postText";
 import PostDoubleLink from "./postDoubleLink/postDoubleLink";
 
+interface PostOptionalParams {
+	isInFeed?: boolean,
+	feedUrl?: string,
+	preferSmallerPost?: boolean
+}
+
 /**
  * A reddit post
  */
 export default class Ph_Post extends Ph_FeedItem {
-	actionBar: HTMLDivElement;
-	voteUpButton: Ph_VoteButton;
-	currentUpvotes: HTMLDivElement;
-	voteDownButton: Ph_VoteButton;
-	feedUrl: string;
-	cover: HTMLElement = null;
-	totalVotes: number;
-	currentVoteDirection: VoteDirection;
-	postBody: Ph_PostBody;
+	private actionBar: HTMLDivElement;
+	private voteUpButton: Ph_VoteButton;
+	private currentUpvotes: HTMLDivElement;
+	private voteDownButton: Ph_VoteButton;
+	private feedUrl: string;
+	private cover: HTMLElement = null;
+	private totalVotes: number;
+	private currentVoteDirection: VoteDirection;
+	private postBody: Ph_PostBody;
 	data: RedditPostData;
-	wasInitiallySeen: boolean;
-	becameVisibleAt: number;
-	doubleLink: PostDoubleLink = null;
-	haveFlairsLoaded = false;
-	postFlair: Ph_Flair;
+	private wasInitiallySeen: boolean;
+	private doubleLink: PostDoubleLink = null;
+	private haveFlairsLoaded = false;
+	private postFlair: Ph_Flair;
+	private preferSmallerPost: boolean;
 
-	constructor(postData: RedditPostObj, isInFeed: boolean, feedUrl?: string) {
+	constructor(postData: RedditPostObj, optionalParams: PostOptionalParams = {}) {
+		const {
+			isInFeed = false,
+			feedUrl = undefined,
+			preferSmallerPost = false,
+		} = optionalParams;
+
 		super(postData?.data.name, postData?.data.permalink, isInFeed);
 		if (!hasParams(arguments)) return;
 
@@ -73,6 +85,7 @@ export default class Ph_Post extends Ph_FeedItem {
 		this.totalVotes = postData.data.ups + -parseInt(this.currentVoteDirection);
 		this.feedUrl = feedUrl;
 		this.wasInitiallySeen = Users.global.hasPostsBeenSeen(this.data.name);
+		this.preferSmallerPost = preferSmallerPost;
 		this.classList.add("post");
 
 		if (isInFeed)
@@ -100,7 +113,7 @@ export default class Ph_Post extends Ph_FeedItem {
 		actionWrapper.append(this.voteDownButton);
 		this.setVotesState(this.currentVoteDirection);
 
-		this.postBody = new Ph_PostBody(undefined);
+		this.postBody = new Ph_PostBody(undefined, preferSmallerPost);
 		if (!isInFeed)
 			this.initPostBody();
 
@@ -308,7 +321,7 @@ export default class Ph_Post extends Ph_FeedItem {
 
 	initPostBody() {
 		try {
-			this.postBody.init(this.data);
+			this.postBody.init(this.data, this.preferSmallerPost);
 		}
 		catch (e) {
 			console.error(`Error making post for ${this.data.permalink}`);

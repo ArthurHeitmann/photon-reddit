@@ -570,7 +570,7 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 	private makeFeedItem(itemData: RedditApiObj, totalItemCount: number): Ph_FeedItem {
 		switch (itemData.kind) {
 			case "t3":
-				const post = new Ph_Post(itemData as RedditPostObj, true, this.requestUrl);
+				const post = new Ph_Post(itemData as RedditPostObj, { isInFeed: true, feedUrl: this.requestUrl});
 				this.postInitIntObs.observe(post);
 				this.postSeenIntObs.observe(post);
 				return post;

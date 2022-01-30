@@ -1,5 +1,5 @@
-import { RedditListingObj, RedditPostObj } from "../../../types/redditTypes";
-import { hasParams } from "../../../utils/utils";
+import {RedditListingObj, RedditPostObj} from "../../../types/redditTypes";
+import {hasParams} from "../../../utils/utils";
 import Ph_Post from "../post";
 
 export default class Ph_PostCrossposts extends HTMLElement {
@@ -9,12 +9,12 @@ export default class Ph_PostCrossposts extends HTMLElement {
 
 		this.classList.add("postAndComments");
 
-		const originalPost = new Ph_Post(data[0].data.children[0], false);
+		const originalPost = new Ph_Post(data[0].data.children[0], { preferSmallerPost: true });
 		this.appendChild(originalPost);
 
 		const crossposts = data[1].data.children;
 		for (const crosspost of crossposts) {
-			const p = new Ph_Post(crosspost, false);
+			const p = new Ph_Post(crosspost, { preferSmallerPost: true });
 			p.classList.add("inCrosspostList");
 			this.appendChild(p);
 		}

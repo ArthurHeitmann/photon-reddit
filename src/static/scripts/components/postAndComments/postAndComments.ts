@@ -1,21 +1,21 @@
-import { redditApiRequest } from "../../api/redditApi";
+import {redditApiRequest} from "../../api/redditApi";
 import ViewsStack from "../../historyState/viewsStack";
-import { PhEvents } from "../../types/Events";
-import { SortCommentsOrder, SortCommentsOrderNamed } from "../../types/misc";
-import { RedditCommentObj, RedditListingObj, RedditPostObj } from "../../types/redditTypes";
-import { getLoadingIcon } from "../../utils/htmlStatics";
-import { elementWithClassInTree } from "../../utils/htmlStuff";
-import { extractPath, extractQuery, hasHTML, hasParams } from "../../utils/utils";
+import {PhEvents} from "../../types/Events";
+import {SortCommentsOrder, SortCommentsOrderNamed} from "../../types/misc";
+import {RedditCommentObj, RedditListingObj, RedditPostObj} from "../../types/redditTypes";
+import {getLoadingIcon} from "../../utils/htmlStatics";
+import {elementWithClassInTree} from "../../utils/htmlStuff";
+import {extractPath, extractQuery, hasHTML, hasParams} from "../../utils/utils";
 import Ph_Comment from "../comment/comment";
 import Ph_CommentsFeed from "../feed/commentsFeed/commentsFeed";
-import { FeedType } from "../feed/feedInfo/feedInfo";
+import {FeedType} from "../feed/feedInfo/feedInfo";
 import FeedInfoFactory from "../feed/feedInfo/feedInfoFactory";
-import Ph_DropDown, { DirectionX, DirectionY } from "../misc/dropDown/dropDown";
-import { DropDownActionData } from "../misc/dropDown/dropDownEntry/dropDownEntry";
+import Ph_DropDown, {DirectionX, DirectionY} from "../misc/dropDown/dropDown";
+import {DropDownActionData} from "../misc/dropDown/dropDownEntry/dropDownEntry";
 import Ph_CommentForm from "../misc/markdownForm/commentForm/commentForm";
-import Ph_Toast, { Level } from "../misc/toast/toast";
+import Ph_Toast, {Level} from "../misc/toast/toast";
 import Ph_Post from "../post/post";
-import { Ph_ViewState } from "../viewState/viewState";
+import {Ph_ViewState} from "../viewState/viewState";
 
 export type PostCommentsListings = [RedditListingObj<RedditPostObj>, RedditListingObj<RedditCommentObj>];
 
@@ -52,7 +52,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 			this.post = postHint.post;
 		else {
 			try {
-				this.post = new Ph_Post(data[0].data.children[0], false);
+				this.post = new Ph_Post(data[0].data.children[0]);
 			} catch (e) {
 				console.error("Error making post in comments");
 				console.error(e);
