@@ -231,11 +231,15 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 					.then(sources => videoOut.init(new Ph_SimpleVideo(sources), true))
 					.catch(() => videoOut.init(null));
 				break;
+			case "media.giphy.com":
+			case "media1.giphy.com":
 			case "media2.giphy.com":
 			case "giphy.com":
-				const giphyId = url.match(/giphy\.com\/\w+\/(\w+)/)[1];		// gfycat.com/<id> or gfycat.com/something/<id> --> <id>
-				const giphyMp4 = `https://i.giphy.com/media/${giphyId}/giphy.mp4`;
-				videoOut.init(new Ph_SimpleVideo([{ src: giphyMp4, type: "video/mp4" }]));
+				const giphyId = url.match(/giphy\.com(\/\w+)?\/(\w+-)*(\w+)/)[3];		// gfycat.com/<id> or gfycat.com/name-of-gif-<id> or gfycat.com/something/<id> --> <id>
+				videoOut.init(new Ph_SimpleVideo([
+					{ src: `https://i.giphy.com/media/${giphyId}/giphy.mp4`, 		type: "video/mp4", lowerQualityAlternative: false, label: "Original" },
+					{ src: `https://i.giphy.com/media/${giphyId}/giphy-preview.mp4`,type: "video/mp4", lowerQualityAlternative: true,  label: "Preview" },
+				]));
 				break;
 			case "streamable.com":
 				getStreamableUrl(url).then(sources => {
