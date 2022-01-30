@@ -1,9 +1,9 @@
-import { initiateLogin } from "../../../auth/loginHandler";
-import { ViewChangeData } from "../../../historyState/viewsStack";
-import { PhEvents } from "../../../types/Events";
-import { SVGAnimateElement } from "../../../types/misc";
+import {initiateLogin} from "../../../auth/loginHandler";
+import {ViewChangeData} from "../../../historyState/viewsStack";
+import {PhEvents} from "../../../types/Events";
+import {SVGAnimateElement} from "../../../types/misc";
 import {$class, $tag} from "../../../utils/htmlStatics";
-import { hasHTML } from "../../../utils/utils";
+import {hasHTML} from "../../../utils/utils";
 import Ph_DropDownArea from "../../misc/dropDown/dropDownArea/dropDownArea";
 import Users from "../../multiUser/userManagement";
 import Ph_PhotonSettings from "../photonSettings/photonSettings";
@@ -61,17 +61,17 @@ export default class Ph_Header extends HTMLElement {
 			</div>
 			<div class="expander absolute w100">
 				<svg viewBox="0 0 1400 200" preserveAspectRatio="none">
-					<path d="M 0 0 v 100 h 500 c 100 0, 100 50, 200 50 s 100 -50, 200 -50 h500 v -100 z" class="filled" fill="var(--bg-color)" vector-effect="non-scaling-stroke">
-						<animate class="headerHideVisualizer" attributeName="d" dur="0.2s" fill="freeze" from="M 0 0 v 100 h 0 c 200 50, 600 50, 700 50 s 500 0, 700 -50 h 0 v -100 z" to="M 0 0 v 100 h 500 c 100 0, 100 50, 200 50 s 100 -50, 200 -50 h 500 v -100 z" begin="indefinite"></animate>
-						<animate class="headerShowVisualizer" attributeName="d" dur="0.2s" fill="freeze" from="M 0 0 v 100 h 500 c 100 0, 100 50, 200 50 s 100 -50, 200 -50 h500 v -100 z" to="M 0 0 v 100 h 0 c 200 50, 600 50, 700 50 s 500 0, 700 -50 h 0 v -100 z" begin="indefinite"></animate>
-						<animate class="headerPinnedBeginAnimation" attributeName="d" dur="0.2s" fill="freeze" from="M 0 0 v 100 h 0 c 200 50, 600 50, 700 50 s 500 0, 700 -50 h 0 v -100 z" to="M 0 0 v 100 h 500 c 100 0, 100 0, 200 0 s 100 0, 200 0 h 500 v -100 z" begin="indefinite"></animate>
-						<animate class="headerPinnedEndAnimation" attributeName="d" dur="0.2s" fill="freeze" from="M 0 0 v 100 h 500 c 100 0, 100 0, 200 0 s 100 0, 200 0 h 500 v -100 z" to="M 0 0 v 100 h 0 c 200 50, 600 50, 700 50 s 500 0, 700 -50 h 0 v -100 z" begin="indefinite"></animate>
+					<path d="M 0 0 v 100 h 500 c 100 0, 100 40, 200 40 s 100 -40, 200 -40 h500 v -100 z" class="filled" fill="var(--bg-color)" vector-effect="non-scaling-stroke">
+						<animate class="headerHideVisualizer" attributeName="d" dur="0.2s" fill="freeze" from="M 0 0 v 100 h 0 c 200 40, 600 40, 700 40 s 500 0, 700 -40 h 0 v -100 z" to="M 0 0 v 100 h 500 c 100 0, 100 40, 200 40 s 100-40, 200 -40 h 500 v -100 z" begin="indefinite"></animate>
+						<animate class="headerShowVisualizer" attributeName="d" dur="0.2s" fill="freeze" from="M 0 0 v 100 h 500 c 100 0, 100 40, 200 40 s 100-40, 200 -40 h500 v -100 z" to="M 0 0 v 100 h 0 c 200 40, 600 40, 700 40 s 500 0, 700 -40 h 0 v -100 z" begin="indefinite"></animate>
+						<animate class="headerPinnedBeginAnimation" attributeName="d" dur="0.2s" fill="freeze" from="M 0 0 v 100 h 0 c 200 40, 600 40, 700 40 s 500 0, 700 -40 h 0 v -100 z" to="M 0 0 v 100 h 500 c 100 0, 100 0, 200 0 s 100 0, 200 0 h 500 v -100 z" begin="indefinite"></animate>
+						<animate class="headerPinnedEndAnimation" attributeName="d" dur="0.2s" fill="freeze" from="M 0 0 v 100 h 500 c 100 0, 100 0, 200 0 s 100 0, 200 0 h 500 v -100 z" to="M 0 0 v 100 h 0 c 200 40, 600 40, 700 40 s 500 0, 700 -40 h 0 v -100 z" begin="indefinite"></animate>
 					</path>
-					<path d="M 0 100 h 500 c 100 0, 100 50, 200 50 s 100 -50, 200 -50 h 500" class="stroked" fill="none" stroke="#eeeeee" stroke-width="5" vector-effect="non-scaling-stroke">
-						<animate class="headerHideVisualizer" attributeName="d" dur="0.2s" fill="freeze" from="M 0 100 h 0 c 200 50, 600 50, 700 50 s 500 0, 700 -50 h 0" to="M 0 100 h 500 c 100 0, 100 50, 200 50 s 100 -50, 200 -50 h 500" begin="indefinite"></animate>
-						<animate class="headerShowVisualizer" attributeName="d" dur="0.2s" fill="freeze" from="M 0 100 h 500 c 100 0, 100 50, 200 50 s 100 -50, 200 -50 h 500" to="M 0 100 h 0 c 200 50, 600 50, 700 50 s 500 0, 700 -50 h 0" begin="indefinite"></animate>
-						<animate class="headerPinnedBeginAnimation" attributeName="d" dur="0.2s" fill="freeze" from="M 0 100 h 0 c 200 50, 600 50, 700 50 s 500 0, 700 -50 h 0" to="M 0 100 h 500 c 100 0, 100 0, 200 0 s 100 0, 200 0 h 500" begin="indefinite"></animate>
-						<animate class="headerPinnedEndAnimation" attributeName="d" dur="0.2s" fill="freeze" from="M 0 100 h 500 c 100 0, 100 0, 200 0 s 100 0, 200 0 h 500" to="M 0 100 h 0 c 200 50, 600 50, 700 50 s 500 0, 700 -50 h 0" begin="indefinite"></animate>
+					<path d="M 0 100 h 500 c 100 0, 100 40, 200 40 s 100-40, 200 -40 h 500" class="stroked" fill="none" stroke="#eeeeee" stroke-width="5" vector-effect="non-scaling-stroke">
+						<animate class="headerHideVisualizer" attributeName="d" dur="0.2s" fill="freeze" from="M 0 100 h 0 c 200 40, 600 40, 700 40 s 500 0, 700 -40 h 0" to="M 0 100 h 500 c 100 0, 100 40, 200 40 s 100-40, 200 -40 h 500" begin="indefinite"></animate>
+						<animate class="headerShowVisualizer" attributeName="d" dur="0.2s" fill="freeze" from="M 0 100 h 500 c 100 0, 100 40, 200 40 s 100-40, 200 -40 h 500" to="M 0 100 h 0 c 200 40, 600 40, 700 40 s 500 0, 700 -40 h 0" begin="indefinite"></animate>
+						<animate class="headerPinnedBeginAnimation" attributeName="d" dur="0.2s" fill="freeze" from="M 0 100 h 0 c 200 40, 600 40, 700 40 s 500 0, 700 -40 h 0" to="M 0 100 h 500 c 100 0, 100 0, 200 0 s 100 0, 200 0 h 500" begin="indefinite"></animate>
+						<animate class="headerPinnedEndAnimation" attributeName="d" dur="0.2s" fill="freeze" from="M 0 100 h 500 c 100 0, 100 0, 200 0 s 100 0, 200 0 h 500" to="M 0 100 h 0 c 200 40, 600 40, 700 40 s 500 0, 700 -40 h 0" begin="indefinite"></animate>
 					</path>
 				</svg>
 			</div>
@@ -104,7 +104,7 @@ export default class Ph_Header extends HTMLElement {
 		this.onWindowResize();
 		window.addEventListener("resize", this.onWindowResize.bind(this));
 
-		this.$class("collapser")[0].addEventListener("click", e =>
+		this.$class("collapser")[0].addEventListener("click", () =>
 			this.$class("actions")[0].classList.toggle("collapsed"));
 		const pinToggleButton = this.$class("pinToggleButton")[0] as HTMLButtonElement;
 		pinToggleButton.addEventListener("click", this.onPinnedToggle.bind(this));

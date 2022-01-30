@@ -219,6 +219,10 @@
 	}
 }
 
-main.pinned {
-	transform: translateY(vars.$header-height);
+main {
+	transition: transform .2s ease;
+
+	&.pinned {
+		transform: translateY(vars.$header-height);
+	}
 }

@@ -296,8 +296,8 @@ export default class Ph_Search extends HTMLElement {
 
 		let url = "/search";
 		const currentSubMatches = history.state.url.match(/\/r\/([^/?#]+)/i);		// /r/pics/top --> /r/pics
-		if (currentSubMatches && currentSubMatches[1])
-			url = currentSubMatches[1].replace(/\/?$/, "/search");		// /r/pics --> /r/pics/search
+		if (currentSubMatches && currentSubMatches[0] && this.limitToSubreddit.checked)
+			url = currentSubMatches[0].replace(/\/?$/, "/search");		// /r/pics --> /r/pics/search
 
 		const paramsString = new URLSearchParams([
 			["q", this.searchBar.value],
@@ -310,8 +310,7 @@ export default class Ph_Search extends HTMLElement {
 			window.open(`${url}?${paramsString}`).focus();
 		else {
 			pushLinkToHistorySep(
-				`${this.currentSubreddit ?? ""}/search`,
-				`?${paramsString}`
+				url, `?${paramsString}`
 			);
 		}
 	}
