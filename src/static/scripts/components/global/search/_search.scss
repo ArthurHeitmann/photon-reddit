@@ -67,7 +67,7 @@ ph-search {
 		position: absolute;
 		bottom: 0;
 		left: 0;
-		width: 100%;
+		min-width: 100%;
 		transform: translateY(calc(100% + .5rem)) scale(.75);
 		transform-origin: top center;
 		background: vars.$background-el1;
