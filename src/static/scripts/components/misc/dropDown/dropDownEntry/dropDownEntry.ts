@@ -2,6 +2,7 @@ import {isElementIn, linksToSpa} from "../../../../utils/htmlStuff";
 import {hasParams} from "../../../../utils/utils";
 import Ph_DropDown, {ButtonLabel} from "../dropDown";
 import Ph_DropDownArea from "../dropDownArea/dropDownArea";
+import Ph_Toast, {Level} from "../../toast/toast";
 
 export default class Ph_DropDownEntry extends HTMLElement {
 	/** Each drop down entry has value. With nested drop downs this is includes the values of all preview drop downs */
@@ -75,15 +76,20 @@ export default class Ph_DropDownEntry extends HTMLElement {
 				}
 				// call callback
 				if (param.onSelectCallback) {
-					const shouldBeOpen = param.onSelectCallback(<DropDownActionData> {
-						valueChain: this.valueChain,
-						setButtonLabel: (newLabel) => this.dropDown.setLabel(newLabel),
-						initialLabel: this.dropDown.getLabel(),
-						source: this
-					})
-						|| false;
-					if (!shouldBeOpen || shouldBeOpen instanceof Promise)
-						dropDownArea.closeMenu(true);
+					try {
+						const shouldBeOpen = param.onSelectCallback(<DropDownActionData>{
+								valueChain: this.valueChain,
+								setButtonLabel: (newLabel) => this.dropDown.setLabel(newLabel),
+								initialLabel: this.dropDown.getLabel(),
+								source: this
+							})
+							|| false;
+						if (!shouldBeOpen || shouldBeOpen instanceof Promise)
+							dropDownArea.closeMenu(true);
+					} catch (e) {
+						console.error(e);
+						new Ph_Toast(Level.error, "Error occurred executing action", { timeout: 1500 });
+					}
 				}
 			});
 		}

@@ -81,7 +81,6 @@ export default class Ph_DropDownArea extends HTMLElement {
 
 		this.initializeParams(this.params);
 		this.isInitialized = true;
-		this.dropdown = null;
 	}
 
 	toggleMenu() {
