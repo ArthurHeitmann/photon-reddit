@@ -1,6 +1,12 @@
-export const photonVersion = "1.1.2";		/// <change version script>
+export const photonVersion = "1.1.3";		/// <change version script>
 
 export const photonChangelog = {
+	"1.1.3": {
+		"Fixed": [
+			"Fixed search subreddit by flair not working",
+			"Other small fixes"
+		],
+	},
 	"1.1.2": {
 		"Fixed": [
 			"Some small changes & fixes",
