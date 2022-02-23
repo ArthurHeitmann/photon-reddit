@@ -1,14 +1,14 @@
-import { getUserPreferences, redditApiRequest } from "../../api/redditApi";
-import { StoredData } from "../../types/misc";
-import { RedditPreferences, RedditUserInfo } from "../../types/redditTypes";
-import { $class } from "../../utils/htmlStatics";
-import { createLock, unlock } from "../../utils/lock";
-import { MultiManager } from "../../utils/MultiManager";
-import { SubredditManager } from "../../utils/subredditManager";
-import { StoredFeedInfo } from "../feed/feedInfo/feedInfo";
-import Ph_UserDropDown from "../global/userDropDown/userDropDown";
+import {getUserPreferences, redditApiRequest} from "../api/redditApi";
+import {StoredData} from "../types/misc";
+import {RedditPreferences, RedditUserInfo} from "../types/redditTypes";
+import {$class} from "../utils/htmlStatics";
+import {createLock, unlock} from "../utils/lock";
+import {MultiManager} from "../utils/MultiManager";
+import {SubredditManager} from "../utils/subredditManager";
+import {StoredFeedInfo} from "../components/feed/feedInfo/feedInfo";
+import Ph_UserDropDown from "../components/global/userDropDown/userDropDown";
 import DataAccessor from "./dataAccessor";
-import { deleteKey, setInStorage, wasDbUpgraded } from "./storageWrapper";
+import {deleteKey, setInStorage, wasDbUpgraded} from "./storageWrapper";
 import Users from "./userManagement";
 
 export const guestUserName = "#guest";

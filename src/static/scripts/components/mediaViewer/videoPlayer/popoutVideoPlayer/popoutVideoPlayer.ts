@@ -3,8 +3,8 @@ import Ph_GifVideo from "../gifVideo/gifVideo";
 import Ph_SimpleVideo from "../simpleVideo/simpleVideo";
 import Ph_VideoAudio from "../videoAudio/videoAudio";
 import Ph_VideoPlayer from "../videoPlayer";
-import { BasicVideoData } from "../videoWrapper";
-import Users from "../../../multiUser/userManagement";
+import {BasicVideoData} from "../videoWrapper";
+import Users from "../../../../multiUser/userManagement";
 
 async function main() {
 	await Users.init();

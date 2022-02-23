@@ -35,7 +35,7 @@ import Ph_CommentForm from "../misc/markdownForm/commentForm/commentForm";
 import Ph_MarkdownForm from "../misc/markdownForm/markdownForm";
 import Ph_Toast, {Level} from "../misc/toast/toast";
 import Ph_VoteButton from "../misc/voteButton/voteButton";
-import Users from "../multiUser/userManagement";
+import Users from "../../multiUser/userManagement";
 import Ph_Post from "../post/post";
 
 /**

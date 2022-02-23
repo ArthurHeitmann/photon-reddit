@@ -22,7 +22,7 @@ import Ph_DropDown, {DirectionX, DirectionY} from "../../misc/dropDown/dropDown"
 import {DropDownActionData, DropDownEntryParam} from "../../misc/dropDown/dropDownEntry/dropDownEntry";
 import Ph_Flair from "../../misc/flair/flair";
 import Ph_Toast, {Level} from "../../misc/toast/toast";
-import Users from "../../multiUser/userManagement";
+import Users from "../../../multiUser/userManagement";
 import Ph_FeedInfo from "./feedInfo";
 
 interface AllSubData extends SubredditDetails {

@@ -20,7 +20,7 @@ import Ph_Wiki from "../components/wiki/wiki";
 import {$id} from "../utils/htmlStatics";
 import {deepClone, exitFullscreen, extractHash, isFullscreen, makeElement, splitPathQuery} from "../utils/utils";
 import ViewsStack from "./viewsStack";
-import Users from "../components/multiUser/userManagement";
+import Users from "../multiUser/userManagement";
 
 ViewsStack.setNextIsReplace();
 

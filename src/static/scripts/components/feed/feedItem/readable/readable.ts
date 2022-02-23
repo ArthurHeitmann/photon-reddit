@@ -4,7 +4,7 @@ import {hasParams} from "../../../../utils/utils";
 import Ph_DropDown, {DirectionX, DirectionY} from "../../../misc/dropDown/dropDown";
 import {DropDownEntryParam} from "../../../misc/dropDown/dropDownEntry/dropDownEntry";
 import Ph_Toast, {Level} from "../../../misc/toast/toast";
-import Users from "../../../multiUser/userManagement";
+import Users from "../../../../multiUser/userManagement";
 import Ph_FeedItem from "../feedItem";
 
 export default abstract class Ph_Readable extends Ph_FeedItem {

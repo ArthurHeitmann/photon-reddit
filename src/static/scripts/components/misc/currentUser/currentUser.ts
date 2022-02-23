@@ -1,7 +1,7 @@
-import { PhEvents } from "../../../types/Events";
-import { $classAr } from "../../../utils/htmlStatics";
-import { getUserIconUrl, makeElement } from "../../../utils/utils";
-import Users from "../../multiUser/userManagement";
+import {PhEvents} from "../../../types/Events";
+import {$classAr} from "../../../utils/htmlStatics";
+import {getUserIconUrl, makeElement} from "../../../utils/utils";
+import Users from "../../../multiUser/userManagement";
 
 export default class Ph_CurrentUserDisplay extends HTMLElement {
 	img: HTMLImageElement;

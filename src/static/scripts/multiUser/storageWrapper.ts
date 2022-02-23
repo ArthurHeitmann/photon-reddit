@@ -1,6 +1,6 @@
-import { PhEvents } from "../../types/Events";
-import { supportsIndexedDB } from "../../utils/browserFeatures";
-import { broadcastMessage } from "../../utils/messageCommunication";
+import {PhEvents} from "../types/Events";
+import {supportsIndexedDB} from "../utils/browserFeatures";
+import {broadcastMessage} from "../utils/messageCommunication";
 
 const dbName= "photonDb";
 const objectStoreName = "users";

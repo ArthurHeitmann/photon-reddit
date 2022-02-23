@@ -1,7 +1,7 @@
-import { PhEvents } from "../../types/Events";
-import { onMessageBroadcast } from "../../utils/messageCommunication";
-import { deepClone } from "../../utils/utils";
-import { getFromStorage, setInStorage } from "./storageWrapper";
+import {PhEvents} from "../types/Events";
+import {onMessageBroadcast} from "../utils/messageCommunication";
+import {deepClone} from "../utils/utils";
+import {getFromStorage, setInStorage} from "./storageWrapper";
 
 export default abstract class DataAccessor<T> {
 	protected abstract key: string;

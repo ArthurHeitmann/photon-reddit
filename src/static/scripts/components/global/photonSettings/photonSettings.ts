@@ -7,7 +7,7 @@ import {broadcastMessage, MessageFormat, onMessageBroadcast} from "../../../util
 import {deepClone, ensurePageLoaded, isJsonEqual, isObjectEmpty, makeElement} from "../../../utils/utils";
 import Ph_ModalPane from "../../misc/modalPane/modalPane";
 import Ph_Toast, {Level} from "../../misc/toast/toast";
-import Users from "../../multiUser/userManagement";
+import Users from "../../../multiUser/userManagement";
 import {SettingConfig, SettingsApi, SettingsSection} from "./photonSettingsData";
 import {getSettingsSections} from "./settingsSections";
 import "./styleSettingsListener";

@@ -1,18 +1,18 @@
-import { getSubFlairs, getSubInfo, redditApiRequest } from "../../../api/redditApi";
-import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager";
-import { FlairApiData, SubredditDetails } from "../../../types/redditTypes";
-import { emojiFlagsToImages } from "../../../utils/htmlStatics";
-import { linksToSpa } from "../../../utils/htmlStuff";
-import { hasHTML } from "../../../utils/utils";
-import { FeedType } from "../../feed/feedInfo/feedInfo";
+import {getSubFlairs, getSubInfo, redditApiRequest} from "../../../api/redditApi";
+import {pushLinkToHistoryComb} from "../../../historyState/historyStateManager";
+import {FlairApiData, SubredditDetails} from "../../../types/redditTypes";
+import {emojiFlagsToImages} from "../../../utils/htmlStatics";
+import {linksToSpa} from "../../../utils/htmlStuff";
+import {hasHTML} from "../../../utils/utils";
+import {FeedType} from "../../feed/feedInfo/feedInfo";
 import FeedInfoFactory from "../../feed/feedInfo/feedInfoFactory";
-import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown";
-import { DropDownActionData, DropDownEntryParam } from "../../misc/dropDown/dropDownEntry/dropDownEntry";
+import Ph_DropDown, {DirectionX, DirectionY} from "../../misc/dropDown/dropDown";
+import {DropDownActionData, DropDownEntryParam} from "../../misc/dropDown/dropDownEntry/dropDownEntry";
 import Ph_Flair from "../../misc/flair/flair";
 import Ph_MarkdownForm from "../../misc/markdownForm/markdownForm";
 import Ph_SubredditSelector from "../../misc/subredditSelector/subredditSelector";
-import Ph_Toast, { Level } from "../../misc/toast/toast";
-import Users from "../../multiUser/userManagement";
+import Ph_Toast, {Level} from "../../misc/toast/toast";
+import Users from "../../../multiUser/userManagement";
 
 enum SubmitPostType {
 	text = "Text",

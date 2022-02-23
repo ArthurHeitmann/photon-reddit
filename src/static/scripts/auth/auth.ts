@@ -1,6 +1,6 @@
-import { getImplicitGrant, getRefreshAccessToken } from "../api/redditAuthApi";
-import Ph_Toast, { Level } from "../components/misc/toast/toast";
-import Users from "../components/multiUser/userManagement";
+import {getImplicitGrant, getRefreshAccessToken} from "../api/redditAuthApi";
+import Ph_Toast, {Level} from "../components/misc/toast/toast";
+import Users from "../multiUser/userManagement";
 
 export enum AuthState {
 	loggedIn, implicitGrant

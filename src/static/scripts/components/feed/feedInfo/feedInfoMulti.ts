@@ -1,4 +1,4 @@
-import { addSubToMulti, getMultiInfo, removeSubFromMulti } from "../../../api/redditApi";
+import {addSubToMulti, getMultiInfo, removeSubFromMulti} from "../../../api/redditApi";
 import {
 	RedditMultiInfo,
 	RedditMultiObj,
@@ -6,17 +6,17 @@ import {
 	SubredditExpanded,
 	SubredditInfoBase
 } from "../../../types/redditTypes";
-import { emojiFlagsToImages, escADQ, escHTML } from "../../../utils/htmlStatics";
-import { linksToSpa } from "../../../utils/htmlStuff";
-import { MultiChangeType, MultisChangeEvent } from "../../../utils/MultiManager";
-import { OnSubscriptionChangeCallback } from "../../../utils/UserSubscriptions";
-import { makeElement, numberToShort, stringSortComparer } from "../../../utils/utils";
+import {emojiFlagsToImages, escADQ, escHTML} from "../../../utils/htmlStatics";
+import {linksToSpa} from "../../../utils/htmlStuff";
+import {MultiChangeType, MultisChangeEvent} from "../../../utils/MultiManager";
+import {OnSubscriptionChangeCallback} from "../../../utils/UserSubscriptions";
+import {makeElement, numberToShort, stringSortComparer} from "../../../utils/utils";
 import Ph_FeedLink from "../../link/feedLink/feedLink";
-import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown";
+import Ph_DropDown, {DirectionX, DirectionY} from "../../misc/dropDown/dropDown";
 import Ph_MultiCreateOrEdit from "../../misc/multiCreateOrEdit/multiCreateOrEdit";
 import Ph_SubredditSelector from "../../misc/subredditSelector/subredditSelector";
-import Ph_Toast, { Level } from "../../misc/toast/toast";
-import Users from "../../multiUser/userManagement";
+import Ph_Toast, {Level} from "../../misc/toast/toast";
+import Users from "../../../multiUser/userManagement";
 import Ph_FeedInfo from "./feedInfo";
 
 export default class Ph_FeedInfoMulti extends Ph_FeedInfo<RedditMultiInfo> {

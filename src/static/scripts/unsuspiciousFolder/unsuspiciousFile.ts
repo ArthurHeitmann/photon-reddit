@@ -24,12 +24,12 @@
  * (So that I know how many users don't support it. In case I want to do something with it in the future)
  */
 
-import { trackBrowserFeatures } from "../api/photonApi";
-import Users from "../components/multiUser/userManagement";
-import { ViewChangeData } from "../historyState/viewsStack";
-import { PhEvents } from "../types/Events";
-import { supportsIndexedDB, supportsServiceWorkers } from "../utils/browserFeatures";
-import { extractPath, randomString } from "../utils/utils";
+import {trackBrowserFeatures} from "../api/photonApi";
+import Users from "../multiUser/userManagement";
+import {ViewChangeData} from "../historyState/viewsStack";
+import {PhEvents} from "../types/Events";
+import {supportsIndexedDB, supportsServiceWorkers} from "../utils/browserFeatures";
+import {extractPath, randomString} from "../utils/utils";
 
 window.addEventListener(PhEvents.viewChange, (e: CustomEvent) => {
 	if (location.hostname === "localhost")

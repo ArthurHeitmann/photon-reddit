@@ -18,7 +18,7 @@ import {DropDownActionData} from "../../misc/dropDown/dropDownEntry/dropDownEntr
 import Ph_ProgressBar from "../../misc/progressBar/progressBar";
 import Ph_SwitchingImage from "../../misc/switchableImage/switchableImage";
 import Ph_Toast, {Level} from "../../misc/toast/toast";
-import Users from "../../multiUser/userManagement";
+import Users from "../../../multiUser/userManagement";
 import Ph_PhotonBaseElement from "../../photon/photonBaseElement/photonBaseElement";
 import {MediaElement} from "../mediaElement";
 import Ph_GifVideo from "./gifVideo/gifVideo";

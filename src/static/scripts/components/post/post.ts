@@ -36,7 +36,7 @@ import Ph_DropDownEntry, {DropDownActionData, DropDownEntryParam} from "../misc/
 import Ph_Flair from "../misc/flair/flair";
 import Ph_Toast, {Level} from "../misc/toast/toast";
 import Ph_VoteButton from "../misc/voteButton/voteButton";
-import Users from "../multiUser/userManagement";
+import Users from "../../multiUser/userManagement";
 import Ph_PostBody from "./postBody/postBody";
 import Ph_PostText from "./postBody/postText/postText";
 import PostDoubleLink from "./postDoubleLink/postDoubleLink";

@@ -1,4 +1,4 @@
-import Users from "../components/multiUser/userManagement";
+import Users from "../multiUser/userManagement";
 
 /**
  * Clears cached data in the storage occasionally

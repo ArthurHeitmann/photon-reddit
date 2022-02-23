@@ -6,7 +6,7 @@ import {checkTokenRefresh} from "../auth/auth";
 import {initiateLogin} from "../auth/loginHandler";
 import Ph_Flair from "../components/misc/flair/flair";
 import Ph_Toast, {Level} from "../components/misc/toast/toast";
-import Users from "../components/multiUser/userManagement";
+import Users from "../multiUser/userManagement";
 import {
 	FlairApiData,
 	RedditApiObj,

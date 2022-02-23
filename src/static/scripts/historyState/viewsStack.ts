@@ -4,7 +4,7 @@
  *  - added & removing elements from the history
  */
 
-import Users from "../components/multiUser/userManagement";
+import Users from "../multiUser/userManagement";
 import {Ph_ViewState} from "../components/viewState/viewState";
 import {PhEvents} from "../types/Events";
 import {HistoryState} from "../types/misc";

@@ -6,7 +6,7 @@
 
 import {PhotonSettings} from "../components/global/photonSettings/photonSettings";
 import Ph_MediaViewer from "../components/mediaViewer/mediaViewer";
-import Users from "../components/multiUser/userManagement";
+import Users from "../multiUser/userManagement";
 import {pushLinkToHistoryComb} from "../historyState/historyStateManager";
 import {PhEvents} from "../types/Events";
 import {RedditCommentData} from "../types/redditTypes";

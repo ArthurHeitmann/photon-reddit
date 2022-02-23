@@ -1,11 +1,11 @@
-import { checkTokenRefresh } from "../../auth/auth";
-import { logOutCurrentUser, tryCompleteLogin } from "../../auth/loginHandler";
-import { PhEvents } from "../../types/Events";
-import { createLock, unlock } from "../../utils/lock";
-import Ph_MessageNotification from "../message/messageNotification/messageNotification";
+import {checkTokenRefresh} from "../auth/auth";
+import {logOutCurrentUser, tryCompleteLogin} from "../auth/loginHandler";
+import {PhEvents} from "../types/Events";
+import {createLock, unlock} from "../utils/lock";
+import Ph_MessageNotification from "../components/message/messageNotification/messageNotification";
 import GlobalUserData from "./globalData";
-import { deleteKey, getAllKeysInStorage } from "./storageWrapper";
-import UserData, { AuthData, guestUserName, tmpLoginUserName } from "./userData";
+import {deleteKey, getAllKeysInStorage} from "./storageWrapper";
+import UserData, {AuthData, guestUserName, tmpLoginUserName} from "./userData";
 
 export default class Users {
 	static global: GlobalUserData;

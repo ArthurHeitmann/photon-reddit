@@ -1,5 +1,5 @@
-import { clamp } from "../../../utils/utils";
-import Users from "../../multiUser/userManagement";
+import {clamp} from "../../../utils/utils";
+import Users from "../../../multiUser/userManagement";
 
 interface ElementHover {
 	element: Element,

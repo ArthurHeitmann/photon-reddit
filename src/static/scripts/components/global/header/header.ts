@@ -5,7 +5,7 @@ import {SVGAnimateElement} from "../../../types/misc";
 import {$class, $tag} from "../../../utils/htmlStatics";
 import {hasHTML} from "../../../utils/utils";
 import Ph_DropDownArea from "../../misc/dropDown/dropDownArea/dropDownArea";
-import Users from "../../multiUser/userManagement";
+import Users from "../../../multiUser/userManagement";
 import Ph_PhotonSettings from "../photonSettings/photonSettings";
 import Ph_Search from "../search/search";
 import Ph_UserDropDown from "../userDropDown/userDropDown";

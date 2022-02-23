@@ -1,6 +1,6 @@
-import { QuickCaches } from "../components/multiUser/userData";
-import Users from "../components/multiUser/userManagement";
-import { StoredData } from "../types/misc";
+import {QuickCaches} from "../multiUser/userData";
+import Users from "../multiUser/userManagement";
+import {StoredData} from "../types/misc";
 
 export type OnSubscriptionChangeCallback<EventType> = (e: EventType) => void;
 export abstract class UserSubscriptions<ContentType, EventData> {

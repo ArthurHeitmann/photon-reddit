@@ -18,7 +18,7 @@ import Ph_DropDown, {DirectionX, DirectionY} from "../misc/dropDown/dropDown";
 import {DropDownEntryParam} from "../misc/dropDown/dropDownEntry/dropDownEntry";
 import Ph_SwitchingImage from "../misc/switchableImage/switchableImage";
 import Ph_Toast, {Level} from "../misc/toast/toast";
-import Users from "../multiUser/userManagement";
+import Users from "../../multiUser/userManagement";
 import Ph_PhotonBaseElement from "../photon/photonBaseElement/photonBaseElement";
 import Ph_DraggableWrapper from "../post/postBody/draggableWrapper/draggableWrapper";
 import {Ph_ViewState} from "../viewState/viewState";

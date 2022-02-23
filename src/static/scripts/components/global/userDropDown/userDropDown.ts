@@ -1,12 +1,12 @@
-import { initiateLogin } from "../../../auth/loginHandler";
-import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager";
+import {initiateLogin} from "../../../auth/loginHandler";
+import {pushLinkToHistoryComb} from "../../../historyState/historyStateManager";
 import ViewsStack from "../../../historyState/viewsStack";
-import { PhEvents } from "../../../types/Events";
-import { RedditApiObj, RedditSubredditObj } from "../../../types/redditTypes";
-import { getLoadingIcon } from "../../../utils/htmlStatics";
-import { elementWithClassInTree, isElementIn } from "../../../utils/htmlStuff";
-import { MultiChangeType, MultisChangeEvent } from "../../../utils/MultiManager";
-import { SubsChangeEvent } from "../../../utils/subredditManager";
+import {PhEvents} from "../../../types/Events";
+import {RedditApiObj, RedditSubredditObj} from "../../../types/redditTypes";
+import {getLoadingIcon} from "../../../utils/htmlStatics";
+import {elementWithClassInTree, isElementIn} from "../../../utils/htmlStuff";
+import {MultiChangeType, MultisChangeEvent} from "../../../utils/MultiManager";
+import {SubsChangeEvent} from "../../../utils/subredditManager";
 import {
 	ensurePageLoaded,
 	getUserIconUrl,
@@ -16,10 +16,10 @@ import {
 	numberToShort
 } from "../../../utils/utils";
 import Ph_FeedLink from "../../link/feedLink/feedLink";
-import Ph_MultiCreateOrEdit, { MultiBasicInfo } from "../../misc/multiCreateOrEdit/multiCreateOrEdit";
-import Ph_Toast, { Level } from "../../misc/toast/toast";
-import UserData from "../../multiUser/userData";
-import Users from "../../multiUser/userManagement";
+import Ph_MultiCreateOrEdit, {MultiBasicInfo} from "../../misc/multiCreateOrEdit/multiCreateOrEdit";
+import Ph_Toast, {Level} from "../../misc/toast/toast";
+import UserData from "../../../multiUser/userData";
+import Users from "../../../multiUser/userManagement";
 import Ph_Header from "../header/header";
 
 /**

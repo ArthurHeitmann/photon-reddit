@@ -1,9 +1,9 @@
-import { initiateLogin } from "../../../auth/loginHandler";
-import { pushLinkToHistoryComb } from "../../../historyState/historyStateManager";
+import {initiateLogin} from "../../../auth/loginHandler";
+import {pushLinkToHistoryComb} from "../../../historyState/historyStateManager";
 import ViewsStack from "../../../historyState/viewsStack";
-import { isFakeSubreddit } from "../../../utils/utils";
-import Ph_Toast, { Level } from "../../misc/toast/toast";
-import Users from "../../multiUser/userManagement";
+import {isFakeSubreddit} from "../../../utils/utils";
+import Ph_Toast, {Level} from "../../misc/toast/toast";
+import Users from "../../../multiUser/userManagement";
 
 export interface FabPreset {
 	action: FabAction,

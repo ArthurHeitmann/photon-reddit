@@ -1,5 +1,5 @@
-import { isRedditApiUp } from "../api/photonApi";
-import Users from "../components/multiUser/userManagement";
+import {isRedditApiUp} from "../api/photonApi";
+import Users from "../multiUser/userManagement";
 import ViewsStack from "../historyState/viewsStack";
 
 let _isIdbSupported: boolean = null;

@@ -1,11 +1,11 @@
-import { PhEvents } from "../../../types/Events";
-import { StoredData } from "../../../types/misc";
-import { $class, $cssAr, escHTML } from "../../../utils/htmlStatics";
-import { tagInElementTree } from "../../../utils/htmlStuff";
-import { hasParams, makeElement } from "../../../utils/utils";
+import {PhEvents} from "../../../types/Events";
+import {StoredData} from "../../../types/misc";
+import {$class, $cssAr, escHTML} from "../../../utils/htmlStatics";
+import {tagInElementTree} from "../../../utils/htmlStuff";
+import {hasParams, makeElement} from "../../../utils/utils";
 import Ph_Header from "../../global/header/header";
-import Ph_Toast, { Level } from "../../misc/toast/toast";
-import Users from "../../multiUser/userManagement";
+import Ph_Toast, {Level} from "../../misc/toast/toast";
+import Users from "../../../multiUser/userManagement";
 
 export enum FeedType {
 	subreddit = "subreddit",

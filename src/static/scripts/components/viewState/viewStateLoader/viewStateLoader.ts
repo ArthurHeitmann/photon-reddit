@@ -1,7 +1,7 @@
 import ViewsStack from "../../../historyState/viewsStack";
 import {HistoryState} from "../../../types/misc";
 import {hasParams} from "../../../utils/utils";
-import Users from "../../multiUser/userManagement";
+import Users from "../../../multiUser/userManagement";
 import {Ph_ViewState} from "../viewState";
 
 /**

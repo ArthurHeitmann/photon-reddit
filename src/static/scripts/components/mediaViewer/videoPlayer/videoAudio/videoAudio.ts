@@ -1,7 +1,7 @@
 import {PhEvents} from "../../../../types/Events";
 import {escADQ} from "../../../../utils/htmlStatics";
 import {clamp, hasParams, urlWithHttps} from "../../../../utils/utils";
-import Users from "../../../multiUser/userManagement";
+import Users from "../../../../multiUser/userManagement";
 import Ph_VideoWrapper, {BasicVideoData, SourceData, VideoTrackInfo} from "../videoWrapper";
 
 /**

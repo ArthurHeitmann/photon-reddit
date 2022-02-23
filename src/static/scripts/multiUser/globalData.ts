@@ -1,9 +1,9 @@
-import { deepClone } from "../../utils/utils";
-import { photonWebVersion } from "../../utils/version";
-import { defaultSettings, PhotonSettings } from "../global/photonSettings/photonSettings";
-import { FabPreset, initialDefaultFabPresets } from "../photon/fab/fabElementConfig";
+import {deepClone} from "../utils/utils";
+import {photonWebVersion} from "../utils/version";
+import {defaultSettings, PhotonSettings} from "../components/global/photonSettings/photonSettings";
+import {FabPreset, initialDefaultFabPresets} from "../components/photon/fab/fabElementConfig";
 import DataAccessor from "./dataAccessor";
-import { setInStorage, wasDbUpgraded } from "./storageWrapper";
+import {setInStorage, wasDbUpgraded} from "./storageWrapper";
 
 const globalUserName = "#global";
 

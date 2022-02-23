@@ -9,7 +9,7 @@
 import {AuthState, checkAuthOnPageLoad, checkTokenRefresh} from "./auth/auth";
 import Ph_Header from "./components/global/header/header";
 import Ph_Toast, {Level} from "./components/misc/toast/toast";
-import Users from "./components/multiUser/userManagement";
+import Users from "./multiUser/userManagement";
 import Ph_Changelog from "./components/photon/changelog/changelog";
 import Ph_Tutorial from "./components/photon/tutorial/tutorial";
 import {pushLinkToHistorySep} from "./historyState/historyStateManager";

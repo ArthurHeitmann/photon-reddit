@@ -1,7 +1,7 @@
 /** Get access and refresh Tokens and implicit grants */
 
-import Users from "../components/multiUser/userManagement";
-import { appId, redirectURI } from "../utils/consts";
+import Users from "../multiUser/userManagement";
+import {appId, redirectURI} from "../utils/consts";
 
 interface AccessTokenReturn {
 	access_token?: string,

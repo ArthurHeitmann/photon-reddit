@@ -2,7 +2,7 @@ import ViewsStack from "../../../historyState/viewsStack";
 import {HistoryState} from "../../../types/misc";
 import {RedditApiObj, RedditListing, RedditPostObj} from "../../../types/redditTypes";
 import {hasParams} from "../../../utils/utils";
-import Users from "../../multiUser/userManagement";
+import Users from "../../../multiUser/userManagement";
 import Ph_Post from "../../post/post";
 import PostDoubleLink from "../../post/postDoubleLink/postDoubleLink";
 import Ph_PostAndComments, {PostCommentsListings} from "../../postAndComments/postAndComments";

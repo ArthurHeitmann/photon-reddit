@@ -12,7 +12,7 @@ import {hasParams, makeElement, sleep, throttle} from "../../../utils/utils";
 import Ph_Comment from "../../comment/comment";
 import Ph_Message from "../../message/message";
 import Ph_Toast, {Level} from "../../misc/toast/toast";
-import Users from "../../multiUser/userManagement";
+import Users from "../../../multiUser/userManagement";
 import Ph_Post from "../../post/post";
 import Ph_FeedItem from "../feedItem/feedItem";
 import RedditListingStream from "./redditListingStream";

@@ -1,6 +1,6 @@
 import {PhEvents} from "../../../types/Events";
 import {ensurePageLoaded} from "../../../utils/utils";
-import Users from "../../multiUser/userManagement";
+import Users from "../../../multiUser/userManagement";
 import {PhotonSettings} from "./photonSettings";
 import {PhotonSettingsKey, SettingsKey} from "./photonSettingsData";
 

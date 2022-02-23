@@ -31,7 +31,7 @@ import {
 	makeUserSectionEntries,
 	makeUserSortSectionEntries
 } from "./sortingDropdownParams";
-import Users from "../../multiUser/userManagement";
+import Users from "../../../multiUser/userManagement";
 import {getLoadingIcon} from "../../../utils/htmlStatics";
 
 export default function makeFeedHeaderElements(feedUrl: string, listingSteam: RedditListingStream): HTMLElement[] {
