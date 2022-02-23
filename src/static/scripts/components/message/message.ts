@@ -130,7 +130,7 @@ export default class Ph_Message extends Ph_Readable {
 			}
 		}
 
-		linksToSpa(this);
+		linksToSpa(this, true);
 	}
 
 	async deleteMessage() {
