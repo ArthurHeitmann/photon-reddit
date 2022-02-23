@@ -154,6 +154,28 @@ export function throttle(func: (...any) => any, wait: number, options: { leading
 	};
 }
 
+/**
+ * Returns a function, that, as long as it continues to be invoked, will not
+ * be triggered. The function will be called after it stops being called for
+ * N milliseconds. If `immediate` is passed, trigger the function on the
+ * leading edge, instead of the trailing.
+ *
+ * From: https://gist.github.com/nmsdvid/8807205
+ */
+export function debounce<T>(this: T, func: (...any) => any, wait: number, immediate = false) {
+	let timeout;
+	return function(this: T) {
+		const context = this;
+		const args = arguments;
+		clearTimeout(timeout);
+		timeout = setTimeout(function() {
+			timeout = null;
+			if (!immediate) func.apply(context, args);
+		}, wait);
+		if (immediate && !timeout) func.apply(context, args);
+	};
+}
+
 /** basically does what obj === {} should (but doesn't) do */
 export function isObjectEmpty(obj: {}) {
 	return Object.keys(obj).length === 0 && obj.constructor === Object;
