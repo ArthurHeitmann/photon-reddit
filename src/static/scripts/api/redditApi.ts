@@ -403,15 +403,26 @@ export async function deleteUserFlair(subredditPath: string) {
 	return !("error" in r) && r["success"];
 }
 
-export async function blockUser(fullname: string): Promise<boolean> {
+export async function blockMessageUser(msgFullname: string): Promise<boolean> {
 	const response = await redditApiRequest(
 		"/api/block",
-		[["id", fullname]],
+		[["id", msgFullname]],
 		true,
 		{ method: "POST" }
 	);
 
 	return isObjectEmpty(response);
+}
+
+export async function blockUser(username: string): Promise<boolean> {
+	const response = await redditApiRequest(
+		"/api/block_user",
+		[["name", username]],
+		true,
+		{ method: "POST" }
+	);
+
+	return isObjectEmpty(response) || response.date && response.name;
 }
 
 export async function deleteMessage(fullname: string) {

@@ -1,5 +1,6 @@
 @use "../../../../style/vars";
 @use "../../../../style/shadow";
+
 .feedInfo {
 	position: fixed;
 	z-index: 3;
@@ -264,6 +265,10 @@
 			border-bottom: 1px solid vars.$border-color;
 		}
 	}
+}
+
+.pinnedHeader .feedInfo {
+	padding-top: 5rem;
 }
 
 .showInfo {

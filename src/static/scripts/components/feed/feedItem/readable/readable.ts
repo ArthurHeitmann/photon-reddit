@@ -1,4 +1,4 @@
-import {blockUser, readAllMessages, setMessageReadStatus} from "../../../../api/redditApi";
+import {blockMessageUser, readAllMessages, setMessageReadStatus} from "../../../../api/redditApi";
 import {$css} from "../../../../utils/htmlStatics";
 import {hasParams} from "../../../../utils/utils";
 import Ph_DropDown, {DirectionX, DirectionY} from "../../../misc/dropDown/dropDown";
@@ -93,7 +93,7 @@ export default abstract class Ph_Readable extends Ph_FeedItem {
 	}
 
 	async blockUser() {
-		if (await blockUser(this.fullName))
+		if (await blockMessageUser(this.fullName))
 			new Ph_Toast(Level.success, "", { timeout: 3000 });
 		else
 			new Ph_Toast(Level.error, "");

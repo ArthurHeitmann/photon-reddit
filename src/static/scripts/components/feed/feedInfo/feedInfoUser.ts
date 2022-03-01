@@ -1,10 +1,11 @@
-import { getSubInfo, getUserMultis } from "../../../api/redditApi";
-import { RedditMultiObj, RedditUserInfo, RedditUserObj } from "../../../types/redditTypes";
-import { linksToSpa } from "../../../utils/htmlStuff";
-import { getUserIconUrl, makeElement, numberToShort } from "../../../utils/utils";
-import Ph_DropDown, { DirectionX, DirectionY } from "../../misc/dropDown/dropDown";
-import Ph_Toast, { Level } from "../../misc/toast/toast";
+import {blockUser, getSubInfo, getUserMultis} from "../../../api/redditApi";
+import {RedditMultiObj, RedditUserInfo, RedditUserObj} from "../../../types/redditTypes";
+import {linksToSpa} from "../../../utils/htmlStuff";
+import {getUserIconUrl, makeElement, numberToShort} from "../../../utils/utils";
+import Ph_DropDown, {DirectionX, DirectionY} from "../../misc/dropDown/dropDown";
+import Ph_Toast, {Level} from "../../misc/toast/toast";
 import Ph_FeedInfo from "./feedInfo";
+import Users from "../../../multiUser/userManagement";
 
 interface AllUserInfo extends RedditUserInfo {
 	multis: RedditMultiObj[]
@@ -61,7 +62,9 @@ export default class Ph_FeedInfoUser extends Ph_FeedInfo<AllUserInfo> {
 		overviewBar.appendChild(userActionsWrapper);
 		userActionsWrapper.appendChild(new Ph_DropDown(
 			[
-				{ label: makeElement("a", { href: `${this.feedUrl}` }, "Visit"), labelImgUrl: "/img/rightArrow.svg" }
+				{ label: makeElement("a", { href: `${this.feedUrl}` }, "Visit"), labelImgUrl: "/img/rightArrow.svg" },
+				this.loadedInfo.data.name != Users.current.name
+					&& { label: "Block user", labelImgUrl: "/img/block.svg", onSelectCallback: this.blockUser.bind(this) }
 			],
 			this.getKebabImg(),
 			DirectionX.left,
@@ -108,6 +111,16 @@ export default class Ph_FeedInfoUser extends Ph_FeedInfo<AllUserInfo> {
 		]));
 
 		linksToSpa(this);
+	}
+
+	blockUser() {
+		const username = this.loadedInfo.data.name;
+		new Ph_Toast(Level.warning, `Are you sure you want to block u/${username}?`, { onConfirm: async () => {
+			if (await blockUser(username))
+				new Ph_Toast(Level.success, "", { timeout: 3000 });
+			else
+				new Ph_Toast(Level.error, "")
+		}});
 	}
 }
 

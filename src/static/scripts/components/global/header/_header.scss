@@ -221,8 +221,8 @@
 
 main {
 	transition: transform .2s ease;
-
-	&.pinned {
-		transform: translateY(vars.$header-height);
-	}
 }
+body.pinnedHeader  main {
+	transform: translateY(vars.$header-height);
+}
+
