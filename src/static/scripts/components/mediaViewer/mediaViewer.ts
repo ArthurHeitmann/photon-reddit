@@ -101,7 +101,8 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 					if ("mp4" in itemData.s) {
 						videoPlayer.init(new Ph_SimpleVideo([{
 							src: itemData.s.mp4,
-							type: "video/mp4"
+							type: "video/mp4",
+							heightHint: itemData.s.y
 						}]));
 					}
 					else {
@@ -161,7 +162,8 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		videoPlayer.caption = data.caption;
 		videoPlayer.init(new Ph_SimpleVideo([{
 			src: data.link,
-			type: "video/mp4"
+			type: "video/mp4",
+			heightHint: data.heightHint
 		}]));
 		return videoPlayer;
 	}

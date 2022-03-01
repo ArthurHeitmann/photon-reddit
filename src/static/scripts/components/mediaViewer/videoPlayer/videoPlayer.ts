@@ -67,7 +67,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 			new Ph_Toast(Level.error, `Unknown video provider for ${escHTML(url)}`);
 		}
 
-		// task of this huuuuge switch: get the video file url (.mp4/.gif/...) of this post
+		// task of this huuuuge switch: get the video file url (.mp4/.gif/...) of this post and init the video player with it
 		switch (url.match(/^https?:\/\/w?w?w?\.?([\w.]+)/)[1]) {
 			case "imgur.com":
 			case "m.imgur.com":
@@ -90,8 +90,19 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 						throw `Invalid gfycat oembed link ${postData.media.oembed.thumbnail_url}`;
 					}
 					videoOut.init(new Ph_SimpleVideo([
-						{src: `https://giant.gfycat.com/${capitalizedPath}.mp4`, type: "video/mp4", label: "Default"},
-						{src: `https://thumbs.gfycat.com/${capitalizedPath}-mobile.mp4`, type: "video/mp4", label: "Mobile", lowerQualityAlternative: true},
+						{
+							src: `https://giant.gfycat.com/${capitalizedPath}.mp4`,
+							type: "video/mp4",
+							label: "Default",
+							heightHint: postData.media.oembed.height
+						},
+						{
+							src: `https://thumbs.gfycat.com/${capitalizedPath}-mobile.mp4`,
+							type: "video/mp4",
+							label: "Mobile",
+							lowerQualityAlternative: true,
+							heightHint: postData.media.oembed.height
+						},
 					]));
 				}
 				// if no oembed data, use gfycat api
@@ -160,6 +171,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 								src: `${vReddItUrl}/${trackData.path}`,
 								type: "video/mp4",
 								label: `${trackData.height}p`,
+								heightHint: trackData.height,
 								lowerQualityAlternative: Math.abs(600 - trackData.height) < 180	// true if approximately 720p or 480p
 							}));
 						if (redditVideoData) {
@@ -167,6 +179,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 								src: redditVideoData.fallback_url,
 								type: "video/mp4",
 								label: `${redditVideoData.height}p`,
+								heightHint: redditVideoData.height,
 								lowerQualityAlternative: Math.abs(600 - redditVideoData.height) < 180	// true if approximately 720p or 480p
 							};
 							if (!isJsonEqual(fallbackSrc, videoSources[0])) {
@@ -193,7 +206,8 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				if (postData && postData.preview && postData.preview.images[0].variants.mp4) {
 					videoOut.init(new Ph_SimpleVideo([{
 						src: postData.preview.images[0].variants.mp4.source.url,
-						type: "video/mp4"
+						type: "video/mp4",
+						heightHint: postData.preview.images[0].variants.mp4.source.height,
 					}]));
 				}
 				else
@@ -207,7 +221,11 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 					// the mp4 url is 							https://clips-media-assets2.twitch.tv/AT-cm|1155435256.mp4
 					const twitchUrlMatches = postData.media.oembed.thumbnail_url.match(/(.*)-social-preview.jpg$/);
 					if (twitchUrlMatches && twitchUrlMatches.length == 2) {
-						videoOut.init(new Ph_SimpleVideo([{src: twitchUrlMatches[1] + ".mp4", type: "video/mp4"}]));
+						videoOut.init(new Ph_SimpleVideo([{
+							src: twitchUrlMatches[1] + ".mp4",
+							type: "video/mp4",
+							heightHint: postData.media.oembed.height
+						}]));
 						twitchMp4Found = true;
 					}
 				}
@@ -281,6 +299,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 
 		if (this.video) {
 			this.appendChild(this.video);
+			this.classList.add("loading")
 			this.fullInit();
 			this.video.setVolume(Ph_VideoPlayer.globalVolume);
 			this.video.setIsMuted(Ph_VideoPlayer.globalIsMuted);
@@ -320,6 +339,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 		this.addWindowEventListener(PhEvents.viewChange, () => this.video.pause());
 		this.video.addEventListener("click", this.togglePlay.bind(this));
 		this.video.addEventListener(PhEvents.ready, () => {
+			this.classList.remove("loading");
 			this.overlayIcon.showImage("ready");
 			timeText.innerText = `${secondsToVideoTime(this.video.getCurrentTime())} / ${secondsToVideoTime(this.video.getMaxTime())}`;
 			const activeTrackName = this.video.getCurrentTrack()?.label;

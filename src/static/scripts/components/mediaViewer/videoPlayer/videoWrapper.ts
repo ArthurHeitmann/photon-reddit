@@ -45,12 +45,14 @@ export interface BasicVideoData {
 
 export interface VideoTrackInfo {
 	label: string,
-	src: SourceData
+	src: SourceData,
+	heightHint?: number,
 }
 
 export interface SourceData {
 	src: string,
 	type: string,
+	heightHint?: number,
 	label?: string,
 	lowerQualityAlternative?: boolean
 }

@@ -2,7 +2,7 @@
  * Interface with redgifs api
  */
 
-import { SourceData } from "../components/mediaViewer/videoPlayer/videoWrapper";
+import {SourceData} from "../components/mediaViewer/videoPlayer/videoWrapper";
 
 export enum GfycatDomain {
 	gfycat = "gfycat",
@@ -35,7 +35,10 @@ export async function getGfycatMp4SrcFromUrl(url: string, domain: GfycatDomain):
 				? data["gfyItem"]["mp4Url"]
 				: data["gif"]["urls"]["hd"],
 			type: "video/mp4",
-			label: "Default"
+			label: "Default",
+			heightHint: domain === GfycatDomain.gfycat
+				? data["gfyItem"]["height"]
+				: data["gif"]["height"]
 		},
 		{
 			src: domain === GfycatDomain.gfycat
@@ -43,7 +46,10 @@ export async function getGfycatMp4SrcFromUrl(url: string, domain: GfycatDomain):
 				: data["gif"]["urls"]["sd"],
 			type: "video/mp4",
 			label: "Mobile",
-			lowerQualityAlternative: true
+			lowerQualityAlternative: true,
+			heightHint: domain === GfycatDomain.gfycat
+				? data["gfyItem"]["height"]
+				: data["gif"]["height"]
 		}
 	];
 }

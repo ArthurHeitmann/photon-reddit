@@ -1,4 +1,4 @@
-import { SourceData } from "../components/mediaViewer/videoPlayer/videoWrapper";
+import {SourceData} from "../components/mediaViewer/videoPlayer/videoWrapper";
 
 export async function getStreamableUrl(url: string): Promise<SourceData[]> {
 	const vidId = url.match(/streamable\.com\/(\w+)/)[1];
@@ -8,13 +8,15 @@ export async function getStreamableUrl(url: string): Promise<SourceData[]> {
 		{
 			src: data["files"]["mp4"]["url"],
 			type: "video/mp4",
-			label: `${data["files"]["mp4"]["height"]}p`
+			label: `${data["files"]["mp4"]["height"]}p`,
+			heightHint: data["files"]["mp4"]["height"]
 		},
-		...(data["files"]["mp4-mobile"] ? [{
+		...(data["files"]["mp4-mobile"] ? [<SourceData> {
 			src: data["files"]["mp4-mobile"]["url"],
 			type: "video/mp4",
 			label: `${data["files"]["mp4-mobile"]["height"]}p`,
-			lowerQualityAlternative: true
+			lowerQualityAlternative: true,
+			heightHint: data["files"]["mp4-mobile"]["height"]
 		}] : []),
 	]
 }

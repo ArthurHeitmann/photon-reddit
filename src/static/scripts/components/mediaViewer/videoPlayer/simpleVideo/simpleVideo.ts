@@ -24,7 +24,8 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 			.filter(src => Boolean(src.label))
 			.map(src => (<VideoTrackInfo> {
 				label: src.label || src.src,
-				src: src
+				src: src,
+				heightHint: src.heightHint,
 			}));
 
 		this.video = document.createElement("video");
@@ -39,6 +40,8 @@ export default class Ph_SimpleVideo extends Ph_VideoWrapper {
 					.concat(sourcesArray.filter(src => !src.lowerQualityAlternative));
 		for (const source of qualityPreferenceSortedSources)
 			this.video.insertAdjacentHTML("beforeend", `<source src="${escADQ(source.src)}" type="${escADQ(source.type)}">`);
+		if (Number(qualityPreferenceSortedSources[0]?.heightHint))
+			this.style.setProperty("--height-hint", `${qualityPreferenceSortedSources[0].heightHint}px`);
 
 		this.lastNon0Volume = this.video.volume;
 		this.video.muted = true;
