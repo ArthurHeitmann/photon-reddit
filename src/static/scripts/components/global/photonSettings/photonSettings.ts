@@ -48,6 +48,7 @@ export interface PhotonSettings {
 	userBlacklist?: string[],
 	tileTextBlacklist?: string[],
 	flairTextBlacklist?: string[],
+	applyUserBlacklistToComments?: boolean,
 	hidePostFlairs?: boolean,
 	hidePostTitle?: boolean,
 	hidePostTopInfo?: boolean,
@@ -57,6 +58,7 @@ export interface PhotonSettings {
 	feedWidth?: number
 	postAndCommentsWidth?: number,
 	beforeExitConfirmation?: boolean,
+	autoCollapsePinnedComment?: boolean,
 }
 
 // default config
@@ -84,6 +86,7 @@ export const defaultSettings: PhotonSettings = {
 	userBlacklist: [],
 	tileTextBlacklist: [],
 	flairTextBlacklist: [],
+	applyUserBlacklistToComments: false,
 	hidePostFlairs: false,
 	hidePostTitle: false,
 	hidePostTopInfo: false,
@@ -93,6 +96,7 @@ export const defaultSettings: PhotonSettings = {
 	feedWidth: 50,
 	postAndCommentsWidth: 60,
 	beforeExitConfirmation: false,
+	autoCollapsePinnedComment: false,
 };
 
 /** Stores and manages global settings */

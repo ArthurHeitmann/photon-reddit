@@ -39,6 +39,7 @@ export const getSettingsSections = (): SettingsSection[] => [
 		settings: [
 			new FiltersSetting("subredditBlacklist", "Subreddits", "Posts from these subreddits will be hidden. They are still visible when visiting the actual subreddit.", SettingsApi.Photon, input => input.replace(/^\/?r\//, "")),
 			new FiltersSetting("userBlacklist", "Users", "Posts from these users will be hidden. They are still visible when visiting the users profile.", SettingsApi.Photon, input => input.replace(/^\/?(u|user)\//, "")),
+			new BooleanSetting("applyUserBlacklistToComments", "Hide comments from filtered users", "", SettingsApi.Photon),
 			new FiltersSetting("tileTextBlacklist", "Post Tile", "Posts where the title contains on of these keywords will be hidden.", SettingsApi.Photon),
 			new FiltersSetting("flairTextBlacklist", "Flair", "Posts with flairs that contain on of these keywords will be hidden.", SettingsApi.Photon),
 		]
@@ -73,6 +74,7 @@ export const getSettingsSections = (): SettingsSection[] => [
 			new NumberSetting({ allowRange: [0, Number.MAX_SAFE_INTEGER] }, "imageLimitedHeight", "Max media height", "Set the maximum height for images/videos in % of screen height. Set height to \"0\" to disable height limits.", SettingsApi.Photon),
 			new NumberSetting({ allowRange: [10, 200], allowFloats: true }, "feedWidth", "Posts feed width", "Width of posts in your feed. (Also used for messages, comments, etc.) (Unit is absolute)", SettingsApi.Photon),
 			new NumberSetting({ allowRange: [10, 200], allowFloats: true }, "postAndCommentsWidth", "Comments view width", "Width when viewing a posts comments. (Unit is absolute)", SettingsApi.Photon),
+			new BooleanSetting("autoCollapsePinnedComment", "Auto collapse pinned comment", "For example auto mod comments", SettingsApi.Photon),
 			new BooleanSetting("displayRedditEmojis", "Display Reddit Emojis", "", SettingsApi.Photon),
 			new BooleanSetting("firstShowControlBar", "Initially show bottom bar", "Initially show or hide controls bar on the bottom of images and videos.", SettingsApi.Photon),
 			new BooleanSetting("enableFab", "Enable FAB", "Enable Floating Action Button (bottom left corner).", SettingsApi.Photon),

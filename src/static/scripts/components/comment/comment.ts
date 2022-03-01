@@ -15,7 +15,7 @@ import {
 	RedditMessageObj,
 	RedditMoreCommentsObj
 } from "../../types/redditTypes";
-import {emojiFlagsToImages} from "../../utils/htmlStatics";
+import {$css, emojiFlagsToImages} from "../../utils/htmlStatics";
 import {addRedditEmojis, elementWithClassInTree, linksToSpa} from "../../utils/htmlStuff";
 import {
 	hasParams,
@@ -37,6 +37,7 @@ import Ph_Toast, {Level} from "../misc/toast/toast";
 import Ph_VoteButton from "../misc/voteButton/voteButton";
 import Users from "../../multiUser/userManagement";
 import Ph_Post from "../post/post";
+import Ph_PhotonSettings, {PhotonSettings} from "../global/photonSettings/photonSettings";
 
 /**
  * A comment that has been posted under a post
@@ -51,6 +52,8 @@ export default class Ph_Comment extends Ph_Readable {
 	childComments: HTMLElement;
 	totalVotes: number;
 	fullName: string;
+	username: string;
+	isPinned: boolean;
 	currentVoteDirection: VoteDirection;
 	isSaved: boolean;
 	postFullName: string;
@@ -76,6 +79,9 @@ export default class Ph_Comment extends Ph_Readable {
 		this.classList.add("comment");
 		if (!isChild)
 			this.classList.add("rootComment");
+
+		this.username = (commentData.data as RedditCommentData)?.author || "";
+		this.isPinned = commentData.data["stickied"];
 
 		// this is not a comment, this is a load more comments button
 		if (commentData.kind === "more") {
@@ -170,6 +176,14 @@ export default class Ph_Comment extends Ph_Readable {
 				labelImgUrl: this.isSaved ? "/img/bookmarkFilled.svg" : "/img/bookmarkEmpty.svg",
 				onSelectCallback: this.toggleSave.bind(this)
 			},
+			{
+				label: "Filter out",
+				labelImgUrl: "/img/filter.svg",
+				nestedEntries: [
+					{ label: "Filter out...", labelImgUrl: "/img/filter.svg" },
+					{ label: ` u/${this.username}`, labelImgUrl: "/img/user.svg", onSelectCallback: () => this.filterUserComments()},
+				]
+			},
 			{ label: "Share", labelImgUrl: "/img/share.svg", nestedEntries: [
 					{ label: "Copy Comment Link", value: "comment link", onSelectCallback: this.share.bind(this) },
 					{ label: "Copy Reddit Link", value: "reddit link", onSelectCallback: this.share.bind(this) },
@@ -195,7 +209,7 @@ export default class Ph_Comment extends Ph_Readable {
 
 		const mainPart = makeElement("div", { class: "w100" }, [
 			makeElement("div", { class: "header flex" }, [
-				commentData.data["stickied"] && makeElement("img", { class: "pinned", src: "/img/pin.svg", alt: "pinned", draggable: "false" }),
+				this.isPinned && makeElement("img", { class: "pinned", src: "/img/pin.svg", alt: "pinned", draggable: "false" }),
 				makeElement("a", { href: `/user/${commentData.data.author}`, class: `user${userAdditionClasses}` }, [
 					makeElement("span", null, `u/${commentData.data.author}`),
 					commentData.data["author_cakeday"] && makeElement("img", { src: "/img/cake.svg", class: "cakeDay", alt: "cake day" }),
@@ -255,6 +269,9 @@ export default class Ph_Comment extends Ph_Readable {
 				this.childComments.appendChild(new Ph_Comment(comment, true, false, post));
 			}
 		}
+
+		this.addWindowEventListener(PhEvents.settingsChanged, (e: CustomEvent) => this.onSettingsChanged(e.detail));
+		this.onSettingsChanged(Users.global.d.photonSettings);
 
 		this.appendChild(mainPart);
 
@@ -450,6 +467,29 @@ export default class Ph_Comment extends Ph_Readable {
 			console.error(e);
 			new Ph_Toast(Level.error, "Error deleting comment");
 		}
+	}
+
+	onSettingsChanged(changed: PhotonSettings) {
+		if ("applyUserBlacklistToComments" in changed || "userBlacklist" in changed) {
+			const applyUserBlacklistToComments = changed.applyUserBlacklistToComments ?? Users.global.d.photonSettings.applyUserBlacklistToComments;
+			const userBlacklist = changed.userBlacklist ?? Users.global.d.photonSettings.userBlacklist;
+			const isBlacklisted = applyUserBlacklistToComments && userBlacklist.includes(this.username);
+			this.classList.toggle("hide", isBlacklisted);
+		}
+		if ("autoCollapsePinnedComment" in changed) {
+			const hidePinned = changed.autoCollapsePinnedComment && this.isPinned;
+			if (hidePinned && !this.classList.contains("isCollapsed"))
+				this.collapse();
+		}
+	}
+
+	filterUserComments() {
+		const settings = $css(".photonSettings")[0] as Ph_PhotonSettings;
+		if (!Users.global.d.photonSettings.applyUserBlacklistToComments)
+			settings.setSettingTo("applyUserBlacklistToComments", true);
+		const newList = [...Users.global.d.photonSettings.userBlacklist];
+		newList.push(this.username);
+		settings.setSettingTo("userBlacklist", newList);
 	}
 }
 
