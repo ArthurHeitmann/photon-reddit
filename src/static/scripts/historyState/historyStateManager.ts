@@ -124,8 +124,17 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 	// make request to reddit
 	const requestData = await redditApiRequest(path, params, false);
 	if (requestData["error"]) {
-		if (requestData["reason"] && /^\/r\/[^#?/]+(\/\w+)?\/?$/i.test(path))
+		// error message
+		if (requestData["message"] && requestData["reason"]) {
+			stateLoader.finishWith(makeElement("div", null, [
+				makeElement("p", null, requestData["message"]),
+				makeElement("p", null, requestData["reason"]),
+			]));
+		}
+		// subreddit info fallback
+		else if (requestData["reason"] && /^\/r\/[^#?/]+(\/\w+)?\/?$/i.test(path))
 			stateLoader.error(new Ph_FeedInfoPage(path));
+		// generic error message
 		else
 			stateLoader.error();
 		new Ph_Toast(Level.error, "Error making request to reddit");
@@ -155,13 +164,7 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 			stateLoader.finishWith(new Ph_Wiki(requestData));
 			newTabTitle = `${path.match(/r\/[^/?#]+/i)[0]} Wiki - Photon`;
 		}
-		// some sort of error
-		else if (requestData["message"] && requestData["reason"]) {
-			stateLoader.finishWith(makeElement("div", null, [
-				makeElement("p", null, requestData["message"]),
-				makeElement("p", null, requestData["reason"]),
-			]));
-		} else {
+		else {
 			stateLoader.error();
 		}
 	} catch (e) {
