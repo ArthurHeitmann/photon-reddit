@@ -64,6 +64,7 @@ export const getSettingsSections = (): SettingsSection[] => [
 			new BooleanSetting("preferHigherVideoQuality", "Prefer higher video quality", "On: Use max resolution Off: Use lower resolution (if available) (360p, 480p)", SettingsApi.Photon),
 			new BooleanSetting("autoplayVideos", "Autoplay videos", "Play videos when they are on screen.", SettingsApi.Photon),
 			new BooleanSetting("globalVideoVolume", "Sync video volume", "When changing volume on video, sync volume to all other videos.", SettingsApi.Photon),
+			new BooleanSetting("altVolumeFunction", "Finer volume control", "Volume initially grows slower (by x², volume: 0.0 - 1.0)", SettingsApi.Photon),
 		]
 	},
 	{

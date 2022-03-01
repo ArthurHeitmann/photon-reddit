@@ -59,6 +59,7 @@ export interface PhotonSettings {
 	postAndCommentsWidth?: number,
 	beforeExitConfirmation?: boolean,
 	autoCollapsePinnedComment?: boolean,
+	altVolumeFunction?: boolean,
 }
 
 // default config
@@ -97,6 +98,7 @@ export const defaultSettings: PhotonSettings = {
 	postAndCommentsWidth: 60,
 	beforeExitConfirmation: false,
 	autoCollapsePinnedComment: false,
+	altVolumeFunction: false,
 };
 
 /** Stores and manages global settings */

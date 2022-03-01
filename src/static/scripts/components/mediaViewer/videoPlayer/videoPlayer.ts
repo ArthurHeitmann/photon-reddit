@@ -391,7 +391,8 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 		this.video.addEventListener(PhEvents.volumeChange,
 			(e: CustomEvent) => {
 				muteImg.showImage(e.detail === 0 ? "mute" : "audio");
-				volumeSlider.setProgress(e.detail);
+				const volume = Users.global.d.photonSettings.altVolumeFunction ? e.detail**0.5 : e.detail;
+				volumeSlider.setProgress(volume);
 			}
 		);
 		volumeWrapper.addEventListener("wheel", e => {
@@ -520,7 +521,8 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 	}
 
 	setVolume(newVolume: number, broadcastChange = true) {
-		this.video?.setVolume(newVolume);
+		const videoVolume = Users.global.d.photonSettings.altVolumeFunction ? newVolume**2 : newVolume;
+		this.video?.setVolume(videoVolume);
 		if (!broadcastChange || !Users.global.d.photonSettings.globalVideoVolume)
 			return;
 		Ph_VideoPlayer.globalVolume = newVolume;
