@@ -7,7 +7,7 @@ import {
 	enableMainPointerEvents,
 	enableMainScroll
 } from "../../../utils/htmlStatics";
-import {hasHTML} from "../../../utils/utils";
+import {cancelEvent, hasHTML} from "../../../utils/utils";
 import Ph_Header from "../../global/header/header";
 import Ph_UserDropDown from "../../global/userDropDown/userDropDown";
 import Ph_Toast, {Level} from "../../misc/toast/toast";
@@ -240,18 +240,23 @@ export default class Ph_Tutorial extends HTMLElement {
 
 		this.topBlocker = document.createElement("div");
 		this.topBlocker.className = "blocker top";
+		this.topBlocker.onclick = cancelEvent;
 		this.appendChild(this.topBlocker);
 		this.rightBlocker = document.createElement("div");
 		this.rightBlocker.className = "blocker right";
+		this.rightBlocker.onclick = cancelEvent;
 		this.appendChild(this.rightBlocker);
 		this.bottomBlocker = document.createElement("div");
 		this.bottomBlocker.className = "blocker bottom";
+		this.bottomBlocker.onclick = cancelEvent;
 		this.appendChild(this.bottomBlocker);
 		this.leftBlocker = document.createElement("div");
 		this.leftBlocker.className = "blocker left";
+		this.leftBlocker.onclick = cancelEvent;
 		this.appendChild(this.leftBlocker);
 		const highlightWindow = document.createElement("div");
 		highlightWindow.className = "highlightWindow";
+		highlightWindow.onclick = cancelEvent;
 		this.appendChild(highlightWindow);
 
 		this.stepText = document.createElement("div");

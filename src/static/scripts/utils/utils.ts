@@ -548,3 +548,10 @@ export function applyAltVolumeFunc(volume: number): number {
 export function reverseAltVolumeFunc(volume: number): number {
 	return Users.global.d.photonSettings.altVolumeFunction ? volume ** 0.5 : volume;
 }
+
+export function cancelEvent(e: Event) {
+	e.stopImmediatePropagation();
+	e.stopPropagation();
+	e.preventDefault();
+	return false;
+}
