@@ -6,6 +6,7 @@ import Ph_Toast, {Level} from "../components/misc/toast/toast";
 import {PhEvents} from "../types/Events";
 import {RedditMultiInfo, RedditUserInfo, SubredditInfoBase} from "../types/redditTypes";
 import {fakeSubreddits} from "./consts";
+import Users from "../multiUser/userManagement";
 
 /** */
 function _numberToShort(num: number): { n: number, s?: string } {
@@ -538,4 +539,12 @@ export function escRegex(strToEscape: string): string {
 
 export function capitalizeFirstLetter(str: string) {
 	return (str[0] ?? "").toUpperCase() + str.slice(1);
+}
+
+export function applyAltVolumeFunc(volume: number): number {
+	return Users.global.d.photonSettings.altVolumeFunction ? volume * volume : volume;
+}
+
+export function reverseAltVolumeFunc(volume: number): number {
+	return Users.global.d.photonSettings.altVolumeFunction ? volume ** 0.5 : volume;
 }

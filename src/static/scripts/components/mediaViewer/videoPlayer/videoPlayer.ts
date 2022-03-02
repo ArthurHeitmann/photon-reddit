@@ -6,11 +6,13 @@ import {RedditPostData} from "../../../types/redditTypes";
 import {$tagAr, escHTML} from "../../../utils/htmlStatics";
 import {classInElementTree, isElementIn} from "../../../utils/htmlStuff";
 import {
+	applyAltVolumeFunc,
 	clamp,
 	getFullscreenElement,
 	hasParams,
 	isFullscreen,
 	isJsonEqual,
+	reverseAltVolumeFunc,
 	secondsToVideoTime
 } from "../../../utils/utils";
 import Ph_ControlsBar, {ControlsLayoutSlots} from "../../misc/controlsBar/controlsBar";
@@ -391,13 +393,13 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 		this.video.addEventListener(PhEvents.volumeChange,
 			(e: CustomEvent) => {
 				muteImg.showImage(e.detail === 0 ? "mute" : "audio");
-				const volume = Users.global.d.photonSettings.altVolumeFunction ? e.detail**0.5 : e.detail;
+				const volume = reverseAltVolumeFunc(e.detail);
 				volumeSlider.setProgress(volume);
 			}
 		);
 		volumeWrapper.addEventListener("wheel", e => {
 			e.preventDefault();
-			this.setVolume(this.video.getVolume() + ((-e.deltaY || e.deltaX) > 0 ? .05 : -.05));
+			this.setVolume(reverseAltVolumeFunc(this.video.getVolume()) + ((-e.deltaY || e.deltaX) > 0 ? .05 : -.05));
 		}, {passive: false});
 		this.video.addEventListener(PhEvents.noAudio, () => {
 			volumeWrapper.classList.add("remove");
@@ -472,10 +474,10 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 					this.video.seekTo(this.video.getCurrentTime() + 5);
 				break;
 			case "ArrowUp":
-				this.setVolume(this.video.getVolume() + .1);
+				this.setVolume(reverseAltVolumeFunc(this.video.getVolume()) + .1);
 				break;
 			case "ArrowDown":
-				this.setVolume(this.video.getVolume() - .1);
+				this.setVolume(reverseAltVolumeFunc(this.video.getVolume()) - .1);
 				break;
 			case "KeyM":
 				this.toggleMuted();
@@ -521,12 +523,13 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 	}
 
 	setVolume(newVolume: number, broadcastChange = true) {
-		const videoVolume = Users.global.d.photonSettings.altVolumeFunction ? newVolume**2 : newVolume;
+		newVolume = clamp(newVolume, 0, 1);
+		const videoVolume = applyAltVolumeFunc(newVolume);
 		this.video?.setVolume(videoVolume);
 		if (!broadcastChange || !Users.global.d.photonSettings.globalVideoVolume)
 			return;
-		Ph_VideoPlayer.globalVolume = newVolume;
-		Ph_VideoPlayer.globalIsMuted = newVolume === 0;
+		Ph_VideoPlayer.globalVolume = videoVolume;
+		Ph_VideoPlayer.globalIsMuted = videoVolume === 0;
 		$tagAr("ph-video-player").forEach((player: Ph_VideoPlayer) => player.setVolume(newVolume, false));
 	}
 
