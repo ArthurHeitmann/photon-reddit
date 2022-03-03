@@ -23,11 +23,13 @@ export default class Ph_ImageViewer extends Ph_PhotonBaseElement implements Medi
 	caption: string;
 	controls: ControlsLayoutSlots;
 	element: HTMLElement;
-	refreshButton: HTMLElement;
 	url: string;
-	originalImage: HTMLImageElement;
-	previewImage: HTMLImageElement = null;
-	originalSrc: string;
+	private refreshButton: HTMLElement;
+	private hdButton: HTMLElement;
+	private loadingIcon: HTMLElement;
+	private originalImage: HTMLImageElement;
+	private previewImage: HTMLImageElement = null;
+	private originalSrc: string;
 
 	constructor(initData: ImageInitData) {
 		super();
@@ -39,29 +41,37 @@ export default class Ph_ImageViewer extends Ph_PhotonBaseElement implements Medi
 			this.style.setProperty("--height-hint", `${initData.heightHint}px`);
 
 		this.caption = initData.caption;
-		this.controls = { rightItems: [
-			getLoadingIcon(),
+		this.controls = {
+			rightItems: [
+				this.loadingIcon = getLoadingIcon(),
+				this.hdButton = makeElement("button", { class: "hdButton" }, [nonDraggableElement(
+					makeElement("img", { src: "/img/hd.svg", alt: "hd", onclick: this.startLoadingOriginal.bind(this) }))]),
 				this.refreshButton = makeElement("button", { class: "refreshButton hide", "data-tooltip": "Reload Image", onclick: this.refreshImages.bind(this) }, [
 					makeElement("img", { src: "/img/refresh.svg", alt: "↻" })
 				])
-		] };
-		this.controls.rightItems[0].classList.add("hide");
+			]
+		};
+		this.loadingIcon.classList.add("hide");
+		this.hdButton.classList.add("hide");
 		this.element = this;
 		this.url = initData.displayUrl || initData.originalUrl;
 
-		this.originalImage = document.createElement("img")
-		this.originalImage.className = "original";
-		this.originalImage.alt = initData.caption || this.url;
-		this.originalImage.addEventListener("error", this.onImageError.bind(this));
-		this.originalImage.addEventListener("load", () => this.classList.remove("loading"));
+		this.originalImage = makeElement("img", {
+			class: "original",
+			alt: initData.caption || this.url,
+			onerror: this.onImageError.bind(this),
+			onload: () => this.classList.remove("loading"),
+		}) as HTMLImageElement;
 		nonDraggableElement(this.originalImage);
 		if (initData.previewUrl && Users.global.d.photonSettings.imageLoadingPolicy !== ImageLoadingPolicy.alwaysOriginal) {
-			this.previewImage = document.createElement("img");
-			this.previewImage.className = "preview";
-			this.previewImage.src = initData.previewUrl
-			this.previewImage.alt = initData.caption || this.url;
-			this.previewImage.addEventListener("error", this.startLoadingOriginal.bind(this));
-			this.previewImage.addEventListener("load", () => this.classList.remove("loading"));
+			this.hdButton.classList.remove("hide");
+			this.previewImage = makeElement("img", {
+				class: "preview",
+				src: initData.previewUrl,
+				alt: initData.caption || this.url,
+				onerror: this.startLoadingOriginal.bind(this),
+				onload: () => this.classList.remove("loading"),
+			}) as HTMLImageElement;
 			nonDraggableElement(this.previewImage);
 			this.append(this.previewImage);
 			this.addEventListener(PhEvents.enteredFullscreen, this.onFullscreenEnter.bind(this));
@@ -77,16 +87,18 @@ export default class Ph_ImageViewer extends Ph_PhotonBaseElement implements Medi
 	}
 
 	startLoadingOriginal() {
+		this.hdButton.classList.add("hide");
+
 		if (!this.previewImage)
 			return;
 		if (this.originalImage.src)
 			return;
 
-		this.controls.rightItems[0].classList.remove("hide");
+		this.loadingIcon.classList.remove("hide");
 		this.originalImage.addEventListener("load", () => {
 			this.previewImage.remove();
 			this.previewImage = undefined;
-			this.controls.rightItems[0].classList.add("hide");
+			this.loadingIcon.classList.add("hide");
 		}, { once: true });
 		this.originalImage.src = this.originalSrc;
 		this.originalImage.classList.remove("hide");
