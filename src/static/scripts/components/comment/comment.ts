@@ -106,11 +106,12 @@ export default class Ph_Comment extends Ph_Readable {
 					try {
 						const loadedComments = await this.loadMoreComments(nextChildren, moreId);
 
-						for (const comment of loadedComments) {
-							this.insertAdjacentElement("beforebegin",
-								new Ph_Comment(comment, isChild, isInFeed, post));
+						if (this.parentElement instanceof Ph_CommentsFeed) {
+							this.parentElement.addPendingComments(loadedComments);
+							loadMoreButton.remove();
 						}
-						loadMoreButton.remove();
+						else
+							new Ph_Toast(Level.error, "Cannot display more comments", { timeout: 3000 });
 					} catch (e) {
 						console.error("Error loading more comments");
 						console.error(e);

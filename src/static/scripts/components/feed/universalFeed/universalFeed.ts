@@ -94,14 +94,14 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 		this.initializeIntersectionObservers();
 		this.addWindowEventListener("resize", this.onResize.bind(this));
 		const screenHeight = window.innerHeight;
-		this.postInitIntObs =  new IntersectionObserver(
+		this.postInitIntObs = new IntersectionObserver(
 			this.onPostInit.bind(this),
 			{
 				threshold: [0.1],
 				rootMargin: `${screenHeight}px 0px ${screenHeight}px 0px`
 			}
 		);
-		this.postSeenIntObs =  new IntersectionObserver(
+		this.postSeenIntObs = new IntersectionObserver(
 			this.onPostSeen.bind(this),
 			{
 				threshold: [0.4],
