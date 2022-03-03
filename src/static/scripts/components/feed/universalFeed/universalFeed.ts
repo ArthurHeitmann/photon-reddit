@@ -20,6 +20,7 @@ import Ph_PhotonBaseElement from "../../photon/photonBaseElement/photonBaseEleme
 import {PhEvents} from "../../../types/Events";
 import {Ph_ViewState} from "../../viewState/viewState";
 import makeFeedHeaderElements from "./feedHeaderElements";
+import PostsFocusStack from "./postsFocusStack";
 
 
 /** Visibility of an item in an infinite scroller (IS) */
@@ -58,6 +59,7 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 	private postInitIntObs: IntersectionObserver;
 	/** Triggers for posts if they visible and marks them as read */
 	private postSeenIntObs: IntersectionObserver;
+	private postsFocusStack: PostsFocusStack;
 
 	// infinite scroller stuff
 	/** List of all item ids to avoid duplicates */
@@ -108,6 +110,7 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 				rootMargin: `0px 0px 0px 0px`
 			}
 		);
+		this.postsFocusStack = new PostsFocusStack();
 
 		this.listingStream = new RedditListingStream();
 		this.listingStream.onNewItems = this.onNewItemsLoaded.bind(this);
@@ -142,7 +145,7 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 			const post = entry.target as Ph_Post;
 			const item = this.allItems.find(item => item.element === post);
 			if (entry.intersectionRatio >= 0.4) {
-				post.onIsOnScreen();
+				this.postsFocusStack.push(post);
 				if (!Users.global.d.photonSettings.markSeenPosts || Users.global.hasPostsBeenSeen(post.data.name))
 					return;
 				item.postMarkAsSeenTimeout = setTimeout(() => {
@@ -150,7 +153,7 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 				}, 500);
 			}
 			else {
-				post.onIsOffScreen();
+				this.postsFocusStack.pop(post);
 				if (item.postMarkAsSeenTimeout)
 					clearTimeout(item.postMarkAsSeenTimeout);
 			}
@@ -602,6 +605,7 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 			item.element.isCleanupProtected = false;
 			item.element.cleanup();
 		}
+		this.postsFocusStack.clear();
 		super.cleanup();
 	}
 }
