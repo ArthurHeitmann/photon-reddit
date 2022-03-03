@@ -78,7 +78,7 @@ export default class Ph_PostBody extends HTMLElement {
 			return PostType.redditGallery;
 		else if (postData.post_hint == "rich:video")
 			return PostType.embeddedVideo;
-		else if (/^(https?:\/\/)?(www\.)?twitter\.com\/[^/]+\/status\/\d+/.test(postData.url))
+		else if (/^(https?:\/\/)?(www\.)?twitter\.com\/[^/]+\/status\/\d+/i.test(postData.url))
 			return PostType.tweet;
 		else
 			return PostType.link;

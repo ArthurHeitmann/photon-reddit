@@ -70,11 +70,11 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 		}
 
 		// task of this huuuuge switch: get the video file url (.mp4/.gif/...) of this post and init the video player with it
-		switch (url.match(/^https?:\/\/w?w?w?\.?([\w.]+)/)[1]) {
+		switch (url.match(/^https?:\/\/w?w?w?\.?([\w.]+)/i)[1]) {
 			case "imgur.com":
 			case "m.imgur.com":
 			case "i.imgur.com":
-				const typelessUrl = url.match(/^https?:\/\/([im])?\.?imgur\.com\/\w+/)[0];		// removes file ending usually all .gif or .gifv have an .mp4
+				const typelessUrl = url.match(/^https?:\/\/([im])?\.?imgur\.com\/\w+/i)[0];		// removes file ending usually all .gif or .gifv have an .mp4
 				videoOut.init(new Ph_SimpleVideo([
 					{src: typelessUrl + ".mp4", type: "video/mp4"},
 				]));
@@ -84,10 +84,10 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				// however in the media oembed property there is a correctly capitalized path
 				if (postData?.media) {
 					let capitalizedPath;
-					if (/^https?:\/\/thumbs\.gfycat\.com\/./.test(postData.media.oembed.thumbnail_url)) {
-						capitalizedPath = postData.media.oembed.thumbnail_url.match(/^https?:\/\/thumbs\.gfycat\.com\/(\w+)/)[1];
+					if (/^https?:\/\/thumbs\.gfycat\.com\/./i.test(postData.media.oembed.thumbnail_url)) {
+						capitalizedPath = postData.media.oembed.thumbnail_url.match(/^https?:\/\/thumbs\.gfycat\.com\/(\w+)/i)[1];
 					} else if (/^https?:\/\/i.embed.ly\/./.test(postData.media.oembed.thumbnail_url)) {
-						capitalizedPath = postData.media.oembed.thumbnail_url.match(/thumbs\.gfycat\.com%2F(\w+)/)[1];
+						capitalizedPath = postData.media.oembed.thumbnail_url.match(/thumbs\.gfycat\.com%2F(\w+)/i)[1];
 					} else {
 						throw `Invalid gfycat oembed link ${postData.media.oembed.thumbnail_url}`;
 					}
@@ -116,7 +116,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 				break;
 			case "v.redd.it":
 			case "reddit.com":
-				if (/\.mp4([?#].*)?$/.test(url)) {
+				if (/\.mp4([?#].*)?$/i.test(url)) {
 					defaultCase();
 				}
 				else {
@@ -148,7 +148,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 
 					let dashUrl: string;
 					// gets videoId from https://v.redd.it/[videoId] or https://reddit.com/link/[postId]/video/[videoId]
-					const vReddItId = url.match(/(https:\/\/v\.redd\.it\/|https?:\/\/(?:www\.)?reddit\.com\/link\/\w+\/video\/)([^/?#]+)|/)[2];
+					const vReddItId = url.match(/(https:\/\/v\.redd\.it\/|https?:\/\/(?:www\.)?reddit\.com\/link\/\w+\/video\/)([^/?#]+)|/i)[2];
 					const vReddItUrl = `https://v.redd.it/${vReddItId}`;
 					const redditVideoData = postData?.media?.reddit_video;
 					if (redditVideoData)
@@ -255,7 +255,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 			case "media1.giphy.com":
 			case "media2.giphy.com":
 			case "giphy.com":
-				const giphyId = url.match(/giphy\.com(\/\w+)?\/(\w+-)*(\w+)/)[3];		// gfycat.com/<id> or gfycat.com/name-of-gif-<id> or gfycat.com/something/<id> --> <id>
+				const giphyId = url.match(/giphy\.com(\/\w+)?\/(\w+-)*(\w+)/i)[3];		// gfycat.com/<id> or gfycat.com/name-of-gif-<id> or gfycat.com/something/<id> --> <id>
 				videoOut.init(new Ph_SimpleVideo([
 					{ src: `https://i.giphy.com/media/${giphyId}/giphy.mp4`, 		type: "video/mp4", lowerQualityAlternative: false, label: "Original" },
 					{ src: `https://i.giphy.com/media/${giphyId}/giphy-preview.mp4`,type: "video/mp4", lowerQualityAlternative: true,  label: "Preview" },

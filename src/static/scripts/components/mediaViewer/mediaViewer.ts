@@ -171,7 +171,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	static isPostVideo(postData: RedditPostData): boolean {
 		if (Ph_MediaViewer.isUrlVideo(postData.url))
 			return true
-		else if (/https?:\/\/clips.twitch.tv\/[\w-]+/.test(postData.url) && postData.media)
+		else if (/https?:\/\/clips.twitch.tv\/[\w-]+/i.test(postData.url) && postData.media)
 			return true;
 		else if (postData.post_hint == "hosted:video")
 			return true;
@@ -194,7 +194,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 			"(giphy\\.com/\\w+/\\w+)|" +											// giphy
 			"(streamable\\.com/\\w+)|" +											// streamable
 			"(\\.(gif|mp4)(\\?.*)?$)"												// .gif or .mp4 file
-		).test(url);
+		, "i").test(url);
 	}
 
 	static isPostImage(postData: RedditPostData): boolean {
@@ -207,7 +207,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	}
 
 	static isUrlImgur(url: string): boolean {
-		return /^(https?:\/\/)?(\w+\.)?imgur\.com\/\w+(\/\w+)?/.test(url);
+		return /^(https?:\/\/)?(\w+\.)?imgur\.com\/\w+(\/\w+)?/i.test(url);
 	}
 
 	static isUrlOnWhiteList(url: string): boolean {
