@@ -133,6 +133,12 @@ export default class Ph_ImageViewer extends Ph_PhotonBaseElement implements Medi
 	onImageError() {
 		this.refreshButton.classList.remove("hide");
 	}
+
+	onKeyDownEvent(e: KeyboardEvent): void {
+		if (e.code == "KeyH") {
+			this.startLoadingOriginal();
+		}
+	};
 }
 
 customElements.define("ph-image-viewer", Ph_ImageViewer);
