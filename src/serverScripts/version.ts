@@ -1,6 +1,20 @@
-export const photonVersion = "1.1.3";		/// <change version script>
+export const photonVersion = "1.1.4";		/// <change version script>
 
 export const photonChangelog = {
+	"1.1.4": {
+		"New": [
+			"Added setting to auto collapse pinned comments",
+			"Added setting to filter comments by username",
+			"Added setting for finer volume control for videos",
+			"Videos in fullscreen will now hide the cursor",
+			"Added button to load HD images (shortcut H)",
+		],
+		"Fixed": [
+			"Hopefully fixed play/pause button animation freezing",
+			"Slightly improved performance for comments (by incrementally loading as you scroll)",
+			"Many small changes & fixes",
+		],
+	},
 	"1.1.3": {
 		"Fixed": [
 			"Fixed search subreddit by flair not working",
