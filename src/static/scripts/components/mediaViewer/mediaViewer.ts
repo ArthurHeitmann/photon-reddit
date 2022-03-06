@@ -6,7 +6,6 @@ import {nonDraggableElement} from "../../utils/htmlStatics";
 import {linksToSpa} from "../../utils/htmlStuff";
 import {
 	attachOnFullscreenChangeListener,
-	enterFullscreen,
 	exitFullscreen,
 	hasHTML,
 	hasParams,
@@ -27,6 +26,7 @@ import {MediaElement} from "./mediaElement";
 import Ph_GifVideo from "./videoPlayer/gifVideo/gifVideo";
 import Ph_SimpleVideo from "./videoPlayer/simpleVideo/simpleVideo";
 import Ph_VideoPlayer from "./videoPlayer/videoPlayer";
+import Ph_AnimatedFullscreen from "../misc/animatedFullscreen/animatedFullscreen";
 
 export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	controls: Ph_ControlsBar;
@@ -418,7 +418,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		}
 		else {
 			Ph_ViewState.getViewOf(this)?.saveScroll(this, "top");
-			enterFullscreen(this);
+			Ph_AnimatedFullscreen.from(this, this.onEnterFullscreen.bind(this), this.onExitFullscreen.bind(this));
 		}
 	}
 

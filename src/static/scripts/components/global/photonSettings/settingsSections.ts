@@ -80,6 +80,7 @@ export const getSettingsSections = (): SettingsSection[] => [
 			new BooleanSetting("firstShowControlBar", "Initially show bottom bar", "Initially show or hide controls bar on the bottom of images and videos.", SettingsApi.Photon),
 			new BooleanSetting("enableFab", "Enable FAB", "Enable Floating Action Button (bottom left corner).", SettingsApi.Photon),
 			new BooleanSetting("tooltipsVisible", "Show tooltips", "Toggle tooltips when hovering some UI elements.", SettingsApi.Photon),
+			new BooleanSetting("animateFullscreenTransition", "Animate fullscreen transition", "", SettingsApi.Photon),
 			new BooleanSetting("hidePostTitle", "Hide post titles", "", SettingsApi.Photon),
 			new BooleanSetting("hidePostTopInfo", "Hide post general info", "Hide Subreddit, user, post time", SettingsApi.Photon),
 			new BooleanSetting("hidePostFlairs", "Hide post flair", "", SettingsApi.Photon),

@@ -63,6 +63,7 @@ describe("Basic Navigation", () => {
 
 		// search for and go to r/AskReddit
 		showHeader();
+		cy.wait(500);
 		cy.get("ph-search input[type=text]").type("r/AskReddit");
 		cy.get("ph-search .modeButton").contains("r/").should("have.class", "checked");
 		cy.get("ph-search .resultsWrapper a").first().as("askRedditLink");

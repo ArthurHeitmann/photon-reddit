@@ -60,6 +60,7 @@ export interface PhotonSettings {
 	beforeExitConfirmation?: boolean,
 	autoCollapsePinnedComment?: boolean,
 	altVolumeFunction?: boolean,
+	animateFullscreenTransition?: boolean,
 }
 
 // default config
@@ -99,6 +100,7 @@ export const defaultSettings: PhotonSettings = {
 	beforeExitConfirmation: false,
 	autoCollapsePinnedComment: false,
 	altVolumeFunction: false,
+	animateFullscreenTransition: false,
 };
 
 /** Stores and manages global settings */

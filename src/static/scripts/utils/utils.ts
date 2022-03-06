@@ -234,11 +234,32 @@ export async function sleep(ms: number): Promise<void> {
 
 export function waitForFullScreenExit(): Promise<boolean> {
 	return new Promise<boolean>((resolve) => {
-		if (!isFullscreen()) {
-			return resolve(false);
-		}
-		attachOnFullscreenChangeListener(document, () => resolve(true), true);
+		if (!isFullscreen())
+			resolve(false);
+
+		const onFsChange = () => {
+			if (isFullscreen())
+				return;
+			resolve(true);
+			detachOnFullscreenChangeListener(document, onFsChange);
+		};
+		attachOnFullscreenChangeListener(document, onFsChange);
 	});
+}
+
+export function attachOnFullscreenChangeListener(target: Element | Document, func: (...args) => void, once = false) {
+	if ("onfullscreenchange" in target)
+		target.addEventListener("fullscreenchange", func, { once });
+	else if ("onwebkitfullscreenchange" in target)
+		// @ts-ignore
+		target.addEventListener("webkitfullscreenchange", func, { once });
+}
+
+export function detachOnFullscreenChangeListener(target: Element | Document, func: (...args) => void) {
+	if ("onfullscreenchange" in target)
+		target.removeEventListener("fullscreenchange", func);
+	else if ("onwebkitfullscreenchange" in target)
+		(target as Element).removeEventListener("webkitfullscreenchange", func);
 }
 
 const randomStringAlphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -435,13 +456,15 @@ export function getFullscreenElement(): Element {
 	return document.fullscreenElement || document.webkitFullscreenElement;
 }
 
-export function enterFullscreen(target: HTMLElement) {
-	if (target.requestFullscreen)
-		target.requestFullscreen();
-	else if (target.webkitRequestFullscreen)
-		target.webkitRequestFullscreen();
-	else
-		throw new Error("No function to enter FS");
+export function enterFullscreen(target: HTMLElement): Promise<void> {
+	return new Promise((resolve, reject) => {
+		if (target.requestFullscreen)
+			resolve(target.requestFullscreen());
+		else if (target.webkitRequestFullscreen)
+			resolve(target.webkitRequestFullscreen());
+		else
+			reject("No function to enter FS");
+	});
 }
 
 export function exitFullscreen() {
@@ -451,15 +474,6 @@ export function exitFullscreen() {
 		document.webkitExitFullscreen();
 	else
 		throw new Error("No function to exit FS");
-}
-
-export function attachOnFullscreenChangeListener(target: Element | Document, func: (...args) => void, once = false) {
-	(target as Document).onwebkitfullscreenchange;
-	if ("onfullscreenchange" in target)
-		target.addEventListener("fullscreenchange", func, { once });
-	else if ("onwebkitfullscreenchange" in target)
-		// @ts-ignore
-		target.addEventListener("webkitfullscreenchange", func, { once });
 }
 
 /**
