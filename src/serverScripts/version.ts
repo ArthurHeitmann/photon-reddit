@@ -1,6 +1,15 @@
-export const photonVersion = "1.1.4";		/// <change version script>
+export const photonVersion = "1.1.5";		/// <change version script>
 
 export const photonChangelog = {
+	"1.1.5": {
+		"New": [
+			"Added optional setting to animate entering/exiting fullscreen (Settings > UI > Animate fullscreen transition)",
+		],
+		"Fixed": [
+			"Fixed \"Load more (x)\" comments button not working",
+			"Fixed twitter videos not being able to enter fullscreen",
+		],
+	},
 	"1.1.4": {
 		"New": [
 			"Added setting to auto collapse pinned comments",
