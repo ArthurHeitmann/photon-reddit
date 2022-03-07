@@ -66,6 +66,11 @@ export default class Ph_CommentsFeed extends Ph_PhotonBaseElement {
 		this.tryAddPendingComments();
 	}
 
+	reset() {
+		this.innerText = "";
+		this.pendingComments = [];
+	}
+
 	insertParentLink(link: string, displayText: string) {
 		const linkA = makeElement(
 			"a",
@@ -79,7 +84,7 @@ export default class Ph_CommentsFeed extends Ph_PhotonBaseElement {
 	private preparePendingComments(): RedditCommentObj[] {
 		let newComments = 0;
 		let i = 0;
-		while (i < this.pendingComments.length && newComments < 40) {
+		while (i < this.pendingComments.length && (newComments < 40 || i < 3)) {
 			newComments += this.countAllNestedComments(this.pendingComments[i]);
 			i++;
 		}
@@ -104,6 +109,8 @@ export default class Ph_CommentsFeed extends Ph_PhotonBaseElement {
 			return false;
 		if (Ph_ViewState.getViewOf(this).classList.contains("hide"))
 			return false;
+		if (this.childElementCount === 0)
+			return true;
 		const bottomDist = this.children[this.childElementCount - 1].getBoundingClientRect().bottom - window.innerHeight;
 		return bottomDist < 1000;
 	}
