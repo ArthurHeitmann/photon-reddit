@@ -123,10 +123,18 @@ export default class Ph_PostBody extends HTMLElement {
 
 	private makeTweetBody(postData: RedditPostData) {
 		this.classList.add("fullScale");
+		const id = postData.url.match(/\/status\/(\d+)/)[1];
+		const twitterEmbedParams = new URLSearchParams({
+			id: id,
+			width: "550px",
+			theme: "dark",
+			origin: location.origin,
+			dnt: "true"
+		});
 		this.innerHTML = `
 			<div class="aspect-ratio-16-9-wrapper">
-				<iframe border=0 frameborder=0 height=250 width=550
-					src="https://twitframe.com/show?url=${encodeURIComponent(postData.url)}&theme=dark&align=center">
+				<iframe border=0 frameborder=0 height=250 width=550 allowfullscreen="true"
+					src="https://platform.twitter.com/embed/Tweet.html?${twitterEmbedParams.toString()}">
 				</iframe>
 			</div>`;
 	}
