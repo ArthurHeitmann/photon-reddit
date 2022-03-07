@@ -69,7 +69,7 @@ export default class Ph_AnimatedFullscreen extends HTMLElement {
 			this.placeholderElement.after(this.fsElement);
 			this.placeholderElement.remove();
 		}
-		this.fsElement.focus();
+		this.fsElement.focus({ preventScroll: true });
 		this.remove();
 	}
 
