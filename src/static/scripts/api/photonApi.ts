@@ -2,9 +2,9 @@
  *
  */
 
-import Ph_Toast, { Level } from "../components/misc/toast/toast";
-import { Changelog } from "../types/misc";
-import { getAuthHeader } from "./redditApi";
+import Ph_Toast, {Level} from "../components/misc/toast/toast";
+import {Changelog} from "../types/misc";
+import {getAuthHeader} from "./redditApi";
 
 /** */
 export async function youtubeDlUrl(url): Promise<{ url?: string, error?: string }> {
@@ -117,4 +117,10 @@ export async function isRedditApiUp(): Promise<boolean> {
 	catch {
 		return false;
 	}
+}
+
+export async function proxyFetch(url: string): Promise<string> {
+	const r = await fetch(`/api/proxy?url=${encodeURIComponent(url)}`);
+	const data = await r.json();
+	return data["text"];
 }

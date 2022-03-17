@@ -27,6 +27,8 @@ import Ph_GifVideo from "./videoPlayer/gifVideo/gifVideo";
 import Ph_SimpleVideo from "./videoPlayer/simpleVideo/simpleVideo";
 import Ph_VideoPlayer from "./videoPlayer/videoPlayer";
 import Ph_AnimatedFullscreen from "../misc/animatedFullscreen/animatedFullscreen";
+import {videoPlayerFromPostData} from "./videoPlayer/videoPlayerFactory";
+import {imageViewerFromUrl} from "./imageViewer/imageViewerFactory";
 
 export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	controls: Ph_ControlsBar;
@@ -56,21 +58,19 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	}
 
 	static fromUrl_Image(url: string): Ph_MediaViewer {
-		return new Ph_MediaViewer([new Ph_ImageViewer({
-			originalUrl: url,
-		})], url);
+		return new Ph_MediaViewer([imageViewerFromUrl(url)], url);
 	}
 
 	static fromPostData_Video(postData: RedditPostData): Ph_MediaViewer {
 		const mediaViewer = new Ph_MediaViewer(null, postData.url);
-		const video = Ph_VideoPlayer.fromPostData({ postData })
+		const video = videoPlayerFromPostData({ postData })
 		mediaViewer.init([ video]);
 		return mediaViewer;
 	}
 
 	static fromUrl_Video(url: string): Ph_MediaViewer {
 		const mediaViewer = new Ph_MediaViewer(null, url);
-		const video = Ph_VideoPlayer.fromPostData({ url })
+		const video = videoPlayerFromPostData({ url })
 		mediaViewer.init([video]);
 		return mediaViewer;
 	}
@@ -203,7 +203,10 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	}
 
 	static isUrlImage(url: string): boolean {
-		return Ph_MediaViewer.isUrlOnWhiteList(url) && /^[^#]+\.(png|jpg|jpeg|svg|webp)(\?.*)?$/i.test(url);		// ends with img file ending and does not have a "#" before that
+		return Ph_MediaViewer.isUrlOnWhiteList(url) && new RegExp(
+			"(^[^#]+\\.(png|jpg|jpeg|svg|webp)(\\?.*)?)|" +
+			"(https://(www\.)?xkcd\.com/\\d+)"
+			, "i").test(url);		// ends with img file ending and does not have a "#" before that
 	}
 
 	static isUrlImgur(url: string): boolean {

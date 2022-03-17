@@ -109,3 +109,22 @@ photonApiRouter.get("/isRedditApiAvailable", safeExcAsync(async (req, res) => {
 		lastApiStatus = false;
 	}
 }));
+
+const allowedDomains = ["xkcd.com"]
+photonApiRouter.get("/proxy", safeExcAsync(async (req, res) => {
+	const url = req.query["url"].toString();
+	const domain = url?.match(/([^./?#]+\.[^./?#]+)(?=[/?#]|$)/)?.[0];
+	if (!url || !domain || !allowedDomains.includes(domain)) {
+		res.status(400).json({ error: "¯\\_(ツ)_/¯" });
+		return;
+	}
+
+	try {
+		const r = await fetch(url);
+		const text = await r.text();
+		res.json({ text });
+	}
+	catch {
+		res.status(400).json({ error: "¯\\_(ツ)_/¯" });
+	}
+}))

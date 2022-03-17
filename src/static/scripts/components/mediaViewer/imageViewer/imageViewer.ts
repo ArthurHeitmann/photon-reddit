@@ -31,16 +31,12 @@ export default class Ph_ImageViewer extends Ph_PhotonBaseElement implements Medi
 	private previewImage: HTMLImageElement = null;
 	private originalSrc: string;
 
-	constructor(initData: ImageInitData) {
+	constructor(initData?: ImageInitData, url?: string) {
 		super();
 		if (!hasParams(arguments)) return;
 
-		this.classList.add("imageViewer");
-		this.classList.add("loading");
-		if (Number(initData.heightHint))
-			this.style.setProperty("--height-hint", `${initData.heightHint}px`);
-
-		this.caption = initData.caption;
+		this.element = this;
+		this.url = url ?? "";
 		this.controls = {
 			rightItems: [
 				this.loadingIcon = getLoadingIcon(),
@@ -51,9 +47,20 @@ export default class Ph_ImageViewer extends Ph_PhotonBaseElement implements Medi
 				])
 			]
 		};
+
+		if (initData)
+			this.init(initData);
+	}
+
+	init(initData: ImageInitData) {
+		this.classList.add("imageViewer");
+		this.classList.add("loading");
+		if (Number(initData.heightHint))
+			this.style.setProperty("--height-hint", `${initData.heightHint}px`);
+
+		this.caption = initData.caption;
 		this.loadingIcon.classList.add("hide");
 		this.hdButton.classList.add("hide");
-		this.element = this;
 		this.url = initData.displayUrl || initData.originalUrl;
 
 		this.originalImage = makeElement("img", {
