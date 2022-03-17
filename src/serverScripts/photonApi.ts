@@ -110,11 +110,11 @@ photonApiRouter.get("/isRedditApiAvailable", safeExcAsync(async (req, res) => {
 	}
 }));
 
-const allowedDomains = ["xkcd.com"]
+const allowedProxyDomains = ["xkcd.com", "ibb.co"];
 photonApiRouter.get("/proxy", safeExcAsync(async (req, res) => {
 	const url = req.query["url"].toString();
 	const domain = url?.match(/([^./?#]+\.[^./?#]+)(?=[/?#]|$)/)?.[0];
-	if (!url || !domain || !allowedDomains.includes(domain)) {
+	if (!url || !domain || !allowedProxyDomains.includes(domain)) {
 		res.status(400).json({ error: "¯\\_(ツ)_/¯" });
 		return;
 	}

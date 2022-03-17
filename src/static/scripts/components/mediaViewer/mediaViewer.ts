@@ -205,7 +205,8 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	static isUrlImage(url: string): boolean {
 		return Ph_MediaViewer.isUrlOnWhiteList(url) && new RegExp(
 			"(^[^#]+\\.(png|jpg|jpeg|svg|webp)(\\?.*)?)|" +
-			"(https://(www\.)?xkcd\.com/\\d+)"
+			"(https://(www\.)?xkcd\.com/\\d+)|" +
+			"(https://(www\.)?ibb\.co/\\w+)"
 			, "i").test(url);		// ends with img file ending and does not have a "#" before that
 	}
 

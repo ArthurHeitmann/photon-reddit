@@ -15,6 +15,17 @@ export function imageViewerFromUrl(url: string): Ph_ImageViewer {
 				new Ph_Toast(Level.error, "Error loading xkcd image", { timeout: 3000, groupId: "xkcdError" });
 			});
 	}
+	if (/https:\/\/(www.)?ibb\.co\/\w+\/?$/.test(url)) {
+		proxyFetch(url)
+			.then(html => {
+				const imgUrl = html.match(/src="(https:\/\/i.ibb.co\/[^?#]+\.(jpg|png|webm))"/)[1];
+				imageViewer.init({ originalUrl: imgUrl })
+			})
+			.catch(e => {
+				console.error(e);
+				new Ph_Toast(Level.error, "Error loading ibb.co image", { timeout: 3000, groupId: "xkcdError" });
+			});
+	}
 	else {
 		imageViewer.init({ originalUrl: url })
 	}
