@@ -176,12 +176,10 @@ export default class Ph_Post extends Ph_FeedItem {
 		commentsLink.setAttribute("data-tooltip", postData.data.num_comments.toString());
 		const numbOfComments = numberToShort(postData.data.num_comments);
 		let commentsSizeClass = "";
-		if (numbOfComments.length > 3) {
+		if (numbOfComments.length > 3)
 			commentsSizeClass = " small";
-		}
-		else if (numbOfComments.length === 3) {
+		else if (numbOfComments.length === 3)
 			commentsSizeClass = "medium";
-		}
 		commentsLink.innerHTML = `
 			<img alt="comments" src="/img/comments.svg">
 			<div class="${commentsSizeClass}">${numbOfComments}</div>
@@ -430,7 +428,16 @@ export default class Ph_Post extends Ph_FeedItem {
 		this.totalVotes = postData.ups + -parseInt(this.currentVoteDirection);
 		this.setVotesState(this.currentVoteDirection);
 		const commentsText = this.$css(".commentsLink div")[0] as HTMLElement;
-		commentsText.innerText = numberToShort(postData.num_comments);
+		const numCommentsStr = numberToShort(postData.num_comments);
+		commentsText.innerText = numCommentsStr;
+		commentsText.classList.remove("small");
+		commentsText.classList.remove("medium");
+		let commentsSizeClass = "";
+		if (numCommentsStr.length > 3)
+			commentsSizeClass = "small";
+		else if (numCommentsStr.length === 3)
+			commentsSizeClass = "medium";
+		commentsText.classList.add(commentsSizeClass);
 	}
 
 	async vote(dir: VoteDirection): Promise<void> {
