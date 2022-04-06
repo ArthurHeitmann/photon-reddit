@@ -30,6 +30,7 @@ export default class Ph_CommentsFeed extends Ph_PhotonBaseElement {
 
 		this.addWindowEventListener("scroll",
 			throttle(this.tryAddPendingComments.bind(this), 200));
+		(new ResizeObserver(this.tryAddPendingComments.bind(this))).observe(this);
 
 		for (const commentData of initialComments)
 			this.appendComment(commentData);
