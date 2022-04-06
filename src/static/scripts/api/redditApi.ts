@@ -211,12 +211,12 @@ export async function deleteThing(fullname: string) {
 	return await redditApiRequest("/api/del", [["id", fullname]], true, { method: "POST" });
 }
 
-export async function searchSubredditNames(query: string) {
-	return await redditApiRequest("/api/search_reddit_names", [["query", query]], false);
-}
-
 export async function searchSubreddits(query: string, limit = 5): Promise<RedditListingObj<RedditSubredditObj>> {
-	return await redditApiRequest("/subreddits/search", [["q", query], ["limit", limit.toString()]], false);
+	return await redditApiRequest("/api/subreddit_autocomplete_v2", [
+		["query", query],
+		["limit", limit.toString()],
+		["include_profiles", "false"]
+	], false);
 }
 
 export async function searchUser(query: string, limit = 5): Promise<RedditListingObj<RedditUserObj>> {
