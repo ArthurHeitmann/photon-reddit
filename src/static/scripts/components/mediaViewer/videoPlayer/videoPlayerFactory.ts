@@ -187,11 +187,35 @@ export function videoPlayerFromPostData({ postData, url }: { postData?: RedditPo
 				// the mp4 url is 							https://clips-media-assets2.twitch.tv/AT-cm|1155435256.mp4
 				const twitchUrlMatches = postData.media.oembed.thumbnail_url.match(/(.*)-social-preview.jpg$/);
 				if (twitchUrlMatches && twitchUrlMatches.length == 2) {
-					videoOut.init(new Ph_SimpleVideo([{
-						src: twitchUrlMatches[1] + ".mp4",
-						type: "video/mp4",
-						heightHint: postData.media.oembed.height
-					}]));
+					const urlBase = twitchUrlMatches[1].replace(/twitch.tv\/(AT-cm%7C)?/, "twitch.tv/AT-cm%7C")
+					videoOut.init(new Ph_SimpleVideo([
+						{
+							src: `${urlBase}.mp4`,
+							type: "video/mp4",
+							heightHint: postData.media.oembed.height,
+							label: "HD"
+						},
+						{
+							src: `${urlBase}-720.mp4`,
+							type: "video/mp4",
+							heightHint: postData.media.oembed.height,
+							lowerQualityAlternative: true,
+							label: "720p"
+						},
+						{
+							src: `${urlBase}-480.mp4`,
+							type: "video/mp4",
+							heightHint: postData.media.oembed.height,
+							lowerQualityAlternative: true,
+							label: "480p"
+						},
+						{
+							src: `${urlBase}-360.mp4`,
+							type: "video/mp4",
+							heightHint: postData.media.oembed.height,
+							label: "360p"
+						},
+					]));
 					twitchMp4Found = true;
 				}
 			}
