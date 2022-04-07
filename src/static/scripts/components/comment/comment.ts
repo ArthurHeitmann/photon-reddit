@@ -115,7 +115,7 @@ export default class Ph_Comment extends Ph_Readable {
 									new Ph_Comment(comment, isChild, isInFeed, post));
 							}
 						}
-						loadMoreButton.remove();
+						this.remove();
 					} catch (e) {
 						console.error("Error loading more comments");
 						console.error(e);

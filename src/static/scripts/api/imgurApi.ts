@@ -2,6 +2,8 @@
  * Interface with imgur api
  */
 
+import Ph_Toast, {Level} from "../components/misc/toast/toast";
+
 /** clientId, should be fine here, shouldn't be a secret */
 const imgurClientID = "d3609b9bd045b8f";
 
@@ -65,6 +67,10 @@ export async function getImgurContent(link: string): Promise<ImgurContent[]> {
 
 	if (data["status"] === 500 && data["success"] === false)
 		return [];
+	else if (data["status"] === 403 && data["success"] === false) {
+		new Ph_Toast(Level.warning, data["data"]["error"], { timeout: 5000, groupId: "imgur rate limit" });
+		return [];
+	}
 	else if ("images" in data.data)
 		return data.data.images.map((img) => makeContentData(img));
 	else

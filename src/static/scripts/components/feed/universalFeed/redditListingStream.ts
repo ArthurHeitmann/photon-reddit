@@ -27,6 +27,10 @@ export default class RedditListingStream<T = RedditApiObj> {
 		this.onLoadingChange?.(this.isLoading);
 		try {
 			const newItems: RedditListingObj<T> = await redditApiRequest(this.url, [["after", this.afterId]], false);
+			if (!newItems || newItems["error"]) {
+				new Ph_Toast(Level.error, "Couldn't load more posts", { timeout: 3000, groupId: "listingStreamError" });
+				return;
+			}
 			this.afterId = newItems.data.after;
 			this.onNewItems?.(newItems.data.children);
 			return;

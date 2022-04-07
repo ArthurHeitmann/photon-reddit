@@ -15,7 +15,7 @@ import {pushLinkToHistoryComb, PushType} from "../../historyState/historyStateMa
 import ViewsStack from "../../historyState/viewsStack";
 import {PhEvents} from "../../types/Events";
 import {FlairApiData, RedditApiObj, RedditListingObj, RedditPostData, RedditPostObj} from "../../types/redditTypes";
-import {$css, emojiFlagsToImages, escADQ, escHTML, getLoadingIcon} from "../../utils/htmlStatics";
+import {$css, emojiFlagsToImages, escADQ, escHTML, getLoadingIcon, nonDraggableElement} from "../../utils/htmlStatics";
 import {linksToSpa} from "../../utils/htmlStuff";
 import {
 	escRegex,
@@ -66,6 +66,7 @@ export default class Ph_Post extends Ph_FeedItem {
 	private haveFlairsLoaded = false;
 	private postFlair: Ph_Flair;
 	private preferSmallerPost: boolean;
+	private removedInfoElement: HTMLElement;
 
 	constructor(postData: RedditPostObj, optionalParams: PostOptionalParams = {}) {
 		const {
@@ -176,12 +177,10 @@ export default class Ph_Post extends Ph_FeedItem {
 		commentsLink.setAttribute("data-tooltip", postData.data.num_comments.toString());
 		const numbOfComments = numberToShort(postData.data.num_comments);
 		let commentsSizeClass = "";
-		if (numbOfComments.length > 3) {
+		if (numbOfComments.length > 3)
 			commentsSizeClass = " small";
-		}
-		else if (numbOfComments.length === 3) {
+		else if (numbOfComments.length === 3)
 			commentsSizeClass = "medium";
-		}
 		commentsLink.innerHTML = `
 			<img alt="comments" src="/img/comments.svg">
 			<div class="${commentsSizeClass}">${numbOfComments}</div>
@@ -283,6 +282,8 @@ export default class Ph_Post extends Ph_FeedItem {
 		mainPart.append(this.postBody);
 		this.append(mainPart);
 
+		if (postData.data.removed_by_category)
+			this.setRemovedReason(postData.data.removed_by_category)
 		mainPart.$class("flairWrapper")[0]
 			.append(this.postFlair);
 		mainPart.$class("user")[0]
@@ -426,11 +427,44 @@ export default class Ph_Post extends Ph_FeedItem {
 		return false;
 	}
 
+	setRemovedReason(removedByCategory: string) {
+		let message: string;
+		if (removedByCategory === "moderator")
+			message = "Removed by moderator";
+		else if (removedByCategory === "deleted")
+			message = "Deleted by user";
+		else
+			message = `Removed (${removedByCategory})`;
+
+		if (!this.removedInfoElement) {
+			this.removedInfoElement = makeElement(
+				"div", { class: "removedInfo" }, [
+					nonDraggableElement(makeElement("img", { src: "/img/error.svg" })),
+					makeElement("div", {}, message)
+				]
+			)
+			this.$class("header")[0].append(this.removedInfoElement);
+		}
+		else {
+			this.removedInfoElement.$tag("div")[0].textContent = message;
+		}
+	}
+
 	updateWithData(postData: RedditPostData) {
 		this.totalVotes = postData.ups + -parseInt(this.currentVoteDirection);
 		this.setVotesState(this.currentVoteDirection);
 		const commentsText = this.$css(".commentsLink div")[0] as HTMLElement;
-		commentsText.innerText = numberToShort(postData.num_comments);
+		const numCommentsStr = numberToShort(postData.num_comments);
+		commentsText.innerText = numCommentsStr;
+		commentsText.classList.remove("small");
+		commentsText.classList.remove("medium");
+		if (numCommentsStr.length > 3)
+			commentsText.classList.add("small");
+		else if (numCommentsStr.length === 3)
+			commentsText.classList.add("medium");
+
+		if (postData.removed_by_category)
+			this.setRemovedReason(postData.removed_by_category);
 	}
 
 	async vote(dir: VoteDirection): Promise<void> {
