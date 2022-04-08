@@ -125,9 +125,8 @@ export default class Ph_UserDropDown extends HTMLElement {
 		const userPage = makeAction(
 			"/img/user.svg",
 			"My Profile",
-			"/"
+			"/user/me"
 		) as HTMLAnchorElement;
-		ensurePageLoaded().then(() => userPage.href = `/user/${Users.current.name}`);
 		actions.append(userPage);
 		// create post
 		const postAction = makeAction(

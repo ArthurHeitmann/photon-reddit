@@ -6,7 +6,7 @@ import {PhotonSettings} from "../../global/photonSettings/photonSettings";
 import Ph_Toast, {Level} from "../../misc/toast/toast";
 import Users from "../../../multiUser/userManagement";
 import Ph_FabElement, {FabElementSize} from "./fabElement/fabElement";
-import {defaultFabPresets, initialDefaultFabPresets} from "./fabElementConfig";
+import {defaultFabPresets, initialDefaultFabPresets, migratePreset} from "./fabElementConfig";
 
 interface LayerConfiguration {
 	distance: number;
@@ -85,6 +85,7 @@ export default class Ph_Fab extends HTMLElement {
 		try {
 			const presets = Users.global.d.fabConfig;
 			for (const preset of presets) {
+				migratePreset(preset);
 				const fabElement = new Ph_FabElement(this.onElementRemoved.bind(this));
 				fabElement.loadPreset(preset);
 				this.fabElements.push(fabElement);
