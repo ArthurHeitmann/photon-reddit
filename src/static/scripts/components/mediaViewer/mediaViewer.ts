@@ -394,7 +394,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		// link
 		this.elementLink.href = newMedia.url;
 		const shortLinkMatches = newMedia.url.match(/[\w-_]+\.[\w-_]+(?=([/?#].*)?$)/);	// sub.en.domain.com?query --> domain.com
-		this.elementLink.innerText = shortLinkMatches?.[0] || newMedia.url.slice(0, 10);
+		this.elementLink.innerText = shortLinkMatches?.[0] || newMedia.url.replace(/^https?:\/\//, "").slice(0, 10);
 		// controls slots
 		this.controls.updateSlotsWith(newMedia.controls);
 		// fs event
