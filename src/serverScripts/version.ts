@@ -1,6 +1,18 @@
-export const photonVersion = "1.1.5";		/// <change version script>
+export const photonVersion = "1.1.6";		/// <change version script>
 
 export const photonChangelog = {
+	"1.1.6": {
+		"New": [
+			"Added support for xkcd images",
+			"Added support for ibb.co images",
+			"Added info for deleted/removed posts",
+			"Added option to change resolution for twitch clips",
+			"Changed subreddit search api to autocomplete api (results should be a bit better)",
+		],
+		"Fixed": [
+			"Many small changes & fixes",
+		],
+	},
 	"1.1.5": {
 		"New": [
 			"Added optional setting to animate entering/exiting fullscreen (Settings > UI > Animate fullscreen transition)",
