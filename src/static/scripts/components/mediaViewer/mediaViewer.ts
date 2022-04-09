@@ -403,17 +403,17 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	}
 
 	nextGalleryElement(fixScrollToBottom = true) {
-		fixScrollToBottom && Ph_ViewState.getViewOf(this).saveScroll(this, "bottom");
+		fixScrollToBottom && Ph_ViewState.getViewOf(this)?.saveScroll(this, "bottom");
 		this.currentIndex = (this.currentIndex + 1) % this.mediaElements.length;
 		this.displayCurrentElement();
-		fixScrollToBottom && Ph_ViewState.getViewOf(this).loadScroll();
+		fixScrollToBottom && Ph_ViewState.getViewOf(this)?.loadScroll();
 	}
 
 	previousGalleryElement(fixScrollToBottom = true) {
-		fixScrollToBottom && Ph_ViewState.getViewOf(this).saveScroll(this, "bottom");
+		fixScrollToBottom && Ph_ViewState.getViewOf(this)?.saveScroll(this, "bottom");
 		this.currentIndex = this.currentIndex > 0 ? this.currentIndex - 1 : this.mediaElements.length - 1;
 		this.displayCurrentElement();
-		fixScrollToBottom && Ph_ViewState.getViewOf(this).loadScroll();
+		fixScrollToBottom && Ph_ViewState.getViewOf(this)?.loadScroll();
 	}
 
 	toggleFullscreen() {
@@ -447,7 +447,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		this.draggableWrapper.reset();
 		this.fullscreenImage.showImage("fullscreen")
 		this.classList.remove("isInFullscreen");
-		Ph_ViewState.getViewOf(this).loadScroll();
+		Ph_ViewState.getViewOf(this)?.loadScroll();
 	}
 
 	cleanup() {
