@@ -44,7 +44,7 @@ export const defaultFabActions: FabAction[] = [
 	{ type: "url", action: "/r/all", names: ["r/all", "all"] },
 	{ type: "url", action: "/r/popular", names: ["r/popular", "popular"] },
 	{ type: "url", action: "/message/inbox", names: ["Inbox", "messages", "chat"] },
-	{ type: "function", action: "My Profile", names: ["My Profile", "my", "me", "profile", "user"] },
+	{ type: "url", action: "/user/me", names: ["My Profile", "my", "me", "profile", "user"] },
 	{ type: "function", action: "Submit", names: ["Submit Post", "post", "submit", "new", "write"] },
 	{ type: "url", action: "/message/compose", names: ["Compose Message", "message", "new", "compose", "chat"] },
 	{ type: "function", action: "Unload Pages", names: ["Unload Pages", "remove", "delete", "cross", "x", "pages"] },
@@ -117,3 +117,10 @@ export const initialDefaultFabPresets = [
 	defaultFabPresets[6],
 	defaultFabPresets[2],
 ];
+
+export function migratePreset(preset: FabPreset) {
+	if (preset.action.type === "function" && preset.action.action === "My Profile") {
+		preset.action.type = "url";
+		preset.action.action = "/user/me";
+	}
+}

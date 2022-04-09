@@ -76,6 +76,7 @@ export async function pushLinkToHistoryComb(pathAndQuery: string, pushType: Push
 
 /** Use this function to redirect to a SPA link and the url doesn't contain a query part */
 export async function pushLinkToHistorySep(path: string, query: string = "?", pushType: PushType = PushType.pushAfter, postHint?: PostDoubleLink): Promise<void> {
+	path = modifyUrl(path);
 	// don't load new page if next history state has same url
 	const nextState = ViewsStack.getNextState();
 	if (nextState && nextState.state.url == (path + query)) {
@@ -218,4 +219,11 @@ function handleSpecialPaths(path: string, query: string[][], stateLoader: Ph_Vie
 		return true;
 	}
 	return false;
+}
+
+function modifyUrl(url: string): string {
+	if (Users.current.d.auth.isLoggedIn)
+		url = url.replace(/\/(u|user)\/me/, `/$1/${Users.current.name}`);
+
+	return url;
 }
