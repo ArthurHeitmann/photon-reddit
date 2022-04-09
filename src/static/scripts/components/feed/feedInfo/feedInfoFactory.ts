@@ -1,9 +1,8 @@
-import { PhEvents } from "../../../types/Events";
-import { escHTML } from "../../../utils/htmlStatics";
-import { makeElement } from "../../../utils/utils";
-import Ph_Toast, { Level } from "../../misc/toast/toast";
+import {PhEvents} from "../../../types/Events";
+import {makeElement} from "../../../utils/utils";
+import Ph_Toast, {Level} from "../../misc/toast/toast";
 import Ph_PhotonBaseElement from "../../photon/photonBaseElement/photonBaseElement";
-import Ph_FeedInfo, { FeedType } from "./feedInfo";
+import Ph_FeedInfo, {FeedType} from "./feedInfo";
 import Ph_FeedInfoMulti from "./feedInfoMulti";
 import Ph_FeedInfoSubreddit from "./feedInfoSubreddit";
 import Ph_FeedInfoUser from "./feedInfoUser";
@@ -52,7 +51,7 @@ export default class FeedInfoFactory {
 		case FeedType.messages:
 		case FeedType.misc:
 		default:
-			new Ph_Toast(Level.warning, `Unknown feed type ${feedType} for ${escHTML(feedUrl)}`);
+			new Ph_Toast(Level.warning, `Unknown feed type ${feedType} for ${feedUrl}`);
 			return null;
 		}
 	}

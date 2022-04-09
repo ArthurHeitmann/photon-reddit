@@ -15,7 +15,7 @@ import {
 	SubredditModerator,
 	SubredditRule
 } from "../../../types/redditTypes";
-import {emojiFlagsToImages, escHTML} from "../../../utils/htmlStatics";
+import {emojiFlagsToImages} from "../../../utils/htmlStatics";
 import {linksToSpa} from "../../../utils/htmlStuff";
 import {getSubredditIconUrl, makeElement, numberToShort, stringSortComparer} from "../../../utils/utils";
 import Ph_DropDown, {DirectionX, DirectionY} from "../../misc/dropDown/dropDown";
@@ -136,7 +136,7 @@ export default class Ph_FeedInfoSubreddit extends Ph_FeedInfo<AllSubData> {
 								this.feedUrl.replace(/^\/r\//, ""),	// remove leading /r/
 							);
 							if (response["explanation"]) {
-								new Ph_Toast(Level.error, escHTML(response["explanation"]), { timeout: 6000 });
+								new Ph_Toast(Level.error, response["explanation"], { timeout: 6000 });
 								return;
 							}
 							else if (!response.name || response["error"]) {

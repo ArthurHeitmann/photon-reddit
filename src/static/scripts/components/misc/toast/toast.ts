@@ -1,4 +1,5 @@
-import { hasParams } from "../../../utils/utils";
+import {hasParams, sleep} from "../../../utils/utils";
+import {escHTML} from "../../../utils/htmlStatics";
 
 export interface ToastOptions {
 	/** if > 0 --> remove toast after n ms */
@@ -25,10 +26,10 @@ export default class Ph_Toast extends HTMLElement {
 
 	/**
 	 * @param level severity
-	 * @param displayHtml message innerHTML
+	 * @param displayText message innerHTML
 	 * @param options optional configuration
 	 */
-	constructor(level: Level, displayHtml: string, options: ToastOptions = {}) {
+	constructor(level: Level, displayText: string, options: ToastOptions = {}) {
 		super();
 		if (!hasParams(arguments)) return;
 
@@ -45,13 +46,14 @@ export default class Ph_Toast extends HTMLElement {
 
 		this.className = "toast";
 		this.style.setProperty("--theme", levelConfig[level].color);
+		this.style.setProperty("--theme-stronger", levelConfig[level].strongerColor);
 		this.options = options;
 
 		this.innerHTML = `
 			<img src="${levelConfig[level].img}" alt="${levelConfig[level].text}" class="levelImg" draggable="false">
 			<div class="textWrapper">
 				<div class="title">${levelConfig[level].text}</div>
-				<div class="info">${displayHtml}</div>
+				<div class="info">${escHTML(displayText)}</div>
 			</div>
 			<button class="closeButton transparentButtonAlt">
 				<img src="/img/close.svg" draggable="false" alt="✖">
@@ -91,11 +93,19 @@ export default class Ph_Toast extends HTMLElement {
 		this.classList.remove("remove")
 		clearTimeout(this.removeTimout);
 		this.removeTimout = null;
+		this.classList.remove("animate");
 	}
 
 	setRemoveAfter() {
-		if (this.options.timeout > 0)
+		if (this.options.timeout > 0) {
 			this.removeTimout = setTimeout(this.removeSelf.bind(this), this.options.timeout);
+			this.classList.add("timeoutAnimation");
+			requestAnimationFrame(
+				// wait for next frame to render before starting animation
+				() => sleep(0.1).then(
+					() => this.classList.add("animate")));
+			this.style.setProperty("--timeout-duration", `${this.options.timeout}ms`);
+		}
 	}
 
 	removeSelf() {
@@ -111,21 +121,25 @@ const levelConfig = {
 	success: {
 		text: "Success",
 		color: "#388e3c",
+		strongerColor: "#1b5e20",
 		img: "/img/success.svg",
 	},
 	info: {
 		text: "Info",
 		color: "#1976d2",
+		strongerColor: "#0d47a1",
 		img: "/img/info.svg",
 	},
 	warning: {
 		text: "Warning",
 		color: "#f57c00",
+		strongerColor: "#e65100",
 		img: "/img/warning.svg",
 	},
 	error: {
 		text: "Error",
 		color: "#d32f2f",
+		strongerColor: "#b71c1c",
 		img: "/img/error.svg",
 	}
 }

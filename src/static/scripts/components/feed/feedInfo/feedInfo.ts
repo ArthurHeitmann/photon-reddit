@@ -1,6 +1,6 @@
 import {PhEvents} from "../../../types/Events";
 import {StoredData} from "../../../types/misc";
-import {$class, $cssAr, escHTML} from "../../../utils/htmlStatics";
+import {$class, $cssAr} from "../../../utils/htmlStatics";
 import {tagInElementTree} from "../../../utils/htmlStuff";
 import {hasParams, makeElement} from "../../../utils/utils";
 import Ph_Header from "../../global/header/header";
@@ -71,7 +71,7 @@ export default abstract class Ph_FeedInfo<StoredData> extends HTMLElement {
 		const isValid = this.isLoadedInfoValid();
 		if (!isValid) {
 			this.removeInfo();
-			new Ph_Toast(Level.error, `Corrupted feed info for ${escHTML(this.feedUrl)}`);
+			new Ph_Toast(Level.error, `Corrupted feed info for ${this.feedUrl}`);
 			console.error(`Corrupted feed info for ${this.feedUrl} (${JSON.stringify(this.loadedInfo)})`);
 			throw "Corrupted feed info";
 		}

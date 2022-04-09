@@ -9,7 +9,6 @@
 	from { transform: translateY(0) translateX(-50%); }
 	to { transform: translateY(calc(100% + 1rem)) translateX(-50%); }
 }
-
 .toast {
 	position: fixed;
 	bottom: 0.5rem;
@@ -59,5 +58,35 @@
 
 	&.remove {
 		animation: remove .25s ease forwards;
+	}
+
+	&.timeoutAnimation {
+		--timeout-duration: 2s;
+
+		&::before, &::after {
+			content: '';
+			position: absolute;
+			bottom: .35rem;
+			left: 3.5rem;
+			height: 2px;
+		}
+
+		&::before {
+			width: calc(100% - 6rem);
+			background: var(--theme-stronger);
+		}
+
+		&::after {
+			width: 0;
+			opacity: 0;
+			background: rgba(255, 255, 255, 0.75);
+			transition: width .25s ease, opacity .125s ease;
+		}
+
+		&.animate::after {
+			opacity: 1;
+			width: calc(100% - 6rem);
+			transition: width var(--timeout-duration) linear, opacity .125s ease;
+		}
 	}
 }

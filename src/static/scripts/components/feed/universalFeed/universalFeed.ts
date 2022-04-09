@@ -7,7 +7,7 @@ import {
 	RedditPostData,
 	RedditPostObj
 } from "../../../types/redditTypes";
-import {escHTML, isElementInViewport} from "../../../utils/htmlStatics";
+import {isElementInViewport} from "../../../utils/htmlStatics";
 import {hasParams, makeElement, sleep, throttle} from "../../../utils/utils";
 import Ph_Comment from "../../comment/comment";
 import Ph_Message from "../../message/message";
@@ -582,7 +582,7 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 			case "t4":
 				return new Ph_Message(itemData as RedditMessageObj, totalItemCount !== 1);
 			default:
-				new Ph_Toast(Level.error, `Unknown feed item "${escHTML(itemData.kind)}"`);
+				new Ph_Toast(Level.error, `Unknown feed item "${itemData.kind}"`);
 				throw `What is this feed item? ${JSON.stringify(itemData, null, 4)}`;
 		}
 	}

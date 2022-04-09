@@ -2,7 +2,6 @@ import {RedditPostData} from "../../../types/redditTypes";
 import Ph_GifVideo from "./gifVideo/gifVideo";
 import Ph_SimpleVideo from "./simpleVideo/simpleVideo";
 import Ph_Toast, {Level} from "../../misc/toast/toast";
-import {escHTML} from "../../../utils/htmlStatics";
 import {getGfycatMp4SrcFromUrl, GfycatDomain} from "../../../api/gfycatApi";
 import Ph_VideoAudio from "./videoAudio/videoAudio";
 import {SourceData} from "./videoWrapper";
@@ -30,7 +29,7 @@ export function videoPlayerFromPostData({ postData, url }: { postData?: RedditPo
 			return;
 		}
 		console.error(`Unknown video provider for ${url}`);
-		new Ph_Toast(Level.error, `Unknown video provider for ${escHTML(url)}`);
+		new Ph_Toast(Level.error, `Unknown video provider for ${url}`);
 	}
 
 	// task of this huuuuge switch: get the video file url (.mp4/.gif/...) of this post and init the video player with it

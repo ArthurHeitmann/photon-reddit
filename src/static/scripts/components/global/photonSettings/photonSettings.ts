@@ -1,7 +1,6 @@
 import {updateUserPreferences} from "../../../api/redditApi";
 import {PhEvents} from "../../../types/Events";
 import {RedditPreferences} from "../../../types/redditTypes";
-import {escHTML} from "../../../utils/htmlStatics";
 import "../../../utils/htmlStuff";
 import {broadcastMessage, MessageFormat, onMessageBroadcast} from "../../../utils/messageCommunication";
 import {deepClone, ensurePageLoaded, isJsonEqual, isObjectEmpty, makeElement} from "../../../utils/utils";
@@ -202,7 +201,7 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 	private async onPhotonSettingChange(source: SettingConfig, newVal: any) {
 		const validatorReturn = source.validateValue(newVal);
 		if (!validatorReturn.isValid) {
-			new Ph_Toast(Level.error, escHTML(validatorReturn.error));
+			new Ph_Toast(Level.error, validatorReturn.error);
 			source.updateState(Users.global.d.photonSettings[source.settingKey]);
 			return;
 		}
@@ -218,7 +217,7 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 	private async onRedditPreferenceChange(source: SettingConfig, newVal: any) {
 		const validatorReturn = source.validateValue(newVal);
 		if (!validatorReturn.isValid) {
-			new Ph_Toast(Level.error, escHTML(validatorReturn.error));
+			new Ph_Toast(Level.error, validatorReturn.error);
 			return;
 		}
 		source.updateState(newVal);

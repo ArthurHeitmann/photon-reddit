@@ -180,7 +180,7 @@ export default class Ph_FeedInfoMulti extends Ph_FeedInfo<RedditMultiInfo> {
 	private async removeSubFromMulti(subName: string, multiPath: string, editSubBar: HTMLElement) {
 		subName = subName.replace(/^\/?r\//i, "");		// remove r/ prefix
 		if (!this.loadedInfo.data.subreddits.find(sub => sub.name === subName)) {
-			new Ph_Toast(Level.warning, `r/${escHTML(subName)} does not exist in ${escHTML(multiPath)}`, { timeout: 6000 });
+			new Ph_Toast(Level.warning, `r/${subName} does not exist in ${multiPath}`, { timeout: 6000 });
 			return;
 		}
 		try {
@@ -198,13 +198,13 @@ export default class Ph_FeedInfoMulti extends Ph_FeedInfo<RedditMultiInfo> {
 	private async addSubToMulti(subData: RedditSubredditObj, multiPath: string, sourceIsMulti: boolean, subsList?: HTMLElement) {
 		const subName = subData.data.display_name;
 		if (sourceIsMulti && this.loadedInfo.data.subreddits.find(sub => sub.name === subName)) {
-			new Ph_Toast(Level.warning, `r/${escHTML(subName)} already exists in ${escHTML(multiPath)}`, { timeout: 6000 });
+			new Ph_Toast(Level.warning, `r/${subName} already exists in ${multiPath}`, { timeout: 6000 });
 			return;
 		}
 		try {
 			const response = await addSubToMulti(multiPath, subName);
 			if (response["explanation"]) {
-				new Ph_Toast(Level.error, escHTML(response["explanation"]), { timeout: 6000 });
+				new Ph_Toast(Level.error, response["explanation"], { timeout: 6000 });
 				return;
 			}
 			if (!response["name"])

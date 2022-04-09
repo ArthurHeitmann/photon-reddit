@@ -106,13 +106,13 @@ export default class Ph_Message extends Ph_Readable {
 				replyForm.addEventListener(PhEvents.submit, async () => {
 					const response = await comment(this.lastMessageFromOther.fullName, replyForm.textField.value);
 					if (response["error"]) {
-						new Ph_Toast(Level.error, `Couldn't reply (${escHTML(response["message"])})`);
+						new Ph_Toast(Level.error, `Couldn't reply (${response["message"]})`);
 						console.error(response);
 						return;
 					}
 					else if (response.json.errors.length) {
 						for (const error of response.json.errors) {
-							new Ph_Toast(Level.error, error instanceof Array ? error.join(" | ") : escHTML(JSON.stringify(error)));
+							new Ph_Toast(Level.error, error instanceof Array ? error.join(" | ") : JSON.stringify(error));
 						}
 						console.error(response);
 						return;

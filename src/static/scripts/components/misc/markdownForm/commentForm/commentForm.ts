@@ -1,8 +1,7 @@
-import { comment } from "../../../../api/redditApi";
-import { PhEvents } from "../../../../types/Events";
-import { escHTML } from "../../../../utils/htmlStatics";
-import { hasParams } from "../../../../utils/utils";
-import Ph_Toast, { Level } from "../../toast/toast";
+import {comment} from "../../../../api/redditApi";
+import {PhEvents} from "../../../../types/Events";
+import {hasParams} from "../../../../utils/utils";
+import Ph_Toast, {Level} from "../../toast/toast";
 import Ph_MarkdownForm from "../markdownForm";
 
 export default class Ph_CommentForm extends Ph_MarkdownForm {
@@ -27,7 +26,7 @@ export default class Ph_CommentForm extends Ph_MarkdownForm {
 				console.error(response);
 				console.error(JSON.stringify(response));
 				for (const error of response.json.errors)
-					new Ph_Toast(Level.error, error instanceof Array ? error.join(" | ") : escHTML(JSON.stringify(error)));
+					new Ph_Toast(Level.error, error instanceof Array ? error.join(" | ") : JSON.stringify(error));
 				return;
 			}
 

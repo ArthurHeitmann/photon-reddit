@@ -1,11 +1,11 @@
-import { editCommentOrPost } from "../../../../api/redditApi";
-import { PhEvents } from "../../../../types/Events";
-import { RedditPostData } from "../../../../types/redditTypes";
-import { emojiFlagsToImages, escHTML } from "../../../../utils/htmlStatics";
-import { elementWithClassInTree, linksToSpa } from "../../../../utils/htmlStuff";
-import { hasParams } from "../../../../utils/utils";
+import {editCommentOrPost} from "../../../../api/redditApi";
+import {PhEvents} from "../../../../types/Events";
+import {RedditPostData} from "../../../../types/redditTypes";
+import {emojiFlagsToImages} from "../../../../utils/htmlStatics";
+import {elementWithClassInTree, linksToSpa} from "../../../../utils/htmlStuff";
+import {hasParams} from "../../../../utils/utils";
 import Ph_MarkdownForm from "../../../misc/markdownForm/markdownForm";
-import Ph_Toast, { Level } from "../../../misc/toast/toast";
+import Ph_Toast, {Level} from "../../../misc/toast/toast";
 import Ph_RedditPoll from "./redditPoll";
 
 /**
@@ -114,7 +114,7 @@ export default class Ph_PostText extends HTMLElement {
 			console.error(editData);
 			console.error(JSON.stringify(editData));
 			for (const error of editData.json.errors)
-				new Ph_Toast(Level.error, error instanceof Array ? error.join(" | ") : escHTML(JSON.stringify(error)));
+				new Ph_Toast(Level.error, error instanceof Array ? error.join(" | ") : JSON.stringify(error));
 			return;
 		}
 
