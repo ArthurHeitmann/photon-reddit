@@ -22,12 +22,12 @@
  *
  */
 
-import { config } from "dotenv";
+import {config} from "dotenv";
 import express from "express";
 import RateLimit from "express-rate-limit";
 import mariadb, {Pool} from "mariadb";
-import { analyticsRateLimitConfig, basicRateLimitConfig } from "./consts";
-import { isIpFromBot, safeExcAsync } from "./utils";
+import {analyticsRateLimitConfig, basicRateLimitConfig} from "./consts";
+import {isIpFromBot, safeExcAsync} from "./utils";
 
 const env: "production" | "development" | string = process.env.NODE_ENV || "development";
 if (env !== "production")
@@ -105,7 +105,7 @@ async function getEventsInTimeFrame(timeFrame: number, resolution: number): Prom
 			Math.round(firstEntry + i * stepSize),
 			Math.round(firstEntry + (i + 1) * stepSize)
 		]);
-	const esc = connection.escape;
+	const esc = connection.escape.bind(connection);
 	try {
 		let queryString = `
 			SELECT
@@ -148,21 +148,27 @@ async function getPopularPathsInTimeFrame(timeFrame: number, limit: number): Pro
 	if (connection === null)
 		return [];
 	try {
-		const rows = await connection.query(`
-			SELECT path, COUNT(path) AS percent
-			FROM trackedEvents
-			WHERE timeMillisUtc >= ${connection.escape(Date.now() - timeFrame)}
-			GROUP BY path
-			ORDER BY percent DESC
-			LIMIT ${connection.escape(limit)}
-			;
-		`);
-		const rows2 = await connection.query(`
-			SELECT COUNT(*) as cnt
-			FROM trackedEvents
-			WHERE timeMillisUtc >= ${connection.escape(Date.now() - timeFrame)}
-			;
-		`);
+		const rows = await connection.query({
+			sql: `
+				SELECT path, COUNT(path) AS percent
+				FROM trackedEvents
+				WHERE timeMillisUtc >= ${connection.escape(Date.now() - timeFrame)}
+				GROUP BY path
+				ORDER BY percent DESC
+				LIMIT ${connection.escape(limit)}
+				;
+			`,
+			bigIntAsNumber: true
+		});
+		const rows2 = await connection.query({
+			sql: `
+				SELECT COUNT(*) as cnt
+				FROM trackedEvents
+				WHERE timeMillisUtc >= ${connection.escape(Date.now() - timeFrame)}
+				;
+			`,
+			bigIntAsNumber: true
+		});
 		const totalRows = rows2[0]["cnt"];
 		const percentRows = rows.filter(elem => !(elem instanceof Array));
 		for (const row of percentRows) {
