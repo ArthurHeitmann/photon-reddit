@@ -114,7 +114,7 @@ export default class Ph_PostBody extends HTMLElement {
 	private makeEmbeddedVideoBody(postData: RedditPostData) {
 		this.classList.add("fullScale");
 		const iframeSrc = postData.media_embed.content.match(/src="([^"]+)"/)[1];		// extract src attribute from <iframe>
-		this.innerHTML = `<div class="aspect-ratio-16-9-wrapper"><iframe src="${escADQ(iframeSrc)}" allowfullscreen></iframe></div>`;
+		this.innerHTML = `<div class="aspect-ratio-16-9-wrapper iframeWrapper"><iframe src="${escADQ(iframeSrc)}" allowfullscreen></iframe></div>`;
 	}
 
 	private makeTextBody(postData: RedditPostData) {
@@ -132,7 +132,7 @@ export default class Ph_PostBody extends HTMLElement {
 			dnt: "true"
 		});
 		this.innerHTML = `
-			<div class="aspect-ratio-16-9-wrapper">
+			<div class="aspect-ratio-16-9-wrapper iframeWrapper tweetIframeWrapper">
 				<iframe border=0 frameborder=0 height=250 width=550 allowfullscreen="true"
 					src="https://platform.twitter.com/embed/Tweet.html?${twitterEmbedParams.toString()}">
 				</iframe>
