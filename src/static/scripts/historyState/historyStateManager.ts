@@ -223,7 +223,7 @@ function handleSpecialPaths(path: string, query: string[][], stateLoader: Ph_Vie
 
 function modifyUrl(url: string): string {
 	if (Users.current.d.auth.isLoggedIn)
-		url = url.replace(/\/(u|user)\/me/, `/$1/${Users.current.name}`);
+		url = url.replace(/\/(u|user)\/me(?=[/#?]|$)/, `/$1/${Users.current.name}`);
 
 	return url;
 }
