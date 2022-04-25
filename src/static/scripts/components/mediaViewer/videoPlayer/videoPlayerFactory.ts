@@ -2,7 +2,7 @@ import {RedditPostData} from "../../../types/redditTypes";
 import Ph_GifVideo from "./gifVideo/gifVideo";
 import Ph_SimpleVideo from "./simpleVideo/simpleVideo";
 import Ph_Toast, {Level} from "../../misc/toast/toast";
-import {getGfycatMp4SrcFromUrl, GfycatDomain} from "../../../api/gfycatApi";
+import {getGfycatMp4SrcFromUrl, getRedgifsMp4SrcFromUrl} from "../../../api/gfycatApi";
 import Ph_VideoAudio from "./videoAudio/videoAudio";
 import {SourceData} from "./videoWrapper";
 import {isJsonEqual} from "../../../utils/utils";
@@ -72,7 +72,7 @@ export function videoPlayerFromPostData({ postData, url }: { postData?: RedditPo
 			}
 			// if no oembed data, use gfycat api
 			else {
-				getGfycatMp4SrcFromUrl(url, GfycatDomain.gfycat)
+				getGfycatMp4SrcFromUrl(url)
 					.then(sources => videoOut.init(new Ph_SimpleVideo(sources), true))
 					.catch(() => videoOut.init(null));
 			}
@@ -234,7 +234,7 @@ export function videoPlayerFromPostData({ postData, url }: { postData?: RedditPo
 			break;
 		case "redgifs.com":
 			// like gfycat but there is no usable info in the oembed data
-			getGfycatMp4SrcFromUrl(url, GfycatDomain.redgifs)
+			getRedgifsMp4SrcFromUrl(url)
 				.then(sources => videoOut.init(new Ph_SimpleVideo(sources), true))
 				.catch(() => videoOut.init(null));
 			break;

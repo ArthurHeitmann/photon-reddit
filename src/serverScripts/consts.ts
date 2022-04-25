@@ -29,3 +29,8 @@ export const youtube_dlRateLimitConfig: Partial <rlOptions> = {
 	windowMs: 30 * 1000,
 	max: 40,
 };
+export const proxyRateLimitConfig: Partial <rlOptions> = {
+	...commonRateLimitConfig,
+	windowMs: 30 * 1000,
+	max: 45,
+};

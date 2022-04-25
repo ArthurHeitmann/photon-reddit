@@ -2,7 +2,7 @@ import express from "express";
 import RateLimit from "express-rate-limit";
 import fetch from "node-fetch";
 import youtube_dl from "youtube-dl-exec";
-import {basicRateLimitConfig, youtube_dlRateLimitConfig} from "./consts";
+import {basicRateLimitConfig, proxyRateLimitConfig, youtube_dlRateLimitConfig} from "./consts";
 import {safeExc, safeExcAsync} from "./utils";
 import {photonChangelog, photonVersion} from "./version";
 
@@ -110,8 +110,8 @@ photonApiRouter.get("/isRedditApiAvailable", safeExcAsync(async (req, res) => {
 	}
 }));
 
-const allowedProxyDomains = ["xkcd.com", "ibb.co"];
-photonApiRouter.get("/proxy", safeExcAsync(async (req, res) => {
+const allowedProxyDomains = ["xkcd.com", "ibb.co", "redgifs.com"];
+photonApiRouter.get("/proxy", RateLimit(proxyRateLimitConfig), safeExcAsync(async (req, res) => {
 	const url = req.query["url"].toString();
 	const domain = url?.match(/([^./?#]+\.[^./?#]+)(?=[/?#]|$)/)?.[0];
 	if (!url || !domain || !allowedProxyDomains.includes(domain)) {
