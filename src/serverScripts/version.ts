@@ -1,6 +1,14 @@
-export const photonVersion = "1.1.6";		/// <change version script>
+export const photonVersion = "1.1.7";		/// <change version script>
 
 export const photonChangelog = {
+	"1.1.7": {
+		"New": [
+			"Added loading indicator to YT videos & Tweets"
+		],
+		"Fixed": [
+			"Small fixes"
+		]
+	},
 	"1.1.6": {
 		"New": [
 			"Added support for xkcd images",
