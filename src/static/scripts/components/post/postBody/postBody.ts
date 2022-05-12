@@ -4,19 +4,35 @@ import {linksToSpa} from "../../../utils/htmlStuff";
 import {hasParams} from "../../../utils/utils";
 import Ph_MediaViewer from "../../mediaViewer/mediaViewer";
 import Ph_PostText from "./postText/postText";
+import {PhEvents} from "../../../types/Events";
+import Users from "../../../multiUser/userManagement";
+import Ph_PhotonBaseElement from "../../photon/photonBaseElement/photonBaseElement";
+import Ph_PostBodyCompactWrapper from "./compactBodyWrapper/compactBodyWrapper";
 
 /**
  * Determines the post type and generates the type specific content
  */
-export default class Ph_PostBody extends HTMLElement {
+export default class Ph_PostBody extends Ph_PhotonBaseElement {
 	isInitialized = false;
+	private isBodyCollapsable = false;
+	private bodyWrapper: Ph_PostBodyCompactWrapper;
 
 	constructor(postData: RedditPostData | undefined, preferSmallerPost = false) {
 		super();
 		if (!hasParams(arguments)) return;
 
 		this.classList.add("content");
-		this.classList.add("aspect-ratio-16-9-wrapper");
+		this.classList.add("unintialized");
+
+		this.bodyWrapper = new Ph_PostBodyCompactWrapper();
+		if (postData)
+			this.bodyWrapper.init(postData);
+		this.bodyWrapper.addEventListener(PhEvents.compactPostToggle,
+			() => this.classList.toggle("compact", !this.bodyWrapper.isExpanded));
+		this.classList.toggle("compact", !this.bodyWrapper.isExpanded);
+		this.addWindowEventListener(PhEvents.settingsChanged,
+			this.updateCollapsedState.bind(this));
+		this.append(this.bodyWrapper);
 
 		if (postData)
 			this.init(postData, preferSmallerPost);
@@ -27,7 +43,7 @@ export default class Ph_PostBody extends HTMLElement {
 		if (this.isInitialized)
 			return;
 		this.isInitialized = true;
-		this.classList.remove("aspect-ratio-16-9-wrapper");
+		this.classList.remove("unintialized");
 
 		const postType = this.getPostType(postData, preferSmallerPost);
 		switch (postType) {
@@ -60,7 +76,15 @@ export default class Ph_PostBody extends HTMLElement {
 				break;
 		}
 
+		this.bodyWrapper.init(postData);
+		this.updateCollapsedState();
+
 		linksToSpa(this, postType === PostType.text);
+	}
+
+	private updateCollapsedState() {
+		const isCollapsable = this.isBodyCollapsable && Users.global.d.photonSettings.feedDisplayType === "compact";
+		this.classList.toggle("isBodyCollapsable", isCollapsable);
 	}
 
 	private getPostType(postData: RedditPostData, preferSmallerPost): PostType {
@@ -86,35 +110,44 @@ export default class Ph_PostBody extends HTMLElement {
 
 	private makeLinkBody(postData: RedditPostData) {
 		this.classList.add("padded");
+		let newHtml: string;
 		if (postData.preview)
-			this.innerHTML = `
+			newHtml = `
 				<div class="linkPreviewWrapper">
 					<a href="${escADQ(postData.url)}" rel="noopener">${escHTML(postData.url)}</a>
 					<img src="${escADQ(postData.preview.images[0].source.url)}" alt="preview">
 				</div>`;
 		else
-			this.innerHTML = `<a href="${escADQ(postData.url)}" rel="noopener">${escHTML(postData.url)}</a>`;
+			newHtml = `<a href="${escADQ(postData.url)}" rel="noopener">${escHTML(postData.url)}</a>`;
+		this.insertAdjacentHTML("beforeend", newHtml);
 	}
 
 	private makeImageBody(postData: RedditPostData) {
 		this.classList.add("fullScale");
+		this.isBodyCollapsable = true;
 		this.appendChild(Ph_MediaViewer.fromPostData_Image(postData));
 	}
 
 	private makeVideoBody(postData: RedditPostData) {
 		this.classList.add("fullScale");
+		this.isBodyCollapsable = true;
 		this.appendChild(Ph_MediaViewer.fromPostData_Video(postData));
 	}
 
 	private makeRedditGalleryBody(postData: RedditPostData) {
 		this.classList.add("fullScale");
+		this.isBodyCollapsable = true;
 		this.appendChild(Ph_MediaViewer.fromPostData_RedditGallery(postData));
 	}
 
 	private makeEmbeddedVideoBody(postData: RedditPostData) {
 		this.classList.add("fullScale");
+		this.isBodyCollapsable = true;
 		const iframeSrc = postData.media_embed.content.match(/src="([^"]+)"/)[1];		// extract src attribute from <iframe>
-		this.innerHTML = `<div class="aspect-ratio-16-9-wrapper iframeWrapper"><iframe src="${escADQ(iframeSrc)}" allowfullscreen></iframe></div>`;
+		this.insertAdjacentHTML(
+			"beforeend",
+			`<div class="aspect-ratio-16-9-wrapper iframeWrapper"><iframe src="${escADQ(iframeSrc)}" allowfullscreen></iframe></div>`
+		);
 	}
 
 	private makeTextBody(postData: RedditPostData) {
@@ -123,6 +156,7 @@ export default class Ph_PostBody extends HTMLElement {
 
 	private makeTweetBody(postData: RedditPostData) {
 		this.classList.add("fullScale");
+		this.isBodyCollapsable = true;
 		const id = postData.url.match(/\/status\/(\d+)/)[1];
 		const twitterEmbedParams = new URLSearchParams({
 			id: id,
@@ -131,16 +165,19 @@ export default class Ph_PostBody extends HTMLElement {
 			origin: location.origin,
 			dnt: "true"
 		});
-		this.innerHTML = `
-			<div class="aspect-ratio-16-9-wrapper iframeWrapper tweetIframeWrapper">
+		this.insertAdjacentHTML(
+			"beforeend",
+			`<div class="aspect-ratio-16-9-wrapper iframeWrapper tweetIframeWrapper">
 				<iframe border=0 frameborder=0 height=250 width=550 allowfullscreen="true"
 					src="https://platform.twitter.com/embed/Tweet.html?${twitterEmbedParams.toString()}">
 				</iframe>
-			</div>`;
+			</div>`
+		);
 	}
 
 	private makeImgurBody(postData: RedditPostData) {
 		this.classList.add("fullScale");
+		this.isBodyCollapsable = true;
 		this.appendChild(Ph_MediaViewer.fromImgurUrl(postData.url));
 	}
 

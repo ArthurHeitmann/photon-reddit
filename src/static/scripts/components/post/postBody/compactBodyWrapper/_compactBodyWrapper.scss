@@ -1,0 +1,48 @@
+@use "../../../../../style/vars";
+
+.postBodyCompactWrapper {
+	display: grid;
+	grid-template-columns: 3rem 1fr auto;
+	align-items: center;
+	padding: 1rem;
+
+	> .toggle {
+		width: 2.5rem;
+		height: 2.5rem;
+		position: relative;
+
+		&::after {
+			content: '';
+			position: absolute;
+			top: -.5rem;
+			left: -.5rem;
+			width: 3.5rem;
+			height: 3.5rem;
+		}
+
+		img {
+			width: 2.5rem;
+			transition: transform .125s ease;
+		}
+	}
+
+	&.expanded {
+		> .toggle {
+			img {
+				transform: rotate(90deg);
+			}
+		}
+	}
+
+	> a {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		height: 1.5em;
+	}
+
+	> img {
+		max-width: 7rem;
+		max-height: 5rem;
+		border-radius: 1rem;
+	}
+}

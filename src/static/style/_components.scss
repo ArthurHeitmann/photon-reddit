@@ -45,6 +45,7 @@
 @use '../scripts/components/photon/tutorial/tutorial';
 @use '../scripts/components/post/submit/submitPostForm';
 @use '../scripts/components/post/post';
+@use '../scripts/components/post/postBody/compactBodyWrapper/compactBodyWrapper';
 @use '../scripts/components/post/postBody/draggableWrapper/draggableWrapper';
 @use '../scripts/components/post/postBody/postText/postText';
 @use '../scripts/components/post/postBody/postText/redditPoll';

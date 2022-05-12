@@ -37,6 +37,18 @@
 				transform: translateZ(0);		// border-radius with videos doesn't work in Safari otherwise
 			}
 
+			&.isBodyCollapsable.compact {
+				> :nth-child(2) {
+					display: none;
+				}
+			}
+
+			&:not(.isBodyCollapsable) {
+				.postBodyCompactWrapper {
+					display: none;
+				}
+			}
+
 			> *:not(.cover) {
 				filter: blur(0);
 				transition: filter .125s ease;
@@ -115,7 +127,7 @@
 
 		> img {
 			max-width: 25%;
-			max-height: 7rem;
+			max-height: 5rem;
 			border-radius: 1rem;
 		}
 	}
@@ -239,17 +251,20 @@
 			display: none;
 		}
 
-		.content .cover {
-			display: none;
+		.content {
+			.cover {
+				display: none;
+			}
+
+			.postBodyCompactWrapper {
+				display: none;
+			}
 		}
 	}
 
 	.content {
 		display: flex;
-
-		&:empty {
-
-		}
+		flex-direction: column;
 
 		.postImage {
 			width: 100%;

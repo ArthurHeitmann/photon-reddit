@@ -31,7 +31,7 @@ export enum NsfwPolicy {
 
 export enum FeedDisplayType {
 	cards = "cards",
-	list = "list",
+	compact = "compact",
 	grid = "grid",
 }
 
@@ -124,6 +124,11 @@ export const getSettingsSections = (): SettingsSection[] => [
 			new BooleanSetting("markSeenPosts", "Mark seen posts", "Mark posts you have scrolled past. Seen posts are only stored in your browser.", SettingsApi.Photon),
 			new BooleanSetting("hideSeenPosts", "Hide seen posts", "Hide posts marked as seen (above option). When viewing a user all posts are always visible.", SettingsApi.Photon),
 			new TimeSetting({ allowRange: [1, Number.MAX_SAFE_INTEGER] }, "clearSeenPostAfterMs", "Store seen posts for", "Seen posts are stored for this time duration (format examples: 1y 13d, 6months 3 days, 1hour).", SettingsApi.Photon),
+			new MultiOptionSetting([
+				{ text: "Cards", value: FeedDisplayType.cards },
+				{ text: "Compact", value: FeedDisplayType.compact },
+				{ text: "Grid", value: FeedDisplayType.grid },
+			], "feedDisplayType", "Posts display type", "Cards: big posts (default), Compact: old reddit inspired, Grid: for sensory overload", SettingsApi.Photon),
 			new MultiOptionSetting([
 				{ text: "Hide NSFW", value: NsfwPolicy.never },
 				{ text: "Blur NSFW", value: NsfwPolicy.covered },

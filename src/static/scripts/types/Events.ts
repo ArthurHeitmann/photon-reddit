@@ -27,4 +27,5 @@ export enum PhEvents {
 	touchDrag = "ph-touchDrag",
 	touchPinch = "ph-touchPinch",
 	dataChanged = "ph-dataChanged",
+	compactPostToggle = "ph-compactPostToggle",
 }

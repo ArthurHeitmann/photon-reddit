@@ -54,9 +54,9 @@ export function _replaceRedditLinks(el: HTMLElement) {
 			continue;
 		}
 		a.href = a.getAttribute("href")
-			.replaceAll(/redd.it\/(\w+)/g, "reddit.com/comments/$1");
+			.replace(/(\/\/|www\.)redd.it\/(\w+)/g, "$1reddit.com/comments/$2");
 		a.href = a.getAttribute("href")        // map all reddit or same origin links to current origin (reddit.com/r/all --> /r/all)
-			.replaceAll(new RegExp(`(https?://)((\\w*\\.)?reddit\\.com|${location.hostname})`, "g"), "");
+			.replace(new RegExp(`(https?://)((\\w*\\.)?reddit\\.com|${location.hostname})`, "g"), "");
 		if (!a.getAttribute("href")) {
 			a.href = "/";
 		}
