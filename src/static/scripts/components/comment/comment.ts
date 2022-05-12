@@ -37,7 +37,8 @@ import Ph_Toast, {Level} from "../misc/toast/toast";
 import Ph_VoteButton from "../misc/voteButton/voteButton";
 import Users from "../../multiUser/userManagement";
 import Ph_Post from "../post/post";
-import Ph_PhotonSettings, {PhotonSettings} from "../global/photonSettings/photonSettings";
+import Ph_PhotonSettings from "../global/photonSettings/photonSettings";
+import {PhotonSettings} from "../global/photonSettings/settingsConfig";
 
 /**
  * A comment that has been posted under a post

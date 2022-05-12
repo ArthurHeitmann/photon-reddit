@@ -5,9 +5,9 @@ import {$css, escADQ, escHTML} from "../../../utils/htmlStatics";
 import {linksToSpa} from "../../../utils/htmlStuff";
 import {ensurePageLoaded, hasParams, numberToShort} from "../../../utils/utils";
 import Ph_Readable from "../../feed/feedItem/readable/readable";
-import {PhotonSettings} from "../../global/photonSettings/photonSettings";
 import Ph_Toast, {Level} from "../../misc/toast/toast";
 import Users from "../../../multiUser/userManagement";
+import {PhotonSettings} from "../../global/photonSettings/settingsConfig";
 
 export default class Ph_MessageNotification extends HTMLElement {
 	static currentlyDisplayedNotification: Ph_MessageNotification = null;

@@ -1,7 +1,7 @@
 import {RedditPreferences} from "../../../types/redditTypes";
 import {editableTimeStrToMs, makeElement, timeMsToEditableTimeStr} from "../../../utils/utils";
 import Users from "../../../multiUser/userManagement";
-import {defaultSettings, PhotonSettings} from "./photonSettings";
+import {defaultSettings, PhotonSettings} from "./settingsConfig";
 
 export interface SettingsSection {
 	name: string,

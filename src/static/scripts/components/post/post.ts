@@ -29,7 +29,7 @@ import {
 	timePassedSince
 } from "../../utils/utils";
 import Ph_FeedItem from "../feed/feedItem/feedItem";
-import Ph_PhotonSettings, {NsfwPolicy, PhotonSettings} from "../global/photonSettings/photonSettings";
+import Ph_PhotonSettings from "../global/photonSettings/photonSettings";
 import Ph_AwardsInfo from "../misc/awardsInfo/awardsInfo";
 import Ph_DropDown, {DirectionX, DirectionY} from "../misc/dropDown/dropDown";
 import Ph_DropDownEntry, {DropDownActionData, DropDownEntryParam} from "../misc/dropDown/dropDownEntry/dropDownEntry";
@@ -40,6 +40,7 @@ import Users from "../../multiUser/userManagement";
 import Ph_PostBody from "./postBody/postBody";
 import Ph_PostText from "./postBody/postText/postText";
 import PostDoubleLink from "./postDoubleLink/postDoubleLink";
+import {NsfwPolicy, PhotonSettings} from "../global/photonSettings/settingsConfig";
 
 interface PostOptionalParams {
 	isInFeed?: boolean,

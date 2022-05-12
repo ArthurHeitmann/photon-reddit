@@ -4,7 +4,6 @@
  * Might import other files
  */
 
-import {PhotonSettings} from "../components/global/photonSettings/photonSettings";
 import Ph_MediaViewer from "../components/mediaViewer/mediaViewer";
 import Users from "../multiUser/userManagement";
 import {pushLinkToHistoryComb} from "../historyState/historyStateManager";
@@ -12,6 +11,7 @@ import {PhEvents} from "../types/Events";
 import {RedditCommentData} from "../types/redditTypes";
 import {$classAr} from "./htmlStatics";
 import {makeElement} from "./utils";
+import {PhotonSettings} from "../components/global/photonSettings/settingsConfig";
 
 /** Converts all same origin links of an element to SPA (single page application) links */
 export function linksToSpa(elem: HTMLElement, inlineMedia: boolean = false) {

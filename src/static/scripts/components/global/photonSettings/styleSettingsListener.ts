@@ -1,8 +1,8 @@
 import {PhEvents} from "../../../types/Events";
 import {ensurePageLoaded} from "../../../utils/utils";
 import Users from "../../../multiUser/userManagement";
-import {PhotonSettings} from "./photonSettings";
 import {PhotonSettingsKey, SettingsKey} from "./photonSettingsData";
+import {PhotonSettings} from "./settingsConfig";
 
 const settingToCssClassMap: { [setting in SettingsKey]?: string } = {
 	hidePostTitle: "hidePostTitle",

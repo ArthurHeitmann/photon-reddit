@@ -5,7 +5,7 @@ import Users from "../../../multiUser/userManagement";
 import Ph_Changelog from "../../photon/changelog/changelog";
 import Ph_Tutorial from "../../photon/tutorial/tutorial";
 import {FiltersSetting} from "./filtersSetting";
-import Ph_PhotonSettings, {ImageLoadingPolicy, NsfwPolicy} from "./photonSettings";
+import Ph_PhotonSettings from "./photonSettings";
 import {
 	BooleanSetting,
 	HTMLElementSetting,
@@ -16,6 +16,105 @@ import {
 	TimeSetting
 } from "./photonSettingsData";
 import Ph_Toast, {Level} from "../../misc/toast/toast";
+
+export enum ImageLoadingPolicy {
+	alwaysPreview = "alwaysPreview",
+	originalInFs = "originalInFs",
+	alwaysOriginal = "alwaysOriginal",
+}
+
+export enum NsfwPolicy {
+	never = "never",
+	covered = "covered",
+	always = "always",
+}
+
+export enum FeedDisplayType {
+	cards = "cards",
+	list = "list",
+	grid = "grid",
+}
+
+export interface PhotonSettings {
+	imageLoadingPolicy?: ImageLoadingPolicy,
+	loadInlineMedia?: boolean,
+	firstShowControlBar?: boolean,
+	imageLimitedHeight?: number,
+	preferHigherVideoQuality?: boolean,
+	autoplayVideos?: boolean,
+	globalVideoVolume?: boolean,
+	nsfwPolicy?: NsfwPolicy,
+	markSeenPosts?: boolean,
+	hideSeenPosts?: boolean,
+	clearFeedCacheAfterMs?: number,
+	clearSeenPostAfterMs?: number,
+	enableFab?: boolean,
+	isIncognitoEnabled?: boolean,
+	tooltipsVisible?: boolean,
+	messageCheckIntervalMs?: number,
+	subredditBlacklist?: string[],
+	userShortCacheTTLMs?: number,
+	displayRedditEmojis?: boolean,
+	emptyAreaClickGoesBack?: boolean
+	userBlacklist?: string[],
+	tileTextBlacklist?: string[],
+	flairTextBlacklist?: string[],
+	applyUserBlacklistToComments?: boolean,
+	hidePostFlairs?: boolean,
+	hidePostTitle?: boolean,
+	hidePostTopInfo?: boolean,
+	hidePostLeftBar?: boolean,
+	hideCrosspostInfo?: boolean,
+	hideSubredditMiniIcon?: boolean,
+	feedWidth?: number
+	postAndCommentsWidth?: number,
+	beforeExitConfirmation?: boolean,
+	autoCollapsePinnedComment?: boolean,
+	altVolumeFunction?: boolean,
+	animateFullscreenTransition?: boolean,
+	feedDisplayType?: FeedDisplayType,
+}
+
+// default config
+export const defaultSettings: PhotonSettings = {
+	imageLoadingPolicy: ImageLoadingPolicy.originalInFs,
+	loadInlineMedia: false,
+	firstShowControlBar: true,
+	imageLimitedHeight: 70,
+	preferHigherVideoQuality: true,
+	autoplayVideos: true,
+	globalVideoVolume: true,
+	nsfwPolicy: NsfwPolicy.covered,
+	markSeenPosts: true,
+	hideSeenPosts: false,
+	clearFeedCacheAfterMs: 1000 * 60 * 60 * 2,
+	clearSeenPostAfterMs: 1000 * 60 * 60 * 24 * 365,
+	enableFab: true,
+	isIncognitoEnabled: false,
+	tooltipsVisible: true,
+	messageCheckIntervalMs: 30 * 1000,
+	userShortCacheTTLMs: 1000 * 60 * 5,
+	displayRedditEmojis: true,
+	emptyAreaClickGoesBack: true,
+	subredditBlacklist: [],
+	userBlacklist: [],
+	tileTextBlacklist: [],
+	flairTextBlacklist: [],
+	applyUserBlacklistToComments: false,
+	hidePostFlairs: false,
+	hidePostTitle: false,
+	hidePostTopInfo: false,
+	hidePostLeftBar: false,
+	hideCrosspostInfo: false,
+	hideSubredditMiniIcon: false,
+	feedWidth: 50,
+	postAndCommentsWidth: 60,
+	beforeExitConfirmation: false,
+	autoCollapsePinnedComment: false,
+	altVolumeFunction: false,
+	animateFullscreenTransition: false,
+	feedDisplayType: FeedDisplayType.cards,
+};
 
 export const getSettingsSections = (): SettingsSection[] => [
 	{

@@ -1,11 +1,11 @@
 import {PhEvents} from "../../../types/Events";
 import {getLoadingIcon, nonDraggableElement} from "../../../utils/htmlStatics";
 import {hasParams, makeElement} from "../../../utils/utils";
-import {ImageLoadingPolicy, PhotonSettings} from "../../global/photonSettings/photonSettings";
 import {ControlsLayoutSlots} from "../../misc/controlsBar/controlsBar";
 import Users from "../../../multiUser/userManagement";
 import Ph_PhotonBaseElement from "../../photon/photonBaseElement/photonBaseElement";
 import {MediaElement} from "../mediaElement";
+import {ImageLoadingPolicy, PhotonSettings} from "../../global/photonSettings/settingsConfig";
 
 interface ImageInitData {
 	originalUrl: string,
