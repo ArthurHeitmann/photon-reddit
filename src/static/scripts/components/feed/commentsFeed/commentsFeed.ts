@@ -85,7 +85,7 @@ export default class Ph_CommentsFeed extends Ph_PhotonBaseElement {
 	private preparePendingComments(): RedditCommentObj[] {
 		let newComments = 0;
 		let i = 0;
-		while (i < this.pendingComments.length && (newComments < 40 || i < 3)) {
+		while (i < this.pendingComments.length && (newComments < 50 || i < 4)) {
 			newComments += this.countAllNestedComments(this.pendingComments[i]);
 			i++;
 		}

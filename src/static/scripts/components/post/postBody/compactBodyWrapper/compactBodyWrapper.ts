@@ -20,10 +20,11 @@ export default class Ph_PostBodyCompactWrapper extends HTMLElement{
 				]),
 			makeElement("a",
 				{ class: "link", href: postData.url }, postData.url),
-			postData.preview?.images?.[0]?.source?.url &&
-			makeElement("img",
-				{ class: "thumbnail", src: postData.preview.images[0].source.url }),
 		);
+		const thumbnail = postData.preview?.images?.[0]?.source?.url || postData.thumbnail;
+		if (thumbnail && /^https:\/\/[^.]+\.[^.]/.test(thumbnail))
+			this.append(
+				makeElement("img", { class: "thumbnail", src: thumbnail }));
 		linksToSpa(this);
 	}
 
