@@ -233,3 +233,7 @@ export function emojiFlagsToImages(element: Element | string): void | string {
 	else
 		return element.replaceAll(reg, flagEmojiToPNG);
 }
+
+export function remToPx(rem: number): number {
+	return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
+}

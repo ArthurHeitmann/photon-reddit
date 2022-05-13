@@ -43,6 +43,9 @@ function handleSettings(settings: PhotonSettings) {
 		document.documentElement.style.setProperty("--image-height-limited",
 			settings.imageLimitedHeight > 0 ?`${settings.imageLimitedHeight}vh` : "unset");
 	}
+	if (settings.feedDisplayType === "grid") {
+		document.body.classList.add("feedGridView");
+	}
 
 	for (const settingsKey in settings) {
 		if (settingsKey in settingToCssClassMap)

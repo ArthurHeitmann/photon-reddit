@@ -1,0 +1,39 @@
+@use '../../../../../style/vars';
+
+.multiColumnView {
+	width: 100%;
+	display: flex;
+	align-items: flex-start;
+
+	&.singleColumn {
+		padding: 0 calc(50vw - #{vars.$widthM} / 2);
+		@media (orientation: portrait) {
+			padding: 0 0.4rem 0 2.2rem;
+		}
+	}
+
+	&.multiColumn {
+		gap: 2.8rem;
+		padding: 0 .5rem 0 2.5rem;
+
+		> * {
+			flex-grow: 1;
+			flex-basis: 0;
+		}
+	}
+}
+
+.hidePostLeftBar {
+	.multiColumnView {
+		&.multiColumn {
+			gap: 1rem;
+			padding: 0 0.5rem;
+
+			.infiniteScroller > * {
+			}
+
+		}
+
+	}
+
+}

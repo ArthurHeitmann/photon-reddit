@@ -8,6 +8,7 @@ import {PhEvents} from "../../../types/Events";
 import Users from "../../../multiUser/userManagement";
 import Ph_PhotonBaseElement from "../../photon/photonBaseElement/photonBaseElement";
 import Ph_PostBodyCompactWrapper from "./compactBodyWrapper/compactBodyWrapper";
+import {FeedDisplayType} from "../../global/photonSettings/settingsConfig";
 
 /**
  * Determines the post type and generates the type specific content
@@ -83,7 +84,10 @@ export default class Ph_PostBody extends Ph_PhotonBaseElement {
 	}
 
 	private updateCollapsedState() {
-		const isCollapsable = this.isBodyCollapsable && Users.global.d.photonSettings.feedDisplayType === "compact";
+		const isCollapsable = this.isBodyCollapsable && (
+			Users.global.d.photonSettings.feedDisplayType === FeedDisplayType.compact ||
+			Users.global.d.photonSettings.feedDisplayType === FeedDisplayType.gridCompact
+		);
 		this.classList.toggle("isBodyCollapsable", isCollapsable);
 	}
 

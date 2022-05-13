@@ -33,6 +33,8 @@ export enum FeedDisplayType {
 	cards = "cards",
 	compact = "compact",
 	grid = "grid",
+	gridCompact = "gridCompact",
+	individual = "individual",
 }
 
 export interface PhotonSettings {
@@ -128,6 +130,8 @@ export const getSettingsSections = (): SettingsSection[] => [
 				{ text: "Cards", value: FeedDisplayType.cards },
 				{ text: "Compact", value: FeedDisplayType.compact },
 				{ text: "Grid", value: FeedDisplayType.grid },
+				{ text: "Grid Compact", value: FeedDisplayType.gridCompact },
+				{ text: "Individual", value: FeedDisplayType.individual },
 			], "feedDisplayType", "Posts display type", "Cards: big posts (default), Compact: old reddit inspired, Grid: for sensory overload", SettingsApi.Photon),
 			new MultiOptionSetting([
 				{ text: "Hide NSFW", value: NsfwPolicy.never },
