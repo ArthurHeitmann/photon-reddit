@@ -31,6 +31,8 @@ export default class Ph_InfiniteScroller extends HTMLElement {
 	private topPlaceholderHeight = 0;
 	private bottomPlaceholderHeight = 0;
 
+	private elementsInView: HTMLElement[] = [];
+
 	constructor() {
 		super();
 
@@ -82,6 +84,7 @@ export default class Ph_InfiniteScroller extends HTMLElement {
 			item.element.classList.remove("isHidden");
 		}
 		this.allItems = [];
+		this.elementsInView = [];
 		this.topPlaceholderHeight = 0;
 		this.bottomPlaceholderHeight = 0;
 		this.updatePlaceholderHeight(RemovedItemPlaceholderPosition.top);
@@ -196,9 +199,11 @@ export default class Ph_InfiniteScroller extends HTMLElement {
 					this.visToHidIntObs.unobserve(element);
 					this.hidToVisIntObs.observe(element);
 					this.hidToRemIntObs.observe(element);
+
+					if (this.elementsInView.indexOf(element) !== -1)
+						this.elementsInView.splice(this.elementsInView.indexOf(element), 1);
 				}
 			)
-
 		}
 	}
 
@@ -228,6 +233,8 @@ export default class Ph_InfiniteScroller extends HTMLElement {
 					this.hidToVisIntObs.unobserve(element);
 					this.hidToRemIntObs.unobserve(element);
 					this.visToHidIntObs.observe(element);
+
+					this.elementsInView.push(element);
 				}
 			)
 		}
@@ -405,6 +412,11 @@ export default class Ph_InfiniteScroller extends HTMLElement {
 			this.allItems[index]?.element.classList.contains("remove") ||
 			this.allItems[index]?.removedPlaceholderHeight < 1
 		);
+	}
+
+	get lastInView(): HTMLElement {
+		const mid = Math.floor(this.allItems.length / 2);
+		return this.allItems[mid]?.element;
 	}
 }
 

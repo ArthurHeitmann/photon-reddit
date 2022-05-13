@@ -23,6 +23,7 @@ import PostsFocusStack from "./postsFocusStack";
 import UniversalFeedView from "./universalFeedViews/universalFeedView";
 import Ph_MultiColumnView from "./universalFeedViews/multiColumnView";
 import {FeedDisplayType, PhotonSettings} from "../../global/photonSettings/settingsConfig";
+import Ph_IndividualPostScroller from "./universalFeedViews/individualPostScroller";
 
 interface FeedItemData {
 	element: Ph_FeedItem;
@@ -62,7 +63,6 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 		this.classList.add("universalFeed");
 
 		this.updateFeedViewType();
-		this.append(this.feedView);
 
 		const screenHeight = window.innerHeight;
 		this.postInitIntObs = new IntersectionObserver(
@@ -173,17 +173,30 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 			case FeedDisplayType.grid:
 			case FeedDisplayType.gridCompact:
 				const isSingleColumn = Users.global.d.photonSettings.feedDisplayType === FeedDisplayType.cards || Users.global.d.photonSettings.feedDisplayType === FeedDisplayType.compact;
+				if (this.feedView instanceof Ph_IndividualPostScroller)
+					Ph_ViewState.getViewOf(this).setHeaderElements(makeFeedHeaderElements(this.requestUrl, this.listingStream));
 				if (this.feedView instanceof Ph_MultiColumnView)
 					this.feedView.setIsSingleColumn(isSingleColumn);
 				else {
 					const oldView = this.feedView;
 					this.feedView = new Ph_MultiColumnView(isSingleColumn);
-					if (oldView)
+					if (oldView) {
 						this.feedView.fromOtherView(oldView);
+						oldView.remove();
+					}
+					this.append(this.feedView)
 				}
 				break;
 			case FeedDisplayType.individual:
-				new Ph_Toast(Level.error, "Individual feed view is not yet implemented");
+				if (!(this.feedView instanceof Ph_IndividualPostScroller)) {
+					const oldView = this.feedView;
+					this.feedView = new Ph_IndividualPostScroller();
+					if (oldView) {
+						this.feedView.fromOtherView(oldView);
+						oldView.remove();
+					}
+					this.append(this.feedView)
+				}
 				break;
 		}
 
@@ -216,6 +229,8 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 		if (this.feedView.getElements().length === 0)
 			return;
 		if (this.scrollHeight > window.innerHeight)
+			return;
+		if (this.feedView instanceof Ph_IndividualPostScroller)
 			return;
 		if (Ph_ViewState.getViewOf(this).classList.contains("hide"))
 			return;

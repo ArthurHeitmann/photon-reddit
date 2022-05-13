@@ -8,6 +8,7 @@
 @use '../scripts/components/feed/feedItem/feedItem';
 @use '../scripts/components/feed/universalFeed/infinteScroller';
 @use '../scripts/components/feed/universalFeed/universalFeed';
+@use '../scripts/components/feed/universalFeed/universalFeedViews/individualPostScroller';
 @use '../scripts/components/feed/universalFeed/universalFeedViews/multiColumnView';
 @use '../scripts/components/global/header/header';
 @use '../scripts/components/global/photonSettings/photonSettings';

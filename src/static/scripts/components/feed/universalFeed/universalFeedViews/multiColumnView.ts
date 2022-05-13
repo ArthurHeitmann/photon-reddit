@@ -1,6 +1,7 @@
 import UniversalFeedView from "./universalFeedView";
 import Ph_InfiniteScroller from "../infinteScroller";
 import {remToPx} from "../../../../utils/htmlStatics";
+import {sleep} from "../../../../utils/utils";
 
 export default class Ph_MultiColumnView extends UniversalFeedView {
 	private isSingleColumn: boolean;
@@ -27,23 +28,6 @@ export default class Ph_MultiColumnView extends UniversalFeedView {
 		});
 	}
 
-	fromElements(elements: HTMLElement[]): UniversalFeedView {
-		for (const element of elements)
-			this.addElement(element);
-
-		return this;
-	}
-
-	fromOtherView(view: UniversalFeedView): UniversalFeedView {
-		const otherElements = view.getElements();
-		view.clear();
-
-		for (const element of otherElements)
-			this.addElement(element);
-
-		return this;
-	}
-
 	setIsSingleColumn(isSingleColumn: boolean): void {
 		this.isSingleColumn = isSingleColumn;
 		this.setColumnCount(isSingleColumn ? 1 : this.calcColumnCount());
@@ -53,6 +37,8 @@ export default class Ph_MultiColumnView extends UniversalFeedView {
 		count = Math.max(1, count);
 		if (count === this.columnCount)
 			return;
+
+		const elementInView = this.getElementInView();
 
 		if (count === 1) {
 			this.classList.add("singleColumn");
@@ -79,6 +65,8 @@ export default class Ph_MultiColumnView extends UniversalFeedView {
 
 		for (const element of allElements)
 			this.addElement(element);
+
+		sleep(1).then(() => elementInView?.scrollIntoView({ behavior: "smooth" }));
 	}
 
 	addElement(element: HTMLElement) {
@@ -149,6 +137,10 @@ export default class Ph_MultiColumnView extends UniversalFeedView {
 			.map(c => c.allItems)
 			.flat()
 			.map(e => e.element);
+	}
+
+	getElementInView(): HTMLElement {
+		return this.columns[0]?.lastInView;
 	}
 
 	get columnCount(): number {
