@@ -3,7 +3,7 @@ import {PhEvents} from "../../../../types/Events";
 import {RedditPostData} from "../../../../types/redditTypes";
 import {emojiFlagsToImages} from "../../../../utils/htmlStatics";
 import {elementWithClassInTree, linksToSpa} from "../../../../utils/htmlStuff";
-import {hasParams} from "../../../../utils/utils";
+import {hasParams, makeElement} from "../../../../utils/utils";
 import Ph_MarkdownForm from "../../../misc/markdownForm/markdownForm";
 import Ph_Toast, {Level} from "../../../misc/toast/toast";
 import Ph_RedditPoll from "./redditPoll";
@@ -34,7 +34,7 @@ export default class Ph_PostText extends HTMLElement {
 		this.textWrapper = document.createElement("div");
 		this.textWrapper.innerHTML = bodyHtml;
 		emojiFlagsToImages(this.textWrapper);
-		this.appendChild(this.textWrapper);
+		this.append(this.textWrapper);
 
 		setTimeout(() => {
 			if (this.isOverflowing() && elementWithClassInTree(this.parentElement, "isInFeed")) {
@@ -42,11 +42,11 @@ export default class Ph_PostText extends HTMLElement {
 				this.maxHeightInRem = 10;
 				this.updateMaxHeightStyle();
 
-				this.expandButton = document.createElement("button");
-				this.expandButton.classList.add("expandButton");
-				this.expandButton.innerHTML = `<img src="/img/downArrow.svg" draggable="false" alt="more">`;
-				this.expandButton.addEventListener("click", this.expand.bind(this));
-				this.appendChild(this.expandButton);
+				this.expandButton = makeElement(
+					"button", { class: "expandButton", onclick: this.expand.bind(this) }, [
+						makeElement("img", { src: "/img/downArrow.svg", draggable: "false", alt: "more" })
+				]) as HTMLButtonElement;
+				this.append(this.expandButton);
 			}
 			else {
 				this.style.setProperty("--max-height", `max-content`);
@@ -57,13 +57,13 @@ export default class Ph_PostText extends HTMLElement {
 		this.editForm.classList.add("hide");
 		this.editForm.addEventListener(PhEvents.submit, this.edit.bind(this));
 		this.editForm.addEventListener(PhEvents.cancel, this.endEditing.bind(this));
-		this.appendChild(this.editForm);
+		this.append(this.editForm);
 
 		if (postData.poll_data) {
 			let links = this.$tagAr("a");
 			links = links.filter(link => link.innerText === "View Poll");
 			links[links.length - 1].remove();
-			this.appendChild(new Ph_RedditPoll(postData));
+			this.append(new Ph_RedditPoll(postData));
 		}
 	}
 

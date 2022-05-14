@@ -140,7 +140,7 @@ export const getSettingsSections = (): SettingsSection[] => [
 				{ text: "Grid", value: FeedDisplayType.grid },
 				{ text: "Grid Compact", value: FeedDisplayType.gridCompact },
 				{ text: "Individual", value: FeedDisplayType.individual },
-			], "feedDisplayType", "Posts display type", "Cards: big posts (default), Compact: old reddit inspired, Grid: for sensory overload", SettingsApi.Photon),
+			], "feedDisplayType", "Posts display type", "Cards: big posts, best compatibility (default) | Compact: old reddit inspired | Grid: for sensory overload | Individual: quick switching between threads", SettingsApi.Photon),
 			new MultiOptionSetting([
 				{ text: "Hide NSFW", value: NsfwPolicy.never },
 				{ text: "Blur NSFW", value: NsfwPolicy.covered },

@@ -1,4 +1,4 @@
-import { linksToSpa } from "../../../utils/htmlStuff";
+import {linksToSpa} from "../../../utils/htmlStuff";
 
 const template = `
 <h1>Photon</h1>
@@ -41,6 +41,9 @@ const template = `
 			The time in milliseconds in UTC.
 		</li>
 	</ul>
+	<br>
+	About once a week some user related data is reported. Data that is reported: browser support for a few modern features,
+ 	if and how much the user has customized the settings, how many posts were seen. The reported data is not correlated with the above-mentioned id. 
 	<br>
 	Tracking is disabled when Photon is running on localhost.
 </p>
