@@ -11,7 +11,7 @@ export default abstract class UniversalFeedView extends HTMLElement {
 	abstract getElements(): HTMLElement[];
 	abstract getElementInView(): HTMLElement;
 
-	fromOtherView(view: UniversalFeedView): UniversalFeedView {
+	fromOtherView(view: UniversalFeedView): void {
 		const otherElements = view.getElements();
 		view.clear();
 		this.clear();
@@ -20,7 +20,5 @@ export default abstract class UniversalFeedView extends HTMLElement {
 			for (const element of otherElements)
 				this.addElement(element);
 		});
-
-		return this;
 	}
 }

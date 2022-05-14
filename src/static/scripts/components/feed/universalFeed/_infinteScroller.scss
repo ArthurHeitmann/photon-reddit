@@ -2,6 +2,7 @@
 .infiniteScroller {
 	display: flex;
 	flex-flow: column;
+	width: 100%;
 
 	> * {
 		margin: 0.75rem 0;

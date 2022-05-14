@@ -28,6 +28,14 @@ export default class Ph_MultiColumnView extends UniversalFeedView {
 		});
 	}
 
+	fromOtherView(view: UniversalFeedView): void {
+		const elementInView = view.getElementInView();
+		super.fromOtherView(view);
+		sleep(0).then(() => {
+			elementInView?.scrollIntoView({ behavior: "smooth" });
+		});
+	}
+
 	setIsSingleColumn(isSingleColumn: boolean): void {
 		this.isSingleColumn = isSingleColumn;
 		this.setColumnCount(isSingleColumn ? 1 : this.calcColumnCount());

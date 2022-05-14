@@ -1,10 +1,11 @@
 import UniversalFeedView from "./universalFeedView";
 import Ph_PostAndComments, {PostCommentsListings} from "../../../postAndComments/postAndComments";
 import Ph_Post from "../../../post/post";
-import {makeElement} from "../../../../utils/utils";
+import {makeElement, sleep} from "../../../../utils/utils";
 import {redditApiRequest} from "../../../../api/redditApi";
 import {nonDraggableElement} from "../../../../utils/htmlStatics";
 import ViewsStack from "../../../../historyState/viewsStack";
+import Ph_PhotonBaseElement from "../../../photon/photonBaseElement/photonBaseElement";
 
 interface IndividualElementData {
 	element: HTMLElement;
@@ -38,6 +39,18 @@ export default class Ph_IndividualPostScroller extends UniversalFeedView {
 		this.append(this.mainWrapper, this.prevBtn, this.nextBtn);
 
 		this.initialUrlHint = decodeURIComponent(ViewsStack.getCurrentState().state.url.split("#")[1]);
+	}
+
+	fromOtherView(view: UniversalFeedView): void {
+		const elementInView = view.getElementInView();
+		super.fromOtherView(view);
+		sleep(0).then(() => {
+			if (!elementInView)
+				return;
+			const elementIndex = this.allElements.findIndex(e => e.element === elementInView);
+			if (elementIndex !== -1)
+				this.switchToElement(elementIndex);
+		});
 	}
 
 	addElement(element: HTMLElement): void {
@@ -89,11 +102,20 @@ export default class Ph_IndividualPostScroller extends UniversalFeedView {
 	}
 
 	clear(): void {
-		for (const element of this.allElements)
+		for (const element of this.allElements) {
 			element.element.classList.add("isInFeed");
+			if (element.expandedElement instanceof Ph_PhotonBaseElement) {
+				element.expandedElement.cleanup();
+				const cleanupElements = element.expandedElement.$css("[requiresCleanup]") as HTMLCollectionOf<Ph_PhotonBaseElement>;
+				for (const elem of cleanupElements)
+					elem.cleanup();
+			}
+		}
 		this.getElement(this.currentIndex)?.remove();
 		this.allElements = [];
 		this.currentIndex = -1;
+		const urlParts = ViewsStack.getCurrentState().state.url.split("#");
+		ViewsStack.changeCurrentUrl(urlParts[0]);
 	}
 
 	private getElement(index: number): HTMLElement {

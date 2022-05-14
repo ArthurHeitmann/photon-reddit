@@ -108,7 +108,9 @@ export default class Ph_CommentsFeed extends Ph_PhotonBaseElement {
 	private canAddPendingComments(): boolean {
 		if (this.pendingComments.length === 0)
 			return false;
-		if (Ph_ViewState.getViewOf(this).classList.contains("hide"))
+		if (!this.isConnected)
+			return false;
+		if (Ph_ViewState.getViewOf(this)?.classList.contains("hide"))
 			return false;
 		if (this.childElementCount === 0)
 			return true;

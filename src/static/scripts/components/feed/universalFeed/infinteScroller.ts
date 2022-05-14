@@ -31,8 +31,6 @@ export default class Ph_InfiniteScroller extends HTMLElement {
 	private topPlaceholderHeight = 0;
 	private bottomPlaceholderHeight = 0;
 
-	private elementsInView: HTMLElement[] = [];
-
 	constructor() {
 		super();
 
@@ -84,7 +82,6 @@ export default class Ph_InfiniteScroller extends HTMLElement {
 			item.element.classList.remove("isHidden");
 		}
 		this.allItems = [];
-		this.elementsInView = [];
 		this.topPlaceholderHeight = 0;
 		this.bottomPlaceholderHeight = 0;
 		this.updatePlaceholderHeight(RemovedItemPlaceholderPosition.top);
@@ -200,10 +197,8 @@ export default class Ph_InfiniteScroller extends HTMLElement {
 					this.hidToVisIntObs.observe(element);
 					this.hidToRemIntObs.observe(element);
 
-					if (this.elementsInView.indexOf(element) !== -1)
-						this.elementsInView.splice(this.elementsInView.indexOf(element), 1);
 				}
-			)
+			);
 		}
 	}
 
@@ -233,8 +228,6 @@ export default class Ph_InfiniteScroller extends HTMLElement {
 					this.hidToVisIntObs.unobserve(element);
 					this.hidToRemIntObs.unobserve(element);
 					this.visToHidIntObs.observe(element);
-
-					this.elementsInView.push(element);
 				}
 			)
 		}
@@ -415,8 +408,23 @@ export default class Ph_InfiniteScroller extends HTMLElement {
 	}
 
 	get lastInView(): HTMLElement {
-		const mid = Math.floor(this.allItems.length / 2);
-		return this.allItems[mid]?.element;
+		const bounds = this.getBoundingClientRect();
+		const viewportHeight = Math.max(0,
+			bounds.top > 0
+				? Math.min(bounds.height, window.innerHeight - bounds.top)
+				: Math.min(bounds.bottom, window.innerHeight)
+		);
+		const centerX = bounds.left + bounds.width / 2;
+		const centerY = Math.max(0, bounds.top) + viewportHeight / 2;
+		const offsetY = viewportHeight / 8;
+		for (const y of [0, -1, 1, -2, 2, -3, 3]) {
+			let elements = document.elementsFromPoint(centerX, centerY + y * offsetY) as HTMLElement[];
+			elements = elements.filter(element => Array.from(this.children).includes(element));
+			if (elements.length > 0) {
+				return elements[0];
+			}
+		}
+		return null;
 	}
 }
 
