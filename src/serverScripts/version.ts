@@ -1,6 +1,20 @@
-export const photonVersion = "1.1.7";		/// <change version script>
+export const photonVersion = "1.1.8";		/// <change version script>
 
 export const photonChangelog = {
+	"1.1.8": {
+		"New": [
+			"Added several new ways to browse posts (Settings > Post > Post display type)",
+			"1. Cards (not new) (default)",
+			"2. Compact: Old Reddit inspired",
+			"3. Grid: Displaying as many posts as possible for sensory overload",
+			"4. Individual: Displays one post at a time and auto loads comments. Navigate with arrows",
+			"",
+			"Added one time confirmation for viewing embedded media (like YouTube and Twitter), cuz privacy 'n stuff",
+		],
+		"Fixed": [
+			"Some small fixes & changes"
+		]
+	},
 	"1.1.7": {
 		"New": [
 			"Added loading indicator to YT videos & Tweets"
