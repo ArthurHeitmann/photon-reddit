@@ -69,14 +69,14 @@ async function init() {
 	if (!clientIdData.idInitTime ||
 		clientIdData.idInitTime > Date.now() ||												// if lastSet is corrupted
 		Date.now() - clientIdData.idInitTime > 1000 * 60 * 60 * 24 * 30 ||					// or invalidate after 30 days
-		!clientIdData.clientId || clientIdData.clientId.length !== 128						// or is id corrupted
+		!clientIdData.clientId || clientIdData.clientId.length < 16							// or is id corrupted
 	) {
 		await generateClientIdData();
 	}
 }
 
 async function generateClientIdData() {
-	await Users.global.set(["analytics", "clientId"], randomString(128));
+	await Users.global.set(["analytics", "clientId"], randomString(16));
 	await Users.global.set(["analytics", "idInitTime"], Date.now());
 }
 
