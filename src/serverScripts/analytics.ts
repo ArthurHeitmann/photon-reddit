@@ -222,6 +222,23 @@ async function trackBrowserFeature(featureName: string, isAvailable: boolean): P
 	}
 }
 
+async function trackGenericProperty(key: string, value: string, data2: string): Promise<void> {
+	const connection = await getConnection();
+	if (connection === null)
+		return;
+
+	try {
+		await connection.query(`
+			INSERT INTO genericEvents
+				(\`key\`, value, data2)
+			 	VALUES (${connection.escape(key)}, ${connection.escape(value)}, ${connection.escape(data2)})
+		`);
+	}
+	finally {
+		await connection.release();
+	}
+}
+
 analyticsRouter.post("/event", RateLimit(analyticsRateLimitConfig), safeExcAsync(async (req, res) => {
 	if (env === "production"  && await isIpFromBot(req)) {
 		res.send("yep");
@@ -354,6 +371,21 @@ analyticsRouter.post("/browserFeatures", safeExcAsync(async (req, res) => {
 	}
 	try {
 		await trackBrowserFeature(featureName, isAvailable);
+		res.send("yep");
+	}
+	catch (e) {
+		res.send("nope").status(400);
+	}
+}));
+
+analyticsRouter.post("/genericProperty", safeExcAsync(async (req, res) => {
+	const { key, value, data2 } = req.body;
+	if (typeof key !== "string" || key.length > 50 || typeof value !== "string" || typeof data2 !== "string") {
+		res.status(400).json({ error: "invalid parameters" });
+		return;
+	}
+	try {
+		await trackGenericProperty(key.toString(), value.toString(), data2.toString());
 		res.send("yep");
 	}
 	catch (e) {

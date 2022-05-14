@@ -74,6 +74,24 @@ export async function trackBrowserFeatures(data: { featureName: string, isAvaila
 	}
 }
 
+export async function trackGenericProperty(key: string, value: string | number | boolean, data2: string): Promise<boolean> {
+	try {
+		const r = await fetch("/data/genericProperty", {
+			method: "POST",
+			headers: { "content-type": "application/json" },
+			body: JSON.stringify({
+				key: key.toString(),
+				value: value.toString(),
+				data2: data2.toString()
+			})
+		});
+		const response = await r.text();
+		return response === "yep";
+	} catch (e) {
+		return false;
+	}
+}
+
 export async function getRandomSubreddit(isNsfw: boolean = false): Promise<string> {
 	let subReq: Response;
 	try {
