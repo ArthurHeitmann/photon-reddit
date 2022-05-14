@@ -1,0 +1,77 @@
+@use "../../../../style/vars";
+
+@keyframes loadingTextOpacityBlink {
+	0% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.5;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+.iframeWrapper {
+	--aspect-ratio: 16/9;
+	width: 100%;
+	position: relative;
+
+	&[data-state=ask] {
+		aspect-ratio: var(--aspect-ratio);
+		display: flex;
+		flex-flow: column;
+		justify-content: center;
+		align-items: center;
+		gap: 1rem;
+
+		.promptText {
+			font-size: 1.5rem;
+		}
+
+		.promptSubtitle {
+			font-size: .9rem;
+			max-width: 25rem;
+		}
+
+		.promptButtons {
+			display: flex;
+			align-items: center;
+			width: 100%;
+			max-width: 25rem;
+			justify-content: space-around;
+
+			> button {
+				width: 5rem;
+				height: 2.5rem;
+				font-size: 1.5rem;
+
+				&.no {
+					opacity: .75;
+				}
+			}
+		}
+	}
+
+	&[data-state=iframe] {
+		aspect-ratio: var(--aspect-ratio);
+
+		.loadingText {
+			position: absolute;
+			font-size: 1.5rem;
+			top: 1rem;
+			left: 1rem;
+			animation: loadingTextOpacityBlink	 2s infinite;
+		}
+
+		iframe {
+			width: 100%;
+			height: 100%;
+			position: relative;
+		}
+	}
+
+	&[data-state=link] {
+		padding: 0 1.75rem 1.75rem;
+	}
+}

@@ -37,6 +37,12 @@ export enum FeedDisplayType {
 	individual = "individual",
 }
 
+export enum AllowIframesDecision {
+	allow = "allow",
+	block = "block",
+	ask = "ask",
+}
+
 export interface PhotonSettings {
 	imageLoadingPolicy?: ImageLoadingPolicy,
 	loadInlineMedia?: boolean,
@@ -75,6 +81,7 @@ export interface PhotonSettings {
 	altVolumeFunction?: boolean,
 	animateFullscreenTransition?: boolean,
 	feedDisplayType?: FeedDisplayType,
+	allowIframes?: AllowIframesDecision,
 }
 
 // default config
@@ -116,6 +123,7 @@ export const defaultSettings: PhotonSettings = {
 	altVolumeFunction: false,
 	animateFullscreenTransition: false,
 	feedDisplayType: FeedDisplayType.cards,
+	allowIframes: AllowIframesDecision.ask,
 };
 
 export const getSettingsSections = (): SettingsSection[] => [
@@ -236,6 +244,11 @@ export const getSettingsSections = (): SettingsSection[] => [
 			new BooleanSetting("emptyAreaClickGoesBack", "Click empty area to go back", "", SettingsApi.Photon),
 			new BooleanSetting("isIncognitoEnabled", "Incognito mode", "Randomize the tab title & url.", SettingsApi.Photon),
 			new BooleanSetting("beforeExitConfirmation", "Require exit confirmation", "Display warning when trying to leave page", SettingsApi.Photon),
+			new MultiOptionSetting([
+				{ text: "Ask", value: AllowIframesDecision.ask },
+				{ text: "Allow", value: AllowIframesDecision.allow },
+				{ text: "Block", value: AllowIframesDecision.block },
+			], "allowIframes", "Allow embedded iframes", "Allow loading external websites (like YouTube or Twitter). These websites can potentially place cookies or track you.", SettingsApi.Photon),
 			new TimeSetting({ allowRange: [1, Number.MAX_SAFE_INTEGER] }, "clearFeedCacheAfterMs", "Subreddit info cache duration", "", SettingsApi.Photon),
 			new TimeSetting({ allowRange: [1, Number.MAX_SAFE_INTEGER] }, "userShortCacheTTLMs", "Short Cache Duration", "For your subscriptions", SettingsApi.Photon),
 			new TimeSetting({

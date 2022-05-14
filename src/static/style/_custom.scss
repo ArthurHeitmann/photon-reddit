@@ -224,28 +224,3 @@ input.radio {
 	vertical-align: middle;
 	margin: 0 2px;
 }
-
-@keyframes loadingTextOpacityBlink {
-	0% {
-		opacity: 1;
-	}
-	50% {
-		opacity: 0.5;
-	}
-	100% {
-		opacity: 1;
-	}
-}
-
-.iframeWrapper::before {
-	content: "Loading External Media...";
-	position: absolute;
-	font-size: 1.5rem;
-	top: 1rem;
-	left: 1rem;
-	animation: loadingTextOpacityBlink	 2s infinite;
-}
-
-.tweetIframeWrapper::before {
-	content: "Loading Tweet...";
-}

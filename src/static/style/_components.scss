@@ -31,6 +31,7 @@
 @use '../scripts/components/misc/currentUser/curentUser';
 @use '../scripts/components/misc/dropDown/dropDown';
 @use '../scripts/components/misc/flair/flair';
+@use '../scripts/components/misc/iframeWrapper/iframeWrapper';
 @use '../scripts/components/misc/markdownForm/markdownForm';
 @use '../scripts/components/misc/modalPane/modalPane';
 @use '../scripts/components/misc/multiCreateOrEdit/multiCreateOrEdit';
@@ -46,6 +47,7 @@
 @use '../scripts/components/photon/fab/fabElement/fabElement';
 @use '../scripts/components/photon/fab/fabElementEditPane/fabElementEditPane';
 @use '../scripts/components/photon/tutorial/tutorial';
+@use '../scripts/components/post/postLink/postLink';
 @use '../scripts/components/post/submit/submitPostForm';
 @use '../scripts/components/post/post';
 @use '../scripts/components/post/postBody/compactBodyWrapper/compactBodyWrapper';

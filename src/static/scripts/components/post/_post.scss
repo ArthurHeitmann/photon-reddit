@@ -110,28 +110,6 @@
 		}
 	}
 
-	.linkPreviewWrapper {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		gap: .5rem;
-		width: 100%;
-		max-height: 6rem;
-
-		> a {
-			max-width: 75%;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			height: 1.5em;
-		}
-
-		> img {
-			max-width: 25%;
-			max-height: 5rem;
-			border-radius: 1rem;
-		}
-	}
-
 	.actions {
 		z-index: 2;
 		min-height: 100%;

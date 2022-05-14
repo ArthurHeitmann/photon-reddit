@@ -1,0 +1,22 @@
+
+.linkPreviewWrapper {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	grid-gap: .5rem;
+	align-items: center;
+	width: 100%;
+	max-height: 6rem;
+
+	> a {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		height: 1.5em;
+	}
+
+	> img {
+		max-width: 7rem;
+		max-height: 5rem;
+		border-radius: 1rem;
+	}
+}

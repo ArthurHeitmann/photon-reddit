@@ -4,7 +4,7 @@
 
 import Ph_Toast, {Level} from "../components/misc/toast/toast";
 import {PhEvents} from "../types/Events";
-import {RedditMultiInfo, RedditUserInfo, SubredditInfoBase} from "../types/redditTypes";
+import {RedditMultiInfo, RedditPostData, RedditUserInfo, SubredditInfoBase} from "../types/redditTypes";
 import {fakeSubreddits} from "./consts";
 import Users from "../multiUser/userManagement";
 
@@ -568,4 +568,11 @@ export function cancelEvent(e: Event) {
 	e.stopPropagation();
 	e.preventDefault();
 	return false;
+}
+
+export function getThumbnailUrl(postData: RedditPostData): string {
+	return (
+		postData?.preview?.images?.[0]?.source?.url
+		?? postData?.thumbnail
+	);
 }

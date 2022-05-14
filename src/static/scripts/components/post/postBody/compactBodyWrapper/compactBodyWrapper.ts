@@ -1,6 +1,6 @@
 import {RedditPostData} from "../../../../types/redditTypes";
 import {PhEvents} from "../../../../types/Events";
-import {makeElement} from "../../../../utils/utils";
+import {getThumbnailUrl, makeElement} from "../../../../utils/utils";
 import {linksToSpa} from "../../../../utils/htmlStuff";
 
 export default class Ph_PostBodyCompactWrapper extends HTMLElement{
@@ -21,7 +21,7 @@ export default class Ph_PostBodyCompactWrapper extends HTMLElement{
 			makeElement("a",
 				{ class: "link", href: postData.url }, postData.url),
 		);
-		const thumbnail = postData.preview?.images?.[0]?.source?.url || postData.thumbnail;
+		const thumbnail = getThumbnailUrl(postData);
 		if (thumbnail && /^https:\/\/[^.]+\.[^.]/.test(thumbnail))
 			this.append(
 				makeElement("img", { class: "thumbnail", src: thumbnail }));

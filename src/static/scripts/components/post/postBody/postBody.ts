@@ -1,14 +1,15 @@
 import {RedditPostData} from "../../../types/redditTypes";
-import {escADQ, escHTML} from "../../../utils/htmlStatics";
 import {linksToSpa} from "../../../utils/htmlStuff";
-import {hasParams} from "../../../utils/utils";
+import {getThumbnailUrl, hasParams} from "../../../utils/utils";
 import Ph_MediaViewer from "../../mediaViewer/mediaViewer";
 import Ph_PostText from "./postText/postText";
 import {PhEvents} from "../../../types/Events";
 import Users from "../../../multiUser/userManagement";
 import Ph_PhotonBaseElement from "../../photon/photonBaseElement/photonBaseElement";
 import Ph_PostBodyCompactWrapper from "./compactBodyWrapper/compactBodyWrapper";
-import {FeedDisplayType} from "../../global/photonSettings/settingsConfig";
+import {AllowIframesDecision, FeedDisplayType} from "../../global/photonSettings/settingsConfig";
+import Ph_PostLink from "../postLink/postLink";
+import Ph_IframeWrapper from "../../misc/iframeWrapper/iframeWrapper";
 
 /**
  * Determines the post type and generates the type specific content
@@ -114,16 +115,8 @@ export default class Ph_PostBody extends Ph_PhotonBaseElement {
 
 	private makeLinkBody(postData: RedditPostData) {
 		this.classList.add("padded");
-		let newHtml: string;
-		if (postData.preview)
-			newHtml = `
-				<div class="linkPreviewWrapper">
-					<a href="${escADQ(postData.url)}" rel="noopener">${escHTML(postData.url)}</a>
-					<img src="${escADQ(postData.preview.images[0].source.url)}" alt="preview">
-				</div>`;
-		else
-			newHtml = `<a href="${escADQ(postData.url)}" rel="noopener">${escHTML(postData.url)}</a>`;
-		this.insertAdjacentHTML("beforeend", newHtml);
+		const thumbnailUrl = getThumbnailUrl(postData);
+		this.append(new Ph_PostLink(postData.url, thumbnailUrl))
 	}
 
 	private makeImageBody(postData: RedditPostData) {
@@ -146,12 +139,12 @@ export default class Ph_PostBody extends Ph_PhotonBaseElement {
 
 	private makeEmbeddedVideoBody(postData: RedditPostData) {
 		this.classList.add("fullScale");
-		this.isBodyCollapsable = true;
+		this.isBodyCollapsable = Users.global.d.photonSettings.allowIframes !== AllowIframesDecision.block;
 		const iframeSrc = postData.media_embed.content.match(/src="([^"]+)"/)[1];		// extract src attribute from <iframe>
-		this.insertAdjacentHTML(
-			"beforeend",
-			`<div class="aspect-ratio-16-9-wrapper iframeWrapper"><iframe src="${escADQ(iframeSrc)}" allowfullscreen></iframe></div>`
-		);
+		this.append(new Ph_IframeWrapper(iframeSrc, {
+			fallbackUrl: postData.url,
+			fallbackThumbnailUrl: getThumbnailUrl(postData),
+		}));
 	}
 
 	private makeTextBody(postData: RedditPostData) {
@@ -160,7 +153,7 @@ export default class Ph_PostBody extends Ph_PhotonBaseElement {
 
 	private makeTweetBody(postData: RedditPostData) {
 		this.classList.add("fullScale");
-		this.isBodyCollapsable = true;
+		this.isBodyCollapsable = Users.global.d.photonSettings.allowIframes !== AllowIframesDecision.block;
 		const id = postData.url.match(/\/status\/(\d+)/)[1];
 		const twitterEmbedParams = new URLSearchParams({
 			id: id,
@@ -169,14 +162,11 @@ export default class Ph_PostBody extends Ph_PhotonBaseElement {
 			origin: location.origin,
 			dnt: "true"
 		});
-		this.insertAdjacentHTML(
-			"beforeend",
-			`<div class="aspect-ratio-16-9-wrapper iframeWrapper tweetIframeWrapper">
-				<iframe border=0 frameborder=0 height=250 width=550 allowfullscreen="true"
-					src="https://platform.twitter.com/embed/Tweet.html?${twitterEmbedParams.toString()}">
-				</iframe>
-			</div>`
-		);
+		this.append(new Ph_IframeWrapper(`https://platform.twitter.com/embed/Tweet.html?${twitterEmbedParams.toString()}`, {
+			fallbackUrl: postData.url,
+			fallbackThumbnailUrl: getThumbnailUrl(postData),
+			loadingText: "Loading Tweet..."
+		}));
 	}
 
 	private makeImgurBody(postData: RedditPostData) {
