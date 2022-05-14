@@ -76,7 +76,7 @@ async function init() {
 }
 
 async function generateClientIdData() {
-	await Users.global.set(["analytics", "clientId"], randomString(16));
+	await Users.global.set(["analytics", "clientId"], randomString(20));
 	await Users.global.set(["analytics", "idInitTime"], Date.now());
 }
 
@@ -113,7 +113,7 @@ async function genericReport() {
 	const isHeaderPinned = Users.global.d.isHeaderPinned;
 	const customSettings =
 		Object.entries(Users.global.d.photonSettings)
-			.filter(([key, value]) => !isJsonEqual(defaultSettings[key], value))
+			.filter(([key, value]) => !isJsonEqual(defaultSettings[key], value as any))
 			.map(([key]) => key);
 	const numberOfCustomSettings = customSettings.length;
 
