@@ -86,12 +86,10 @@ const reportIntervalMs = 1000 * 60 * 60 * 24 * 7;	// new report every week
 Users.ensureDataHasLoaded().then(() => {
 	init();
 	if ((Date.now() - Users.global.d.analytics.lastReportAt > reportIntervalMs) && location.hostname !== "localhost") {
-		Promise.all([
-			sendBrowserFeatures(),
-			genericReport(),
-		]).then(() => {
-			Users.global.set(["analytics", "lastReportAt"], Date.now());
-		});
+		sendBrowserFeatures();
+		if (Users.global.d.analytics.lastReportAt > 0)	// don't send report on first time visit
+			genericReport();
+		Users.global.set(["analytics", "lastReportAt"], Date.now());
 	}
 });
 
