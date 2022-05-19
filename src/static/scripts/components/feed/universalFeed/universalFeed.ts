@@ -7,7 +7,7 @@ import {
 	RedditPostData,
 	RedditPostObj
 } from "../../../types/redditTypes";
-import {hasParams, sleep, throttle} from "../../../utils/utils";
+import {hasParams, sleep, throttle, waitForViewToBecomeVisible} from "../../../utils/utils";
 import Ph_Comment from "../../comment/comment";
 import Ph_Message from "../../message/message";
 import Ph_Toast, {Level} from "../../misc/toast/toast";
@@ -166,7 +166,10 @@ export default class Ph_UniversalFeed extends Ph_PhotonBaseElement {
 		document.scrollingElement.scrollTo(0, 0);
 	}
 
-	private updateFeedViewType() {
+	private async updateFeedViewType() {
+		const view = Ph_ViewState.getViewOf(this);
+		if (view)
+			await waitForViewToBecomeVisible(view);
 		switch (Users.global.d.photonSettings.feedDisplayType) {
 			case FeedDisplayType.cards:
 			case FeedDisplayType.compact:

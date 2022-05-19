@@ -7,6 +7,7 @@ import {PhEvents} from "../types/Events";
 import {RedditMultiInfo, RedditPostData, RedditUserInfo, SubredditInfoBase} from "../types/redditTypes";
 import {fakeSubreddits} from "./consts";
 import Users from "../multiUser/userManagement";
+import {Ph_ViewState} from "../components/viewState/viewState";
 
 /** */
 function _numberToShort(num: number): { n: number, s?: string } {
@@ -230,6 +231,24 @@ export function urlWithHttps(url: string) {
 
 export async function sleep(ms: number): Promise<void> {
 	return  new Promise(resolve => setTimeout(resolve, ms));
+}
+
+export function waitForViewToBecomeVisible(view: Ph_ViewState, timeout?: number): Promise<boolean> {
+	if (view.offsetHeight || view.offsetWidth)
+		return Promise.resolve(true);
+	return new Promise(resolve => {
+		const timeoutId = timeout > 0 && setTimeout(() => {
+			window.removeEventListener(PhEvents.viewChange, viewChangeListener);
+			resolve(false);
+		}, timeout);
+		const viewChangeListener = () => {
+			if (view.offsetHeight || view.offsetWidth) {
+				timeoutId && clearTimeout(timeoutId);
+				resolve(true);
+			}
+		};
+		window.addEventListener(PhEvents.viewChange, viewChangeListener);
+	});
 }
 
 export function waitForFullScreenExit(): Promise<boolean> {

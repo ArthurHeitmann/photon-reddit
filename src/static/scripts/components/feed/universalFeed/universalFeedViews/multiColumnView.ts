@@ -6,6 +6,7 @@ import {sleep} from "../../../../utils/utils";
 export default class Ph_MultiColumnView extends UniversalFeedView {
 	private isSingleColumn: boolean;
 	private columns: Ph_InfiniteScroller[] = [];
+	private allElements: HTMLElement[] = [];
 
 	constructor(isSingleColumn: boolean) {
 		super();
@@ -79,6 +80,7 @@ export default class Ph_MultiColumnView extends UniversalFeedView {
 
 	addElement(element: HTMLElement) {
 		this.getSmallestColumn().addElement(element);
+		this.allElements.push(element);
 	}
 
 	private getSmallestColumn(): Ph_InfiniteScroller {
@@ -135,16 +137,13 @@ export default class Ph_MultiColumnView extends UniversalFeedView {
 	}
 
 	clear() {
-		for (const column of this.columns) {
+		for (const column of this.columns)
 			column.clearElements();
-		}
+		this.allElements = [];
 	}
 
 	getElements(): HTMLElement[] {
-		return this.columns
-			.map(c => c.allItems)
-			.flat()
-			.map(e => e.element);
+		return this.allElements;
 	}
 
 	getElementInView(): HTMLElement {
