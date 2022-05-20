@@ -224,3 +224,14 @@ input.radio {
 	vertical-align: middle;
 	margin: 0 2px;
 }
+
+.retryButton {
+	padding: .25rem .75rem;
+	background: vars.$primary-contrast;
+	margin: 2rem 0;
+	width: max-content;
+	height: 2.5rem;
+	align-self: center;
+	font-size: 1.25rem;
+	border-radius: 1.5rem;
+}

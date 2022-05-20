@@ -61,7 +61,7 @@ window.onbeforeunload = () => {
 
 /** Whether a new history state should be inserted before or after the current one */
 export enum PushType {
-	pushAfter, pushBefore
+	pushAfter, pushBefore, reload
 }
 
 enum PostHintState {
@@ -79,7 +79,7 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 	path = modifyUrl(path);
 	// don't load new page if next history state has same url
 	const nextState = ViewsStack.getNextState();
-	if (nextState && nextState.state.url == (path + query)) {
+	if (nextState && nextState.state.url == (path + query) && pushType != PushType.reload) {
 		history.forward();
 		return;
 	}
@@ -95,9 +95,12 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 		stateLoader = new Ph_CommentsViewStateLoader(historyState, postHint);
 		postHintState = PostHintState.postNoComments;
 	}
-	else {
+	else if (pushType != PushType.reload) {
 		stateLoader = new Ph_ViewStateLoader(historyState);
 		postHintState = PostHintState.noHint;
+	}
+	else {
+		stateLoader = ViewsStack.getCurrentState();
 	}
 
 	if (pushType === PushType.pushAfter)
@@ -169,6 +172,7 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 			stateLoader.error();
 		}
 	} catch (e) {
+		console.error(e);
 		stateLoader.error();
 	}
 
