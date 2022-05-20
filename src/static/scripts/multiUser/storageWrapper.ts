@@ -16,6 +16,41 @@ export const wasDbUpgraded: DbUpgrade = {
 	toVersion: null
 };
 
+interface WriteLock {
+	isLocked: boolean,
+	unlockPromise: Promise<void>,
+	unlockResolve: () => void,
+}
+const writeLocks: { [key: string]: WriteLock } = {};
+function lockWriting(key: string): Promise<void> {
+	return new Promise(resolve => {
+		if (!(key in writeLocks)) {
+			writeLocks[key] = {
+				isLocked: false,
+				unlockPromise: null,
+				unlockResolve: null,
+			};
+		}
+		if (!writeLocks[key].isLocked) {
+			writeLocks[key].isLocked = true;
+			writeLocks[key].unlockPromise = new Promise(resolve => {
+				writeLocks[key].unlockResolve = resolve;
+			});
+			resolve();
+		}
+		else {
+			writeLocks[key].unlockPromise.then(() => {
+				lockWriting(key).then(resolve);
+			});
+		}
+	});
+}
+function unlockWriting(key: string): void {
+	writeLocks[key].isLocked = false;
+	writeLocks[key].unlockResolve();
+	writeLocks[key].unlockResolve = null;
+}
+
 function openDb(): Promise<IDBDatabase> {
 	return new Promise<IDBDatabase>((resolve, reject) => {
 		const openRequest = window.indexedDB.open(dbName, version);
@@ -57,6 +92,7 @@ async function getFromDb(...keyPath: string[]): Promise<any> {
 
 function setInDb(value: any, ...keyPath: string[]): Promise<void> {
 	return new Promise(async (resolve, reject) => {
+		await lockWriting(keyPath[0]);
 		const db = await openDb();
 		let newVal = value;
 		try {
@@ -76,10 +112,14 @@ function setInDb(value: any, ...keyPath: string[]): Promise<void> {
 		const objectStore = transaction.objectStore(objectStoreName);
 		const putRequest = objectStore.put(newVal, keyPath[0]);
 		putRequest.onsuccess = () => {
-			resolve();
 			db.close();
+			unlockWriting(keyPath[0]);
+			resolve();
 		};
-		putRequest.onerror = () => reject(putRequest.error);
+		putRequest.onerror = () => {
+			unlockWriting(keyPath[0]);
+			reject(putRequest.error);
+		};
 	});
 }
 

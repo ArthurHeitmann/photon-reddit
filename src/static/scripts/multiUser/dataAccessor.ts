@@ -13,7 +13,10 @@ export default abstract class DataAccessor<T> {
 
 		let storedData: any;
 		try {
-			storedData = await getFromStorage(this.key);
+			storedData = {
+				...deepClone(this.default),
+				...await getFromStorage(this.key)
+			};
 		} catch {}
 		if (!storedData) {
 			this.loaded = deepClone(this.default);
@@ -35,11 +38,11 @@ export default abstract class DataAccessor<T> {
 	set<k0 extends keyof T, k1 extends keyof T[k0], k2 extends keyof T[k0][k1]>(keys: [k0, k1, k2], value: T[k0][k1][k2]): Promise<void>;
 	set<k0 extends keyof T, k1 extends keyof T[k0], k2 extends keyof T[k0][k1], k3 extends keyof T[k0][k1][k2]>(keys: [k0, k1, k2, k3], value: T[k0][k1][k2][k3]): Promise<void>;
 	async set(keys: string[], value: any): Promise<void> {
-		await setInStorage(value, this.key, ...keys);
 		let loadedTarget = this.loaded;
 		for (let i = 0; i < keys.length - 1; i++)
 			loadedTarget = loadedTarget[keys[i]];
 		loadedTarget[keys[keys.length - 1]] = value;
+		await setInStorage(value, this.key, ...keys);
 	}
 
 	remove<k0 extends keyof T>(...keys: [k0]): Promise<T[k0]>;
