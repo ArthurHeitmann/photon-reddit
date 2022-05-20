@@ -25,7 +25,8 @@ export default class GlobalUserData extends DataAccessor<_GlobalData> {
 		photonVersion: photonWebVersion,
 		seenPosts: {},
 		pageBeforeLogin: null,
-		loginCode: null
+		loginCode: null,
+		colorContrastCache: {},
 	}
 
 	async init(): Promise<this> {
@@ -95,8 +96,10 @@ interface _GlobalData {
 	hasAcknowledgedTutorial: boolean;
 	/** When visiting for the first time, a test is needed to know if firefox is used in private mode */
 	firefoxPrivateCheckCompleted: boolean;
-	pageBeforeLogin: string,
-	loginCode: string
+	pageBeforeLogin: string;
+	loginCode: string;
+	/** Maps a `background,foreground` color pair to a new pair with better contrast */
+	colorContrastCache: { [key: string]: [[number, number, number], [number, number, number]] }
 }
 
 export interface AnalyticsData {

@@ -237,3 +237,19 @@ export function emojiFlagsToImages(element: Element | string): void | string {
 export function remToPx(rem: number): number {
 	return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
 }
+
+const colorStringToRgbCache: { [key: string]: [number, number, number] } = {};
+export function colorStringToRgb(color: string): [number, number, number] {
+	if (colorStringToRgbCache[color])
+		return colorStringToRgbCache[color];
+	const testElement = document.createElement("div");
+	testElement.className = "hide";
+	testElement.style.color = color;
+	document.body.appendChild(testElement);
+	const cssRgb = getComputedStyle(testElement).color;
+	testElement.remove();
+	const rgb = cssRgb.match(/\d+/g);
+	const rgbArray = rgb.map(x => parseInt(x)) as [number, number, number];
+	colorStringToRgbCache[color] = rgbArray;
+	return rgbArray;
+}

@@ -264,6 +264,21 @@ export const getSettingsSections = (): SettingsSection[] => [
 						new Ph_Toast(Level.success, `Cleared ${seenPostsCount} seen posts`, { timeout: 1500 });
 					}
 				}, "Clear seen posts"),
+				makeElement("button", {
+					class: "button",
+					onclick: async () => {
+						Promise.all([
+							Users.global.set(["colorContrastCache"], {}),
+							...Users.all.map(user => user.set(["caches"], {
+								subs: null,
+								multis: null,
+								feedInfos: {},
+							}))
+						]).then(() => {
+							new Ph_Toast(Level.success, "", { timeout: 1500 });
+						});
+					}
+				}, "Clear Caches"),
 				makeElement("button", { class: "button", onclick: () => Ph_Changelog.show() }, "Show Changelog"),
 				makeElement("button", {
 					class: "button", onclick() {

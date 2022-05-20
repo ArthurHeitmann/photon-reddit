@@ -1,7 +1,9 @@
-import { FlairApiData, FlairData, RedditApiData } from "../../../types/redditTypes";
-import { emojiFlagsToImages } from "../../../utils/htmlStatics";
-import { hasParams } from "../../../utils/utils";
-import Ph_Toast, { Level } from "../toast/toast";
+import {FlairApiData, FlairData, RedditApiData} from "../../../types/redditTypes";
+import {colorStringToRgb, emojiFlagsToImages} from "../../../utils/htmlStatics";
+import {clamp, hasParams} from "../../../utils/utils";
+import Users from "../../../multiUser/userManagement";
+
+type RGB = [number, number, number];
 
 /**
  * A reddit flair (for example user or post related)
@@ -28,8 +30,8 @@ export default class Ph_Flair extends HTMLElement {
 
 		this.className = "flair";
 		const [bgColor, textColor] = this.makeFlairColorScheme(data.backgroundColor, data.textColor);
-		this.style.setProperty("--flair-bg", bgColor);
-		this.style.setProperty("--flair-tc", textColor);
+		this.style.setProperty("--flair-bg", `rgb(${bgColor.join(",")})`);
+		this.style.setProperty("--flair-tc", `rgb(${textColor.join(",")})`);
 
 		this.flairContent = document.createElement("div");
 		this.append(this.flairContent);
@@ -150,59 +152,88 @@ export default class Ph_Flair extends HTMLElement {
 		return new Ph_Flair(this.data, allowEdits);
 	}
 
-	private makeFlairColorScheme(color: string, secondaryColor?: string): string[] {
+	private makeFlairColorScheme(color: string, secondaryColor?: string): [RGB, RGB] {
+		const cacheKey = `${color},${secondaryColor || ""}`;
+		if (Users.global.d.colorContrastCache[cacheKey]) {
+			return Users.global.d.colorContrastCache[cacheKey];
+		}
+		let bgFgColor: [RGB, RGB];
 		switch (color) {
 			case "dark":
-				return [this.shortColorToCss("dark"), this.shortColorToCss(secondaryColor) || this.shortColorToCss("light")];
+				bgFgColor = [this.shortColorToCss("dark"), this.shortColorToCss(secondaryColor) || this.shortColorToCss("light")];
+				break;
 			case "light":
-				return [this.shortColorToCss("light"), this.shortColorToCss(secondaryColor) || this.shortColorToCss("dark")];
+				bgFgColor = [this.shortColorToCss("light"), this.shortColorToCss(secondaryColor) || this.shortColorToCss("dark")];
+				break;
 			default:
 				if (color) {
-					return [
+					bgFgColor = [
 						this.shortColorToCss(color),
 						color === "transparent" && secondaryColor === "dark"
 							? this.shortColorToCss("light")
-							: this.shortColorToCss(secondaryColor) || this.contrastColor(color)
+							: this.shortColorToCss(secondaryColor) || this.oppositeColor(color)
 					];
 				}
 				else
-					return [this.shortColorToCss("dark"), this.shortColorToCss("light")];
+					bgFgColor = [this.shortColorToCss("dark"), this.shortColorToCss("light")];
 		}
+		bgFgColor = this.fixContrast(bgFgColor);
+		Users.global.set(["colorContrastCache", cacheKey], bgFgColor);
+		return bgFgColor;
 	}
 
-	private contrastColor(color: string): string {
+	private oppositeColor(color: string | RGB): RGB {
 		if (color === "light")
 			return this.shortColorToCss("dark");
 		else if (color === "dark")
 			return this.shortColorToCss("light");
 
-		color = this.shortColorToCss(color);
-		const testElement = document.createElement("div");
-		testElement.className = "hide";
-		testElement.style.color = color;
-		document.body.appendChild(testElement);
-		const cssRgb = getComputedStyle(testElement).color;
-		testElement.remove();
-
-		const rgbValues: string[] = cssRgb.match(/\d+/g);
-		if (rgbValues) {
-			const brightness = rgbValues.reduce((prev, cur) => prev + parseInt(cur), 0) / 3;
-			return brightness < 128 ? this.shortColorToCss("light") : this.shortColorToCss("dark");
-		}
-		else {
-			new Ph_Toast(Level.error, "Invalid flair color");
-			return "red";
-		}
+		const rgbValues = typeof color === "string"
+			? colorStringToRgb(`rgb(${this.shortColorToCss(color).join(",")})`)
+			: color;
+		const brightness = (rgbValues[0] + rgbValues[1] + rgbValues[2]) / 3;
+		return brightness < 128 ? this.shortColorToCss("light") : this.shortColorToCss("dark");
 	}
 
-	private shortColorToCss(colorOrShortColor): string {
+	private fixContrast(bgFgColor: [RGB, RGB]): [RGB, RGB] {
+		const rgbToLuminance =
+			(r: number, g: number, b: number) => (r * 299 + g * 587 + b * 114) / 1000;
+
+		// keep increasing contrast until the contrast ratio >= 3.0
+		let i = 0;
+		let ratio: number;
+		do {
+			const bgLuminance = rgbToLuminance(...bgFgColor[0]);
+			const fgLuminance = rgbToLuminance(...bgFgColor[1]);
+			ratio = (Math.max(bgLuminance, fgLuminance) + 0.05) / (Math.min(bgLuminance, fgLuminance) + 0.05);
+			if (ratio === 1) {		// same luminance
+				bgFgColor[1] = this.oppositeColor(bgFgColor[0]);
+				continue;
+			}
+			if (ratio < 3) {
+				const bgFactor = bgLuminance > fgLuminance ? 1.25 : 0.75;
+				const fgFactor = bgLuminance > fgLuminance ? 0.75 : 1.25;
+				bgFgColor[0] = bgFgColor[0].map(c =>
+					clamp(c * bgFactor, 0, 255)) as RGB;
+				bgFgColor[1] = bgFgColor[1].map(c =>
+					clamp(c * fgFactor, 0, 255)) as RGB;
+			}
+			i++;
+		} while (ratio < 3 && i < 5);
+
+		return bgFgColor;
+	}
+
+	private shortColorToCss(colorOrShortColor: string | RGB): RGB {
 		switch (colorOrShortColor) {
 			case "dark":
-				return "var(--bg-color)";
+				return [18, 18, 18];
 			case "light":
-				return "var(--text-color)";
+				return [228, 228, 228];
 			default:
-				return colorOrShortColor;
+				return typeof colorOrShortColor === "string"
+					? colorStringToRgb(colorOrShortColor)
+					: colorOrShortColor;
 		}
 	}
 
