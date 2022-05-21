@@ -16,6 +16,7 @@ import Ph_CommentForm from "../misc/markdownForm/commentForm/commentForm";
 import Ph_Toast, {Level} from "../misc/toast/toast";
 import Ph_Post from "../post/post";
 import {Ph_ViewState} from "../viewState/viewState";
+import Users from "../../multiUser/userManagement";
 
 export type PostCommentsListings = [RedditListingObj<RedditPostObj>, RedditListingObj<RedditCommentObj>];
 
@@ -70,6 +71,10 @@ export default class Ph_PostAndComments extends HTMLElement {
 
 	initWithData(data: PostCommentsListings) {
 		if (!hasParams(arguments)) return;
+
+		// viewing comments --> mark post as seen
+		if (Users.global.d.photonSettings.markSeenPosts)
+			Users.global.markPostAsSeen(data[0].data.children[0].data.name);
 
 		// write comment form
 		if (!(this.post.data.archived || this.post.data.locked)) {
