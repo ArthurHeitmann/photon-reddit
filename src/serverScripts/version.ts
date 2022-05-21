@@ -1,6 +1,15 @@
-export const photonVersion = "1.1.8";		/// <change version script>
+export const photonVersion = "1.1.9";		/// <change version script>
 
 export const photonChangelog = {
+	"1.1.9": {
+		"New": [
+			"Added \"Retry\" button when loading subreddit or comments fails",
+			"Flair colors from Reddit will now have more contrast to make reading easier (no more bright background with bright text color)",
+		],
+		"Fixed": [
+			"Some small fixes & changes"
+		]
+	},
 	"1.1.8": {
 		"New": [
 			"Added several new ways to browse posts (Settings > Post > Post display type)",
