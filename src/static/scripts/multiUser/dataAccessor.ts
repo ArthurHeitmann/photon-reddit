@@ -18,13 +18,12 @@ export default abstract class DataAccessor<T> {
 				...await getFromStorage(this.key)
 			};
 		} catch {}
-		if (!storedData) {
-			this.loaded = deepClone(this.default);
-			await setInStorage(this.default, this.key);
-		}
-		else {
+		if (storedData) {
 			this.loaded = storedData;
+		} else {
+			this.loaded = deepClone(this.default);
 		}
+		await setInStorage(this.loaded, this.key);
 		return this;
 	}
 

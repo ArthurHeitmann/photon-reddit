@@ -25,6 +25,15 @@ import {photonWebVersion} from "./utils/version";
 import {setWaitingServiceWorker} from "./utils/versionManagement";
 import VersionNumber from "./utils/versionNumber";
 
+async function startPhotonReddit() {
+	try {
+		await init();
+	} catch (e) {
+		console.error(e);
+		showInitErrorPage();
+	}
+}
+
 async function init(): Promise<void> {
 	console.log("Photon Init");
 
@@ -82,7 +91,13 @@ function showInitErrorPage() {
 	ViewsStack.attachmentPoint.append(makeElement("div", null, [
 		makeElement("h1", null, "Bad error happened!"),
 		makeElement("p", null, ["Maybe check ",
-			makeElement("a", { href: "https://www.redditstatus.com/", target:"_blank" }, "redditstatus.com")])
+			makeElement("a", { href: "https://www.redditstatus.com/", target:"_blank" }, "redditstatus.com")]),
+		makeElement("p", null, `If this error persists, try deleting this websites data in your browser`),
+		makeElement("p", null, ["Or submit a bug report to on ",
+			makeElement("a", { href: "https://github.com/ArthurHeitmann/photon-reddit/issues", target:"_blank" }, "GitHub"),
+			" or ",
+			makeElement("a", { href: "https://www.reddit.com/r/photon_reddit", target:"_blank" }, "r/photon_reddit")
+		])
 	]));
 }
 
@@ -136,4 +151,4 @@ function disableSpaceBarScroll() {
 	})
 }
 
-window.addEventListener("load", init);
+window.addEventListener("load", startPhotonReddit);
