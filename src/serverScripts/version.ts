@@ -1,6 +1,11 @@
-export const photonVersion = "1.1.9";		/// <change version script>
+export const photonVersion = "1.1.10";		/// <change version script>
 
 export const photonChangelog = {
+	"1.1.10": {
+		"Fixed": [
+			"Added some safeguards in case of data corruption",
+		]
+	},
 	"1.1.9": {
 		"New": [
 			"Added \"Retry\" button when loading subreddit or comments fails",
