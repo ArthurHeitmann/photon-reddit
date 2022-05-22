@@ -1,0 +1,30 @@
+@use "../../../../style/vars";
+
+.mobileInfoPopup {
+	--height: max-content;
+	--width: min(30rem, calc(100vw - 2rem));
+
+	.modalContent {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.confirmBtn {
+		margin-left: auto;
+		height: 3rem;
+		padding: 0 1rem;
+		border: 3px solid vars.$primary-contrast;
+		border-radius: 1.5rem;
+		font-size: 1.25rem;
+		transition: all .25s ease;
+
+		&:hover {
+			color: vars.$primary-contrast;
+		}
+
+		&:active {
+			color: vars.$text-color;
+			background: vars.$primary-contrast;
+		}
+	}
+}

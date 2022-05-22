@@ -19,7 +19,7 @@
 	align-items: center;
 	background: var(--theme);
 	padding: 0.7rem;
-	width: min(27rem, 70vw);
+	width: min(27rem, calc(100vw - 2rem));
 	background: var(--theme);
 	border-radius: 1rem;
 	@extend %shadow-diffuse;

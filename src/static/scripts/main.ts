@@ -20,10 +20,11 @@ import {loginSubredditFullName, loginSubredditName} from "./utils/consts";
 import {$css, $id} from "./utils/htmlStatics";
 import {linksToSpa} from "./utils/htmlStuff";
 import "./utils/sideEffectImports";
-import {extractHash, extractPath, extractQuery, makeElement} from "./utils/utils";
+import {extractHash, extractPath, extractQuery, isMobile, makeElement} from "./utils/utils";
 import {photonWebVersion} from "./utils/version";
 import {setWaitingServiceWorker} from "./utils/versionManagement";
 import VersionNumber from "./utils/versionNumber";
+import Ph_MobileInfoPopup from "./components/photon/mobileInfoPopup/mobileInfoPopup";
 
 async function startPhotonReddit() {
 	try {
@@ -69,6 +70,7 @@ async function init(): Promise<void> {
 
 	await checkForNewVersion();
 	disableSpaceBarScroll();
+	checkMobileInfoPopup();
 
 	if (thisUserFetch)
 		await thisUserFetch;
@@ -149,6 +151,14 @@ function disableSpaceBarScroll() {
 		if (e.code === "Space" && !["INPUT", "TEXTAREA"].includes((e.target as HTMLElement).tagName))
 			e.preventDefault();
 	})
+}
+
+function checkMobileInfoPopup() {
+	if (!Users.global.d.isFirstTimeVisit || !isMobile())
+		return;
+	const popup = new Ph_MobileInfoPopup();
+	document.body.append(popup);
+	popup.show();
 }
 
 window.addEventListener("load", startPhotonReddit);

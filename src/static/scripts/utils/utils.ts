@@ -634,3 +634,7 @@ export function commentsToTree(comments: RedditCommentObj[]): RedditCommentObj[]
 export function isCommentDeleted(commentData: RedditCommentData) {
 	return commentData.author === "[deleted]" && ["[deleted]", "[removed]", "[ Removed by Reddit ]"].includes(commentData.body);
 }
+
+export function isMobile(): boolean {
+	return window.matchMedia("(max-width: 767px)").matches;
+}
