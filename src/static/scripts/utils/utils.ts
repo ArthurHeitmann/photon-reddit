@@ -4,7 +4,15 @@
 
 import Ph_Toast, {Level} from "../components/misc/toast/toast";
 import {PhEvents} from "../types/Events";
-import {RedditMultiInfo, RedditPostData, RedditUserInfo, SubredditInfoBase} from "../types/redditTypes";
+import {
+	RedditCommentData,
+	RedditCommentObj,
+	RedditListingObj,
+	RedditMultiInfo,
+	RedditPostData,
+	RedditUserInfo,
+	SubredditInfoBase
+} from "../types/redditTypes";
 import {fakeSubreddits} from "./consts";
 import Users from "../multiUser/userManagement";
 import {Ph_ViewState} from "../components/viewState/viewState";
@@ -594,4 +602,35 @@ export function getThumbnailUrl(postData: RedditPostData): string {
 		postData?.preview?.images?.[0]?.source?.url
 		?? postData?.thumbnail
 	);
+}
+
+export function commentsToTree(comments: RedditCommentObj[]): RedditCommentObj[] {
+	const tree: RedditCommentObj[] = [];
+	const lookup: { [id: string]: RedditCommentObj } = {};
+	for (const comment of comments)
+		lookup[comment.data.name] = comment;
+
+	for (const comment of comments) {
+		const parent = lookup[comment.data.parent_id];
+		if (parent) {
+			if (!parent.data.replies) {
+				parent.data.replies = <RedditListingObj<RedditCommentObj>>{
+					kind: "Listing",
+					data: {
+						children: []
+					}
+				};
+				parent.data.replies.data.children.push(comment);
+			}
+		}
+		else {
+			tree.push(comment);
+		}
+	}
+
+	return tree;
+}
+
+export function isCommentDeleted(commentData: RedditCommentData) {
+	return commentData.author === "[deleted]" && ["[deleted]", "[removed]"].includes(commentData.body);
 }

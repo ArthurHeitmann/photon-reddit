@@ -8,17 +8,13 @@ import {
 	voteDirectionFromLikes
 } from "../../api/redditApi";
 import {PhEvents} from "../../types/Events";
-import {
-	RedditCommentData,
-	RedditCommentObj,
-	RedditListingObj,
-	RedditMessageObj,
-	RedditMoreCommentsObj
-} from "../../types/redditTypes";
+import {RedditCommentData, RedditCommentObj, RedditMessageObj, RedditMoreCommentsObj} from "../../types/redditTypes";
 import {$css, emojiFlagsToImages} from "../../utils/htmlStatics";
 import {addRedditEmojis, elementWithClassInTree, linksToSpa} from "../../utils/htmlStuff";
 import {
+	commentsToTree,
 	hasParams,
+	isCommentDeleted,
 	isObjectEmpty,
 	makeElement,
 	numberToShort,
@@ -39,6 +35,7 @@ import Users from "../../multiUser/userManagement";
 import Ph_Post from "../post/post";
 import Ph_PhotonSettings from "../global/photonSettings/photonSettings";
 import {PhotonSettings} from "../global/photonSettings/settingsConfig";
+import {getCommentFromPushshift, getCommentRepliesFromPushshift} from "../../api/pushshiftApi";
 
 /**
  * A comment that has been posted under a post
@@ -51,6 +48,7 @@ export default class Ph_Comment extends Ph_Readable {
 	voteDownButton: Ph_VoteButton;
 	replyForm: Ph_CommentForm;
 	childComments: HTMLElement;
+	data: RedditCommentData;
 	totalVotes: number;
 	fullName: string;
 	username: string;
@@ -81,6 +79,7 @@ export default class Ph_Comment extends Ph_Readable {
 		if (!isChild)
 			this.classList.add("rootComment");
 
+		this.data = commentData.data as RedditCommentData;
 		this.username = (commentData.data as RedditCommentData)?.author || "";
 		this.isPinned = commentData.data["stickied"];
 
@@ -239,7 +238,9 @@ export default class Ph_Comment extends Ph_Readable {
 					[makeElement("img", { "src": "/img/locked.svg", alt: "locked" })]
 				)
 			]),
-			makeElement("div", { class: "content" }, commentData.data.body_html, true)
+			makeElement("div", { class: "content" }, commentData.data.body_html, true),
+			isCommentDeleted(commentData.data as RedditCommentData) &&
+				makeElement("button", { class: "button loadPushshiftBtn", onclick: this.loadPushshiftVersion.bind(this) }, "Load Archived Version"),
 		]);
 
 		emojiFlagsToImages(mainPart);
@@ -306,36 +307,7 @@ export default class Ph_Comment extends Ph_Readable {
 
 		// reddit returns here just an array of all comments, regardless whether they are parents/children of each other
 		// therefore we have to assemble the comment tree with all the relations ourselves -_-
-		let commentTree: RedditCommentObj[] = [];
-		for (const comment of childData.json.data.things) {
-			if (!this.tryAttachToCommentTree(commentTree, comment))
-				commentTree.push(comment as RedditCommentObj);
-		}
-
-		return commentTree;
-	}
-
-	private tryAttachToCommentTree(tree: RedditCommentObj[], commentData): boolean {
-		for (const elem of tree) {
-			if (elem.data.name === commentData.data["parent_id"]) {
-				if (!elem.data.replies || elem.data.replies.kind !== "Listing") {
-					elem.data.replies = <RedditListingObj<RedditCommentObj>> {
-						kind: "Listing",
-						data: {
-							children: []
-						}
-					};
-				}
-				elem.data.replies.data.children.push(commentData);
-				return true;
-			} else if (elem.data.replies && elem.data.replies.kind === "Listing") {
-				if (this.tryAttachToCommentTree(elem.data.replies.data.children as RedditCommentObj[], commentData)) {
-					return true;
-				}
-			}
-		}
-
-		return false;
+		return commentsToTree(childData.json.data.things as RedditCommentObj[]);
 	}
 
 	async vote(dir: VoteDirection): Promise<void> {
@@ -496,6 +468,44 @@ export default class Ph_Comment extends Ph_Readable {
 		const newList = [...Users.global.d.photonSettings.userBlacklist];
 		newList.push(this.username);
 		settings.setSettingTo("userBlacklist", newList);
+	}
+
+	async loadPushshiftVersion() {
+		const loadBtn = this.$class("loadPushshiftBtn")[0] as HTMLButtonElement;
+		loadBtn.disabled = true;
+		loadBtn.classList.add("loading");
+
+		const currentReplies = this.data.replies?.data?.children ?? [];
+		const commentsIdsToKeep = currentReplies
+			.filter((comment: RedditCommentObj | RedditMoreCommentsObj) => comment.kind !== "more")
+			.map(c => c.data.id);
+		const commentData = await getCommentFromPushshift(this.data);
+		let newReplies = await getCommentRepliesFromPushshift(this.data, commentsIdsToKeep);
+
+		loadBtn.disabled = false;
+		loadBtn.classList.remove("loading");
+		if (!commentData) {
+			new Ph_Toast(Level.warning, "Could find comment on pushshift");
+			return;
+		}
+		loadBtn.remove();
+
+		// update current comment
+		const content = this.$class("content")[0] as HTMLElement;
+		content.innerHTML = commentData.body_html;
+		const userLink = this.$css("a.user")[0] as HTMLAnchorElement;
+		userLink.href = `/user/${commentData.author}`;
+		userLink.$tag("span")[0].textContent = `u/${commentData.author}`;
+
+		// update replies
+		[...this.childComments.children]
+			.filter(c => c instanceof Ph_Comment && !commentsIdsToKeep.includes(c.data.id))
+			.forEach(c => c.remove());
+		this.childComments.append(...newReplies.map(comment => new Ph_Comment(comment, true, false)));
+
+		emojiFlagsToImages(content);
+		addRedditEmojis(content, this.data);
+		linksToSpa(content, true);
 	}
 }
 
