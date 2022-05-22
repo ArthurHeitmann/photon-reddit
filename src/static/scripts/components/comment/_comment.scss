@@ -158,35 +158,4 @@
 			margin: 0 1.5rem;
 		}
 	}
-
-	.loadPushshiftBtn {
-		height: 2rem;
-		padding: 0 0.75rem;
-		border-radius: 1rem;
-		background: #333;
-		transition: all .25s ease;
-		line-height: 2rem;
-		display: flex;
-		align-items: center;
-
-		&::before {
-			content: "";
-			display: inline-block;
-			width: 1.5rem;
-			height: 1.5rem;
-			margin-left: -.25rem;
-			margin-right: .5rem;
-			background-image: url("/img/reset.svg");
-			background-size: contain;
-			background-repeat: no-repeat;
-		}
-
-		&.loading {
-			&::before {
-				width: 2rem;
-				margin-right: 0;
-				background-image: url("/img/loading3.svg");
-			}
-		}
-	}
 }

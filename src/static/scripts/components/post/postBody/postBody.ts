@@ -16,6 +16,7 @@ import Ph_IframeWrapper from "../../misc/iframeWrapper/iframeWrapper";
  */
 export default class Ph_PostBody extends Ph_PhotonBaseElement {
 	isInitialized = false;
+	postType: PostType;
 	private isBodyCollapsable = false;
 	private bodyWrapper: Ph_PostBodyCompactWrapper;
 
@@ -36,8 +37,10 @@ export default class Ph_PostBody extends Ph_PhotonBaseElement {
 			this.updateCollapsedState.bind(this));
 		this.append(this.bodyWrapper);
 
-		if (postData)
+		if (postData) {
+			this.postType = this.getPostType(postData, preferSmallerPost);
 			this.init(postData, preferSmallerPost);
+		}
 	}
 
 	init(postData: RedditPostData, preferSmallerPost = false) {
@@ -47,8 +50,9 @@ export default class Ph_PostBody extends Ph_PhotonBaseElement {
 		this.isInitialized = true;
 		this.classList.remove("unintialized");
 
-		const postType = this.getPostType(postData, preferSmallerPost);
-		switch (postType) {
+		if (!this.postType)
+			this.postType = this.getPostType(postData, preferSmallerPost);
+		switch (this.postType) {
 			case PostType.image:
 				this.makeImageBody(postData);
 				break;
@@ -81,7 +85,16 @@ export default class Ph_PostBody extends Ph_PhotonBaseElement {
 		this.bodyWrapper.init(postData);
 		this.updateCollapsedState();
 
-		linksToSpa(this, postType === PostType.text);
+		linksToSpa(this, this.postType === PostType.text);
+	}
+
+	reinitialize(postData: RedditPostData) {
+		this.isInitialized = false;
+		this.postType = undefined;
+		[...this.children]
+			.filter(child => child !== this.bodyWrapper)
+			.forEach(child => child.remove());
+		this.init(postData);
 	}
 
 	private updateCollapsedState() {
@@ -92,7 +105,7 @@ export default class Ph_PostBody extends Ph_PhotonBaseElement {
 		this.classList.toggle("isBodyCollapsable", isCollapsable);
 	}
 
-	private getPostType(postData: RedditPostData, preferSmallerPost): PostType {
+	getPostType(postData: RedditPostData, preferSmallerPost): PostType {
 		if (preferSmallerPost)
 			return PostType.link;
 		else if (postData.is_self)
@@ -183,7 +196,7 @@ export default class Ph_PostBody extends Ph_PhotonBaseElement {
 
 customElements.define("ph-post-body", Ph_PostBody);
 
-enum PostType {
+export enum PostType {
 	link,
 	image,
 	video,

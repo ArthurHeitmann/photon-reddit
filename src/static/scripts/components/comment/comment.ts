@@ -240,7 +240,7 @@ export default class Ph_Comment extends Ph_Readable {
 			]),
 			makeElement("div", { class: "content" }, commentData.data.body_html, true),
 			isCommentDeleted(commentData.data as RedditCommentData) &&
-				makeElement("button", { class: "button loadPushshiftBtn", onclick: this.loadPushshiftVersion.bind(this) }, "Load Archived Version"),
+				makeElement("button", { class: "loadPushshiftBtn", onclick: this.loadPushshiftVersion.bind(this) }, "Load Archived Version"),
 		]);
 
 		emojiFlagsToImages(mainPart);
@@ -485,7 +485,7 @@ export default class Ph_Comment extends Ph_Readable {
 		loadBtn.disabled = false;
 		loadBtn.classList.remove("loading");
 		if (!commentData) {
-			new Ph_Toast(Level.warning, "Could find comment on pushshift");
+			new Ph_Toast(Level.warning, "Could find comment. Maybe pushshift is having problems");
 			return;
 		}
 		loadBtn.remove();

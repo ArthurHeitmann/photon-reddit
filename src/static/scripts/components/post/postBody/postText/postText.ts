@@ -118,11 +118,22 @@ export default class Ph_PostText extends HTMLElement {
 			return;
 		}
 
-		this.markdown = editData["json"]["data"]["things"][0]["data"]["selftext"];
-		this.textWrapper.innerHTML = editData["json"]["data"]["things"][0]["data"]["selftext_html"];
+		// this.markdown = editData["json"]["data"]["things"][0]["data"]["selftext"];
+		// this.textWrapper.innerHTML = editData["json"]["data"]["things"][0]["data"]["selftext_html"];
+		// emojiFlagsToImages(this.textWrapper);
+		// linksToSpa(this, true)
+		this.setText(
+			editData["json"]["data"]["things"][0]["data"]["selftext"],
+			editData["json"]["data"]["things"][0]["data"]["selftext_html"]
+		);
+		this.endEditing();
+	}
+
+	setText(markdown: string, html: string) {
+		this.markdown = markdown;
+		this.textWrapper.innerHTML = html;
 		emojiFlagsToImages(this.textWrapper);
 		linksToSpa(this, true)
-		this.endEditing();
 	}
 }
 

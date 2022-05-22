@@ -37,10 +37,11 @@ import Ph_Flair from "../misc/flair/flair";
 import Ph_Toast, {Level} from "../misc/toast/toast";
 import Ph_VoteButton from "../misc/voteButton/voteButton";
 import Users from "../../multiUser/userManagement";
-import Ph_PostBody from "./postBody/postBody";
+import Ph_PostBody, {PostType} from "./postBody/postBody";
 import Ph_PostText from "./postBody/postText/postText";
 import PostDoubleLink from "./postDoubleLink/postDoubleLink";
 import {NsfwPolicy, PhotonSettings} from "../global/photonSettings/settingsConfig";
+import {getPostFromPushshift} from "../../api/pushshiftApi";
 
 interface PostOptionalParams {
 	isInFeed?: boolean,
@@ -449,6 +450,12 @@ export default class Ph_Post extends Ph_FeedItem {
 		else {
 			this.removedInfoElement.$tag("div")[0].textContent = message;
 		}
+
+		if (this.postBody.postType === PostType.text) {
+			this.postBody.append(
+				makeElement("button", { class: "loadPushshiftBtn", onclick: this.loadPushshiftVersion.bind(this) }, "Load Archived Version")
+			);
+		}
 	}
 
 	updateWithData(postData: RedditPostData) {
@@ -539,7 +546,7 @@ export default class Ph_Post extends Ph_FeedItem {
 	}
 
 	editPost() {
-		const postText = this.postBody.children[0] as Ph_PostText;
+		const postText = this.postBody.$css("postText")[0] as Ph_PostText;
 		postText.startEditing();
 	}
 
@@ -648,6 +655,32 @@ export default class Ph_Post extends Ph_FeedItem {
 		newList.push(entry);
 		const settings = $css(".photonSettings")[0] as Ph_PhotonSettings;
 		settings.setSettingTo(key, newList);
+	}
+
+	private async loadPushshiftVersion() {
+		const loadBtn = this.$class("loadPushshiftBtn")[0] as HTMLButtonElement;
+		loadBtn.disabled = true;
+		loadBtn.classList.add("loading");
+
+		const newPostData = await getPostFromPushshift(this.data.id);
+		loadBtn.disabled = false;
+		loadBtn.classList.remove("loading");
+		if (!newPostData) {
+			new Ph_Toast(Level.warning, "Could find post. Maybe Pushshift is having problems.");
+			return;
+		}
+		loadBtn.remove();
+
+		const userLink = this.$css("a.user")[0] as HTMLAnchorElement;
+		userLink.href = `/user/${newPostData.author}`;
+		userLink.children[0].textContent = `u/${newPostData.author}`;
+
+		if (this.postBody.getPostType(newPostData, false) === PostType.text) {
+			const postText = this.postBody.$class("postText")[0] as Ph_PostText;
+			postText.setText(newPostData.selftext, newPostData.selftext_html);
+		} else {
+			this.postBody.reinitialize(newPostData);
+		}
 	}
 }
 

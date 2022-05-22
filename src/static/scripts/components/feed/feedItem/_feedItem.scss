@@ -115,6 +115,11 @@
 		a:not(.backgroundLink), .content > *, .time {
 			position: relative;
 		}
+
+		.loadPushshiftBtn {
+			margin-left: 2rem;
+			margin-bottom: 2rem;
+		}
 	}
 
 	img.pinned {
@@ -151,5 +156,46 @@
 		word-break: break-word;
 		overflow-wrap: anywhere;
 		max-width: 100%;
+	}
+
+	.loadPushshiftBtn {
+		height: 2rem;
+		padding: 0 0.5rem;
+		border-radius: 1rem;
+		border: 3px solid #a3a3a3;
+		line-height: 2rem;
+		display: flex;
+		align-items: center;
+		align-self: flex-start;
+		transition: all .25s ease !important;
+
+		&::before {
+			content: "";
+			display: inline-block;
+			width: 1.5rem;
+			height: 1.5rem;
+			margin-left: -.25rem;
+			margin-right: .5rem;
+			background-image: url("/img/reset.svg");
+			background-size: contain;
+			background-repeat: no-repeat;
+		}
+
+		&.loading {
+			&::before {
+				width: 2rem;
+				margin-right: 0;
+				background-image: url("/img/loading3.svg");
+			}
+		}
+
+		&:hover:not(:disabled) {
+			color: vars.$primary-contrast;
+		}
+
+		&:active:not(:disabled) {
+			background: #a3a3a3;
+			color: vars.$background;
+		}
 	}
 }

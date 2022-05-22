@@ -1,5 +1,5 @@
-import {RedditCommentData, RedditCommentObj, RedditListingObj} from "../types/redditTypes";
-import {PushshiftCommentData, PushshiftResponse} from "../types/pushshiftTypes";
+import {RedditCommentData, RedditCommentObj, RedditListingObj, RedditPostData} from "../types/redditTypes";
+import {PushshiftCommentData, PushshiftPostData, PushshiftResponse} from "../types/pushshiftTypes";
 import {parseMarkdown} from "../lib/markdownForReddit/markdown-for-reddit";
 import {isCommentDeleted, sleep} from "../utils/utils";
 import Ph_Toast, {Level} from "../components/misc/toast/toast";
@@ -103,6 +103,91 @@ export async function getCommentRepliesFromPushshift(
 		kind: "t1",
 		data: comment
 	}));
+}
+
+export async function getPostFromPushshift(id: string): Promise<RedditPostData> {
+	let response: Response;
+	try {
+		response = await fetch(`https://api.pushshift.io/reddit/search/submission/?ids=${id}`);
+		const data = await response.json() as PushshiftResponse;
+		if (!data?.[0])
+			return null;
+		const postData = pushshiftPostToRedditPost(data.data[0] as PushshiftPostData);
+		if (["[deleted]", "[removed]"].includes(postData.selftext))
+			postData.selftext += "(not found)";
+		postData.selftext += "\n\n*^(Provided by Pushshift)*";
+		postData.selftext_html = `<div class="md">${parseMarkdown(postData.selftext)}</div>`;
+		return postData;
+	} catch (e) {
+		console.error(e);
+		new Ph_Toast(
+			Level.error,
+			response?.status === 429 ? "Too many requests" : "Pushshift API error",
+			{ timeout: 3000, groupId: "pushshiftError" }
+		);
+		return null;
+	}
+}
+
+function pushshiftPostToRedditPost(post: PushshiftPostData): RedditPostData {
+	return {
+		...post,
+		selftext_html: `<div class="md">${parseMarkdown(post.selftext)}</div>`,
+		approved_at_utc: undefined,
+		approved_by: undefined,
+		archived: false,
+		author_flair_background_color: undefined,
+		author_flair_css_class: undefined,
+		author_flair_template_id: undefined,
+		author_flair_text: undefined,
+		author_flair_text_color: undefined,
+		banned_at_utc: undefined,
+		banned_by: undefined,
+		can_gild: false,
+		category: undefined,
+		clicked: false,
+		content_categories: undefined,
+		created: post.created_utc,
+		crosspost_parent_list: [],
+		discussion_type: undefined,
+		distinguished: undefined,
+		downs: 0,
+		edited: 0,
+		gallery_data: null,
+		gilded: 0,
+		hidden: false,
+		hide_score: false,
+		likes: null,
+		media: null,
+		media_embed: undefined,
+		media_metadata: null,
+		mod_note: undefined,
+		mod_reason_by: undefined,
+		mod_reason_title: undefined,
+		mod_reports: [],
+		name: `t3_${post.id}`,
+		num_duplicates: 0,
+		num_reports: undefined,
+		post_hint: "",
+		quarantine: false,
+		removal_reason: undefined,
+		removed_by: undefined,
+		removed_by_category: undefined,
+		report_reasons: undefined,
+		saved: false,
+		secure_media: {},
+		secure_media_embed: undefined,
+		subreddit_name_prefixed: "",
+		suggested_sort: "",
+		thumbnail_height: 0,
+		thumbnail_width: 0,
+		top_awarded_type: undefined,
+		ups: post.score,
+		url_overridden_by_dest: "",
+		user_reports: [],
+		view_count: undefined,
+		visited: false,
+	};
 }
 
 function pushshiftToRedditComment(commentData: PushshiftCommentData, shouldParseMarkdown = false): RedditCommentData {

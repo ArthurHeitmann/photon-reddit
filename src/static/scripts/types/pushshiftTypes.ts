@@ -55,3 +55,66 @@ export interface PushshiftCommentData extends PushshiftData {
 	treatment_tags: any[],
 	unrepliable_reason: any
 }
+
+export interface PushshiftPostData extends PushshiftData {
+	all_awardings: RedditAward[]
+	allow_live_comments: boolean
+	author: string
+	author_flair_richtext: any[]
+	author_flair_type: string
+	author_fullname: string
+	author_is_blocked: boolean
+	author_patreon_flair: boolean
+	author_premium: boolean
+	awarders: any[]
+	can_mod_post: boolean
+	contest_mode: boolean
+	created_utc: number
+	domain: string
+	full_link: string
+	gildings: any
+	id: string
+	is_created_from_ads_ui: boolean
+	is_crosspostable: boolean
+	is_meta: boolean
+	is_original_content: boolean
+	is_reddit_media_domain: boolean
+	is_robot_indexable: boolean
+	is_self: boolean
+	is_video: boolean
+	link_flair_background_color: string
+	link_flair_css_class: string
+	link_flair_richtext: any[]
+	link_flair_template_id: string
+	link_flair_text: string
+	link_flair_text_color: string
+	link_flair_type: string
+	locked: boolean
+	media_only: boolean
+	no_follow: boolean
+	num_comments: number
+	num_crossposts: number
+	over_18: boolean
+	parent_whitelist_status: string
+	permalink: string
+	pinned: boolean
+	pwls: number
+	retrieved_on: number
+	score: number
+	selftext: string
+	send_replies: boolean
+	spoiler: boolean
+	stickied: boolean
+	subreddit: string
+	subreddit_id: string
+	subreddit_subscribers: number
+	subreddit_type: string
+	thumbnail: string
+	title: string
+	total_awards_received: number
+	treatment_tags: any[]
+	upvote_ratio: number
+	url: string
+	whitelist_status: string
+	wls: number
+}
