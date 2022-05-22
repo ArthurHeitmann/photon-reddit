@@ -12,7 +12,8 @@ export async function getCommentFromPushshift(commentData: RedditCommentData): P
 		const newCommentData = pushshiftToRedditComment(data.data[0] as PushshiftCommentData);
 		if (isCommentDeleted(newCommentData))
 			newCommentData.body += "(not found)";
-		newCommentData.body += "\n\n*^(Provided by Pushshift)*";
+		else
+			newCommentData.body += "\n\n*^(Loaded from Pushshift)*";
 		newCommentData.body_html = `<div class="md">${parseMarkdown(newCommentData.body)}</div>`;
 		return newCommentData;
 	} catch (e) {
@@ -57,7 +58,8 @@ export async function getCommentRepliesFromPushshift(
 	for (const comment of comments) {
 		if (isCommentDeleted(comment))
 			comment.body += " (not found)";
-		comment.body += "\n\n*^(Provided by Pushshift)*";
+		else
+			comment.body += "\n\n*^(Loaded from Pushshift)*";
 		comment.body_html = `<div class="md">${parseMarkdown(comment.body)}</div>`;
 	}
 
@@ -110,12 +112,13 @@ export async function getPostFromPushshift(id: string): Promise<RedditPostData> 
 	try {
 		response = await fetch(`https://api.pushshift.io/reddit/search/submission/?ids=${id}`);
 		const data = await response.json() as PushshiftResponse;
-		if (!data?.[0])
+		if (!data.data[0])
 			return null;
 		const postData = pushshiftPostToRedditPost(data.data[0] as PushshiftPostData);
 		if (["[deleted]", "[removed]"].includes(postData.selftext))
 			postData.selftext += "(not found)";
-		postData.selftext += "\n\n*^(Provided by Pushshift)*";
+		else
+			postData.selftext += "\n\n*^(Loaded from Pushshift)*";
 		postData.selftext_html = `<div class="md">${parseMarkdown(postData.selftext)}</div>`;
 		return postData;
 	} catch (e) {
