@@ -2,7 +2,7 @@
  *
  * https://developer.mozilla.org/en-US/docs/Web/API/Touch_events
  */
-import { PhEvents } from "../types/Events";
+import {PhEvents} from "../types/Events";
 
 export default class TouchGestureListener {
 	private activeTouches: Touch[] = [];
@@ -23,8 +23,8 @@ export default class TouchGestureListener {
 	}
 
 	enable() {
-		this.attached.addEventListener("touchstart", this.touchStartFunc);
-		this.attached.addEventListener("touchmove", this.touchMoveFunc, {passive: false});
+		this.attached.addEventListener("touchstart", this.touchStartFunc, { passive: false });
+		this.attached.addEventListener("touchmove", this.touchMoveFunc, { passive: false });
 		this.attached.addEventListener("touchend", this.touchEndFunc);
 		this.attached.addEventListener("touchcancel", this.touchCancelFunc);
 	}
