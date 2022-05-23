@@ -4,7 +4,7 @@ import {broadcastMessage} from "../utils/messageCommunication";
 
 const dbName= "photonDb";
 const objectStoreName = "users";
-const version = 1;
+const version = 2;
 interface DbUpgrade {
 	wasUpgraded: boolean,
 	fromVersion: number,
@@ -62,7 +62,8 @@ function openDb(): Promise<IDBDatabase> {
 
 function onDbUpgradeNeeded(this: IDBOpenDBRequest, e: IDBVersionChangeEvent) {
 	const db = this.result;
-	db.createObjectStore(objectStoreName);
+	if (e.oldVersion < 1)
+		db.createObjectStore(objectStoreName);
 	wasDbUpgraded.wasUpgraded = true;
 	wasDbUpgraded.fromVersion = e.oldVersion;
 	wasDbUpgraded.toVersion = e.newVersion;

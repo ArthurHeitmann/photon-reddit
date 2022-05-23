@@ -196,8 +196,15 @@ export default class Ph_Flair extends HTMLElement {
 	}
 
 	private fixContrast(bgFgColor: [RGB, RGB]): [RGB, RGB] {
-		const rgbToLuminance =
-			(r: number, g: number, b: number) => (r * 299 + g * 587 + b * 114) / 1000;
+		const rgbToLuminance = (r: number, g: number, b: number) => {
+			const a = [r, g, b].map(v => {
+				v /= 255;
+				return v <= 0.03928
+					? v / 12.92
+					: Math.pow((v + 0.055) / 1.055, 2.4);
+			});
+			return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+			};
 
 		// keep increasing contrast until the contrast ratio >= 3.0
 		let i = 0;
@@ -210,7 +217,7 @@ export default class Ph_Flair extends HTMLElement {
 				bgFgColor[1] = this.oppositeColor(bgFgColor[0]);
 				continue;
 			}
-			if (ratio < 3) {
+			if (ratio < 4.5) {
 				const bgFactor = bgLuminance > fgLuminance ? 1.25 : 0.75;
 				const fgFactor = bgLuminance > fgLuminance ? 0.75 : 1.25;
 				bgFgColor[0] = bgFgColor[0].map(c =>
@@ -219,7 +226,7 @@ export default class Ph_Flair extends HTMLElement {
 					clamp(c * fgFactor, 0, 255)) as RGB;
 			}
 			i++;
-		} while (ratio < 3 && i < 5);
+		} while (ratio < 4.5 && i < 5);
 
 		return bgFgColor;
 	}

@@ -44,6 +44,9 @@ export default class GlobalUserData extends DataAccessor<_GlobalData> {
 			this.tryMigrateFromLsToLoaded(["seenPosts"], ["seenPosts"]);
 			this.tryMigrateFromLsToLoaded(["settings"], ["photonSettings"]);
 			this.tryMigrateFromLsToLoaded(["version"], ["photonVersion"]);
+			if (wasDbUpgraded.fromVersion === 1 && wasDbUpgraded.toVersion > 1) {
+				this.loaded.colorContrastCache = {};
+			}
 			await setInStorage(this.loaded, this.key);
 		}
 
