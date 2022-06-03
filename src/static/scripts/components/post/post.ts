@@ -662,11 +662,16 @@ export default class Ph_Post extends Ph_FeedItem {
 		loadBtn.disabled = true;
 		loadBtn.classList.add("loading");
 
-		const newPostData = await getPostFromPushshift(this.data.id);
+		let newPostData: RedditPostData;
+		try {
+			newPostData = await getPostFromPushshift(this.data.id);
+		} catch (e) {
+			console.error(e);
+		}
 		loadBtn.disabled = false;
 		loadBtn.classList.remove("loading");
 		if (!newPostData) {
-			new Ph_Toast(Level.warning, "Could find post. Maybe Pushshift is having problems.");
+			new Ph_Toast(Level.warning, "Couldn't load post. Maybe Pushshift is having problems.");
 			return;
 		}
 		loadBtn.remove();

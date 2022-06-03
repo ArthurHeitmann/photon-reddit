@@ -479,13 +479,19 @@ export default class Ph_Comment extends Ph_Readable {
 		const commentsIdsToKeep = currentReplies
 			.filter((comment: RedditCommentObj | RedditMoreCommentsObj) => comment.kind !== "more")
 			.map(c => c.data.id);
-		const commentData = await getCommentFromPushshift(this.data);
-		let newReplies = await getCommentRepliesFromPushshift(this.data, commentsIdsToKeep);
+		let commentData: RedditCommentData;
+		let newReplies: RedditCommentObj[];
+		try {
+			commentData = await getCommentFromPushshift(this.data);
+			newReplies = await getCommentRepliesFromPushshift(this.data, commentsIdsToKeep);
+		} catch (e) {
+			console.error(e);
+		}
 
 		loadBtn.disabled = false;
 		loadBtn.classList.remove("loading");
-		if (!commentData) {
-			new Ph_Toast(Level.warning, "Could find comment. Maybe pushshift is having problems");
+		if (!commentData || !newReplies) {
+			new Ph_Toast(Level.warning, "Couldn't load comment. Maybe pushshift is having problems");
 			return;
 		}
 		loadBtn.remove();

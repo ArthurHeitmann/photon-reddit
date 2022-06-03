@@ -24,7 +24,7 @@ export async function getCommentFromPushshift(commentData: RedditCommentData): P
 }
 
 export async function getCommentRepliesFromPushshift(
-	commentData: RedditCommentData, skipReplyIds: string[] = [], maxDepth = 5, maxRequests = 10, 	// public params
+	commentData: RedditCommentData, skipReplyIds: string[] = [], maxDepth = 5, maxRequests = 7, 	// public params
 	_depth = 0, _requests = { v: 0 }, tStart = Date.now()									// privat recursion params
 ): Promise<RedditCommentObj[]> {
 	if (_depth > maxDepth || _requests.v > maxRequests)
