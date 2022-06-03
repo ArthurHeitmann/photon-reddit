@@ -4,17 +4,20 @@ import {hasParams, makeElement} from "../../../utils/utils";
 import Users from "../../../multiUser/userManagement";
 import {Ph_ViewState} from "../viewState";
 import {pushLinkToHistoryComb, PushType} from "../../../historyState/historyStateManager";
+import {getLoadingIcon} from "../../../utils/htmlStatics";
 
 /**
  * A Ph_ViewState with a loading screen
  */
 export default class Ph_ViewStateLoader extends Ph_ViewState {
 	private errorElement: HTMLElement;
+	private loadingIcon: HTMLElement;
 
 	constructor(state: HistoryState) {
 		super(state);
 		if (!hasParams(arguments)) return;
-		this.innerHTML = `<img src="/img/loading1.svg" alt="loading" class="loadingIcon">`;
+
+		this.append(this.loadingIcon = getLoadingIcon("1"));
 	}
 
 	finishWith(elem: HTMLElement) {
@@ -24,6 +27,8 @@ export default class Ph_ViewStateLoader extends Ph_ViewState {
 	}
 
 	error(errorInfo?: HTMLElement) {
+		this.loadingIcon.remove();
+
 		this.append(this.errorElement = makeElement("div", { class: "center-h-alt flex f-direction-column" }, [
 			makeElement("h2", {}, "Oh no an error occurred!"),
 			makeElement("div", {}, "What could have happened?"),
@@ -36,6 +41,7 @@ export default class Ph_ViewStateLoader extends Ph_ViewState {
 			]),
 			makeElement("button", { class: "button retryButton", onclick: this.retryLoadingUrl.bind(this) }, "Reload"),
 		]));
+
 		if (errorInfo)
 			this.children[0].append(errorInfo);
 	}
@@ -43,6 +49,7 @@ export default class Ph_ViewStateLoader extends Ph_ViewState {
 	async retryLoadingUrl() {
 		this.errorElement?.remove();
 		this.errorElement = null;
+		this.append(this.loadingIcon);
 		pushLinkToHistoryComb(this.state.url, PushType.reload);
 	}
 
