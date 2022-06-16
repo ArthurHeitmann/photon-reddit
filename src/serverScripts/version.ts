@@ -1,6 +1,11 @@
-export const photonVersion = "1.1.11";		/// <change version script>
+export const photonVersion = "1.1.12";		/// <change version script>
 
 export const photonChangelog = {
+	"1.1.12": {
+		"Fixed": [
+			"Some small fixes & changes",
+		],
+	},
 	"1.1.11": {
 		"New": [
 			"Added buttons to view deleted comments & posts (similar to removeddit/reveddit/unddit) (data provided by pushshift)",
