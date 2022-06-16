@@ -23,8 +23,8 @@ export async function checkTokenRefresh(): Promise<boolean> {
 }
 
 export async function checkAuthOnPageLoad(): Promise<AuthState> {
-	// An over engineered way to check the auth state. Has some fallback in case of data corruption
-	// has storage potentially usable auth data
+	// An over engineered way to check the auth state. Has some fallback in case of data corruption.
+	// Has storage potentially usable auth data?
 	await Users.current.lockAuthData();
 	try {
 		if (!Users.current.d.auth.isLoggedIn || Users.current.d.auth.refreshToken) {
@@ -90,7 +90,7 @@ async function refreshAccessToken(): Promise<boolean> {
 	await Users.current.set(["auth", "accessToken"],  newTokens.access_token);
 	if (newTokens.refresh_token)
 		await Users.current.set(["auth", "refreshToken"],  newTokens.refresh_token);
-	await Users.current.set(["auth", "expiration"],  Date.now() + (59 * 60 * 1000));
+	await Users.current.set(["auth", "expiration"],  (newTokens.expires_in || 60*60)*1000 + Date.now() - 1000*60);
 	return true;
 }
 
