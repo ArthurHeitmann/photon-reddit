@@ -132,7 +132,7 @@ export default class Ph_Post extends Ph_FeedItem {
 				labelImgUrl: "/img/filter.svg",
 				nestedEntries: [
 					{ label: "Filter out...", labelImgUrl: "/img/filter.svg" },
-					{ label: ` r/${this.data.subreddit}`, labelImgUrl: "/img/rSlash.svg", onSelectCallback: () => this.addToFilters("subredditBlacklist", this.data.subreddit) },
+					{ label: ` r/${this.data.subreddit}`, labelImgUrl: getSubredditIconUrl(postData.data.sr_detail), onSelectCallback: () => this.addToFilters("subredditBlacklist", this.data.subreddit), labelImgRoundCorners: true },
 					{ label: ` u/${this.data.author}`, labelImgUrl: "/img/user.svg", onSelectCallback: () => this.addToFilters("userBlacklist", this.data.author)},
 				]
 			},

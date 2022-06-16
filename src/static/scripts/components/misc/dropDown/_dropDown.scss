@@ -158,10 +158,11 @@
 		}
 
 		.labelImg {
-			height: 100%;
 			width: 1.4rem;
+			height: 1.4rem;
 			min-width: 1.4rem;
 			margin-left: -.25rem;
+			align-self: center;
 			background-image: var(--img-url);
 			background-size: contain;
 			background-repeat: no-repeat;
@@ -169,6 +170,10 @@
 
 			+ .label {
 				margin-left: -.5rem;
+			}
+
+			&.roundCorners {
+				border-radius: 0.7rem;
 			}
 		}
 	}

@@ -40,6 +40,8 @@ export default class Ph_DropDownEntry extends HTMLElement {
 
 		this.labelImg = document.createElement("div");
 		this.labelImg.className = "labelImg";
+		if (param.labelImgRoundCorners)
+			this.labelImg.classList.add("roundCorners");
 		if (param.labelImgUrl) {
 			this.append(this.labelImg);
 			this.setLabelImg(param.labelImgUrl);
@@ -136,6 +138,8 @@ export type DropDownCallback = (data: DropDownActionData) => boolean | Promise<a
 
 export interface DropDownEntryParam {
 	labelImgUrl?: string,
+	/** Default false */
+	labelImgRoundCorners?: boolean,
 	/** innerText or HTMLElement of the label */
 	label?: string | HTMLElement,
 	/** the value associated with this entry, will be passed to onSelectCallback */
