@@ -642,6 +642,12 @@ export function isMobile(): boolean {
 export function getTwitchClipEmbedUrl(embedlyUr: string): string {
 	const params =  new URLSearchParams(embedlyUr.split("?")[1]);
 	const twitchUrl = new URL(params.get("src"));
+	if (twitchUrl.host == "player.twitch.tv") {
+		twitchUrl.host = "clips.twitch.tv";
+		twitchUrl.pathname = "/embed";
+		twitchUrl.searchParams.set("clip", twitchUrl.searchParams.get("channel"));
+		twitchUrl.searchParams.delete("channel");
+	}
 	twitchUrl.searchParams.delete("parent");
 	twitchUrl.searchParams.set("parent", location.hostname);
 	return twitchUrl.toString();
