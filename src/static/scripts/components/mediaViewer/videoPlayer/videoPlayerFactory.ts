@@ -179,6 +179,7 @@ export function videoPlayerFromPostData({ postData, url }: { postData?: RedditPo
 				defaultCase();
 			break;
 		case "clips.twitch.tv":
+			// CURRENTLY NOT WORKING
 			// try to get mp4 url from oembed data
 			let twitchMp4Found = false;
 			if (postData && postData.media && postData.media.oembed) {

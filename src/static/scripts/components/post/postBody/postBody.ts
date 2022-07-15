@@ -1,6 +1,6 @@
 import {RedditPostData} from "../../../types/redditTypes";
 import {linksToSpa} from "../../../utils/htmlStuff";
-import {getThumbnailUrl, hasParams} from "../../../utils/utils";
+import {getThumbnailUrl, getTwitchClipEmbedUrl, hasParams} from "../../../utils/utils";
 import Ph_MediaViewer from "../../mediaViewer/mediaViewer";
 import Ph_PostText from "./postText/postText";
 import {PhEvents} from "../../../types/Events";
@@ -118,7 +118,7 @@ export default class Ph_PostBody extends Ph_PhotonBaseElement {
 			return PostType.image;
 		else if (postData.gallery_data)
 			return PostType.redditGallery;
-		else if (postData.post_hint == "rich:video")
+		else if (postData.post_hint == "rich:video" || /https?:\/\/clips.twitch.tv\/[\w-]+/i.test(postData.url) && postData.media_embed)
 			return PostType.embeddedVideo;
 		else if (/^(https?:\/\/)?(www\.)?twitter\.com\/[^/]+\/status\/\d+/i.test(postData.url))
 			return PostType.tweet;
@@ -153,7 +153,9 @@ export default class Ph_PostBody extends Ph_PhotonBaseElement {
 	private makeEmbeddedVideoBody(postData: RedditPostData) {
 		this.classList.add("fullScale");
 		this.isBodyCollapsable = Users.global.d.photonSettings.allowIframes !== AllowIframesDecision.block;
-		const iframeSrc = postData.media_embed.content.match(/src="([^"]+)"/)[1];		// extract src attribute from <iframe>
+		let iframeSrc = postData.media_embed.content.match(/src="([^"]+)"/)[1];		// extract src attribute from <iframe>
+		if (iframeSrc.startsWith("https://cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fclips.twitch.tv"))
+			iframeSrc = getTwitchClipEmbedUrl(iframeSrc);
 		this.append(new Ph_IframeWrapper(iframeSrc, {
 			fallbackUrl: postData.url,
 			fallbackThumbnailUrl: getThumbnailUrl(postData),

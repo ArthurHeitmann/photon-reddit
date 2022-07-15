@@ -638,3 +638,11 @@ export function isCommentDeleted(commentData: RedditCommentData) {
 export function isMobile(): boolean {
 	return window.matchMedia("(max-width: 767px)").matches;
 }
+
+export function getTwitchClipEmbedUrl(embedlyUr: string): string {
+	const params =  new URLSearchParams(embedlyUr.split("?")[1]);
+	const twitchUrl = new URL(params.get("src"));
+	twitchUrl.searchParams.delete("parent");
+	twitchUrl.searchParams.set("parent", location.hostname);
+	return twitchUrl.toString();
+}

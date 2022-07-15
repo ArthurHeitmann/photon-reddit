@@ -171,8 +171,8 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	static isPostVideo(postData: RedditPostData): boolean {
 		if (Ph_MediaViewer.isUrlVideo(postData.url))
 			return true
-		else if (/https?:\/\/clips.twitch.tv\/[\w-]+/i.test(postData.url) && postData.media)
-			return true;
+		// else if (/https?:\/\/clips.twitch.tv\/[\w-]+/i.test(postData.url) && postData.media)
+		// 	return true;
 		else if (postData.post_hint == "hosted:video")
 			return true;
 		return false
