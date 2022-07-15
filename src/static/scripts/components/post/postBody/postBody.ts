@@ -118,7 +118,7 @@ export default class Ph_PostBody extends Ph_PhotonBaseElement {
 			return PostType.image;
 		else if (postData.gallery_data)
 			return PostType.redditGallery;
-		else if (postData.post_hint == "rich:video" || /https?:\/\/clips.twitch.tv\/[\w-]+/i.test(postData.url) && postData.media_embed)
+		else if (postData.post_hint == "rich:video" || /https?:\/\/clips.twitch.tv\/[\w-]+/i.test(postData.url) && postData.media_embed?.content)
 			return PostType.embeddedVideo;
 		else if (/^(https?:\/\/)?(www\.)?twitter\.com\/[^/]+\/status\/\d+/i.test(postData.url))
 			return PostType.tweet;
