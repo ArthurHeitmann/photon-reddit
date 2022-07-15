@@ -1,6 +1,11 @@
-export const photonVersion = "1.1.12";		/// <change version script>
+export const photonVersion = "1.1.13";		/// <change version script>
 
 export const photonChangelog = {
+	"1.1.13": {
+		"Fixed": [
+			"Twitch videos are currently not working. For now displaying is embedded iframe instead.",
+		],
+	},
 	"1.1.12": {
 		"Fixed": [
 			"Some small fixes & changes",
