@@ -118,7 +118,7 @@ export default class Ph_PostBody extends Ph_PhotonBaseElement {
 			return PostType.image;
 		else if (postData.gallery_data)
 			return PostType.redditGallery;
-		else if (postData.post_hint == "rich:video" || /https?:\/\/clips.twitch.tv\/[\w-]+/i.test(postData.url) && postData.media_embed)
+		else if (postData.post_hint == "rich:video" || /https?:\/\/clips.twitch.tv\/[\w-]+/i.test(postData.url) && postData.media_embed?.content)
 			return PostType.embeddedVideo;
 		else if (/^(https?:\/\/)?(www\.)?twitter\.com\/[^/]+\/status\/\d+/i.test(postData.url))
 			return PostType.tweet;
@@ -154,7 +154,7 @@ export default class Ph_PostBody extends Ph_PhotonBaseElement {
 		this.classList.add("fullScale");
 		this.isBodyCollapsable = Users.global.d.photonSettings.allowIframes !== AllowIframesDecision.block;
 		let iframeSrc = postData.media_embed.content.match(/src="([^"]+)"/)[1];		// extract src attribute from <iframe>
-		if (iframeSrc.startsWith("https://cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fclips.twitch.tv"))
+		if (/^https:\/\/cdn\.embedly\.com\/widgets\/media\.html\?src=https%3A%2F%2F\w+\.twitch\.tv/.test(iframeSrc))
 			iframeSrc = getTwitchClipEmbedUrl(iframeSrc);
 		this.append(new Ph_IframeWrapper(iframeSrc, {
 			fallbackUrl: postData.url,
