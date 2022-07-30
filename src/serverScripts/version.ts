@@ -1,6 +1,11 @@
-export const photonVersion = "1.1.14";		/// <change version script>
+export const photonVersion = "1.1.15";		/// <change version script>
 
 export const photonChangelog = {
+	"1.1.15": {
+		"Fixed": [
+			"Another cache not updating fix.",
+		],
+	},
 	"1.1.14": {
 		"Fixed": [
 			"Fixed login not working properly.",
