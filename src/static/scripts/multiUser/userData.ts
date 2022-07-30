@@ -10,6 +10,7 @@ import Ph_UserDropDown from "../components/global/userDropDown/userDropDown";
 import DataAccessor from "./dataAccessor";
 import {deleteKey, setInStorage, wasDbUpgraded} from "./storageWrapper";
 import Users from "./userManagement";
+import {randomString} from "../utils/utils";
 
 export const guestUserName = "#guest";
 export const tmpLoginUserName = "#login";
@@ -32,7 +33,7 @@ export default class UserData extends DataAccessor<_UserData> {
 		},
 		loginSubPromptDisplayed: false,
 		redditPreferences: undefined,
-		userData: null
+		userData: {}
 	};
 	subreddits = new SubredditManager();
 	multireddits = new MultiManager();
@@ -58,7 +59,8 @@ export default class UserData extends DataAccessor<_UserData> {
 	}
 
 	async fetchName(): Promise<boolean> {
-		await this.set(["userData"], await redditApiRequest("/api/v1/me", [], false));
+		const cacheBustPram = ["rand", randomString("10")]
+		await this.set(["userData"], await redditApiRequest("/api/v1/me", [cacheBustPram], false));
 		if ("error" in this.d.userData)
 			return false;
 		const oldName = this.name;
