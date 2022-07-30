@@ -33,7 +33,7 @@ export default class UserData extends DataAccessor<_UserData> {
 		},
 		loginSubPromptDisplayed: false,
 		redditPreferences: undefined,
-		userData: {}
+		userData: {} as RedditUserInfo
 	};
 	subreddits = new SubredditManager();
 	multireddits = new MultiManager();
@@ -59,7 +59,7 @@ export default class UserData extends DataAccessor<_UserData> {
 	}
 
 	async fetchName(): Promise<boolean> {
-		const cacheBustPram = ["rand", randomString("10")]
+		const cacheBustPram = ["rand", randomString(10)]
 		await this.set(["userData"], await redditApiRequest("/api/v1/me", [cacheBustPram], false));
 		if ("error" in this.d.userData)
 			return false;
