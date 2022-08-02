@@ -1,9 +1,0 @@
-{
-  "projectId": "vha2vq",
-  "baseUrl": "http://localhost:8080",
-  "viewportWidth": 1500,
-  "viewportHeight": 900,
-  "defaultCommandTimeout": 10000,
-  "numTestsKeptInMemory": 50,
-  "scrollBehavior": false
-}
