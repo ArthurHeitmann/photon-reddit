@@ -45,6 +45,7 @@ import {getCommentFromPushshift, getCommentRepliesFromPushshift} from "../../api
 export default class Ph_Comment extends Ph_Readable {
 	voteUpButton: Ph_VoteButton;
 	currentUpvotes: HTMLElement;
+	upvotesCollapsedOnly: HTMLElement;
 	voteDownButton: Ph_VoteButton;
 	replyForm: Ph_CommentForm;
 	childComments: HTMLElement;
@@ -163,7 +164,6 @@ export default class Ph_Comment extends Ph_Readable {
 		this.voteDownButton = new Ph_VoteButton(false);
 		this.voteDownButton.addEventListener("click", () => this.vote(VoteDirection.down));
 		actionBar.appendChild(this.voteDownButton);
-		this.setVotesState(this.currentVoteDirection);
 		// additional actions drop down
 		const isLocked = commentData.data["locked"] || commentData.data["archived"] || false;
 		const lockedReason = commentData.data["locked"] ? "Locked" : "Archived";
@@ -220,6 +220,7 @@ export default class Ph_Comment extends Ph_Readable {
 					commentData.data["author_cakeday"] && makeElement("img", { src: "/img/cake.svg", class: "cakeDay", alt: "cake day" }),
 					commentData.data["controversiality"] === 1 && makeElement("div", { class: "controversial", "data-tooltip": "Controversial" })
 				]),
+				this.upvotesCollapsedOnly = makeElement("span", { class: "upvotesCollapsedOnly" }),
 				makeElement(
 					"span",
 					{ class: "time", "data-tooltip": `${new Date(commentData.data.created_utc * 1000).toString()}` },
@@ -243,6 +244,7 @@ export default class Ph_Comment extends Ph_Readable {
 				makeElement("button", { class: "loadPushshiftBtn", onclick: this.loadPushshiftVersion.bind(this) }, "Load Archived Version"),
 		]);
 
+		this.setVotesState(this.currentVoteDirection);
 		emojiFlagsToImages(mainPart);
 		addRedditEmojis(mainPart.$class("content")[0], commentData.data as RedditCommentData);
 		if (commentData.data["all_awardings"] && commentData.data["all_awardings"].length > 0) {
@@ -322,7 +324,9 @@ export default class Ph_Comment extends Ph_Readable {
 	};
 
 	setVotesState(voteDirection: VoteDirection) {
-		this.currentUpvotes.innerText = numberToShort(this.totalVotes + parseInt(voteDirection));
+		const votesText = numberToShort(this.totalVotes + parseInt(voteDirection));
+		this.currentUpvotes.innerText = votesText;
+		this.upvotesCollapsedOnly.innerText = `${votesText} 🠉`;
 		if (this.currentUpvotes.innerText.length > 3) {
 			this.currentUpvotes.classList.add("small");
 			this.currentUpvotes.classList.remove("medium");

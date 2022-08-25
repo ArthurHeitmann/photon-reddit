@@ -33,6 +33,12 @@
 		}
 	}
 
+	&:not(.isCollapsed) {
+		> div >.header > .upvotesCollapsedOnly {
+			display: none;
+		}
+	}
+
 	&.isEditing {
 		> div {
 			>.content {
