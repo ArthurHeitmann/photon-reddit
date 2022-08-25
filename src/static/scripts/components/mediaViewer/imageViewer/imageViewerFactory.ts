@@ -15,7 +15,7 @@ export function imageViewerFromUrl(url: string): Ph_ImageViewer {
 				new Ph_Toast(Level.error, "Error loading xkcd image", { timeout: 3000, groupId: "xkcdError" });
 			});
 	}
-	if (/https:\/\/(www.)?ibb\.co\/\w+\/?$/.test(url)) {
+	else if (/https:\/\/(www.)?ibb\.co\/\w+\/?$/.test(url)) {
 		proxyFetch(url)
 			.then(html => {
 				const imgUrl = html.match(/src="(https:\/\/i.ibb.co\/[^?#]+\.(jpg|png|webm))"/)[1];
