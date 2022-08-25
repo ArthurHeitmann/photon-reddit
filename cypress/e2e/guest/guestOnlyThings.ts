@@ -1,4 +1,4 @@
-import { hideHeader, loadPage } from "../../support/utils";
+import {hideHeader, loadPage} from "../../support/utils";
 
 describe("Guest only things", () => {
 	it("Guest only things", () => {

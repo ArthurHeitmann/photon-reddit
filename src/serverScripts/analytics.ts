@@ -20,6 +20,12 @@
  * - type: VARCHAR(3)
  * - count: INT(11) default=0
  *
+ * Table genericEvents:
+ * - ID: INT(11) AUTO_INCREMENT
+ * - key: VARCHAR(50)
+ * - value: TEXT
+ * - date: DATE default=curdate()
+ * - data2: TEXT default=NULL
  */
 
 import {config} from "dotenv";

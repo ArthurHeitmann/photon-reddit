@@ -382,6 +382,10 @@ export default class Ph_InfiniteScroller extends HTMLElement {
 		changeState: (itemState: ItemISState, element: HTMLElement) => void,
 		isReversed = false
 	) {
+		if (this.allItems.length <= itemIndex) {
+			console.warn(`Trying to change state for item that doesn't exist (${itemIndex}/${this.allItems.length})`);
+			return;
+		}
 		const sameVisibility = this.allItems[itemIndex].visibility;
 		let firstI = itemIndex;
 		while (this.isItemHiddenNeighbour(firstI - 1, sameVisibility))
