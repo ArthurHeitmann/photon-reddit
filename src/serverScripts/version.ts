@@ -1,6 +1,15 @@
-export const photonVersion = "1.1.15";		/// <change version script>
+export const photonVersion = "1.1.16";		/// <change version script>
 
 export const photonChangelog = {
+	"1.1.16": {
+		"New": [
+			"Support for images with self-text (new reddit update)",
+			"Collapsed comments now show the upvote count",
+		],
+		"Fixed": [
+			"Fixed XKCD images not displaying correctly",
+		]
+	},
 	"1.1.15": {
 		"Fixed": [
 			"Another cache not updating fix.",
