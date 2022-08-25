@@ -81,6 +81,9 @@ export default class Ph_PostBody extends Ph_PhotonBaseElement {
 				this.makeDefaultBody(postData);
 				break;
 		}
+		// surprise surprise, new reddit update allows text with images
+		if (this.postType != PostType.text && postData.selftext.length > 0)
+			this.makeTextBody(postData);
 
 		this.bodyWrapper.init(postData);
 		this.updateCollapsedState();
