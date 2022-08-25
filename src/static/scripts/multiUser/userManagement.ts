@@ -73,6 +73,7 @@ export default class Users {
 	static async add(auth: AuthData): Promise<void> {
 		const newUser = await (new UserData(tmpLoginUserName)).init();
 		await newUser.set(["auth"], auth);
+		await newUser.set(["userData", "name"], tmpLoginUserName);
 		Users.all.push(newUser);
 		Users._current = newUser;
 		await Users.global.set(["lastActiveUser"], tmpLoginUserName);

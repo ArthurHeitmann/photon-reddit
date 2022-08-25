@@ -88,6 +88,7 @@
 	}
 
 	.stepText {
+		max-width: 45rem;
 		position: fixed;
 		left: 1rem;
 		right: 1rem;
@@ -111,7 +112,7 @@
 		* {
 			font-size: 1.75rem;
 			text-shadow:  0 0 30px black, 0 0 20px black, 0 0 15px black, 0 0 10px black, 0 0 5px black;
-			line-break: anywhere;
+			line-break: auto;
 		}
 	}
 

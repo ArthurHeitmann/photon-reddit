@@ -32,7 +32,7 @@ export default class UserData extends DataAccessor<_UserData> {
 		},
 		loginSubPromptDisplayed: false,
 		redditPreferences: undefined,
-		userData: null
+		userData: {} as RedditUserInfo
 	};
 	subreddits = new SubredditManager();
 	multireddits = new MultiManager();

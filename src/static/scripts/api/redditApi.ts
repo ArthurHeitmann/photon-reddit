@@ -17,7 +17,7 @@ import {
 	RedditSubredditObj,
 	RedditUserObj
 } from "../types/redditTypes";
-import {isObjectEmpty, splitPathQuery, throttle} from "../utils/utils";
+import {isObjectEmpty, randomString, splitPathQuery, throttle} from "../utils/utils";
 import {SortPostsOrder, UserSection} from "../types/misc";
 
 /**
@@ -58,6 +58,7 @@ async function oauth2Request(pathAndQuery, params: string[][] | any, options: Re
 		for (const param of params)
 			parameters.append(param[0], param[1]);
 		parameters.append("raw_json", "1");
+		parameters.append("rand", randomString(10));
 	}
 	if (fetchOptions.method && fetchOptions.method.toUpperCase() !== "GET") {
 		fetchOptions.body = parameters ?? params;

@@ -27,6 +27,7 @@ interface TutorialStep {
 	showIf?: () => boolean,
 	beginAction?: () => void,
 	endAction?: () => void,
+	hideExit?: boolean,
 }
 
 interface TutorialDescription {
@@ -41,6 +42,7 @@ const tutorialDescription: TutorialDescription = {
 			highlightElementSelector: null,
 			displayText: [
 				"Hello there!",
+				"Photon is an unofficial desktop web-app for Reddit. It's a website with a strong focus on browsing content, no ads, no distractions."
 			]
 		},
 		{
@@ -69,6 +71,7 @@ const tutorialDescription: TutorialDescription = {
 			],
 			beginAction: () => $css("ph-fab")[0].classList.add("show"),
 			endAction: () => $css("ph-fab")[0].classList.remove("show"),
+			hideExit: true
 		},
 		{
 			highlightElementSelector: "ph-header .actions",
@@ -331,6 +334,7 @@ export default class Ph_Tutorial extends HTMLElement {
 		}));
 		this.stepText.className = `stepText ${currentStep.textPosition ?? "BL"}`;
 
+		this.finishButton.classList.toggle("hide", Boolean(currentStep.hideExit));
 		if (currentStep.beginAction)
 			currentStep.beginAction();
 		if (currentStep.updateHighlightForMs)
