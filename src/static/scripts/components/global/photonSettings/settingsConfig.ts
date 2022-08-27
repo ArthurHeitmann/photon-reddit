@@ -16,6 +16,7 @@ import {
 	TimeSetting
 } from "./photonSettingsData";
 import Ph_Toast, {Level} from "../../misc/toast/toast";
+import {SortPostsOrder, SortPostsOrderNamed} from "../../../types/misc";
 
 export enum ImageLoadingPolicy {
 	alwaysPreview = "alwaysPreview",
@@ -82,6 +83,7 @@ export interface PhotonSettings {
 	animateFullscreenTransition?: boolean,
 	feedDisplayType?: FeedDisplayType,
 	allowIframes?: AllowIframesDecision,
+	defaultFrontpageSort?: SortPostsOrder,
 }
 
 // default config
@@ -124,6 +126,7 @@ export const defaultSettings: PhotonSettings = {
 	animateFullscreenTransition: false,
 	feedDisplayType: FeedDisplayType.cards,
 	allowIframes: AllowIframesDecision.ask,
+	defaultFrontpageSort: SortPostsOrder.default,
 };
 
 export const getSettingsSections = (): SettingsSection[] => [
@@ -146,6 +149,9 @@ export const getSettingsSections = (): SettingsSection[] => [
 				{ text: "Blur NSFW", value: NsfwPolicy.covered },
 				{ text: "Show NSFW", value: NsfwPolicy.always },
 			], "nsfwPolicy", "NSFW post visibility", "NSFW post visibility when viewing in feed. 1. Completely hidden 2. Blur + Warning on post 3. Normal visibility", SettingsApi.Photon),
+			new MultiOptionSetting(Object.values(SortPostsOrder).map(value => (
+				{ text: SortPostsOrderNamed[value], value: value }
+			)), "defaultFrontpageSort", "Default Frontpage sort order", "Only applies when logged in", SettingsApi.Photon),
 			new BooleanSetting("hideSubredditMiniIcon", "Hide small subreddit icon", "Enable to Hide a small icon next to the subreddit name", SettingsApi.Photon),
 		]
 	},

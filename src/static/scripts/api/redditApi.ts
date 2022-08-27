@@ -37,7 +37,7 @@ export async function redditApiRequest(pathAndQuery, params: string[][] | any, r
 	return await oauth2Request(pathAndQuery, params, options);
 }
 
-/** Makes a request to reddit with an an access token */
+/** Makes a request to reddit with an access token */
 async function oauth2Request(pathAndQuery, params: string[][] | any, options: RequestInit, attempt = 0) {
 	pathAndQuery = fixUrl(pathAndQuery);
 	const [path, query] = splitPathQuery(pathAndQuery);
@@ -94,6 +94,8 @@ function fixUrl(url: string) {
 	url = url.replace(/^\/gallery(?=\/\w+)/, "/comments");									// /gallery/... --> /comments/...
 	if (new RegExp(`^/(u|user)/${Users.current.name}/m/([^/]+)`, "i").test(url))					// private multireddits have CORS problems
 		url = url.replace(/^\/user\/[^/]+\/m\//, "/me/m/")									// /user/thisUser/m/... --> /me/m/...
+	if (Users.current.d.auth.isLoggedIn && (url === "" || url === "/") && Users.global.d.photonSettings.defaultFrontpageSort)
+		url = `/${Users.global.d.photonSettings.defaultFrontpageSort}`
 	return url;
 }
 
