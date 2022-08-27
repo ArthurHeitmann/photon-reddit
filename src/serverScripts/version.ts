@@ -1,6 +1,14 @@
-export const photonVersion = "1.1.16";		/// <change version script>
+export const photonVersion = "1.1.17";		/// <change version script>
 
 export const photonChangelog = {
+	"1.1.17": {
+		"New": [
+			"Added option to change default frontend sort order (Settings > Post > Default Frontpage sort order)",
+		],
+		"Fixed": [
+			"Increased space between images and text from previous update",
+		]
+	},
 	"1.1.16": {
 		"New": [
 			"Support for images with self-text (new reddit update)",
