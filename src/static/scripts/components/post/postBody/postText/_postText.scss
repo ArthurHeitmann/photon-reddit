@@ -10,6 +10,10 @@
 	.md :first-child {
 		margin-block-start: 0;
 	}
+
+	&.textAfterMedia {
+		margin-top: 1.5rem;
+	}
 }
 
 .isInFeed {
