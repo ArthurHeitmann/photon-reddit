@@ -1,6 +1,11 @@
-export const photonVersion = "1.1.17";		/// <change version script>
+export const photonVersion = "1.1.18";		/// <change version script>
 
 export const photonChangelog = {
+	"1.1.18": {
+		"Fixed": [
+			"Fixed redgifs not working",
+		]
+	},
 	"1.1.17": {
 		"New": [
 			"Added option to change default frontend sort order (Settings > Post > Default Frontpage sort order)",
