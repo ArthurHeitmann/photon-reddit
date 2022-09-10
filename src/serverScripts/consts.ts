@@ -34,3 +34,9 @@ export const proxyRateLimitConfig: Partial <rlOptions> = {
 	windowMs: 30 * 1000,
 	max: 45,
 };
+
+export const tokenRequestRateLimitConfig: Partial<rlOptions> = {
+	...commonRateLimitConfig,
+	windowMs: 60 * 60 * 1000,
+	max: 12,
+};

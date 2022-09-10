@@ -5,6 +5,7 @@
 import Ph_Toast, {Level} from "../components/misc/toast/toast";
 import {Changelog} from "../types/misc";
 import {getAuthHeader} from "./redditApi";
+import {RedgifsAuthData} from "../multiUser/globalData";
 
 /** */
 export async function youtubeDlUrl(url): Promise<{ url?: string, error?: string }> {
@@ -141,4 +142,9 @@ export async function proxyFetch(url: string): Promise<string> {
 	const r = await fetch(`/api/proxy?url=${encodeURIComponent(url)}`);
 	const data = await r.json();
 	return data["text"];
+}
+
+export async function fetchRedgifsToken(): Promise<RedgifsAuthData> {
+	const r = await fetch("/api/requestRedgifsToken");
+	return await r.json();
 }

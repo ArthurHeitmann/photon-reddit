@@ -2,13 +2,14 @@ import {RedditPostData} from "../../../types/redditTypes";
 import Ph_GifVideo from "./gifVideo/gifVideo";
 import Ph_SimpleVideo from "./simpleVideo/simpleVideo";
 import Ph_Toast, {Level} from "../../misc/toast/toast";
-import {getGfycatMp4SrcFromUrl, getRedgifsMp4SrcFromUrl} from "../../../api/gfycatApi";
+import {getGfycatMp4SrcFromUrl} from "../../../api/gfycatApi";
 import Ph_VideoAudio from "./videoAudio/videoAudio";
 import {SourceData} from "./videoWrapper";
 import {isJsonEqual} from "../../../utils/utils";
 import {youtubeDlUrl} from "../../../api/photonApi";
 import {getStreamableUrl} from "../../../api/streamableApi";
 import Ph_VideoPlayer from "./videoPlayer";
+import {getRedgifsMp4SrcFromUrl} from "../../../api/redgifsApi";
 
 /** Creates a video player from a reddit post (with a video link) */
 export function videoPlayerFromPostData({ postData, url }: { postData?: RedditPostData, url?: string }): Ph_VideoPlayer {

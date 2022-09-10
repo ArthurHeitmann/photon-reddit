@@ -27,6 +27,10 @@ export default class GlobalUserData extends DataAccessor<_GlobalData> {
 		pageBeforeLogin: null,
 		loginCode: null,
 		colorContrastCache: {},
+		redgifsAuth: {
+			token: null,
+			expiration: -1
+		}
 	}
 
 	async init(): Promise<this> {
@@ -102,7 +106,8 @@ interface _GlobalData {
 	pageBeforeLogin: string;
 	loginCode: string;
 	/** Maps a `background,foreground` color pair to a new pair with better contrast */
-	colorContrastCache: { [key: string]: [[number, number, number], [number, number, number]] }
+	colorContrastCache: { [key: string]: [[number, number, number], [number, number, number]] },
+	redgifsAuth: RedgifsAuthData;
 }
 
 export interface AnalyticsData {
@@ -116,4 +121,9 @@ export interface AnalyticsData {
 
 export interface SeenPosts {
 	[fullName: string]: number
+}
+
+export interface RedgifsAuthData {
+	token: string;
+	expiration: number;
 }

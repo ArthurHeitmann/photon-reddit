@@ -2,7 +2,12 @@ import express from "express";
 import RateLimit from "express-rate-limit";
 import fetch from "node-fetch";
 import youtube_dl from "youtube-dl-exec";
-import {basicRateLimitConfig, proxyRateLimitConfig, youtube_dlRateLimitConfig} from "./consts";
+import {
+	basicRateLimitConfig,
+	proxyRateLimitConfig,
+	tokenRequestRateLimitConfig,
+	youtube_dlRateLimitConfig
+} from "./consts";
 import {safeExc, safeExcAsync} from "./utils";
 import {photonChangelog, photonVersion} from "./version";
 
@@ -128,3 +133,35 @@ photonApiRouter.get("/proxy", RateLimit(proxyRateLimitConfig), safeExcAsync(asyn
 		res.status(400).json({ error: "¯\\_(ツ)_/¯" });
 	}
 }))
+
+photonApiRouter.get("/requestRedgifsToken", RateLimit(tokenRequestRateLimitConfig), safeExcAsync(async (req, res) => {
+	const clientId = process.env.redGifs_ClientId;
+	const clientSecret = process.env.redGifs_ClientSecret;
+	if (!clientId || !clientSecret) {
+		res.status(500).json({error: "No client id or secret defined"});
+		return;
+	}
+
+	const r = await fetch("https://api.redgifs.com/v2/oauth/client", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/x-www-form-urlencoded"
+		},
+		body: new URLSearchParams({
+			grant_type: "client_credentials",
+			client_id: clientId,
+			client_secret: clientSecret
+		})
+	});
+	const json: Object = await r.json();
+	if (!("access_token" in json && "expires_in" in json)) {
+		console.log(json); // TODO: remove
+		res.status(500).json({error: "Could not get token"});
+		return;
+	}
+
+	res.json({
+		token: json["access_token"],
+		expiration: Date.now() + json["expires_in"] ?? 60*60*24 * 1000 - 60*1000
+	});
+}));
