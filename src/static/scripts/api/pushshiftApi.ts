@@ -7,7 +7,7 @@ import {redditInfo} from "./redditApi";
 
 export async function getCommentFromPushshift(commentData: RedditCommentData): Promise<RedditCommentData> {
 	try {
-		const response = await fetch(`https://api.pushshift.io/reddit/search/comment/?ids=${commentData.id}`);
+		const response = await fetch(`https://api.pushshift.io/reddit/comment/search?ids=${commentData.id}`);
 		const data = await response.json() as PushshiftResponse;
 		const newCommentData = pushshiftToRedditComment(data.data[0] as PushshiftCommentData);
 		if (isCommentDeleted(newCommentData))
@@ -24,10 +24,10 @@ export async function getCommentFromPushshift(commentData: RedditCommentData): P
 }
 
 export async function getCommentRepliesFromPushshift(
-	commentData: RedditCommentData, skipReplyIds: string[] = [], maxDepth = 5, maxRequests = 7, 	// public params
+	commentData: RedditCommentData, skipReplyIds: string[] = [], maxDepth = 4, maxRequests = 4, 	// public params
 	_depth = 0, _requests = { v: 0 }, tStart = Date.now()									// privat recursion params
 ): Promise<RedditCommentObj[]> {
-	if (_depth > maxDepth || _requests.v > maxRequests)
+	if (_depth > maxDepth || _requests.v >= maxRequests)
 		return [];
 	if (_depth > 0)
 		await sleep(Math.random() * 500);
@@ -37,7 +37,7 @@ export async function getCommentRepliesFromPushshift(
 	let data: PushshiftResponse;
 	try {
 		_requests.v++;
-		response = await fetch(`https://api.pushshift.io/reddit/search/comment/?parent_id=${commentData.id}`);
+		response = await fetch(`https://api.pushshift.io/reddit/comment/search?parent_id=${commentData.id}`);
 		data = await response.json() as PushshiftResponse;
 	} catch (e) {
 		if (response.status === 429) {
@@ -67,7 +67,7 @@ export async function getCommentRepliesFromPushshift(
 	for (let i = 0; i < comments.length; i++){
 		const comment = comments[i];
 		// recursion limit to avoid too many or too long requests
-		if (_requests.v > maxRequests || _depth > maxDepth || Date.now() - tStart > 10000 && _depth > 0) {
+		if (_requests.v >= maxRequests || _depth > maxDepth || Date.now() - tStart > 10000 && _depth > 0) {
 			// replace with deleted comment, so that can later be manually fetched from pushshift
 			comments[i] = {
 				...comment,
@@ -110,7 +110,7 @@ export async function getCommentRepliesFromPushshift(
 export async function getPostFromPushshift(id: string): Promise<RedditPostData> {
 	let response: Response;
 	try {
-		response = await fetch(`https://api.pushshift.io/reddit/search/submission/?ids=${id}`);
+		response = await fetch(`https://api.pushshift.io/reddit/submission/search?ids=${id}`);
 		const data = await response.json() as PushshiftResponse;
 		if (!data.data[0])
 			return null;
