@@ -175,6 +175,8 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		// 	return true;
 		else if (postData.post_hint == "hosted:video")
 			return true;
+		else if (postData.preview?.reddit_video_preview?.dash_url)
+			return true;
 		return false
 	}
 
@@ -186,10 +188,11 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 
 	static isUrlVideo(url: string): boolean {
 		return Ph_MediaViewer.isUrlOnWhiteList(url) && new RegExp(
-			"^((https?://(i|m)?\.?imgur\\.com\/[\\w-]+.(gifv|mp4))|" +		// imgur
+			"^(https?://(i|m)?\.?imgur\\.com\/[\\w-]+.(gifv|mp4))|" +		// imgur
 			"(https?://v.redd.it\\/[\\w-]+)|" +										// v.redd.it
 			"(https?://(www\\.)?reddit\\.com/link/\\w+/video/\\w+)|" +				// other v.redd.it?
-			"(https?://w?w?w?\\.?redgifs.com/\\w+/\\w+))|" +						// redgifs
+			// "(https?://w?w?w?\\.?redgifs.com/\\w+/\\w+)" +						// redgifs
+			// ")|" +
 			"(https?://gfycat.com/[\\w-]+)|" +										// gfycat
 			"(giphy\\.com/\\w+/\\w+)|" +											// giphy
 			"(streamable\\.com/\\w+)|" +											// streamable

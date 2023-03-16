@@ -203,6 +203,7 @@ export interface RedditPostData extends RedditApiData {
 				},
 			},
 		}[],
+		reddit_video_preview?: RedditVideo,
 		enabled: boolean,
 	},
 	pwls: number,
