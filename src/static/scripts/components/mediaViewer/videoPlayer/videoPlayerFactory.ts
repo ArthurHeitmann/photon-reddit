@@ -234,12 +234,12 @@ export function videoPlayerFromPostData({ postData, url }: { postData?: RedditPo
 				}).catch(() => videoOut.init(null))
 			}
 			break;
-		case "redgifs.com":
-			// like gfycat but there is no usable info in the oembed data
-			getRedgifsMp4SrcFromUrl(url)
-				.then(sources => videoOut.init(new Ph_SimpleVideo(sources), true))
-				.catch(() => videoOut.init(null));
-			break;
+		// case "redgifs.com":
+		// 	// like gfycat but there is no usable info in the oembed data
+		// 	getRedgifsMp4SrcFromUrl(url)
+		// 		.then(sources => videoOut.init(new Ph_SimpleVideo(sources), true))
+		// 		.catch(() => videoOut.init(null));
+		// 	break;
 		case "media.giphy.com":
 		case "media1.giphy.com":
 		case "media2.giphy.com":
