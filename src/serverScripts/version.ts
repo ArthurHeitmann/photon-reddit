@@ -1,6 +1,12 @@
-export const photonVersion = "1.1.18";		/// <change version script>
+export const photonVersion = "1.1.19";		/// <change version script>
 
 export const photonChangelog = {
+	"1.1.19": {
+		"Fixed": [
+			"Fixed pushshift not working (Needed to \"Load Archived Version\" of posts/comments)",
+			"Disabled redgifs API until it's fixed again :/",
+		]
+	},
 	"1.1.18": {
 		"Fixed": [
 			"Fixed redgifs not working",
