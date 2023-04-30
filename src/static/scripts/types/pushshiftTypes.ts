@@ -39,7 +39,7 @@ export interface PushshiftCommentData extends PushshiftData {
 	link_id: string,
 	locked: boolean,
 	no_follow: boolean,
-	parent_id: string,
+	parent_id: number,
 	permalink: string,
 	retrieved_utc: number,
 	score: number,

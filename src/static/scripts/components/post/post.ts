@@ -451,11 +451,9 @@ export default class Ph_Post extends Ph_FeedItem {
 			this.removedInfoElement.$tag("div")[0].textContent = message;
 		}
 
-		if (this.postBody.postType === PostType.text) {
-			this.postBody.append(
-				makeElement("button", { class: "loadPushshiftBtn", onclick: this.loadPushshiftVersion.bind(this) }, "Load Archived Version")
-			);
-		}
+		this.postBody.append(
+			makeElement("button", { class: "loadPushshiftBtn", onclick: this.loadPushshiftVersion.bind(this) }, "Load Archived Version")
+		);
 	}
 
 	updateWithData(postData: RedditPostData) {

@@ -1,13 +1,13 @@
 import {RedditCommentData, RedditCommentObj, RedditListingObj, RedditPostData} from "../types/redditTypes";
 import {PushshiftCommentData, PushshiftPostData, PushshiftResponse} from "../types/pushshiftTypes";
 import {parseMarkdown} from "../lib/markdownForReddit/markdown-for-reddit";
-import {isCommentDeleted, sleep} from "../utils/utils";
+import {commentsToTree, deepClone, fromBase36, isCommentDeleted, sleep, toBase36} from "../utils/utils";
 import Ph_Toast, {Level} from "../components/misc/toast/toast";
 import {redditInfo} from "./redditApi";
 
 export async function getCommentFromPushshift(commentData: RedditCommentData): Promise<RedditCommentData> {
 	try {
-		const response = await fetch(`https://api.pushshift.io/reddit/comment/search?ids=${commentData.id}`);
+		const response = await fetch(`https://api.pushshift.io/reddit/search/comment?ids=${commentData.id}`);
 		const data = await response.json() as PushshiftResponse;
 		const newCommentData = pushshiftToRedditComment(data.data[0] as PushshiftCommentData);
 		if (isCommentDeleted(newCommentData))
@@ -23,35 +23,30 @@ export async function getCommentFromPushshift(commentData: RedditCommentData): P
 	}
 }
 
-export async function getCommentRepliesFromPushshift(
-	commentData: RedditCommentData, skipReplyIds: string[] = [], maxDepth = 4, maxRequests = 4, 	// public params
-	_depth = 0, _requests = { v: 0 }, tStart = Date.now()									// privat recursion params
-): Promise<RedditCommentObj[]> {
-	if (_depth > maxDepth || _requests.v >= maxRequests)
-		return [];
-	if (_depth > 0)
-		await sleep(Math.random() * 500);
+export async function getCommentRepliesFromPushshift(commentData: RedditCommentData, skipReplyIds: string[] = []): Promise<RedditCommentObj[]> {
+	// steps:
+	// 1. get (almost) all comments, where: same link_id, after commentData.created_utc-1
+	// 2. turn data into reddit like comment data
+	// 3. recreate comment tree (from flat list)
+	// 4. get latest score from reddit api
+	// 5. sort replies by score
 
-	// make API request with rate limit fallback
+	// 1. get (almost) all comments, where: same link_id, after commentData.created_utc-1
+	const linkId = fromBase36(commentData.link_id.split("_")[1]);
+	const startTimeStamp = commentData.created_utc - 1;
 	let response: Response;
 	let data: PushshiftResponse;
 	try {
-		_requests.v++;
-		response = await fetch(`https://api.pushshift.io/reddit/comment/search?parent_id=${commentData.id}`);
+		response = await fetch(`https://api.pushshift.io/reddit/search/comment?link_id=${linkId}&after=${startTimeStamp}&sort=created_utc&order=asc&limit=1000`);
 		data = await response.json() as PushshiftResponse;
-	} catch (e) {
-		if (response.status === 429) {
-			new Ph_Toast(Level.warning, "Pushshift API rate limit reached", { timeout: 3000, groupId: "pushshiftRL" });
-			await sleep(1000);
-			return await getCommentRepliesFromPushshift(commentData, skipReplyIds, maxDepth, maxRequests, _depth + 1, _requests, tStart);
-		}
-		else {
-			console.error(e);
-			new Ph_Toast(Level.error, "Pushshift API error", { timeout: 3000, groupId: "pushshiftError" });
-			return [];
-		}
 	}
-	// map and filter to useful reddit like datas
+	catch (e) {
+		console.error(e);
+		new Ph_Toast(Level.error, "Pushshift API error", { timeout: 3000, groupId: "pushshiftError" });
+		return [];
+	}
+	
+	// 2. turn data into reddit like comment data
 	let comments = data.data.map(comment => pushshiftToRedditComment(comment as PushshiftCommentData));
 	comments = comments.filter(comment => !skipReplyIds.includes(comment.id));
 	// add pushshift info to body
@@ -63,43 +58,38 @@ export async function getCommentRepliesFromPushshift(
 		comment.body_html = `<div class="md">${parseMarkdown(comment.body)}</div>`;
 	}
 
-	// recursively get replies for each comment
-	for (let i = 0; i < comments.length; i++){
-		const comment = comments[i];
-		// recursion limit to avoid too many or too long requests
-		if (_requests.v >= maxRequests || _depth > maxDepth || Date.now() - tStart > 10000 && _depth > 0) {
-			// replace with deleted comment, so that can later be manually fetched from pushshift
-			comments[i] = {
-				...comment,
-				author: "[deleted]",
-				author_fullname: undefined,
-				author_flair_richtext: [],
-				author_flair_type: undefined,
-				body: "[deleted]",
-				body_html: `<div class="md"><p>[removed]</p></div>`,
-			};
-			continue;
-		}
-		const replies = await getCommentRepliesFromPushshift(comment, [], maxRequests, maxRequests, _depth + 1, _requests, tStart);
-		comment.replies = <RedditListingObj<RedditCommentObj>> {
-			kind: "Listing",
-			data: {
-				children: replies,
-			}
-		}
-	}
+	// 3. recreate comment tree (from flat list)
+	// remove original comment from list
+	comments = comments.filter(comment => comment.id !== commentData.id);
+	const commentObjects = comments.map(comment => (<RedditCommentObj>{
+		kind: "t1",
+		data: comment
+	}));
+	// add original comment as first child
+	commentData = deepClone(commentData);
+	if (commentData.replies && commentData.replies.data.children.length > 0)
+		commentData.replies.data.children = [];
+	const originalComment = (<RedditCommentObj>{
+		kind: "t1",
+		data: commentData
+	});
+	commentObjects.unshift(originalComment);
+	const commentTree = commentsToTree(commentObjects);
+	// find original comment in tree
+	const originalCommentInTree = commentTree.find(comment => comment.data.id === commentData.id);
+	// get replies
+	const replies = (originalCommentInTree.data.replies as RedditListingObj<RedditCommentObj>).data.children;
 
-	if (_depth === 0) {
-		// get latest score from reddit api
-		const flatCommentsMap: { [fullName: string]: RedditCommentData } = {};
-		flattenCommentTree(comments, flatCommentsMap);
-		const freshCommentsData = await redditInfo({fullNames: Object.keys(flatCommentsMap)}) as RedditListingObj<RedditCommentObj>;
-		for (const comment of freshCommentsData.data.children) {
-			flatCommentsMap[comment.data.name].score = comment.data.score;
-			flatCommentsMap[comment.data.name].ups = (comment.data as RedditCommentData).ups;
-		}
-		comments = sortRepliesByScore(comments);
+	// 4. get latest score from reddit api
+	const flatCommentsMap: { [fullName: string]: RedditCommentData } = {};
+	flattenCommentTree(replies, flatCommentsMap);
+	const freshCommentsData = await redditInfo({fullNames: Object.keys(flatCommentsMap)}) as RedditListingObj<RedditCommentObj>;
+	for (const comment of freshCommentsData.data.children) {
+		flatCommentsMap[comment.data.name].score = comment.data.score;
+		flatCommentsMap[comment.data.name].ups = (comment.data as RedditCommentData).ups;
 	}
+	// 5. sort replies by score
+	comments = sortRepliesByScore(replies.map(reply => reply.data as RedditCommentData));
 
 	return comments.map(comment => ({
 		kind: "t1",
@@ -110,7 +100,7 @@ export async function getCommentRepliesFromPushshift(
 export async function getPostFromPushshift(id: string): Promise<RedditPostData> {
 	let response: Response;
 	try {
-		response = await fetch(`https://api.pushshift.io/reddit/submission/search?ids=${id}`);
+		response = await fetch(`https://api.pushshift.io/reddit/search/submission?ids=${id}`);
 		const data = await response.json() as PushshiftResponse;
 		if (!data.data[0])
 			return null;
@@ -213,6 +203,7 @@ function pushshiftToRedditComment(commentData: PushshiftCommentData, shouldParse
 		mod_reason_by: undefined,
 		mod_reason_title: undefined,
 		mod_reports: [],
+		parent_id: `t1_${toBase36(commentData.parent_id)}`,
 		name: `t1_${commentData.id}`,
 		num_reports: undefined,
 		removal_reason: undefined,
@@ -236,12 +227,12 @@ function makeDeleteCommentData(commentData: RedditCommentData): RedditCommentDat
 	};
 }
 
-function flattenCommentTree(comments: RedditCommentData[], flatCommentsMap: { [id: string]: RedditCommentData }): void {
+function flattenCommentTree(comments: RedditCommentObj[], flatCommentsMap: { [id: string]: RedditCommentData }): void {
 	for (const comment of comments) {
-		flatCommentsMap[comment.name] = comment;
-		if (comment.replies?.data?.children)
+		flatCommentsMap[comment.data.name] = comment.data as RedditCommentData;
+		if ((<RedditListingObj<RedditCommentObj>> comment.data.replies)?.data?.children)
 			flattenCommentTree(
-				comment.replies.data.children.map(reply => reply.data as RedditCommentData),
+				(<RedditListingObj<RedditCommentObj>> comment.data.replies).data.children,
 				flatCommentsMap
 			);
 	}

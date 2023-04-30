@@ -620,8 +620,8 @@ export function commentsToTree(comments: RedditCommentObj[]): RedditCommentObj[]
 						children: []
 					}
 				};
-				parent.data.replies.data.children.push(comment);
 			}
+			(<RedditCommentObj[]> parent.data.replies.data.children).push(comment);
 		}
 		else {
 			tree.push(comment);
@@ -651,4 +651,22 @@ export function getTwitchClipEmbedUrl(embedlyUr: string): string {
 	twitchUrl.searchParams.delete("parent");
 	twitchUrl.searchParams.set("parent", location.hostname);
 	return twitchUrl.toString();
+}
+
+const base36Charts = "0123456789abcdefghijklmnopqrstuvwxyz";
+export function toBase36(num: number): string {
+	let str = "";
+	do {
+		str = base36Charts[num % 36] + str;
+		num = Math.floor(num / 36);
+	} while (num > 0);
+	return str;
+}
+
+export function fromBase36(numB36: string): number {
+	let num = 0;
+	for (let i = 0; i < numB36.length; i++) {
+		num += base36Charts.indexOf(numB36[i]) * 36 ** (numB36.length - i - 1);
+	}
+	return num;
 }

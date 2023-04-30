@@ -486,8 +486,12 @@ export default class Ph_Comment extends Ph_Readable {
 		let commentData: RedditCommentData;
 		let newReplies: RedditCommentObj[];
 		try {
-			commentData = await getCommentFromPushshift(this.data);
-			newReplies = await getCommentRepliesFromPushshift(this.data, commentsIdsToKeep);
+			const resp = await Promise.all([
+				getCommentFromPushshift(this.data),
+				getCommentRepliesFromPushshift(this.data, commentsIdsToKeep)
+			]);
+			commentData = resp[0];
+			newReplies = resp[1];
 		} catch (e) {
 			console.error(e);
 		}
