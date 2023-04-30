@@ -1,6 +1,13 @@
-export const photonVersion = "1.1.19";		/// <change version script>
+export const photonVersion = "1.1.20";		/// <change version script>
 
 export const photonChangelog = {
+	"1.1.20": {
+		"Fixed": [
+			"Fixes & improvements to pushshift comment loading (\"Load Archived Version\" button)",
+			"Fixed unrelated child comments being loaded from pushshift",
+			"Improved loading time of pushshift comments"
+		]
+	},
 	"1.1.19": {
 		"Fixed": [
 			"Fixed pushshift not working (Needed to \"Load Archived Version\" of posts/comments)",
