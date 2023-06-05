@@ -19,6 +19,7 @@ export default class Ph_PostBody extends Ph_PhotonBaseElement {
 	postType: PostType;
 	private isBodyCollapsable = false;
 	private bodyWrapper: Ph_PostBodyCompactWrapper;
+	private skipImgur: boolean = false;
 
 	constructor(postData: RedditPostData | undefined, preferSmallerPost = false) {
 		super();
@@ -110,12 +111,12 @@ export default class Ph_PostBody extends Ph_PhotonBaseElement {
 		this.classList.toggle("isBodyCollapsable", isCollapsable);
 	}
 
-	getPostType(postData: RedditPostData, preferSmallerPost): PostType {
+	getPostType(postData: RedditPostData, preferSmallerPost: boolean): PostType {
 		if (preferSmallerPost)
 			return PostType.link;
 		else if (postData.is_self)
 			return PostType.text;
-		else if (Ph_MediaViewer.isUrlImgur(postData.url))
+		else if (!this.skipImgur && Ph_MediaViewer.isUrlImgur(postData.url))
 			return PostType.imgur;
 		else if (Ph_MediaViewer.isPostVideo(postData))
 			return PostType.video
@@ -192,7 +193,13 @@ export default class Ph_PostBody extends Ph_PhotonBaseElement {
 	private makeImgurBody(postData: RedditPostData) {
 		this.classList.add("fullScale");
 		this.isBodyCollapsable = true;
-		this.appendChild(Ph_MediaViewer.fromImgurUrl(postData.url));
+		this.appendChild(Ph_MediaViewer.fromImgurUrl(postData.url, () => this.onImgurLoadError(postData)));
+	}
+
+	private onImgurLoadError(postData: RedditPostData) {
+		console.log(`Imgur load error, trying to reinitialize without Imgur for ${postData.permalink}`);
+		this.skipImgur = true;
+		this.reinitialize(postData);
 	}
 
 	private makeDefaultBody(postData: RedditPostData) {

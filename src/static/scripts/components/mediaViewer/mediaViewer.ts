@@ -129,9 +129,9 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 			return null;
 	}
 
-	static fromImgurUrl(url: string): Ph_MediaViewer {
+	static fromImgurUrl(url: string, onErrorCallback?: () => void): Ph_MediaViewer {
 		const mediaViewer = new Ph_MediaViewer(null, url);
-		getImgurContent(url).then((contents: ImgurContent[]) =>
+		getImgurContent(url).then((contents: ImgurContent[]) => {
 			mediaViewer.init(contents.map(imgurElement => {
 				if (imgurElement.type === ImgurContentType.image)
 					return Ph_MediaViewer.makeImgurImage(imgurElement, url);
@@ -139,10 +139,16 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 					return Ph_MediaViewer.makeImgurVideo(imgurElement, url);
 				else
 					throw new Error("oops");
-			})))
+			}));
+
+			if (contents.length == 0 && onErrorCallback)
+				onErrorCallback();
+		})
 			.catch(e => {
 				console.error("Error getting imgur content", e);
 				mediaViewer.init([]);
+				if (onErrorCallback)
+					onErrorCallback();
 			});
 		return mediaViewer;
 	}
