@@ -4,6 +4,7 @@ import {FabPreset, initialDefaultFabPresets} from "../components/photon/fab/fabE
 import DataAccessor from "./dataAccessor";
 import {setInStorage, wasDbUpgraded} from "./storageWrapper";
 import {defaultSettings, PhotonSettings} from "../components/global/photonSettings/settingsConfig";
+import {RedditApiUsageRecord} from "../types/misc";
 
 const globalUserName = "#global";
 
@@ -30,7 +31,8 @@ export default class GlobalUserData extends DataAccessor<_GlobalData> {
 		redgifsAuth: {
 			token: null,
 			expiration: -1
-		}
+		},
+		pendingRedditApiUsages: [],
 	}
 
 	async init(): Promise<this> {
@@ -108,6 +110,7 @@ interface _GlobalData {
 	/** Maps a `background,foreground` color pair to a new pair with better contrast */
 	colorContrastCache: { [key: string]: [[number, number, number], [number, number, number]] },
 	redgifsAuth: RedgifsAuthData;
+	pendingRedditApiUsages: RedditApiUsageRecord[];
 }
 
 export interface AnalyticsData {

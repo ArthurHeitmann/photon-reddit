@@ -2,6 +2,7 @@
 
 import Users from "../multiUser/userManagement";
 import {appId, redirectURI} from "../utils/consts";
+import {onRedditApiUsage} from "./redditApiUsageTracking";
 
 interface AccessTokenReturn {
 	access_token?: string,
@@ -14,6 +15,7 @@ interface AccessTokenReturn {
 
 async function getAccessToken(params: URLSearchParams, additionHeaders: HeadersInit = {}): Promise<AccessTokenReturn> {
 	try {
+		onRedditApiUsage("/api/v1/access_token");
 		const response = await fetch("https://www.reddit.com/api/v1/access_token", {
 			method: "POST",
 			headers: {
@@ -63,6 +65,7 @@ export async function getImplicitGrant(clientId: string): Promise<AccessTokenRet
 
 export async function revokeToken(): Promise<boolean> {
 	try {
+		onRedditApiUsage("/api/v1/revoke_token");
 		const revokeRequests = await Promise.all(
 			[Users.current.d.auth.refreshToken, Users.current.d.auth.accessToken]
 				.map(token => fetch("https://www.reddit.com/api/v1/revoke_token", {

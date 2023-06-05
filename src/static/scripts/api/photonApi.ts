@@ -3,7 +3,7 @@
  */
 
 import Ph_Toast, {Level} from "../components/misc/toast/toast";
-import {Changelog} from "../types/misc";
+import {Changelog, RedditApiUsageRecord} from "../types/misc";
 import {getAuthHeader} from "./redditApi";
 import {RedgifsAuthData} from "../multiUser/globalData";
 
@@ -147,4 +147,18 @@ export async function proxyFetch(url: string): Promise<string> {
 export async function fetchRedgifsToken(): Promise<RedgifsAuthData> {
 	const r = await fetch("/api/requestRedgifsToken");
 	return await r.json();
+}
+
+export async function trackRedditApiUsage(records: RedditApiUsageRecord[]): Promise<boolean> {
+	try {
+		const r = await fetch("/data/redditApiUsage", {
+			method: "POST",
+			headers: { "content-type": "application/json" },
+			body: JSON.stringify(records)
+		});
+		const response = await r.text();
+		return response === "yep";
+	} catch (e) {
+		return false;
+	}
 }

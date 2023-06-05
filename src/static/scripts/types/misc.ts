@@ -166,3 +166,9 @@ export interface Changelog {
 		[header: string]: string[]
 	}
 }
+
+export interface RedditApiUsageRecord {
+	clientId: string;
+	timeMillisUtc: number;
+	endpoint: string
+}

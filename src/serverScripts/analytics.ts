@@ -26,6 +26,12 @@
  * - value: TEXT
  * - date: DATE default=curdate()
  * - data2: TEXT default=NULL
+ *
+ * Table redditApiUsage:
+ * - id: INT(11) AUTO_INCREMENT
+ * - clientId: VARCHAR(128)
+ * - timeMillisUtc DECIMAL(15,0)
+ * - category: VARCHAR(64)
  */
 
 import {config} from "dotenv";
@@ -245,6 +251,27 @@ async function trackGenericProperty(key: string, value: string, data2: string): 
 	}
 }
 
+type RedditApiUsageRecord = { clientId: string, timeMillisUtc: number, endpoint: string };
+async function trackRedditApiUsage(records: RedditApiUsageRecord[]): Promise<void> {
+	const connection = await getConnection();
+	if (connection === null)
+		return;
+
+	try {
+		await connection.query(`
+			INSERT INTO redditApiUsage
+				(clientId, timeMillisUtc, endpoint)
+				VALUES ${records
+					.map(record => `(${connection.escape(record.clientId)}, ${connection.escape(record.timeMillisUtc)}, ${connection.escape(record.endpoint)})`)
+					.join(",")
+				}
+		`);
+	}
+	finally {
+		await connection.release();
+	}
+}
+
 analyticsRouter.post("/event", RateLimit(analyticsRateLimitConfig), safeExcAsync(async (req, res) => {
 	if (env === "production"  && await isIpFromBot(req)) {
 		res.send("yep");
@@ -392,6 +419,31 @@ analyticsRouter.post("/genericProperty", safeExcAsync(async (req, res) => {
 	}
 	try {
 		await trackGenericProperty(key.toString(), value.toString(), data2.toString());
+		res.send("yep");
+	}
+	catch (e) {
+		res.send("nope").status(400);
+	}
+}));
+
+analyticsRouter.post("/redditApiUsage", safeExcAsync(async (req, res) => {
+	const records: RedditApiUsageRecord[] = req.body;
+	function isRecordValid(record: RedditApiUsageRecord) {
+		return (
+			typeof record.clientId === "string" &&
+			typeof record.timeMillisUtc === "number" &&
+			record.timeMillisUtc >= 0 &&
+			typeof record.endpoint === "string"
+		)
+	}
+	if (!(records instanceof Array) || !records.every(isRecordValid)) {
+		res.status(400).json({ error: "invalid parameters" });
+		return;
+	}
+	for (const record of records)
+		record.endpoint = record.endpoint.slice(0, 64);
+	try {
+		await trackRedditApiUsage(records);
 		res.send("yep");
 	}
 	catch (e) {
