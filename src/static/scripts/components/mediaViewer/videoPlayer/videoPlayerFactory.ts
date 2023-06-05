@@ -9,7 +9,6 @@ import {isJsonEqual} from "../../../utils/utils";
 import {youtubeDlUrl} from "../../../api/photonApi";
 import {getStreamableUrl} from "../../../api/streamableApi";
 import Ph_VideoPlayer from "./videoPlayer";
-import {getRedgifsMp4SrcFromUrl} from "../../../api/redgifsApi";
 
 /** Creates a video player from a reddit post (with a video link) */
 export function videoPlayerFromPostData({ postData, url }: { postData?: RedditPostData, url?: string }): Ph_VideoPlayer {
@@ -149,10 +148,22 @@ export function videoPlayerFromPostData({ postData, url }: { postData?: RedditPo
 		// 		.catch(() => videoOut.init(null));
 		// 	break;
 		case "media.giphy.com":
+		case "media0.giphy.com":
 		case "media1.giphy.com":
 		case "media2.giphy.com":
+		case "media3.giphy.com":
+		case "media4.giphy.com":	// idk if any of these actually exist lol
+		case "media5.giphy.com":
+		case "media6.giphy.com":
+		case "media7.giphy.com":
+		case "media8.giphy.com":
+		case "media9.giphy.com":
 		case "giphy.com":
-			const giphyId = url.match(/giphy\.com(\/\w+)?\/(\w+-)*(\w+)/i)[3];		// gfycat.com/<id> or gfycat.com/name-of-gif-<id> or gfycat.com/something/<id> --> <id>
+			let giphyId: string;
+			if (url.includes("/media/v1."))
+				giphyId = url.match(/\/media\/v1\.[^/]+\/(\w+)/i)[1];				// gfycat.com/media/v1.something/<id> --> <id>
+			else
+				giphyId = url.match(/giphy\.com(\/\w+)?\/(\w+-)*(\w+)/i)[3];		// gfycat.com/<id> or gfycat.com/name-of-gif-<id> or gfycat.com/something/<id> --> <id>
 			videoOut.init(new Ph_SimpleVideo([
 				{ src: `https://i.giphy.com/media/${giphyId}/giphy.mp4`, 		type: "video/mp4", lowerQualityAlternative: false, label: "Original" },
 				{ src: `https://i.giphy.com/media/${giphyId}/giphy-preview.mp4`,type: "video/mp4", lowerQualityAlternative: true,  label: "Preview" },
