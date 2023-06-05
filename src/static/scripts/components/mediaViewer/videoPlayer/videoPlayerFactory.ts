@@ -175,7 +175,7 @@ export function videoPlayerFromPostData({ postData, url }: { postData?: RedditPo
 			}).catch(() => videoOut.init(null));
 			break;
 		default:
-			if (postData?.preview?.reddit_video_preview.dash_url) {
+			if (postData?.preview?.reddit_video_preview?.dash_url) {
 				const dashUrl = postData.preview.reddit_video_preview.dash_url;
 				redditDashVideo(dashUrl, videoOut, postData, dashUrl);
 			} else {
