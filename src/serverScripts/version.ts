@@ -1,6 +1,14 @@
-export const photonVersion = "1.1.20";		/// <change version script>
+export const photonVersion = "1.1.21";		/// <change version script>
 
 export const photonChangelog = {
+	"1.1.21": {
+		"New": [
+			"Added metrics for reddit API usage, due to upcoming API changes. For more information see reddit.com/r/redditdev/comments/13wsiks",
+		],
+		"Fixed": [
+			"Fixes for some giphy, imgur and postimg videos and images",
+		]
+	},
 	"1.1.20": {
 		"Fixed": [
 			"Fixes & improvements to pushshift comment loading (\"Load Archived Version\" button)",
