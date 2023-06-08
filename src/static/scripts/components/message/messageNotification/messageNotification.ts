@@ -94,10 +94,17 @@ export default class Ph_MessageNotification extends HTMLElement {
 }
 
 let messageCheckInterval = null;
+
+const forcedMinInterval = 1000 * 60 * 5; // 5 minutes, to reduce API costs
+function setMsgCheckingInterval() {
+	const ms = Math.min(Users.global.d.photonSettings.messageCheckIntervalMs, forcedMinInterval);
+	return setInterval(Ph_MessageNotification.checkForNewMessages, ms);
+}
+
 ensurePageLoaded().then( () => {
 	Ph_MessageNotification.checkForNewMessages();
 	if (Users.global.d.photonSettings.messageCheckIntervalMs > 0)
-		messageCheckInterval = setInterval(Ph_MessageNotification.checkForNewMessages, Users.global.d.photonSettings.messageCheckIntervalMs);
+		messageCheckInterval = setMsgCheckingInterval();
 });
 window.addEventListener(PhEvents.settingsChanged, (e: CustomEvent) => {
 	const changed = e.detail as PhotonSettings;
@@ -106,7 +113,7 @@ window.addEventListener(PhEvents.settingsChanged, (e: CustomEvent) => {
 	if (messageCheckInterval !== null)
 		clearInterval(messageCheckInterval);
 	if (changed.messageCheckIntervalMs > 0)
-		messageCheckInterval = setInterval(Ph_MessageNotification.checkForNewMessages, Users.global.d.photonSettings.messageCheckIntervalMs);
+		messageCheckInterval = setMsgCheckingInterval();
 });
 
 customElements.define("ph-message-notification", Ph_MessageNotification);

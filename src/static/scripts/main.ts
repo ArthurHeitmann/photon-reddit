@@ -25,6 +25,7 @@ import {photonWebVersion} from "./utils/version";
 import {setWaitingServiceWorker} from "./utils/versionManagement";
 import VersionNumber from "./utils/versionNumber";
 import Ph_MobileInfoPopup from "./components/photon/mobileInfoPopup/mobileInfoPopup";
+import {doVersionMigration} from "./utils/versionMigration";
 
 async function startPhotonReddit() {
 	try {
@@ -68,7 +69,7 @@ async function init(): Promise<void> {
 	removeLoadingIcon();
 	loadPosts();
 
-	await checkForNewVersion();
+	await versionCheck();
 	disableSpaceBarScroll();
 	checkMobileInfoPopup();
 
@@ -110,9 +111,10 @@ function loadPosts() {
 		pushLinkToHistorySep(location.pathname + location.hash, location.search || "");
 }
 
-async function checkForNewVersion() {
+async function versionCheck() {
 	let lastVersion = new VersionNumber(Users.global.d.photonVersion);
 	const currentVersion = new VersionNumber(photonWebVersion);
+	await doVersionMigration(lastVersion, currentVersion);
 	if (currentVersion.equals(lastVersion))
 		return;
 	else if (currentVersion.greaterThan(lastVersion)) {

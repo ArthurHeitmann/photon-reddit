@@ -24,4 +24,20 @@ export default class VersionNumber {
 			|| this.major === version.major && this.minor === version.minor && this.patch > version.patch
 		);
 	}
+
+	lessThan(version: VersionNumber) {
+		return (
+			this.major < version.major
+			|| this.major === version.major && this.minor < version.minor
+			|| this.major === version.major && this.minor === version.minor && this.patch < version.patch
+		);
+	}
+
+	greaterThanEqual(version: VersionNumber) {
+		return this.greaterThan(version) || this.equals(version);
+	}
+
+	lessThanEqual(version: VersionNumber) {
+		return this.lessThan(version) || this.equals(version);
+	}
 }

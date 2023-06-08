@@ -103,7 +103,7 @@ export const defaultSettings: PhotonSettings = {
 	enableFab: true,
 	isIncognitoEnabled: false,
 	tooltipsVisible: true,
-	messageCheckIntervalMs: 30 * 1000,
+	messageCheckIntervalMs: 0,
 	userShortCacheTTLMs: 1000 * 60 * 5,
 	displayRedditEmojis: true,
 	emptyAreaClickGoesBack: true,
@@ -258,9 +258,9 @@ export const getSettingsSections = (): SettingsSection[] => [
 			new TimeSetting({ allowRange: [1, Number.MAX_SAFE_INTEGER] }, "clearFeedCacheAfterMs", "Subreddit info cache duration", "", SettingsApi.Photon),
 			new TimeSetting({ allowRange: [1, Number.MAX_SAFE_INTEGER] }, "userShortCacheTTLMs", "Short Cache Duration", "For your subscriptions", SettingsApi.Photon),
 			new TimeSetting({
-				allowRange: [1000 * 10, Number.MAX_SAFE_INTEGER],
+				allowRange: [1000 * 60 * 5, Number.MAX_SAFE_INTEGER],
 				allowList: [0]
-			}, "messageCheckIntervalMs", "New messages checking interval", "Use \"0\" to disable. Min intervall is 10s. Message polling is only done while website is open.", SettingsApi.Photon),
+			}, "messageCheckIntervalMs", "New messages checking interval", "Use \"0\" to disable. Min interval is 5 minutes. Message polling is only done while website is open.", SettingsApi.Photon),
 			new HTMLElementSetting(makeElement("div", null, [
 				makeElement("button", {
 					class: "button",
