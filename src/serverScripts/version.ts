@@ -1,6 +1,13 @@
-export const photonVersion = "1.1.21";		/// <change version script>
+export const photonVersion = "1.1.22";		/// <change version script>
 
 export const photonChangelog = {
+	"1.1.22": {
+		"New": [
+			"Disabled checking for new messages. You can re-enable it in the settings (Other > New messages checking interval).",
+			"Increased shortest message checking interval from 30s to 5m.",
+			"These changes are in anticipation of the upcoming reddit API pricing changes."
+		],
+	},
 	"1.1.21": {
 		"New": [
 			"Added metrics for reddit API usage, due to upcoming API changes. For more information see reddit.com/r/redditdev/comments/13wsiks",
