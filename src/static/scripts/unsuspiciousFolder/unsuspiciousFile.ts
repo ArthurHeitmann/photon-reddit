@@ -31,6 +31,7 @@ import {PhEvents} from "../types/Events";
 import {supportsIndexedDB, supportsServiceWorkers} from "../utils/browserFeatures";
 import {extractPath, isJsonEqual, randomString} from "../utils/utils";
 import {defaultSettings} from "../components/global/photonSettings/settingsConfig";
+import {photonWebVersion} from "../utils/version";
 
 window.addEventListener(PhEvents.viewChange, (e: CustomEvent) => {
 	if (location.hostname === "localhost")
@@ -114,6 +115,7 @@ async function genericReport() {
 			.filter(([key, value]) => !isJsonEqual(defaultSettings[key], value as any))
 			.map(([key]) => key);
 	const numberOfCustomSettings = customSettings.length;
+	const version = photonWebVersion;
 
 	const randId = randomString(16);
 	const reportSuccess = await Promise.all([
@@ -123,6 +125,7 @@ async function genericReport() {
 		trackGenericProperty("isHeaderPinned", isHeaderPinned, randId),
 		trackGenericProperty("customSettings", customSettings.join(","), randId),
 		trackGenericProperty("numberOfCustomSettings", numberOfCustomSettings, randId),
+		trackGenericProperty("version", version, randId),
 	]);
 	if (!reportSuccess.every(r => r))
 		console.warn("Failed to report some generic properties");
