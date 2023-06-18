@@ -4,6 +4,7 @@ export const photonChangelog = {
 	"1.1.23": {
 		"Fixed": [
 			"Fixed missing audio for new v.redd.it videos",
+			"Changed subreddit in introduction sequence from r/eyebleach to r/Rabbits, due to the current blackouts",
 		],
 		"Note": [
 			"According to my data, the upcoming reddit API changes will not affect photon. The request count is below 100 requests per minute, which is the limit for the free tier.",

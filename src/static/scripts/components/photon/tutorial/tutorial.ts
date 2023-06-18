@@ -36,7 +36,7 @@ interface TutorialDescription {
 }
 
 const tutorialDescription: TutorialDescription = {
-	url: "/r/Eyebleach/top?t=day",
+	url: "/r/Rabbits/top?t=day",
 	steps: [
 		{
 			highlightElementSelector: null,
