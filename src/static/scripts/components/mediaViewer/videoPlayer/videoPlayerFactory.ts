@@ -245,7 +245,7 @@ function redditDashVideo(url: string, videoOut: Ph_VideoPlayer, postData?: Reddi
 	fetch(dashUrl).then(async r => {
 		const hlsXml = (new DOMParser()).parseFromString(await r.text(), "application/xml");
 
-		let videoUrlElements = hlsXml.querySelectorAll(`Representation[id^=video i]`);
+		let videoUrlElements = hlsXml.querySelectorAll(`Representation[id^=video i], AdaptationSet[contentType=video] Representation`);
 		const videoSources = Array.from(videoUrlElements)
 			.sort((a, b) => {
 				const bandwidthA = parseInt(a.getAttribute("bandwidth"));
@@ -277,7 +277,7 @@ function redditDashVideo(url: string, videoOut: Ph_VideoPlayer, postData?: Reddi
 			return;
 		}
 
-		const audioUrlElement = hlsXml.querySelector(`Representation[id^=audio i] BaseURL`);
+		const audioUrlElement = hlsXml.querySelector(`Representation[id^=audio i] BaseURL, AdaptationSet[contentType=audio] BaseURL`);
 		const audioSrc = audioUrlElement
 			? [{ src: `${vReddItUrl}/${audioUrlElement.textContent}`, type: "audio/mp4" }]
 			: []
