@@ -1,6 +1,14 @@
-export const photonVersion = "1.1.22";		/// <change version script>
+export const photonVersion = "1.1.23";		/// <change version script>
 
 export const photonChangelog = {
+	"1.1.23": {
+		"Fixed": [
+			"Fixed missing audio for new v.redd.it videos",
+		],
+		"Note": [
+			"According to my data, the upcoming reddit API changes will not affect photon. The request count is below 100 requests per minute, which is the limit for the free tier.",
+		],
+	},
 	"1.1.22": {
 		"New": [
 			"Disabled checking for new messages. You can re-enable it in the settings (Other > New messages checking interval).",
