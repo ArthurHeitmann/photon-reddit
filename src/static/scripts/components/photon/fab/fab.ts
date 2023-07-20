@@ -58,6 +58,9 @@ export default class Ph_Fab extends HTMLElement {
 				return;
 			this.setIsEnabled(changed.enableFab);
 		});
+
+		if (!Users.global.d.photonSettings.enableFab)
+			this.setIsEnabled(false);
 	}
 
 	addElement() {
