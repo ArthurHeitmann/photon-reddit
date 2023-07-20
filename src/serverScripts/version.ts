@@ -1,6 +1,12 @@
-export const photonVersion = "1.1.23";		/// <change version script>
+export const photonVersion = "1.1.24";		/// <change version script>
 
 export const photonChangelog = {
+	"1.1.24": {
+		"Fixed": [
+			"Fixed issue where hiding the FAB button would reset when reloading the page",
+			"API usage statistics now only track the endpoint type and not exact path",
+		],
+	},
 	"1.1.23": {
 		"Fixed": [
 			"Fixed missing audio for new v.redd.it videos",
