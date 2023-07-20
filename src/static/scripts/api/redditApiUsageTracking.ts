@@ -4,10 +4,8 @@ import {RedditApiUsageRecord} from "../types/misc";
 import {trackRedditApiUsage} from "./photonApi";
 
 export async function onRedditApiUsage(endpoint: string) {
-	// remove everything after 5th slash
-	const parts = endpoint.split("/");
-	if (parts.length > 5)
-		endpoint = parts.slice(0, 5).join("/");
+	
+	endpoint = generalizeEndpoint(endpoint);
 	const newRecord: RedditApiUsageRecord = {
 		clientId: Users.global.d.analytics.clientId,
 		timeMillisUtc: Date.now(),
@@ -27,3 +25,23 @@ async function sendTrackedUsages() {
 	]);
 }
 const sendTrackedUsageThrottled = throttle(sendTrackedUsages, 1000 * 5, {leading: false, trailing: true});
+
+function generalizeEndpoint(endpoint: string): string {
+	// remove duplicate slashes
+	endpoint = endpoint.replace(/\/+/g, "/");
+	// remove everything after 8th slash
+	const parts = endpoint.split("/");
+	if (parts.length > 8)
+		endpoint = parts.slice(0, 8).join("/");
+	// /r/[subreddit] -> /r/...
+	endpoint = endpoint.replace(/\/r\/[^/#?]+/g, "/r/[subreddit]");
+	// /u|user/[username] -> /user/...
+	endpoint = endpoint.replace(/\/u(ser)?\/[^/#?]+/g, "/user/[username]");
+	// /comments/[...] -> /comments/...
+	endpoint = endpoint.replace(/\/comments\/[^/#?]+/g, "/comments/[...]");
+	// /m/[multireddit] -> /m/...
+	endpoint = endpoint.replace(/\/m\/[^/#?]+/g, "/m/[multi]");
+	// /message/messages/[...] -> /message/messages/...
+	endpoint = endpoint.replace(/\/message\/messages\/[^/#?]+/g, "/message/messages/[message]");
+	return endpoint;
+}
