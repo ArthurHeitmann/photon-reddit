@@ -3,7 +3,7 @@ export const photonVersion = "1.1.25";		/// <change version script>
 export const photonChangelog = {
 	"1.1.25": {
 		"Fixed": [
-			"Fixed new type of reddit links (example /r/.../s/...",
+			"Fixed new type of reddit links (example /r/.../s/...)",
 		],
 	},
 	"1.1.24": {
