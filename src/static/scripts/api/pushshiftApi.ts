@@ -32,39 +32,46 @@ export async function getCommentRepliesFromPushshift(commentData: RedditCommentD
 	// 5. sort replies by score
 
 	// 1. get (almost) all comments, where: same link_id, after commentData.created_utc-1
-	const linkId = fromBase36(commentData.link_id.split("_")[1]);
-	const startTimeStamp = commentData.created_utc - 1;
+	// const linkId = fromBase36(commentData.link_id.split("_")[1]);
+	const linkId = commentData.link_id;
+	const parentId = commentData.id;
+	// const startTimeStamp = commentData.created_utc - 1;
 	let response: Response;
-	let data: PushshiftResponse;
+	// let data: PushshiftResponse;
+	let data: RedditCommentObj[];
 	try {
-		response = await fetch(`https://api.pushshift.io/reddit/search/comment?link_id=${linkId}&after=${startTimeStamp}&sort=created_utc&order=asc&limit=1000`);
-		data = await response.json() as PushshiftResponse;
+		// response = await fetch(`https://api.pushshift.io/reddit/search/comment?link_id=${linkId}&after=${startTimeStamp}&sort=created_utc&order=asc&limit=1000`);
+		// data = await response.json() as PushshiftResponse;
+		response = await fetch(`https://arctic-shift.photon-reddit.com/api/comments/tree?link_id=${linkId}&parent_id=${parentId}&limit=1000`);
+		data = await response.json() as RedditCommentObj[];
 	}
 	catch (e) {
 		console.error(e);
-		new Ph_Toast(Level.error, "Pushshift API error", { timeout: 3000, groupId: "pushshiftError" });
+		// new Ph_Toast(Level.error, "Pushshift API error", { timeout: 3000, groupId: "pushshiftError" });
+		new Ph_Toast(Level.error, "API error", { timeout: 3000, groupId: "pushshiftError" });
 		return [];
 	}
 	
 	// 2. turn data into reddit like comment data
-	let comments = data.data.map(comment => pushshiftToRedditComment(comment as PushshiftCommentData));
-	comments = comments.filter(comment => !skipReplyIds.includes(comment.id));
+	// let comments = data.data.map(comment => pushshiftToRedditComment(comment as PushshiftCommentData));
+	let comments = data.filter(comment => !skipReplyIds.includes(comment.data.id));
 	// add pushshift info to body
 	for (const comment of comments) {
-		if (isCommentDeleted(comment))
-			comment.body += " (not found)";
+		const commentData = comment.data as RedditCommentData;
+		if (isCommentDeleted(commentData))
+			commentData.body += " (not found)";
 		else
-			comment.body += "\n\n*^(Loaded from Pushshift)*";
-		comment.body_html = `<div class="md">${parseMarkdown(comment.body)}</div>`;
+			commentData.body += "\n\n*^(Loaded from Pushshift)*";
+		commentData.body_html = `<div class="md">${parseMarkdown(commentData.body)}</div>`;
 	}
 
 	// 3. recreate comment tree (from flat list)
 	// remove original comment from list
-	comments = comments.filter(comment => comment.id !== commentData.id);
-	const commentObjects = comments.map(comment => (<RedditCommentObj>{
-		kind: "t1",
-		data: comment
-	}));
+	comments = comments.filter(comment => comment.data.id !== commentData.id);
+	// const commentObjects = comments.map(comment => (<RedditCommentObj>{
+	// 	kind: "t1",
+	// 	data: comment
+	// }));
 	// add original comment as first child
 	commentData = deepClone(commentData);
 	if (commentData.replies && commentData.replies.data.children.length > 0)
@@ -100,22 +107,25 @@ export async function getCommentRepliesFromPushshift(commentData: RedditCommentD
 export async function getPostFromPushshift(id: string): Promise<RedditPostData> {
 	let response: Response;
 	try {
-		response = await fetch(`https://api.pushshift.io/reddit/search/submission?ids=${id}`);
-		const data = await response.json() as PushshiftResponse;
-		if (!data.data[0])
+		// response = await fetch(`https://api.pushshift.io/reddit/search/submission?ids=${id}`);
+		// const data = await response.json() as PushshiftResponse;
+		response = await fetch(`https://arctic-shift.photon-reddit.com/api/posts?ids=${id}`);
+		const data = await response.json() as RedditPostData[];
+		if (!data[0])
 			return null;
-		const postData = pushshiftPostToRedditPost(data.data[0] as PushshiftPostData);
+		// const postData = pushshiftPostToRedditPost(data.data[0] as PushshiftPostData);
+		const postData = data[0] as RedditPostData;
 		if (["[deleted]", "[removed]"].includes(postData.selftext))
 			postData.selftext += "(not found)";
 		else
-			postData.selftext += "\n\n*^(Loaded from Pushshift)*";
+			postData.selftext += "\n\n*^(Archived version)*";
 		postData.selftext_html = `<div class="md">${parseMarkdown(postData.selftext)}</div>`;
 		return postData;
 	} catch (e) {
 		console.error(e);
 		new Ph_Toast(
 			Level.error,
-			response?.status === 429 ? "Too many requests" : "Pushshift API error",
+			response?.status === 429 ? "Too many requests" : "API error",
 			{ timeout: 3000, groupId: "pushshiftError" }
 		);
 		return null;
