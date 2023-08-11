@@ -1,16 +1,16 @@
 import {throttle} from "../utils/utils";
 import Users from "../multiUser/userManagement";
 import {RedditApiUsageRecord} from "../types/misc";
-import {trackRedditApiUsage} from "./photonApi";
+import {trackApiUsage} from "./photonApi";
 
-export async function onRedditApiUsage(endpoint: string) {
-	
+export async function onApiUsage(endpoint: string, api: string) {
 	endpoint = generalizeEndpoint(endpoint);
 	const newRecord: RedditApiUsageRecord = {
 		clientId: Users.global.d.analytics.clientId,
 		timeMillisUtc: Date.now(),
 		endpoint,
-	}
+		api,
+	};
 	let pendingUsages = Users.global.d.pendingRedditApiUsages;
 	pendingUsages = [...pendingUsages, newRecord];
 	await Users.global.set(["pendingRedditApiUsages"], pendingUsages);
@@ -20,7 +20,7 @@ export async function onRedditApiUsage(endpoint: string) {
 async function sendTrackedUsages() {
 	let pendingUsages = Users.global.d.pendingRedditApiUsages;
 	await Promise.all([
-		trackRedditApiUsage(pendingUsages),
+		trackApiUsage(pendingUsages),
 		Users.global.set(["pendingRedditApiUsages"], []),
 	]);
 }
@@ -38,7 +38,7 @@ function generalizeEndpoint(endpoint: string): string {
 	// /u|user/[username] -> /user/...
 	endpoint = endpoint.replace(/\/u(ser)?\/[^/#?]+/g, "/user/[username]");
 	// /comments/[...] -> /comments/...
-	endpoint = endpoint.replace(/\/comments\/[^/#?]+/g, "/comments/[...]");
+	endpoint = endpoint.replace(/\/comments\/.+/g, "/comments/[...]");
 	// /m/[multireddit] -> /m/...
 	endpoint = endpoint.replace(/\/m\/[^/#?]+/g, "/m/[multi]");
 	// /message/messages/[...] -> /message/messages/...

@@ -170,5 +170,6 @@ export interface Changelog {
 export interface RedditApiUsageRecord {
 	clientId: string;
 	timeMillisUtc: number;
-	endpoint: string
+	endpoint: string;
+	api: string;
 }

@@ -19,7 +19,7 @@ import {
 } from "../types/redditTypes";
 import {isObjectEmpty, randomString, splitPathQuery, throttle} from "../utils/utils";
 import {SortPostsOrder, UserSection} from "../types/misc";
-import {onRedditApiUsage} from "./redditApiUsageTracking";
+import {onApiUsage} from "./redditApiUsageTracking";
 
 /**
  * Use this to make requests to reddit
@@ -42,7 +42,7 @@ export async function redditApiRequest(pathAndQuery, params: string[][] | any, r
 async function oauth2Request(pathAndQuery, params: string[][] | any, options: RequestInit, attempt = 0) {
 	pathAndQuery = fixUrl(pathAndQuery);
 	const [path, query] = splitPathQuery(pathAndQuery);
-	onRedditApiUsage(path);
+	onApiUsage(path, "reddit");
 
 	let fetchOptions: RequestInit = {
 		...options,

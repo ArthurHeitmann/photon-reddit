@@ -251,7 +251,7 @@ async function trackGenericProperty(key: string, value: string, data2: string): 
 	}
 }
 
-type RedditApiUsageRecord = { clientId: string, timeMillisUtc: number, endpoint: string };
+type RedditApiUsageRecord = { clientId: string, timeMillisUtc: number, endpoint: string, api?: string };
 async function trackRedditApiUsage(records: RedditApiUsageRecord[]): Promise<void> {
 	const connection = await getConnection();
 	if (connection === null)
@@ -260,9 +260,9 @@ async function trackRedditApiUsage(records: RedditApiUsageRecord[]): Promise<voi
 	try {
 		await connection.query(`
 			INSERT INTO redditApiUsage
-				(clientId, timeMillisUtc, endpoint)
+				(clientId, timeMillisUtc, endpoint, api)
 				VALUES ${records
-					.map(record => `(${connection.escape(record.clientId)}, ${connection.escape(record.timeMillisUtc)}, ${connection.escape(record.endpoint)})`)
+					.map(record => `(${connection.escape(record.clientId)}, ${connection.escape(record.timeMillisUtc)}, ${connection.escape(record.endpoint)}, ${connection.escape(record.api)})`)
 					.join(",")
 				}
 		`);
@@ -440,8 +440,10 @@ analyticsRouter.post("/redditApiUsage", safeExcAsync(async (req, res) => {
 		res.status(400).json({ error: "invalid parameters" });
 		return;
 	}
-	for (const record of records)
+	for (const record of records) {
 		record.endpoint = record.endpoint.slice(0, 64);
+		record.api ??= null;
+	}
 	try {
 		await trackRedditApiUsage(records);
 		res.send("yep");

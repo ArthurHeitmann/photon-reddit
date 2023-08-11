@@ -6,11 +6,13 @@ import Ph_Toast, {Level} from "../components/misc/toast/toast";
 import {Changelog, RedditApiUsageRecord} from "../types/misc";
 import {getAuthHeader} from "./redditApi";
 import {RedgifsAuthData} from "../multiUser/globalData";
+import { onApiUsage } from "./redditApiUsageTracking";
 
 /** */
 export async function youtubeDlUrl(url): Promise<{ url?: string, error?: string }> {
 	let res: Response;
 	try {
+		onApiUsage("/api/youtube-dl", "photon");
 		res = await fetch(`/api/youtube-dl?url=${encodeURIComponent(url)}`);
 	} catch (e) {
 		console.error("error fetching youtube-dl url", e);
@@ -96,6 +98,7 @@ export async function trackGenericProperty(key: string, value: string | number |
 export async function getRandomSubreddit(isNsfw: boolean = false): Promise<string> {
 	let subReq: Response;
 	try {
+		onApiUsage("/api/randomSubreddit", "photon");
 		subReq = await fetch(`/api/randomSubreddit?isNsfw=${isNsfw ? "true" : "false"}`, {
 			headers: { Authorization: getAuthHeader() }
 		});
@@ -113,6 +116,7 @@ export async function getRandomSubreddit(isNsfw: boolean = false): Promise<strin
 export async function getRandomSubredditPostUrl(subreddit: string): Promise<string> {
 	let postReq: Response;
 	try {
+		onApiUsage("/api/randomSubredditPostUrl", "photon");
 		postReq = await fetch(`/api/randomSubredditPostUrl?subreddit=${subreddit}`, {
 			headers: { Authorization: getAuthHeader() }
 		});
@@ -129,6 +133,7 @@ export async function getRandomSubredditPostUrl(subreddit: string): Promise<stri
 
 export async function isRedditApiUp(): Promise<boolean> {
 	try {
+		onApiUsage("/api/isRedditApiAvailable", "photon");
 		const r = await fetch("/api/isRedditApiAvailable");
 		const t = await r.text();
 		return t === "true";
@@ -139,6 +144,7 @@ export async function isRedditApiUp(): Promise<boolean> {
 }
 
 export async function proxyFetch(url: string): Promise<string> {
+	onApiUsage("/api/proxy", "photon");
 	const r = await fetch(`/api/proxy?url=${encodeURIComponent(url)}`);
 	const data = await r.json();
 	return data["text"];
@@ -149,7 +155,7 @@ export async function fetchRedgifsToken(): Promise<RedgifsAuthData> {
 	return await r.json();
 }
 
-export async function trackRedditApiUsage(records: RedditApiUsageRecord[]): Promise<boolean> {
+export async function trackApiUsage(records: RedditApiUsageRecord[]): Promise<boolean> {
 	try {
 		const r = await fetch("/data/redditApiUsage", {
 			method: "POST",
@@ -164,6 +170,7 @@ export async function trackRedditApiUsage(records: RedditApiUsageRecord[]): Prom
 }
 
 export async function resolveRedditUrl(url: string): Promise<string> {
+	onApiUsage("/api/resolveRedditUrl", "photon");
 	const r = await fetch(`/api/resolveRedditUrl?url=${encodeURIComponent(url)}`);
 	const data = await r.json();
 	if (data["error"] || !data["path"]) {
