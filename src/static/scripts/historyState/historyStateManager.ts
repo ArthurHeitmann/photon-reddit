@@ -21,6 +21,7 @@ import {$id} from "../utils/htmlStatics";
 import {deepClone, exitFullscreen, extractHash, isFullscreen, makeElement, splitPathQuery} from "../utils/utils";
 import ViewsStack from "./viewsStack";
 import Users from "../multiUser/userManagement";
+import { resolveRedditUrl } from "../api/photonApi";
 
 ViewsStack.setNextIsReplace();
 
@@ -111,6 +112,13 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 	if (postHintState === PostHintState.postAndComments) {
 		ViewsStack.setCurrentStateTitle(`${postHint.post.data.title} - Photon`);
 		return;
+	}
+	
+	const asyncModifiedPath = await await modifyUrlAsync(path);
+	if (path != asyncModifiedPath) {
+		path = asyncModifiedPath;
+		historyState.url = asyncModifiedPath + query;
+		ViewsStack.changeCurrentUrl(asyncModifiedPath + query);
 	}
 
 	// convert query string to key value string[][]
@@ -228,6 +236,13 @@ function handleSpecialPaths(path: string, query: string[][], stateLoader: Ph_Vie
 function modifyUrl(url: string): string {
 	if (Users.current.d.auth.isLoggedIn)
 		url = url.replace(/\/(u|user)\/me(?=[/#?]|$)/, `/$1/${Users.current.name}`);
+
+	return url;
+}
+
+async function modifyUrlAsync(url: string): Promise<string> {
+	if (/^\/r\/[^/#?]+\/s\//.test(url))
+		url = await resolveRedditUrl(url);
 
 	return url;
 }

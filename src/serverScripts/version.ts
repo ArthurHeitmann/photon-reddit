@@ -1,6 +1,11 @@
 export const photonVersion = "1.1.24";		/// <change version script>
 
 export const photonChangelog = {
+	"1.1.25": {
+		"Fixed": [
+			"Fixed new type of reddit links (example /r/.../s/...",
+		],
+	},
 	"1.1.24": {
 		"Fixed": [
 			"Fixed issue where hiding the FAB button would reset when reloading the page",

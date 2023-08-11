@@ -162,3 +162,13 @@ export async function trackRedditApiUsage(records: RedditApiUsageRecord[]): Prom
 		return false;
 	}
 }
+
+export async function resolveRedditUrl(url: string): Promise<string> {
+	const r = await fetch(`/api/resolveRedditUrl?url=${encodeURIComponent(url)}`);
+	const data = await r.json();
+	if (data["error"] || !data["path"]) {
+		new Ph_Toast(Level.warning, `Couldn't resolve reddit url (${data["error"]})`, { groupId: "reddit url resolver" });
+		return url;
+	}
+	return data["path"];
+}

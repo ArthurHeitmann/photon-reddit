@@ -132,7 +132,7 @@ photonApiRouter.get("/proxy", RateLimit(proxyRateLimitConfig), safeExcAsync(asyn
 	catch {
 		res.status(400).json({ error: "¯\\_(ツ)_/¯" });
 	}
-}))
+}));
 
 photonApiRouter.get("/requestRedgifsToken", RateLimit(tokenRequestRateLimitConfig), safeExcAsync(async (req, res) => {
 	const clientId = process.env.redGifs_ClientId;
@@ -164,4 +164,44 @@ photonApiRouter.get("/requestRedgifsToken", RateLimit(tokenRequestRateLimitConfi
 		token: json["access_token"],
 		expiration: Date.now() + json["expires_in"] ?? 60*60*24 * 1000 - 60*1000
 	});
+}));
+
+photonApiRouter.get("/resolveRedditUrl", RateLimit(tokenRequestRateLimitConfig), safeExcAsync(async (req, res) => {
+	let url = req.query["url"].toString();
+	if (!url) {
+		res.status(400).json({ error: "¯\\_(ツ)_/¯" });
+		return;
+	}
+	if (url.startsWith("https://reddit.com/"))
+	url = url.replace("https://reddit.com/", "https://www.reddit.com/");
+	if (url.startsWith("/"))
+		url = "https://www.reddit.com" + url;
+	
+	let response;
+	let isRedirect = false;
+	const supportedRedditUrl = /^https:\/\/(\w+\.)?reddit.com\/r\/[^/#?]+\/comments\/[0-9a-zA-Z]+[$?#/]/;
+	do {
+		response = await fetch(url, {
+			redirect: "manual",
+		});
+		let newUrl = response.headers.get("location");
+		if (!newUrl)
+			break;
+		if (!newUrl.startsWith("http"))
+			newUrl = new URL(newUrl, response.url).href;
+		url = newUrl;
+		isRedirect = response.status >= 300 && response.status < 400;
+	}
+	while (isRedirect && !supportedRedditUrl.test(url));
+	
+	if (!supportedRedditUrl.test(url)) {
+		res.status(400).json({ error: "Failed to resolve url" });
+		return;
+	}
+	const urlObj = new URL(url);
+	urlObj.search = "";
+	urlObj.hash = "";
+	url = urlObj.toString();
+	
+	res.json({ url, path: urlObj.pathname });
 }));
