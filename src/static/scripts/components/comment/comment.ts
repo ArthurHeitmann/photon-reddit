@@ -8,7 +8,7 @@ import {
 	voteDirectionFromLikes
 } from "../../api/redditApi";
 import {PhEvents} from "../../types/Events";
-import {RedditCommentData, RedditCommentObj, RedditMessageObj, RedditMoreCommentsObj} from "../../types/redditTypes";
+import {RedditCommentData, RedditCommentObj, RedditListingObj, RedditMessageObj, RedditMoreCommentsObj} from "../../types/redditTypes";
 import {$css, emojiFlagsToImages} from "../../utils/htmlStatics";
 import {addRedditEmojis, elementWithClassInTree, linksToSpa} from "../../utils/htmlStuff";
 import {
@@ -35,7 +35,7 @@ import Users from "../../multiUser/userManagement";
 import Ph_Post from "../post/post";
 import Ph_PhotonSettings from "../global/photonSettings/photonSettings";
 import {PhotonSettings} from "../global/photonSettings/settingsConfig";
-import {getCommentFromPushshift, getCommentRepliesFromPushshift} from "../../api/pushshiftApi";
+import {getCommentTreeFromArchive} from "../../api/redditArchiveApi";
 
 /**
  * A comment that has been posted under a post
@@ -59,6 +59,7 @@ export default class Ph_Comment extends Ph_Readable {
 	postFullName: string;
 	bodyMarkdown: string;
 	editForm: Ph_MarkdownForm;
+	parentPost: Ph_Post|undefined;
 
 	/**
 	 * @param commentData Data returned by the reddit API
@@ -83,6 +84,7 @@ export default class Ph_Comment extends Ph_Readable {
 		this.data = commentData.data as RedditCommentData;
 		this.username = (commentData.data as RedditCommentData)?.author || "";
 		this.isPinned = commentData.data["stickied"];
+		this.parentPost = post;
 
 		// this is not a comment, this is a load more comments button
 		if (commentData.kind === "more") {
@@ -241,7 +243,7 @@ export default class Ph_Comment extends Ph_Readable {
 			]),
 			makeElement("div", { class: "content" }, commentData.data.body_html, true),
 			isCommentDeleted(commentData.data as RedditCommentData) &&
-				makeElement("button", { class: "loadPushshiftBtn", onclick: this.loadPushshiftVersion.bind(this) }, "Load Archived Version"),
+				makeElement("button", { class: "loadPushshiftBtn", onclick: this.loadArchivedVersion.bind(this) }, "Load Archived Version"),
 		]);
 
 		this.setVotesState(this.currentVoteDirection);
@@ -474,24 +476,18 @@ export default class Ph_Comment extends Ph_Readable {
 		settings.setSettingTo("userBlacklist", newList);
 	}
 
-	async loadPushshiftVersion() {
+	async loadArchivedVersion() {
 		const loadBtn = this.$class("loadPushshiftBtn")[0] as HTMLButtonElement;
 		loadBtn.disabled = true;
 		loadBtn.classList.add("loading");
 
 		const currentReplies = this.data.replies?.data?.children ?? [];
-		const commentsIdsToKeep = currentReplies
-			.filter((comment: RedditCommentObj | RedditMoreCommentsObj) => comment.kind !== "more")
-			.map(c => c.data.id);
 		let commentData: RedditCommentData;
-		let newReplies: RedditCommentObj[];
+		let newReplies: (RedditCommentObj|RedditMoreCommentsObj)[];
 		try {
-			const resp = await Promise.all([
-				getCommentFromPushshift(this.data),
-				getCommentRepliesFromPushshift(this.data, commentsIdsToKeep)
-			]);
-			commentData = resp[0];
-			newReplies = resp[1];
+			const resp = await getCommentTreeFromArchive(this.data);
+			commentData = resp;
+			newReplies = (resp.replies as RedditListingObj<RedditCommentObj|RedditMoreCommentsObj>)?.data?.children ?? [];
 		} catch (e) {
 			console.error(e);
 		}
@@ -499,7 +495,7 @@ export default class Ph_Comment extends Ph_Readable {
 		loadBtn.disabled = false;
 		loadBtn.classList.remove("loading");
 		if (!commentData || !newReplies) {
-			new Ph_Toast(Level.warning, "Couldn't load comment. Maybe pushshift is having problems");
+			new Ph_Toast(Level.warning, "Couldn't load comment. Maybe the archive server is having problems");
 			return;
 		}
 		loadBtn.remove();
@@ -512,10 +508,16 @@ export default class Ph_Comment extends Ph_Readable {
 		userLink.$tag("span")[0].textContent = `u/${commentData.author}`;
 
 		// update replies
+		const commentsIdsToKeep = currentReplies
+			.filter(comment => comment.kind !== "more" && !isCommentDeleted(comment.data as RedditCommentData))
+			.map(c => c.data.id);
 		[...this.childComments.children]
 			.filter(c => c instanceof Ph_Comment && !commentsIdsToKeep.includes(c.data.id))
 			.forEach(c => c.remove());
-		this.childComments.append(...newReplies.map(comment => new Ph_Comment(comment, true, false)));
+		this.childComments.append(...newReplies
+			.filter(comment => !commentsIdsToKeep.includes(comment.data?.id))
+			.map(comment => new Ph_Comment(comment, true, false, this.parentPost))
+		);
 
 		emojiFlagsToImages(content);
 		addRedditEmojis(content, this.data);

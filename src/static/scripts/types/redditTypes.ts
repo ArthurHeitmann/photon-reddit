@@ -325,7 +325,7 @@ export interface RedditCommentData extends RedditApiData {
 	parent_id: string,
 	permalink: string,
 	removal_reason: any,
-	replies: RedditListingObj<RedditCommentObj>,
+	replies: RedditListingObj<RedditCommentObj|RedditMoreCommentsObj>,
 	report_reasons: any,
 	saved: boolean,
 	score_hidden: boolean,
