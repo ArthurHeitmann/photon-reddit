@@ -819,3 +819,12 @@ export interface RedditPreferences {
 	"use_global_defaults"?: boolean,
 	"video_autoplay"?: boolean,
 }
+
+export interface RedditQuarantineError {
+	quarantine_requires_email_optin: boolean,
+	reason: string,
+	quarantine_message_html: string,
+	quarantine_message: string,
+	error: number,
+	message: string,
+}

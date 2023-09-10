@@ -1,0 +1,17 @@
+@use '../../../../style/vars';
+
+.quarantineOptIn {
+	display: flex;
+	flex-direction: column;
+	max-width: 30rem;
+	background: vars.$background-el1;
+	border-radius: vars.$border-radius;
+	border: 1px solid vars.$border-heavy-color;
+	padding: 1rem;
+
+	button {
+		align-self: flex-end;
+		border: 2px solid vars.$primary-contrast;
+		background: none;
+	}
+}

@@ -62,9 +62,10 @@ export default class Ph_CommentsViewStateLoader extends Ph_ViewState {
 		history.back();
 	}
 
-	protected async retryLoadingUrl() {
+	async retryLoadingUrl() {
 		this.errorElement?.remove();
 		this.errorElement = null;
+		this.innerHTML = "";
 
 		try {
 			const newData = await redditApiRequest(this.state.url, [], false);
