@@ -481,3 +481,12 @@ export async function updateUserPreferences(newPrefs: RedditPreferences) {
 		},
 	})
 }
+
+export async function quarantinedSubredditOptIn(subredditName: string) {
+	return await redditApiRequest(
+		`/api/quarantine_optin`,
+		[["sr_name", subredditName]],
+		true,
+		{ method: "POST" }
+	);
+}

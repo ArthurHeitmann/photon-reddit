@@ -22,6 +22,7 @@ import {deepClone, exitFullscreen, extractHash, isFullscreen, makeElement, split
 import ViewsStack from "./viewsStack";
 import Users from "../multiUser/userManagement";
 import { resolveRedditUrl } from "../api/photonApi";
+import Ph_QuarantineOptIn from "../components/misc/quarantineOptIn/quarantineOptIn";
 
 ViewsStack.setNextIsReplace();
 
@@ -137,7 +138,10 @@ export async function pushLinkToHistorySep(path: string, query: string = "?", pu
 	const requestData = await redditApiRequest(path, params, false);
 	if (requestData["error"]) {
 		// error message
-		if (requestData["message"] && requestData["reason"]) {
+		if (requestData["reason"] == "quarantined") {
+			stateLoader.finishWith(new Ph_QuarantineOptIn(requestData, path));
+		}
+		else if (requestData["message"] && requestData["reason"]) {
 			stateLoader.finishWith(makeElement("div", null, [
 				makeElement("p", null, requestData["message"]),
 				makeElement("p", null, requestData["reason"]),

@@ -49,6 +49,7 @@ export default class Ph_ViewStateLoader extends Ph_ViewState {
 	async retryLoadingUrl() {
 		this.errorElement?.remove();
 		this.errorElement = null;
+		this.innerHTML = "";
 		this.append(this.loadingIcon);
 		pushLinkToHistoryComb(this.state.url, PushType.reload);
 	}
