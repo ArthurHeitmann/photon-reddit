@@ -162,7 +162,7 @@ photonApiRouter.get("/requestRedgifsToken", RateLimit(tokenRequestRateLimitConfi
 
 	res.json({
 		token: json["access_token"],
-		expiration: Date.now() + json["expires_in"] ?? 60*60*24 * 1000 - 60*1000
+		expiration: Date.now() + (json["expires_in"] as number) ?? 60*60*24 * 1000 - 60*1000
 	});
 }));
 
@@ -179,7 +179,7 @@ photonApiRouter.get("/resolveRedditUrl", RateLimit(tokenRequestRateLimitConfig),
 	
 	let response;
 	let isRedirect = false;
-	const supportedRedditUrl = /^https:\/\/(\w+\.)?reddit.com\/r\/[^/#?]+\/comments\/[0-9a-zA-Z]+[$?#/]/;
+	const supportedRedditUrl = /^https:\/\/(\w+\.)?reddit.com\/(r|u|user)\/[^/#?]+\//;
 	do {
 		response = await fetch(url, {
 			redirect: "manual",

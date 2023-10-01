@@ -25,7 +25,7 @@ export function videoPlayerFromPostData({ postData, url }: { postData?: RedditPo
 		case "imgur.com":
 		case "m.imgur.com":
 		case "i.imgur.com":
-			const typelessUrl = url.match(/^https?:\/\/([im])?\.?imgur\.com\/\w+/i)[0];		// removes file ending usually all .gif or .gifv have an .mp4
+			const typelessUrl = url.match(/^https?:\/\/([im])?\.?imgur\.(?:com|io)\/\w+/i)[0];		// removes file ending usually all .gif or .gifv have an .mp4
 			videoOut.init(new Ph_SimpleVideo([
 				{src: typelessUrl + ".mp4", type: "video/mp4"},
 			]));

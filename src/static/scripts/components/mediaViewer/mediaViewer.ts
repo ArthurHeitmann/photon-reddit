@@ -220,7 +220,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	}
 
 	static isUrlImgur(url: string): boolean {
-		return /^(https?:\/\/)?(\w+\.)?imgur\.com\/\w+(\/\w+)?/i.test(url);
+		return /^(https?:\/\/)?(\w+\.)?imgur\.(com|io)\/\w+(\/\w+)?/i.test(url);
 	}
 
 	static isUrlOnWhiteList(url: string): boolean {

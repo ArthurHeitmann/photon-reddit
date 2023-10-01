@@ -383,7 +383,7 @@ export default class Ph_InfiniteScroller extends HTMLElement {
 		isReversed = false
 	) {
 		if (this.allItems.length <= itemIndex) {
-			console.warn(`Trying to change state for item that doesn't exist (${itemIndex}/${this.allItems.length})`);
+			// console.warn(`Trying to change state for item that doesn't exist (${itemIndex}/${this.allItems.length})`);
 			return;
 		}
 		const sameVisibility = this.allItems[itemIndex].visibility;

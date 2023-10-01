@@ -44,13 +44,13 @@ function makeContentData(data): ImgurContent {
 
 export async function getImgurContent(link: string): Promise<ImgurContent[]> {
 	let linkType: ImgurLinkType;
-	if (/imgur\.com\/(?:a|album|t\/[^/?#]+)\//.test(link))
+	if (/imgur\.(com|io)\/(?:a|album|t\/[^/?#]+)\//.test(link))
 		linkType = ImgurLinkType.album;
-	else if (/imgur\.com\/gallery\//.test(link))
+	else if (/imgur\.(com|io)\/gallery\//.test(link))
 		linkType = ImgurLinkType.gallery;
 	else
 		linkType = ImgurLinkType.image;
-	const id = link.match(/imgur\.com(?:\/(?:a|album|gallery|t\/[^/?#]+))?\/(\w+)/)[1];
+	const id = link.match(/imgur\.(?:com|io)(?:\/(?:a|album|gallery|t\/[^/?#]+))?\/(\w+)/)[1];
 
 	const options: RequestInit = {
 		headers: [

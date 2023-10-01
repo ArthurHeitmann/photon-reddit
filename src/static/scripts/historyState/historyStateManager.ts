@@ -241,7 +241,7 @@ function modifyUrl(url: string): string {
 }
 
 async function modifyUrlAsync(url: string): Promise<string> {
-	if (/^\/r\/[^/#?]+\/s\//.test(url))
+	if (/^\/(r|u|user)\/[^/#?]+\/s\//.test(url))
 		url = await resolveRedditUrl(url);
 
 	return url;
