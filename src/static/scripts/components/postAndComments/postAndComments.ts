@@ -73,8 +73,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 		if (!hasParams(arguments)) return;
 
 		// viewing comments --> mark post as seen
-		if (Users.global.d.photonSettings.markSeenPosts)
-			Users.global.markPostAsSeen(data[0].data.children[0].data.name);
+		Users.global.onPostViewed(data[0].data.children[0].data.name);
 
 		// write comment form
 		if (!(this.post.data.archived || this.post.data.locked)) {
@@ -174,6 +173,8 @@ export default class Ph_PostAndComments extends HTMLElement {
 			const newComments: PostCommentsListings = await redditApiRequest(newUrl, [], false);
 			if (newComments["error"])
 				throw `Sorting error (${JSON.stringify(newComments, null, 4)})`;
+
+			Users.global.onPostViewed(this.post.data.name);
 
 			this.comments.reset();
 			this.comments.addPendingComments(newComments[1].data.children);

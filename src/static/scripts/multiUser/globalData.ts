@@ -25,6 +25,8 @@ export default class GlobalUserData extends DataAccessor<_GlobalData> {
 		photonSettings: deepClone(defaultSettings),
 		photonVersion: photonWebVersion,
 		seenPosts: {},
+		postLastViewedAt: {},
+		postPreviouslyViewedAt: {},
 		pageBeforeLogin: null,
 		loginCode: null,
 		colorContrastCache: {},
@@ -72,6 +74,15 @@ export default class GlobalUserData extends DataAccessor<_GlobalData> {
 		await this.set(["seenPosts", postFullName], Math.floor(Date.now() / 1000));
 	}
 
+	async onPostViewed(postFullName: string) {
+		const lastViewedAt = this.d.postLastViewedAt[postFullName];
+		if (lastViewedAt)
+			await this.set(["postPreviouslyViewedAt", postFullName], lastViewedAt);
+		await this.set(["postLastViewedAt", postFullName], Math.floor(Date.now() / 1000));
+		if (this.d.photonSettings.markSeenPosts)
+			await this.markPostAsSeen(postFullName);
+	}
+
 	async unmarkPostAsSeen(postFullName: string) {
 		delete this.loaded.seenPosts[postFullName];
 		await this.set(["seenPosts"], this.loaded.seenPosts);
@@ -92,6 +103,8 @@ interface _GlobalData {
 	photonSettings: PhotonSettings;
 	/** All posts the user has seen/scrolled past */
 	seenPosts: SeenPosts;
+	postLastViewedAt: SeenPosts;
+	postPreviouslyViewedAt: SeenPosts;
 	/** Name of last active user (for all logged in users) */
 	lastActiveUser: string;
 	/** Information about analytics */

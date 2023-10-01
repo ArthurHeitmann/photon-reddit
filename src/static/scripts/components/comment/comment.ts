@@ -59,6 +59,7 @@ export default class Ph_Comment extends Ph_Readable {
 	postFullName: string;
 	bodyMarkdown: string;
 	editForm: Ph_MarkdownForm;
+	isNew: boolean;
 
 	/**
 	 * @param commentData Data returned by the reddit API
@@ -83,9 +84,11 @@ export default class Ph_Comment extends Ph_Readable {
 		this.data = commentData.data as RedditCommentData;
 		this.username = (commentData.data as RedditCommentData)?.author || "";
 		this.isPinned = commentData.data["stickied"];
+		this.postFullName = post?.data.name ?? commentData.data["link_id"];
 
 		// this is not a comment, this is a load more comments button
 		if (commentData.kind === "more") {
+			this.classList.add("loadMoreComments");
 			const loadMoreButton = makeElement("button", { class: "loadMoreButton button light" }) as HTMLButtonElement;
 			this.append(loadMoreButton);
 
@@ -96,7 +99,6 @@ export default class Ph_Comment extends Ph_Readable {
 			}
 			// load n more comments button
 			else {
-				this.postFullName = post.data.name;
 				const moreId = commentData.data.name;
 				const loadMoreBtnText: string = `Load more (${commentData.data.count})`;
 				loadMoreButton.innerText = loadMoreBtnText;
@@ -148,6 +150,10 @@ export default class Ph_Comment extends Ph_Readable {
 					.insertParentLink(`${post.data.permalink}${commentData.data.parent_id.slice(3)}?context=3`, "Load parent comment")
 				, 0)
 		}
+
+		this.isNew = this.checkIfIsNew();
+		if (this.isNew)
+			this.classList.add("new");
 
 		// HTML elements
 
@@ -264,7 +270,7 @@ export default class Ph_Comment extends Ph_Readable {
 			this.replyForm = new Ph_CommentForm(this.fullName, true);
 			this.replyForm.classList.add("replyForm")
 			this.replyForm.addEventListener(PhEvents.commentSubmitted, (e: CustomEvent) => {
-				this.replyForm.insertAdjacentElement("afterend",
+				this.replyForm.insertAdjacentElement("afterend",	// TODO next comment is new
 					new Ph_Comment(e.detail, true, false, post));
 				this.classList.remove("isReplying");
 			});
@@ -285,6 +291,14 @@ export default class Ph_Comment extends Ph_Readable {
 		this.appendChild(mainPart);
 
 		linksToSpa(this, true);
+	}
+	connectedCallback(): void {
+		super.connectedCallback();
+		if (Users.global.d.photonSettings.highlightNewComments) {
+			const prevSibling = this.previousElementSibling;
+			if (prevSibling instanceof Ph_Comment)
+				prevSibling.updateIsNewBorderFromNextSibling(this.isNew);
+		}
 	}
 
 	collapse() {
@@ -520,6 +534,25 @@ export default class Ph_Comment extends Ph_Readable {
 		emojiFlagsToImages(content);
 		addRedditEmojis(content, this.data);
 		linksToSpa(content, true);
+	}
+
+	private checkIfIsNew(): boolean {
+		if (!Users.global.d.photonSettings.highlightNewComments)
+			return false;
+		if (!this.postFullName)
+			return false;
+		const postPreviouslyViewerAt = Users.global.d.postPreviouslyViewedAt[this.postFullName];
+		if (!postPreviouslyViewerAt)
+			return false;
+		const commentCreated = this.data.created_utc;
+		const buffer = 20;
+		return commentCreated > postPreviouslyViewerAt - buffer;
+	}
+
+	updateIsNewBorderFromNextSibling(isNextNew: boolean) {
+		if (!this.isNew)
+			return;
+		this.classList.toggle("lastNew", !isNextNew);
 	}
 }
 

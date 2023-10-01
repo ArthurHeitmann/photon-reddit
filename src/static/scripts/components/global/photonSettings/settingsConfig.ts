@@ -84,6 +84,7 @@ export interface PhotonSettings {
 	feedDisplayType?: FeedDisplayType,
 	allowIframes?: AllowIframesDecision,
 	defaultFrontpageSort?: SortPostsOrder,
+	highlightNewComments?: boolean,
 }
 
 // default config
@@ -127,6 +128,7 @@ export const defaultSettings: PhotonSettings = {
 	feedDisplayType: FeedDisplayType.cards,
 	allowIframes: AllowIframesDecision.ask,
 	defaultFrontpageSort: SortPostsOrder.default,
+	highlightNewComments: true,
 };
 
 export const getSettingsSections = (): SettingsSection[] => [
@@ -153,6 +155,14 @@ export const getSettingsSections = (): SettingsSection[] => [
 				{ text: SortPostsOrderNamed[value], value: value }
 			)), "defaultFrontpageSort", "Default Frontpage sort order", "Only applies when logged in", SettingsApi.Photon),
 			new BooleanSetting("hideSubredditMiniIcon", "Hide small subreddit icon", "Enable to Hide a small icon next to the subreddit name", SettingsApi.Photon),
+		]
+	},
+	{
+		name: "Comments",
+		iconUrl: "/img/commentEmpty.svg",
+		settings: [
+			new BooleanSetting("autoCollapsePinnedComment", "Auto collapse pinned comment", "For example auto mod comments", SettingsApi.Photon),
+			new BooleanSetting("highlightNewComments", "Highlight new comments", "Highlight new comments since when revisiting a post", SettingsApi.Photon),
 		]
 	},
 	{
@@ -197,7 +207,6 @@ export const getSettingsSections = (): SettingsSection[] => [
 			new NumberSetting({ allowRange: [0, Number.MAX_SAFE_INTEGER] }, "imageLimitedHeight", "Max media height", "Set the maximum height for images/videos in % of screen height. Set height to \"0\" to disable height limits.", SettingsApi.Photon),
 			new NumberSetting({ allowRange: [10, 200], allowFloats: true }, "feedWidth", "Posts feed width", "Width of posts in your feed. (Also used for messages, comments, etc.) (Unit is absolute)", SettingsApi.Photon),
 			new NumberSetting({ allowRange: [10, 200], allowFloats: true }, "postAndCommentsWidth", "Comments view width", "Width when viewing a posts comments. (Unit is absolute)", SettingsApi.Photon),
-			new BooleanSetting("autoCollapsePinnedComment", "Auto collapse pinned comment", "For example auto mod comments", SettingsApi.Photon),
 			new BooleanSetting("displayRedditEmojis", "Display Reddit Emojis", "", SettingsApi.Photon),
 			new BooleanSetting("firstShowControlBar", "Initially show bottom bar", "Initially show or hide controls bar on the bottom of images and videos.", SettingsApi.Photon),
 			new BooleanSetting("enableFab", "Enable FAB", "Enable Floating Action Button (bottom left corner).", SettingsApi.Photon),

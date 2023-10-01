@@ -4,7 +4,7 @@ import Users from "../multiUser/userManagement";
  * Clears cached data in the storage occasionally
  */
 
-export function clearAllOldData() {
+export async function clearAllOldData() {
 	const now = Date.now();
 	let removedCachedInfos = 0;
 	for (const storageKey in Users.current.d.caches.feedInfos) {
@@ -41,6 +41,24 @@ export function clearAllOldData() {
 			++removedSeen;
 		}
 	}
+	// remove old viewed posts
+	const viewerPostsCutoff = now / 1000 - 60 * 60 * 24 * 30;		// 30 days
+	const lastViewedPosts = { ...Users.global.d.postLastViewedAt };
+	for (const [postName, lastViewedUtcS] of Object.entries(lastViewedPosts)) {
+		if (lastViewedUtcS > viewerPostsCutoff)
+			continue;
+		delete lastViewedPosts[postName];
+	}
+	if (Object.keys(lastViewedPosts).length !== Object.keys(Users.global.d.postLastViewedAt).length)
+		await Users.global.set(["postLastViewedAt"], lastViewedPosts);
+	const prevViewedPosts = { ...Users.global.d.postPreviouslyViewedAt };
+	for (const [postName, lastViewedUtcS] of Object.entries(prevViewedPosts)) {
+		if (lastViewedUtcS > viewerPostsCutoff)
+			continue;
+		delete prevViewedPosts[postName];
+	}
+	if (Object.keys(prevViewedPosts).length !== Object.keys(Users.global.d.postPreviouslyViewedAt).length)
+		await Users.global.set(["postPreviouslyViewedAt"], prevViewedPosts);
 
 	// remove data from old versions
 	localStorage.removeItem("browserFeaturesTracked");
