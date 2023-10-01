@@ -183,6 +183,8 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 			return true;
 		else if (postData.preview?.reddit_video_preview?.dash_url)
 			return true;
+		else if (postData.preview?.images[0]?.variants?.mp4?.source?.url)
+			return true;
 		return false
 	}
 

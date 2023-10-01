@@ -178,6 +178,10 @@ export function videoPlayerFromPostData({ postData, url }: { postData?: RedditPo
 			if (postData?.preview?.reddit_video_preview?.dash_url) {
 				const dashUrl = postData.preview.reddit_video_preview.dash_url;
 				redditDashVideo(dashUrl, videoOut, postData, dashUrl);
+			} else if (postData?.preview?.images[0]?.variants?.mp4?.source?.url) {
+				videoOut.init(new Ph_SimpleVideo([
+					{ src: postData.preview.images[0].variants.mp4.source.url, type: "video/mp4" }
+				]));		
 			} else {
 				// some other .mp4 or .gif file
 				defaultCase(url, videoOut);
