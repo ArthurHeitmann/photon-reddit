@@ -1,6 +1,17 @@
-export const photonVersion = "1.1.25";		/// <change version script>
+export const photonVersion = "1.2.0";		/// <change version script>
 
 export const photonChangelog = {
+	"1.2.0": {
+		"New": [
+			"When revisiting a post, new comments will be highlighted (can be disabled in the settings)",
+			"Added opt-in option to view quarantined subreddits",
+		],
+		"Fixed": [
+			"imgur.io links not working",
+			"Some gifs/videos showing up as images",
+			"Fixed new type of user reddit links (example /u/.../s/...)",
+		],
+	},
 	"1.1.25": {
 		"Fixed": [
 			"Fixed new type of reddit links (example /r/.../s/...)",
