@@ -1,10 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" height="300px" width="300px" fill="var(--svg-fill)" data-name="Layer 2" viewBox="0 0 48 48" x="0px" y="0px">
-	<style>
-		svg {
-			--svg-fill: #e4e4e4;
-		}
-	</style>
-	<title>video music player</title>
-	<path d="M11,38a2,2,0,0,1-2-2V12a2,2,0,0,1,1-1.74,2,2,0,0,1,2,0l20,12a2,2,0,0,1,0,3.42l-20,12A2,2,0,0,1,11,38Zm2-22.47V32.47L27.11,24Z" />
-	<path d="M37,38a2,2,0,0,1-2-2V12a2,2,0,0,1,4,0V36A2,2,0,0,1,37,38Z" />
-</svg>
+<svg height='300px' width='300px'  fill="#e4e4e4" xmlns="http://www.w3.org/2000/svg" data-name="Layer 2" viewBox="0 0 48 48" x="0px" y="0px"><title>video music player</title><path d="M11,38a2,2,0,0,1-2-2V12a2,2,0,0,1,1-1.74,2,2,0,0,1,2,0l20,12a2,2,0,0,1,0,3.42l-20,12A2,2,0,0,1,11,38Zm2-22.47V32.47L27.11,24Z"></path><path d="M37,38a2,2,0,0,1-2-2V12a2,2,0,0,1,4,0V36A2,2,0,0,1,37,38Z"></path></svg>
