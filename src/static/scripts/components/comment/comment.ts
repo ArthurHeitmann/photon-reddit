@@ -243,7 +243,7 @@ export default class Ph_Comment extends Ph_Readable {
 			]),
 			makeElement("div", { class: "content" }, commentData.data.body_html, true),
 			isCommentDeleted(commentData.data as RedditCommentData) &&
-				makeElement("button", { class: "loadPushshiftBtn", onclick: this.loadArchivedVersion.bind(this) }, "Load Archived Version"),
+				makeElement("button", { class: "loadArchivedBtn", onclick: this.loadArchivedVersion.bind(this) }, "Load Archived Version"),
 		]);
 
 		this.setVotesState(this.currentVoteDirection);
@@ -477,7 +477,7 @@ export default class Ph_Comment extends Ph_Readable {
 	}
 
 	async loadArchivedVersion() {
-		const loadBtn = this.$class("loadPushshiftBtn")[0] as HTMLButtonElement;
+		const loadBtn = this.$class("loadArchivedBtn")[0] as HTMLButtonElement;
 		loadBtn.disabled = true;
 		loadBtn.classList.add("loading");
 
@@ -495,7 +495,7 @@ export default class Ph_Comment extends Ph_Readable {
 		loadBtn.disabled = false;
 		loadBtn.classList.remove("loading");
 		if (!commentData || !newReplies) {
-			new Ph_Toast(Level.warning, "Couldn't load comment. Maybe the archive server is having problems");
+			new Ph_Toast(Level.warning, "Failed to load archived version");
 			return;
 		}
 		loadBtn.remove();

@@ -34,5 +34,5 @@ app.get("*", [RateLimit(basicRateLimitConfig), checkSslAndWww], safeExc((req, re
 }));
 
 app.listen(port, () => {
-	console.log(`Started app on port ${port}!`)
+	console.log(`Server running on http://localhost:${port}`)
 });
