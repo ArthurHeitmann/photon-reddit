@@ -81,6 +81,7 @@
 
 			&.selected {
 				background: var(--special-color);
+				color: vars.$text-on-primary;
 			}
 
 			&.nsfw {

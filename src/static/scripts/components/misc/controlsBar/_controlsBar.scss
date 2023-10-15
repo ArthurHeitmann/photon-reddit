@@ -45,6 +45,10 @@
 		margin: 0 .25rem;
 	}
 
+	a {
+		color: vars.$controls-link-color;
+	}
+
 	> .progressBar {
 		position: absolute;
 		top: 0;
@@ -64,7 +68,7 @@
 
 		> .progress {
 			transition: width .1s linear;
-			border-right: .25rem solid vars.$text-color;
+			border-right: .25rem solid vars.$progress-bar-tip;
 		}
 	}
 

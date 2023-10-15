@@ -2,6 +2,7 @@ import {FlairApiData, FlairData, RedditApiData} from "../../../types/redditTypes
 import {colorStringToRgb, emojiFlagsToImages} from "../../../utils/htmlStatics";
 import {clamp, hasParams} from "../../../utils/utils";
 import Users from "../../../multiUser/userManagement";
+import { UiTheme } from "../../global/photonSettings/settingsConfig";
 
 type RGB = [number, number, number];
 
@@ -153,10 +154,6 @@ export default class Ph_Flair extends HTMLElement {
 	}
 
 	private makeFlairColorScheme(color: string, secondaryColor?: string): [RGB, RGB] {
-		const cacheKey = `${color},${secondaryColor || ""}`;
-		if (Users.global.d.colorContrastCache[cacheKey]) {
-			return Users.global.d.colorContrastCache[cacheKey];
-		}
 		let bgFgColor: [RGB, RGB];
 		switch (color) {
 			case "dark":
@@ -170,16 +167,14 @@ export default class Ph_Flair extends HTMLElement {
 					bgFgColor = [
 						this.shortColorToCss(color),
 						color === "transparent" && secondaryColor === "dark"
-							? this.shortColorToCss("light")
+							? this.shortColorToCss(Users.global.d.photonSettings.theme != UiTheme.light ? "light" : "dark")
 							: this.shortColorToCss(secondaryColor) || this.oppositeColor(color)
 					];
 				}
 				else
 					bgFgColor = [this.shortColorToCss("dark"), this.shortColorToCss("light")];
 		}
-		bgFgColor = this.fixContrast(bgFgColor);
-		Users.global.set(["colorContrastCache", cacheKey], bgFgColor);
-		return bgFgColor;
+		return this.fixContrast(bgFgColor);
 	}
 
 	private oppositeColor(color: string | RGB): RGB {

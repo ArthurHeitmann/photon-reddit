@@ -112,7 +112,12 @@
 
 		* {
 			font-size: 1.75rem;
-			text-shadow:  0 0 30px black, 0 0 20px black, 0 0 15px black, 0 0 10px black, 0 0 5px black;
+			text-shadow:  
+				0 0 30px vars.$background,
+				0 0 20px vars.$background,
+				0 0 15px vars.$background,
+				0 0 10px vars.$background,
+				0 0 5px vars.$background;
 			line-break: auto;
 		}
 	}

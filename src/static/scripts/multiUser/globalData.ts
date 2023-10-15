@@ -29,7 +29,6 @@ export default class GlobalUserData extends DataAccessor<_GlobalData> {
 		postPreviouslyViewedAt: {},
 		pageBeforeLogin: null,
 		loginCode: null,
-		colorContrastCache: {},
 		redgifsAuth: {
 			token: null,
 			expiration: -1
@@ -52,9 +51,6 @@ export default class GlobalUserData extends DataAccessor<_GlobalData> {
 			this.tryMigrateFromLsToLoaded(["seenPosts"], ["seenPosts"]);
 			this.tryMigrateFromLsToLoaded(["settings"], ["photonSettings"]);
 			this.tryMigrateFromLsToLoaded(["version"], ["photonVersion"]);
-			if (wasDbUpgraded.fromVersion === 1 && wasDbUpgraded.toVersion > 1) {
-				this.loaded.colorContrastCache = {};
-			}
 			await setInStorage(this.loaded, this.key);
 		}
 
@@ -120,8 +116,6 @@ interface _GlobalData {
 	firefoxPrivateCheckCompleted: boolean;
 	pageBeforeLogin: string;
 	loginCode: string;
-	/** Maps a `background,foreground` color pair to a new pair with better contrast */
-	colorContrastCache: { [key: string]: [[number, number, number], [number, number, number]] },
 	redgifsAuth: RedgifsAuthData;
 	pendingRedditApiUsages: RedditApiUsageRecord[];
 }

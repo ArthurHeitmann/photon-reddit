@@ -20,13 +20,13 @@
 		background-color: vars.$background-el1;
 		transition: all .25s ease;
 		@extend %shadow-shorter;
-		--shadow-color: tranparent;
+		--shadow-color: transparent;
 
 		img {
 			transition: all .25s ease;
 
 			&.bg {
-				filter: grayscale(1) brightness(0.5) opacity(0.65);
+				filter: vars.$fab-root-filter;
 				width: 100%;
 				height: 100%;
 			}
@@ -63,10 +63,10 @@
 
 	&.show:not(.remove) {
 		.rootElement {
-			--shadow-color: #0000009c;
+			--shadow-color: #{vars.$fab-root-shadow};
 
 			img.bg {
-				filter: grayscale(1) brightness(.4) opacity(1);
+				filter: vars.$fab-root-filter-active;
 			}
 
 			img.edit {

@@ -22,14 +22,16 @@
 		--dark-shadow-color: black;
 		--controls-bg: #121212ad;
 		--controls-color: var(--text-color);
+		--controls-link-color: var(--link-color);
 		--progress-bar-color: var(--primary);
+		--progress-bar-tip: var(--text-color);
 		--primary-faint: #875e5e;
 		--primary-transparent: #f07f7f80;
 		--link-color: #7da3f9;
 		--switcher-bg-hover: #333333;
 		--switcher-bg-active: #404040;
 		--switcher-bg-selected: #616161;
-		--divider-color: #6f6f6f;
+		--divider-color: var(--border-color);
 		--user-admin-bg: darkred;
 		--user-admin-color: #ff3939;
 		--user-mod-bg: green;
@@ -55,6 +57,9 @@
 		--comment-collapser-hover-bg: rgba(0, 0, 0, 0.8);
 		--header-bg: var(--bg-color);
 		--header-stroke: var(--text-color);
+		--fab-root-filter: grayscale(1) brightness(0.5) opacity(0.65);
+		--fab-root-filter-active: grayscale(1) brightness(.4) opacity(1);
+		--fab-root-shadow: var(--shadow-color);
 	}
 
 	&.theme-override.theme-light {
@@ -69,14 +74,16 @@
 		--dark-shadow-color: #0000006d;
 		--controls-bg: #121212ad;
 		--controls-color: #e4e4e4;
+		--controls-link-color: #7da3f9;
 		--progress-bar-color: lightcoral;
+		--progress-bar-tip: #e4e4e4;
 		--primary-faint: #875e5e;
 		--primary-transparent: #f07f7f80;
 		--link-color: #5589ff;
 		--switcher-bg-hover: #ebebeb;
 		--switcher-bg-active: #dcdcdc;
 		--switcher-bg-selected: #c4c4c4;
-		--divider-color: #6f6f6f;
+		--divider-color: var(--border-color);
 		--user-admin-bg: darkred;
 		--user-admin-color: #cf0808;
 		--user-mod-bg: green;
@@ -102,6 +109,9 @@
 		--comment-collapser-hover-bg: rgba(0, 0, 0, 0.25);
 		--header-bg: var(--bg-color);
 		--header-stroke: #c3c3c4;
+		--fab-root-filter: grayscale(1) brightness(1) opacity(0.3);
+		--fab-root-filter-active: grayscale(1) brightness(1) opacity(0.5);
+		--fab-root-shadow: #00000026;
 	}
 }
 
@@ -123,7 +133,9 @@ $border-radius: math.div($post-padding, 2);
 $controls-height: 3rem;
 $controls-bg: var(--controls-bg);
 $controls-color: var(--controls-color);
+$controls-link-color: var(--controls-link-color);
 $progress-bar-color: var(--progress-bar-color);
+$progress-bar-tip: var(--progress-bar-tip);
 $shadow-color: var(--shadow-color);
 $dark-shadow-color: var(--dark-shadow-color);
 $progress-bar-hover-scale: 3;
@@ -175,3 +187,6 @@ $comment-collapser-hover-bg: var(--comment-collapser-hover-bg);
 $quote-color: var(--quote-color);
 $header-bg: var(--header-bg);
 $header-stroke: var(--header-stroke);
+$fab-root-filter: var(--fab-root-filter);
+$fab-root-filter-active: var(--fab-root-filter-active);
+$fab-root-shadow: var(--fab-root-shadow);

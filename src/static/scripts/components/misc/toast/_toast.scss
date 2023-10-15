@@ -1,3 +1,4 @@
+@use "../../../../style/vars";
 @use "../../../../style/shadow";
 
 @keyframes show {
@@ -25,6 +26,10 @@
 	@extend %shadow-diffuse;
 	transition: transform 1s ease;
 	animation: show .25s ease forwards;
+
+	* {
+		color: vars.$text-on-primary;
+	}
 
 	> .levelImg {
 		width: 2rem;
