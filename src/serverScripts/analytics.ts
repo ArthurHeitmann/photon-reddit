@@ -112,25 +112,23 @@ async function getEventsInTimeFrame(timeFrame: number, resolution: number): Prom
 		return [];
 	const stepSize = timeFrame / resolution;
 	const firstEntry = Date.now() - timeFrame;
-	const valueRanges = Array(resolution).fill(0)
-		.map((el, i) => [
-			Math.round(firstEntry + i * stepSize),
-			Math.round(firstEntry + (i + 1) * stepSize)
-		]);
 	const esc = connection.escape.bind(connection);
 	try {
 		let queryString = `
 			SELECT
-			${
-				valueRanges.map((range, i) => 
-					`SUM(IF(timeMillisUtc >= ${esc(range[0])} AND timeMillisUtc < ${esc(range[1])}, 1, 0)) AS "${esc(i)}"`)
-					.join(",\n")	
-			}
+				FLOOR(timeMillisUtc / ${esc(stepSize)}) * ${esc(stepSize)} AS timeMillisUtc,
+				COUNT(*) AS cnt
 			FROM trackedEvents
+			WHERE timeMillisUtc >= ${esc(firstEntry)}
+			GROUP BY FLOOR(timeMillisUtc / ${esc(stepSize)})
+			ORDER BY timeMillisUtc ASC
 			;
 		`;
-		const rows = await connection.query(queryString);
-		return Object.values(rows[0]);
+		const rows = await connection.query({
+			sql: queryString,
+			bigIntAsNumber: true
+		});
+		return Object.values(rows.map(row => row["cnt"]));
 	}
 	finally {
 		await connection.release();
@@ -323,7 +321,7 @@ analyticsRouter.get("/events", RateLimit(basicRateLimitConfig), analyticsQueryMi
 		res.status(400).json({ error: "invalid parameters" });
 		return;
 	}
-	if (resolution <= 0 || !isFinite(resolution) || typeof resolution !== "number" || resolution > 100) {
+	if (resolution <= 0 || !isFinite(resolution) || typeof resolution !== "number" || resolution > 1000) {
 		res.status(400).json({ error: "invalid parameters" });
 		return;
 	}

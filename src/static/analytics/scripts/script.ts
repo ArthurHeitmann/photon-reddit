@@ -12,6 +12,7 @@ const timeFrameConfig = [
 	["week", 1000 * 60 * 60 * 24 * 7, 14],
 	["month",1000 * 60 * 60 * 24 * 30, 30],
 	["year", 1000 * 60 * 60 * 24 * 365, 52],
+	["3 year", 1000 * 60 * 60 * 24 * 365 * 3, 12 * 2 * 3],
 ];
 let timeFrame = timeFrameConfig[1][1];
 let resolution = timeFrameConfig[1][2];
