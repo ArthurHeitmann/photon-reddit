@@ -140,6 +140,7 @@ export enum VoteDirection {
 
 export function voteDirectionFromLikes(likes: boolean) {
 	switch (likes) {
+		case undefined:
 		case null:
 			return VoteDirection.none;
 		case true:

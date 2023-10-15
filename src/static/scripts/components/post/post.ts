@@ -41,7 +41,7 @@ import Ph_PostBody, {PostType} from "./postBody/postBody";
 import Ph_PostText from "./postBody/postText/postText";
 import PostDoubleLink from "./postDoubleLink/postDoubleLink";
 import {NsfwPolicy, PhotonSettings} from "../global/photonSettings/settingsConfig";
-import {getPostFromPushshift} from "../../api/pushshiftApi";
+import {getPostFromArchive} from "../../api/redditArchiveApi";
 
 interface PostOptionalParams {
 	isInFeed?: boolean,
@@ -452,7 +452,7 @@ export default class Ph_Post extends Ph_FeedItem {
 		}
 
 		this.postBody.append(
-			makeElement("button", { class: "loadPushshiftBtn", onclick: this.loadPushshiftVersion.bind(this) }, "Load Archived Version")
+			makeElement("button", { class: "loadArchivedBtn", onclick: this.loadArchivedVersion.bind(this) }, "Load Archived Version")
 		);
 	}
 
@@ -469,8 +469,10 @@ export default class Ph_Post extends Ph_FeedItem {
 		else if (numCommentsStr.length === 3)
 			commentsText.classList.add("medium");
 
-		if (postData.removed_by_category)
+		if (postData.removed_by_category && this.data.removed_by_category !== postData.removed_by_category)
 			this.setRemovedReason(postData.removed_by_category);
+
+		this.data = postData;
 	}
 
 	async vote(dir: VoteDirection): Promise<void> {
@@ -655,21 +657,21 @@ export default class Ph_Post extends Ph_FeedItem {
 		settings.setSettingTo(key, newList);
 	}
 
-	private async loadPushshiftVersion() {
-		const loadBtn = this.$class("loadPushshiftBtn")[0] as HTMLButtonElement;
+	private async loadArchivedVersion() {
+		const loadBtn = this.$class("loadArchivedBtn")[0] as HTMLButtonElement;
 		loadBtn.disabled = true;
 		loadBtn.classList.add("loading");
 
 		let newPostData: RedditPostData;
 		try {
-			newPostData = await getPostFromPushshift(this.data.id);
+			newPostData = await getPostFromArchive(this.data.id);
 		} catch (e) {
 			console.error(e);
 		}
 		loadBtn.disabled = false;
 		loadBtn.classList.remove("loading");
 		if (!newPostData) {
-			new Ph_Toast(Level.warning, "Couldn't load post. Maybe Pushshift is having problems.");
+			new Ph_Toast(Level.warning, "Couldn't load post. Maybe the archive server is having problems.");
 			return;
 		}
 		loadBtn.remove();
