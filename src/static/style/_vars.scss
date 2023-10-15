@@ -15,12 +15,14 @@
 		--bg-el1-color: #1f1f1f;
 		--bg-el2-color: #292929;
 		--text-color: #e4e4e4;
-		--svg-fill: var(--text-color);
+		--text-on-primary: var(--text-color);
 		--primary: lightcoral;
 		--primary-contrast: #e65d5d;
 		--shadow-color: #0000009c;
+		--dark-shadow-color: black;
 		--controls-bg: #121212ad;
 		--controls-color: var(--text-color);
+		--progress-bar-color: var(--primary);
 		--primary-faint: #875e5e;
 		--primary-transparent: #f07f7f80;
 		--link-color: #7da3f9;
@@ -51,49 +53,55 @@
 		--quote-color: cornflowerblue;
 		--comment-collapser-bg: rgba(4, 4, 4, 0.6);
 		--comment-collapser-hover-bg: rgba(0, 0, 0, 0.8);
+		--header-bg: var(--bg-color);
+		--header-stroke: var(--text-color);
 	}
 
 	&.theme-override.theme-light {
 		--bg-color: #ffffff;
 		--bg-el1-color: var(--bg-color);
-		--bg-el2-color: #ebebeb;
-		--text-color: #000000;
-		--svg-fill: var(--text-color);
-		--primary-contrast: #e65d5d;
-		--primary: var(--primary-contrast);
-		--shadow-color: #0000002b;
+		--bg-el2-color: #f1f1f1;
+		--text-color: #2c2c2c;
+		--text-on-primary: white;
+		--primary-contrast: #f57272;
+		--primary: #ff4747;
+		--shadow-color: #0000000d;
+		--dark-shadow-color: #0000006d;
 		--controls-bg: #121212ad;
 		--controls-color: #e4e4e4;
+		--progress-bar-color: lightcoral;
 		--primary-faint: #875e5e;
 		--primary-transparent: #f07f7f80;
-		--link-color: #7da3f9;
+		--link-color: #5589ff;
 		--switcher-bg-hover: #ebebeb;
 		--switcher-bg-active: #dcdcdc;
 		--switcher-bg-selected: #c4c4c4;
 		--divider-color: #6f6f6f;
 		--user-admin-bg: darkred;
-		--user-admin-color: #ff3939;
+		--user-admin-color: #cf0808;
 		--user-mod-bg: green;
-		--user-mod-color: lightgreen;
+		--user-mod-color: #31cd31;
 		--cancel-btn-bg: #5b5b5b;
-		--upvote-hover: #efc77b;
+		--upvote-hover: #e29709;
 		--upvote-filled: orange;
-		--downvote-hover: #99abe3;
+		--downvote-hover: #547eff;
 		--downvote-filled: royalblue;
-		--transparent-btn-hover: #ffffff1a;
-		--transparent-btn-active: #ffffff40;
+		--transparent-btn-hover: #00000009;
+		--transparent-btn-active: #00000018;
 		--input-element-bg: var(--bg-el2-color);
 		--scrollbar-color: #a3a3a3a6;
 		--scrollbar-color-hover: #a3a3a3d9;
 		--code-bg: var(--bg-el2-color);
-		--table-header-bg: #4e4e4e;
-		--table-header-divider: #2d2d2d;
-		--table-row-alt-bg: #313131;
-		--table-row-hover-bg: #3e3e3e;
+		--table-header-bg: #e0e0e0;
+		--table-header-divider: var(--border-color);
+		--table-row-alt-bg: #f5f5f5;
+		--table-row-hover-bg: #eaeaea;
 		--tooltip-bg: white;
 		--quote-color: cornflowerblue;
 		--comment-collapser-bg: rgba(4, 4, 4, 0.15);
 		--comment-collapser-hover-bg: rgba(0, 0, 0, 0.25);
+		--header-bg: var(--bg-color);
+		--header-stroke: #c3c3c4;
 	}
 }
 
@@ -104,7 +112,8 @@ $background-el1: var(--bg-el1-color);
 $background-el2: var(--bg-el2-color);
 /** text color */
 $text-color: var(--text-color);
-$svg-fill: var(--svg-fill);
+/** text color on primary background */
+$text-on-primary: var(--text-on-primary);
 $modal-transparent-bg: #00000080;
 $header-height: 5rem;
 $post-actions-width: 2.2rem;
@@ -114,6 +123,9 @@ $border-radius: math.div($post-padding, 2);
 $controls-height: 3rem;
 $controls-bg: var(--controls-bg);
 $controls-color: var(--controls-color);
+$progress-bar-color: var(--progress-bar-color);
+$shadow-color: var(--shadow-color);
+$dark-shadow-color: var(--dark-shadow-color);
 $progress-bar-hover-scale: 3;
 /** primary accent */
 $primary: var(--primary);
@@ -161,3 +173,5 @@ $tooltip-bg: var(--tooltip-bg);
 $comment-collapser-bg: var(--comment-collapser-bg);
 $comment-collapser-hover-bg: var(--comment-collapser-hover-bg);
 $quote-color: var(--quote-color);
+$header-bg: var(--header-bg);
+$header-stroke: var(--header-stroke);

@@ -75,10 +75,18 @@ function setCssVarOnBody<T extends PhotonSettingsKey>(mapping: SettingToCssVar<T
 	document.body.style.setProperty(mapping.cssVarName, varVal);
 }
 
-function setTheme(theme: UiTheme) {
+function setTheme(theme: UiTheme, applyClass: boolean = false) {
 	const themeClasses = [`theme-${theme}`];
-	if (theme !== UiTheme.dark)
+	if (theme !== UiTheme.dark) {
 		themeClasses.push("theme-override");
+		document.cookie = `themeOverride=${theme};path=/;max-age=31536000`;
+	}
+	else {
+		document.cookie = `themeOverride=;path=/;max-age=0`;
+	}
+
+	if (!applyClass)
+		return;
 	
 	for (const className of [...document.documentElement.classList]) {
 		if (!className.startsWith("theme-"))
@@ -93,4 +101,10 @@ function setTheme(theme: UiTheme) {
 window.addEventListener("load", () => {
 	Users.ensureDataHasLoaded().then(() => handleSettings(Users.global.d.photonSettings));
 	ensurePageLoaded().then(() => handleSettings(Users.global.d.photonSettings));
+
+	const themeOverride = document.cookie.split(";").find(c => c.trim().startsWith("themeOverride="));
+	if (themeOverride) {
+		const theme = themeOverride.split("=")[1];
+		setTheme(theme as UiTheme, true);
+	}
 });

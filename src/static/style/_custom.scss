@@ -149,8 +149,8 @@ input.checkbox {
 			position: absolute;
 			width: 60%;
 			height: 27%;
-			border-bottom: 4px solid var(--text-color);
-			border-left: 4px solid var(--text-color);
+			border-bottom: 4px solid vars.$text-on-primary;
+			border-left: 4px solid vars.$text-on-primary;
 			transform: translateY(-76%) translateX(-52%) rotate(-45deg);
 			margin-top: 50%;
 			margin-left: 50%;
@@ -209,6 +209,7 @@ input.radio {
 
 .loginButton {
 	background: vars.$primary-contrast;
+	color: vars.$text-on-primary;
 	height: 2.5rem;
 	padding: 0 .75rem;
 	border-radius: 1.25rem;
@@ -228,6 +229,7 @@ input.radio {
 .retryButton {
 	padding: .25rem .75rem;
 	background: vars.$primary-contrast;
+	color: vars.$text-on-primary;
 	margin: 2rem 0;
 	width: max-content;
 	height: 2.5rem;

@@ -23,7 +23,7 @@
 		}
 
 		&:active {
-			color: vars.$text-color;
+			color: vars.$text-on-primary;
 			background: vars.$primary-contrast;
 		}
 	}

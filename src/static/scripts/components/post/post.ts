@@ -184,7 +184,7 @@ export default class Ph_Post extends Ph_FeedItem {
 		else if (numbOfComments.length === 3)
 			commentsSizeClass = "medium";
 		commentsLink.innerHTML = `
-			<ph-icon alt="comments" src="/img/comments.svg"></ph-icon>
+			<img alt="comments" src="/img/comments.svg">
 			<div class="${commentsSizeClass}">${numbOfComments}</div>
 		`;
 		actionWrapper.append(commentsLink);
@@ -250,7 +250,7 @@ export default class Ph_Post extends Ph_FeedItem {
 							<span>${numberToShort(crosspostData.ups)}</span>
 						</div>
 						<div>
-							<ph-icon src="/img/comments.svg" class="commentsImg" alt="comments"></ph-icon>
+							<img src="/img/comments.svg" class="commentsImg" alt="comments">
 							<span>${numberToShort(crosspostData.num_comments)}</span>
 						</div>
 						
@@ -679,6 +679,9 @@ export default class Ph_Post extends Ph_FeedItem {
 		const userLink = this.$css("a.user")[0] as HTMLAnchorElement;
 		userLink.href = `/user/${newPostData.author}`;
 		userLink.children[0].textContent = `u/${newPostData.author}`;
+
+		const title = this.$css(".title")[0] as HTMLElement;
+		title.innerText = newPostData.title;
 
 		if (this.postBody.getPostType(newPostData, false) === PostType.text) {
 			const postText = this.postBody.$class("postText")[0] as Ph_PostText;

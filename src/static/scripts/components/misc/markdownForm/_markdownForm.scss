@@ -36,7 +36,7 @@
 		}
 
 		.markdownPreview {
-			border-top: 1px solid #909090;
+			border-top: 1px solid vars.$border-color;
 			line-break: anywhere;
 
 			&::before {
@@ -74,6 +74,7 @@
 			border-radius: 1.5rem;
 			transition: all .25s ease;
 			--btn-color: none;
+			--btn-text-color: vars.$text-color;
 			border: 2px solid var(--btn-color);
 
 			&:disabled {
@@ -86,11 +87,12 @@
 
 			&:active {
 				background: var(--btn-color);
-				color: vars.$text-color;
+				color: var(--btn-text-color);
 			}
 
 			&.submitBtn {
 				--btn-color: #{vars.$primary-contrast};
+				--btn-text-color: #{vars.$text-on-primary};
 			}
 
 			&.cancelBtn {

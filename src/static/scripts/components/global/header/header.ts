@@ -61,13 +61,13 @@ export default class Ph_Header extends HTMLElement {
 			</div>
 			<div class="expander absolute w100">
 				<svg viewBox="0 0 1400 200" preserveAspectRatio="none">
-					<path d="M 0 0 v 100 h 500 c 100 0, 100 40, 200 40 s 100 -40, 200 -40 h500 v -100 z" class="filled" fill="var(--bg-color)" vector-effect="non-scaling-stroke">
+					<path d="M 0 0 v 100 h 500 c 100 0, 100 40, 200 40 s 100 -40, 200 -40 h500 v -100 z" class="filled" vector-effect="non-scaling-stroke">
 						<animate class="headerHideVisualizer" attributeName="d" dur="0.2s" fill="freeze" from="M 0 0 v 100 h 0 c 200 40, 600 40, 700 40 s 500 0, 700 -40 h 0 v -100 z" to="M 0 0 v 100 h 500 c 100 0, 100 40, 200 40 s 100-40, 200 -40 h 500 v -100 z" begin="indefinite"></animate>
 						<animate class="headerShowVisualizer" attributeName="d" dur="0.2s" fill="freeze" from="M 0 0 v 100 h 500 c 100 0, 100 40, 200 40 s 100-40, 200 -40 h500 v -100 z" to="M 0 0 v 100 h 0 c 200 40, 600 40, 700 40 s 500 0, 700 -40 h 0 v -100 z" begin="indefinite"></animate>
 						<animate class="headerPinnedBeginAnimation" attributeName="d" dur="0.2s" fill="freeze" from="M 0 0 v 100 h 0 c 200 40, 600 40, 700 40 s 500 0, 700 -40 h 0 v -100 z" to="M 0 0 v 100 h 500 c 100 0, 100 0, 200 0 s 100 0, 200 0 h 500 v -100 z" begin="indefinite"></animate>
 						<animate class="headerPinnedEndAnimation" attributeName="d" dur="0.2s" fill="freeze" from="M 0 0 v 100 h 500 c 100 0, 100 0, 200 0 s 100 0, 200 0 h 500 v -100 z" to="M 0 0 v 100 h 0 c 200 40, 600 40, 700 40 s 500 0, 700 -40 h 0 v -100 z" begin="indefinite"></animate>
 					</path>
-					<path d="M 0 100 h 500 c 100 0, 100 40, 200 40 s 100-40, 200 -40 h 500" class="stroked" fill="none" stroke="#eeeeee" stroke-width="5" vector-effect="non-scaling-stroke">
+					<path d="M 0 100 h 500 c 100 0, 100 40, 200 40 s 100-40, 200 -40 h 500" class="stroked" stroke-width="5" vector-effect="non-scaling-stroke">
 						<animate class="headerHideVisualizer" attributeName="d" dur="0.2s" fill="freeze" from="M 0 100 h 0 c 200 40, 600 40, 700 40 s 500 0, 700 -40 h 0" to="M 0 100 h 500 c 100 0, 100 40, 200 40 s 100-40, 200 -40 h 500" begin="indefinite"></animate>
 						<animate class="headerShowVisualizer" attributeName="d" dur="0.2s" fill="freeze" from="M 0 100 h 500 c 100 0, 100 40, 200 40 s 100-40, 200 -40 h 500" to="M 0 100 h 0 c 200 40, 600 40, 700 40 s 500 0, 700 -40 h 0" begin="indefinite"></animate>
 						<animate class="headerPinnedBeginAnimation" attributeName="d" dur="0.2s" fill="freeze" from="M 0 100 h 0 c 200 40, 600 40, 700 40 s 500 0, 700 -40 h 0" to="M 0 100 h 500 c 100 0, 100 0, 200 0 s 100 0, 200 0 h 500" begin="indefinite"></animate>

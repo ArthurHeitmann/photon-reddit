@@ -132,8 +132,8 @@
 				top: 25%;
 				width: 100%;
 				height: 50%;
-				background-color: vars.$background;
-				box-shadow: 0.75rem 0 1rem 0 vars.$background;
+				background-color: vars.$header-bg;
+				box-shadow: 0.75rem 0 1rem 0 vars.$header-bg;
 			}
 		}
 
@@ -170,14 +170,14 @@
 			transform: scaleX(max(1, calc(1.77777 / var(--window-aspect-ratio))));
 
 			.filled {
-				fill: var(--bg-color);
+				fill: vars.$header-bg;
 				stroke: none;
 			}
 
 			.stroked {
 				transition: stroke .5s ease;
 				fill: none;
-				stroke: vars.$text-color;
+				stroke: vars.$header-stroke;
 			}
 		}
 	}

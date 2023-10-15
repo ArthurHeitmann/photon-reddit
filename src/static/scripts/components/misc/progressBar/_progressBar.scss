@@ -12,7 +12,7 @@
 	> .progress {
 		height: 100%;
 		width: calc(100% * var(--progress));
-		background: vars.$primary;
+		background: vars.$progress-bar-color;
 	}
 
 	.accessibilitySpacer {

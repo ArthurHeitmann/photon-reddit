@@ -7,7 +7,7 @@ import {PhEvents} from "../../../types/Events";
 import Users from "../../../multiUser/userManagement";
 import Ph_PhotonBaseElement from "../../photon/photonBaseElement/photonBaseElement";
 import Ph_PostBodyCompactWrapper from "./compactBodyWrapper/compactBodyWrapper";
-import {AllowIframesDecision, FeedDisplayType} from "../../global/photonSettings/settingsConfig";
+import {AllowIframesDecision, FeedDisplayType, UiTheme} from "../../global/photonSettings/settingsConfig";
 import Ph_PostLink from "../postLink/postLink";
 import Ph_IframeWrapper from "../../misc/iframeWrapper/iframeWrapper";
 
@@ -179,7 +179,7 @@ export default class Ph_PostBody extends Ph_PhotonBaseElement {
 		const twitterEmbedParams = new URLSearchParams({
 			id: id,
 			width: "550px",
-			theme: "dark",
+			theme: Users.global.d.photonSettings.theme == UiTheme.dark ? "dark" : "light",
 			origin: location.origin,
 			dnt: "true"
 		});

@@ -13,6 +13,7 @@
 		transition: all .125s ease;
 
 		> div {
+			color: vars.$text-on-primary;
 			width: 15rem;
 			font-size: 1.25rem;
 			line-break: anywhere;

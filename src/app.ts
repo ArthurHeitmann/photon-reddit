@@ -6,7 +6,7 @@ import helmet from "helmet";
 import {analyticsRouter} from "./serverScripts/analytics";
 import {__dirname, basicRateLimitConfig, port,} from "./serverScripts/consts";
 import {photonApiRouter} from "./serverScripts/photonApi";
-import {cacheControl, checkSslAndWww, safeExc} from "./serverScripts/utils";
+import {cacheControl, checkSslAndWww, imgThemeOverride, safeExc, safeExcAsync} from "./serverScripts/utils";
 
 const app = express();
 // middlewares
@@ -18,6 +18,7 @@ app.use(helmet({
 }));
 app.use(safeExc(checkSslAndWww));
 app.use(safeExc(cacheControl));
+app.use("/img", safeExcAsync(imgThemeOverride));
 app.use(express.static('src/static'));
 app.use(bodyParser.json());
 

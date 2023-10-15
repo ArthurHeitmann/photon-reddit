@@ -70,6 +70,7 @@
 
 			&.nextButton {
 				background: vars.$primary-contrast;
+				color: vars.$text-on-primary;
 				border: none;
 			}
 
@@ -129,6 +130,7 @@
 
 		.finishButton {
 			background: vars.$primary-contrast;
+			color: vars.$text-on-primary;
 			order: 2;
 		}
 	}

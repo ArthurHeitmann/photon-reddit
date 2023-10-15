@@ -65,7 +65,7 @@
 		}
 
 		* {
-			color: vars.$text-color;
+			color: vars.$text-on-primary;
 		}
 	}
 
@@ -122,7 +122,7 @@
 		}
 	}
 
-	ph-icon.pinned {
+	img.pinned {
 		width: 1.25rem;
 		height: 1.25rem;
 		transform: translateY(0.1rem) rotate(45deg);
@@ -145,7 +145,7 @@
 			margin-left: auto;
 			margin-right: 1rem;
 
-			> ph-icon {
+			> img {
 				height: 1.25em;
 			}
 		}
@@ -197,7 +197,7 @@
 		&:active:not(:disabled) {
 			border-color: vars.$primary-contrast;
 			background: vars.$primary-contrast;
-			color: vars.$text-color;
+			color: vars.$text-on-primary;
 		}
 	}
 }

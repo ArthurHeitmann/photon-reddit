@@ -20,6 +20,7 @@
 				width: calc(1% * var(--percentage));
 				min-width: 1rem;
 				background: vars.$primary-contrast;
+				color: vars.$text-on-primary;
 				border-radius: 1rem;
 			}
 
@@ -32,7 +33,6 @@
 					height: 1.3rem;
 					margin-top: .35rem;
 					margin-left: .5rem;
-					background-size: contain;
 					display: block;
 					background: url("/img/check.svg") center;
 					background-size: contain;

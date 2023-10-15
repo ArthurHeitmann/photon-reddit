@@ -1,6 +1,8 @@
 import dns from "dns";
 import express from "express";
 import { env } from "./consts";
+import { promises as fs } from "fs";
+import path from "path";
 
 /** Fallback for when service worker doesn't work */
 export function cacheControl(req: express.Request, res: express.Response, next: express.NextFunction) {
@@ -73,4 +75,69 @@ export async function isIpFromBot(req: express.Request): Promise<boolean> {
 	} catch {
 		return false;
 	}
+}
+
+async function fileExists(filePath: string): Promise<boolean> {
+	try {
+		await fs.access(filePath);
+		return true;
+	} catch {
+		return false;
+	}
+}
+
+function getCookies(req: express.Request): { [key: string]: string } {
+	const cookies: { [key: string]: string } = {};
+	const cookieList = (req.headers.cookie ?? "")?.split("; ");
+	for (const cookie of cookieList) {
+		const [key, value] = cookie.split("=");
+		cookies[key] = value;
+	}
+	return cookies;
+}
+
+const themeOverrides = {
+	"light": [
+		["#e4e4e4", "#2c2c2c"],
+		["#ffd700", "#ffae00"],
+		["#88ff76", "#31cd31"],
+	]
+}
+
+async function overrideSvgTheme(req: express.Request, res: express.Response, themeOverride: string) {
+	const filePath = path.join(process.cwd(), "src", "static", "img", req.path);
+	let svg: string;
+	try {
+		svg = await fs.readFile(filePath, "utf8");
+	}
+	catch (e) {
+		if (!await fileExists(filePath)) {
+			res.sendStatus(404);
+			return;
+		}
+		throw e;
+	}
+	const overrideColors = themeOverrides[themeOverride];
+	let newSvg = svg;
+	for (const [from, to] of overrideColors) {
+		newSvg = newSvg.replace(new RegExp(from, "g"), to);
+	}
+	res.setHeader("Content-Type", "image/svg+xml");
+	res.send(newSvg);
+}
+
+export async function imgThemeOverride(req: express.Request, res: express.Response, next: express.NextFunction) {
+	if (!req.path.endsWith(".svg")) {
+		next();
+		return;
+	}
+	if ("noThemeOverride" in req.query) {
+		next();
+		return;
+	}
+	const themeOverride = getCookies(req).themeOverride;
+	if (themeOverride && themeOverride in themeOverrides)
+		await overrideSvgTheme(req, res, themeOverride);
+	else
+		next();
 }

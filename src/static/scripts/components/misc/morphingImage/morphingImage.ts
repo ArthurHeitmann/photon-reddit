@@ -7,8 +7,9 @@ export default class Ph_MorphingImage extends HTMLElement {
 	svg: SVGElement;
 	path: SVGPathElement;
 	anim: SVGAnimateElement;
+	fillColor: string;
 
-	constructor(initPath: string, viewBox: string, isButton = false) {
+	constructor(initPath: string, viewBox: string, isButton = false, fillColor = "var(--text-color)") {
 		super();
 		if (!hasParams(arguments)) return;
 
@@ -29,7 +30,7 @@ export default class Ph_MorphingImage extends HTMLElement {
 		this.path = document.createElementNS("http://www.w3.org/2000/svg", "path");
 		this.svg.append(this.path);
 		this.path.setAttribute("d", initPath);
-		this.path.setAttribute("fill", "var(--text-color)");
+		this.path.setAttribute("fill", fillColor);
 
 		this.anim = document.createElementNS("http://www.w3.org/2000/svg", "animate") as SVGAnimateElement;
 		this.path.append(this.anim);

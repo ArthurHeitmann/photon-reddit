@@ -81,7 +81,6 @@ esbuild.build({
 esbuild.build({
 	entryPoints: [
 		"src/static/style/main.scss",
-		"src/static/scripts/components/misc/icon/icon.scss",
 		"src/static/analytics/style/style.scss",
 	],
 	minify: true,
