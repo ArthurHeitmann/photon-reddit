@@ -12,6 +12,10 @@
 	transform: translateY(101%);
 	transition: all .25s ease;
 
+	.caption *, .textOnly:not(a) {
+		color: vars.$controls-color;
+	}
+
 	img.padded {
 		padding: 10%;
 	}

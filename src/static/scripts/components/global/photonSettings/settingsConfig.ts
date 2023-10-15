@@ -44,6 +44,11 @@ export enum AllowIframesDecision {
 	ask = "ask",
 }
 
+export enum UiTheme {
+	light = "light",
+	dark = "dark",
+}
+
 export interface PhotonSettings {
 	imageLoadingPolicy?: ImageLoadingPolicy,
 	loadInlineMedia?: boolean,
@@ -85,6 +90,7 @@ export interface PhotonSettings {
 	allowIframes?: AllowIframesDecision,
 	defaultFrontpageSort?: SortPostsOrder,
 	highlightNewComments?: boolean,
+	theme?: UiTheme,
 }
 
 // default config
@@ -129,6 +135,7 @@ export const defaultSettings: PhotonSettings = {
 	allowIframes: AllowIframesDecision.ask,
 	defaultFrontpageSort: SortPostsOrder.default,
 	highlightNewComments: true,
+	theme: UiTheme.dark,
 };
 
 export const getSettingsSections = (): SettingsSection[] => [
@@ -203,6 +210,12 @@ export const getSettingsSections = (): SettingsSection[] => [
 		name: "UI",
 		iconUrl: "/img/settings2.svg",
 		settings: [
+			new MultiOptionSetting(
+				[
+					{ text: "Dark", value: UiTheme.dark },
+					{ text: "Light", value: UiTheme.light },
+				], "theme", "Theme", "", SettingsApi.Photon
+			),
 			new BooleanSetting("loadInlineMedia", "Expand media previews", "Expand previews for links with media (e.g. imgur.com/..., reddit.com/.../.png).", SettingsApi.Photon),
 			new NumberSetting({ allowRange: [0, Number.MAX_SAFE_INTEGER] }, "imageLimitedHeight", "Max media height", "Set the maximum height for images/videos in % of screen height. Set height to \"0\" to disable height limits.", SettingsApi.Photon),
 			new NumberSetting({ allowRange: [10, 200], allowFloats: true }, "feedWidth", "Posts feed width", "Width of posts in your feed. (Also used for messages, comments, etc.) (Unit is absolute)", SettingsApi.Photon),

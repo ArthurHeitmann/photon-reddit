@@ -279,10 +279,10 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 
 		// prev/next + i
 		if (initElements.length > 1) {
-			const prevBtn = Ph_ControlsBar.makeImageButton("/img/playBack.svg");
+			const prevBtn = Ph_ControlsBar.makeImageButton("/img/playBack.svg?noThemeOverride");
 			prevBtn.addEventListener("click", this.previousGalleryElement.bind(this));
 			controlSlots.push(prevBtn);
-			const nextBtn = Ph_ControlsBar.makeImageButton("/img/playNext.svg");
+			const nextBtn = Ph_ControlsBar.makeImageButton("/img/playNext.svg?noThemeOverride");
 			nextBtn.addEventListener("click", this.nextGalleryElement.bind(this));
 			controlSlots.push(nextBtn);
 			controlSlots.push(this.controls.firstLeftItemsSlot);
@@ -311,14 +311,14 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		this.elementLink.setAttribute("excludeLinkFromMedia", "");
 		controlSlots.push(this.elementLink);
 		// reset view
-		const resetViewBtn = Ph_ControlsBar.makeImageButton("/img/reset.svg");
+		const resetViewBtn = Ph_ControlsBar.makeImageButton("/img/reset.svg?noThemeOverride");
 		resetViewBtn.classList.add("resetView");
 		resetViewBtn.classList.add("evenSmaller");
 		resetViewBtn.addEventListener("click", () => this.draggableWrapper.reset());
 		controlSlots.push(resetViewBtn);
 		// settings dropdown
 		const settingsImg = document.createElement("img");
-		settingsImg.src = "/img/settings2.svg";
+		settingsImg.src = "/img/settings2.svg?noThemeOverride";
 		nonDraggableElement(settingsImg)
 		settingsImg.alt = "settings";
 		this.settingsDropDown = new Ph_DropDown(
@@ -337,8 +337,8 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		controlSlots.push(this.settingsDropDown);
 		// fullscreen
 		const { b: fsBtn, img: fsImg } = Ph_ControlsBar.makeSwitchingImageBtn(new Ph_SwitchingImage([
-			{ src: "/img/fullscreen.svg", key: "fullscreen" },
-			{ src: "/img/minimize.svg", key: "minimize" },
+			{ src: "/img/fullscreen.svg?noThemeOverride", key: "fullscreen" },
+			{ src: "/img/minimize.svg?noThemeOverride", key: "minimize" },
 		]));
 		this.fullscreenImage = fsImg;
 		fsBtn.addEventListener("click", this.toggleFullscreen.bind(this));
@@ -399,7 +399,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 		// gallery index
 		if (this.mediaElements.length > 1)
 			this.currentIndexDisplay.innerText = `${this.currentIndex + 1}/${this.mediaElements.length}`;
-		// capation
+		// caption
 		(this.elementCaption.children[0] as HTMLElement).innerText = newMedia.caption || "";
 		(this.elementCaption.children[1] as HTMLElement).innerText = newMedia.caption || "";
 		// link

@@ -1,4 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill="#e4e4e4" viewBox="0 0 100 100">
-    <path d="m 31.012022,76.637653 q -7.05,0 -10.425,-3.9 -3.3,-3.9 -3.3,-11.7 v -16.95 q 0,-5.7 5.625,-5.7 5.7,0 5.7,5.7 v 17.25 q 0,6.525 5.625,6.525 3.225,0 5.25,-2.25 2.1,-2.325 2.1,-6.075 v -15.45 q 0,-5.7 5.625,-5.7 5.7,0 5.7,5.7 v 26.625 q 0,5.775 -5.475,5.775 -2.7,0 -4.125,-1.5 -1.425,-1.5 -1.425,-4.2 -3.675,5.85 -10.875,5.85 z" style="font-style:normal;font-weight:normal;font-size:75px;font-family:'Nunito ExtraBold';text-anchor:start;fill:#e4e4e4;stroke:#000000;stroke-width:0" id="path19" />
-    <path d="m 65.436892,77.762653 q -0.675,2.1 -2.325,2.775 -1.575,0.675 -3.225,0.15 -1.65,-0.45 -2.55,-1.875 -0.975,-1.425 -0.225,-3.675 l 16.95,-52.875 q 0.675,-2.1 2.25,-2.775 1.65,-0.675 3.3,-0.225 1.65,0.45 2.55,1.95 0.975,1.425 0.225,3.6 z" style="font-style:normal;font-weight:normal;font-size:75px;font-family:'Nunito ExtraBold';text-anchor:start;fill:#e4e4e4;stroke:#000000;stroke-width:0" id="path21" />
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill="var(--svg-fill)" viewBox="0 0 100 100">
+	<style>
+		svg {
+			--svg-fill: #e4e4e4;
+		}
+	</style>
+	<path d="m 31.012022,76.637653 q -7.05,0 -10.425,-3.9 -3.3,-3.9 -3.3,-11.7 v -16.95 q 0,-5.7 5.625,-5.7 5.7,0 5.7,5.7 v 17.25 q 0,6.525 5.625,6.525 3.225,0 5.25,-2.25 2.1,-2.325 2.1,-6.075 v -15.45 q 0,-5.7 5.625,-5.7 5.7,0 5.7,5.7 v 26.625 q 0,5.775 -5.475,5.775 -2.7,0 -4.125,-1.5 -1.425,-1.5 -1.425,-4.2 -3.675,5.85 -10.875,5.85 z" style="font-style:normal;font-weight:normal;font-size:75px;font-family:'Nunito ExtraBold';text-anchor:start;fill:#e4e4e4;stroke:#000000;stroke-width:0" id="path19" />
+	<path d="m 65.436892,77.762653 q -0.675,2.1 -2.325,2.775 -1.575,0.675 -3.225,0.15 -1.65,-0.45 -2.55,-1.875 -0.975,-1.425 -0.225,-3.675 l 16.95,-52.875 q 0.675,-2.1 2.25,-2.775 1.65,-0.675 3.3,-0.225 1.65,0.45 2.55,1.95 0.975,1.425 0.225,3.6 z" style="font-style:normal;font-weight:normal;font-size:75px;font-family:'Nunito ExtraBold';text-anchor:start;fill:#e4e4e4;stroke:#000000;stroke-width:0" id="path21" />
 </svg>

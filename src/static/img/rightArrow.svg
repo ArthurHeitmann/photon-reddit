@@ -1,1 +1,9 @@
-<svg height='300px' width='300px'  fill="#e4e4e4" xmlns="http://www.w3.org/2000/svg" data-name="Layer 2" viewBox="0 0 48 48" x="0px" y="0px"><title>video music player</title><path d="M19,36a2,2,0,0,1-1.41-3.41L26.17,24l-8.58-8.59a2,2,0,0,1,2.82-2.82l10,10a2,2,0,0,1,0,2.82l-10,10A2,2,0,0,1,19,36Z"></path></svg>
+<svg xmlns="http://www.w3.org/2000/svg" height="300px" width="300px" fill="var(--svg-fill)" data-name="Layer 2" viewBox="0 0 48 48" x="0px" y="0px">
+	<style>
+		svg {
+			--svg-fill: #e4e4e4;
+		}
+	</style>
+	<title>video music player</title>
+	<path d="M19,36a2,2,0,0,1-1.41-3.41L26.17,24l-8.58-8.59a2,2,0,0,1,2.82-2.82l10,10a2,2,0,0,1,0,2.82l-10,10A2,2,0,0,1,19,36Z" />
+</svg>

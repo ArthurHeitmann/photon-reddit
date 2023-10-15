@@ -1,4 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="#e4e4e4">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="var(--svg-fill)">
+	<style>
+		svg {
+			--svg-fill: #e4e4e4;
+		}
+	</style>
 	<title>video music player</title>
-	<path style="transform: scale(1.25); transform-origin: center;" d="M32.52,15.56l0,0s0,0,0,0a12,12,0,1,0,.08.08ZM24,16a7.93,7.93,0,0,1,4.06,1.12L17.12,28.06A8,8,0,0,1,24,16Zm0,16a7.93,7.93,0,0,1-4.06-1.12L30.88,19.94A8,8,0,0,1,24,32Z"></path>
+	<path style="transform: scale(1.25); transform-origin: center;" d="M32.52,15.56l0,0s0,0,0,0a12,12,0,1,0,.08.08ZM24,16a7.93,7.93,0,0,1,4.06,1.12L17.12,28.06A8,8,0,0,1,24,16Zm0,16a7.93,7.93,0,0,1-4.06-1.12L30.88,19.94A8,8,0,0,1,24,32Z" />
 </svg>

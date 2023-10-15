@@ -53,7 +53,7 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 
 		this.overlayIcon = new Ph_SwitchingImage([
 			{src: "/img/loading3.svg", key: "loading"},
-			{src: "/img/playVideo.svg", key: "ready"},
+			{src: "/img/playVideo.svg?noThemeOverride", key: "ready"},
 			{src: "", key: "none"},
 		]);
 		this.overlayIcon.classList.add("initialIcon");
@@ -146,8 +146,8 @@ export default class Ph_VideoPlayer extends Ph_PhotonBaseElement implements Medi
 		volumeWrapper.className = "volumeWrapper";
 		this.controls.leftItems.push(volumeWrapper);
 		const { b: muteButton, img: muteImg } = Ph_ControlsBar.makeSwitchingImageBtn(new Ph_SwitchingImage([
-			{ src: "/img/mute.svg", key: "mute" },
-			{ src: "/img/audio.svg", key: "audio" },
+			{ src: "/img/mute.svg?noThemeOverride", key: "mute" },
+			{ src: "/img/audio.svg?noThemeOverride", key: "audio" },
 		]));
 		volumeWrapper.appendChild(muteButton);
 		muteButton.addEventListener("click", () => this.toggleMuted());

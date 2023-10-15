@@ -29,7 +29,7 @@ export default class Ph_MorphingImage extends HTMLElement {
 		this.path = document.createElementNS("http://www.w3.org/2000/svg", "path");
 		this.svg.append(this.path);
 		this.path.setAttribute("d", initPath);
-		this.path.setAttribute("fill", "#e4e4e4");
+		this.path.setAttribute("fill", "var(--text-color)");
 
 		this.anim = document.createElementNS("http://www.w3.org/2000/svg", "animate") as SVGAnimateElement;
 		this.path.append(this.anim);

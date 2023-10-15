@@ -1,3 +1,8 @@
-<svg height='300px' width='300px' fill="#e4e4e4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" x="0px" y="0px">
-	<path d="m7 23a1 1 0 0 1-.47-.12 1 1 0 0 1-.53-.88v-4.5a5 5 0 0 1-5-5v-6.5a5 5 0 0 1 5-5h12a5 5 0 0 1 5 5v6.5a5 5 0 0 1-5 5h-3.7l-6.75 5.33a1 1 0 0 1-.55.17z"></path>
+<svg xmlns="http://www.w3.org/2000/svg" height="300px" width="300px" fill="var(--svg-fill)" viewBox="0 0 24 24" x="0px" y="0px">
+	<style>
+		svg {
+			--svg-fill: #e4e4e4;
+		}
+	</style>
+	<path d="m7 23a1 1 0 0 1-.47-.12 1 1 0 0 1-.53-.88v-4.5a5 5 0 0 1-5-5v-6.5a5 5 0 0 1 5-5h12a5 5 0 0 1 5 5v6.5a5 5 0 0 1-5 5h-3.7l-6.75 5.33a1 1 0 0 1-.55.17z" />
 </svg>

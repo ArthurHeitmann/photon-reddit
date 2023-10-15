@@ -184,7 +184,7 @@ export default class Ph_Post extends Ph_FeedItem {
 		else if (numbOfComments.length === 3)
 			commentsSizeClass = "medium";
 		commentsLink.innerHTML = `
-			<img alt="comments" src="/img/comments.svg">
+			<ph-icon alt="comments" src="/img/comments.svg"></ph-icon>
 			<div class="${commentsSizeClass}">${numbOfComments}</div>
 		`;
 		actionWrapper.append(commentsLink);
@@ -250,7 +250,7 @@ export default class Ph_Post extends Ph_FeedItem {
 							<span>${numberToShort(crosspostData.ups)}</span>
 						</div>
 						<div>
-							<img src="/img/comments.svg" class="commentsImg" alt="comments">
+							<ph-icon src="/img/comments.svg" class="commentsImg" alt="comments"></ph-icon>
 							<span>${numberToShort(crosspostData.num_comments)}</span>
 						</div>
 						

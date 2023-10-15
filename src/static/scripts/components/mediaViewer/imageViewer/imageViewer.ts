@@ -41,9 +41,9 @@ export default class Ph_ImageViewer extends Ph_PhotonBaseElement implements Medi
 			rightItems: [
 				this.loadingIcon = getLoadingIcon(),
 				this.hdButton = makeElement("button", { class: "hdButton" }, [nonDraggableElement(
-					makeElement("img", { src: "/img/hd.svg", alt: "hd", onclick: this.startLoadingOriginal.bind(this) }))]),
+					makeElement("img", { src: "/img/hd.svg?noThemeOverride", alt: "hd", onclick: this.startLoadingOriginal.bind(this) }))]),
 				this.refreshButton = makeElement("button", { class: "refreshButton hide", "data-tooltip": "Reload Image", onclick: this.refreshImages.bind(this) }, [
-					makeElement("img", { src: "/img/refresh.svg", alt: "↻" })
+					makeElement("img", { src: "/img/refresh.svg?noThemeOverride", alt: "↻" })
 				])
 			]
 		};

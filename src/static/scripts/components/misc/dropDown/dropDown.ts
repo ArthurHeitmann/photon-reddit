@@ -3,7 +3,7 @@ import Ph_DropDownArea from "./dropDownArea/dropDownArea";
 import {DropDownEntryParam} from "./dropDownEntry/dropDownEntry";
 
 /**
- * A drop down menu. Can have infinite sub drop downds
+ * A drop down menu. Can have infinite sub drop downs
  */
 export default class Ph_DropDown extends HTMLElement {
 	toggleButton: HTMLButtonElement;

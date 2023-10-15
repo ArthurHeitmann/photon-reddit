@@ -2,7 +2,7 @@ import {PhEvents} from "../../../types/Events";
 import {ensurePageLoaded} from "../../../utils/utils";
 import Users from "../../../multiUser/userManagement";
 import {PhotonSettingsKey, SettingsKey} from "./photonSettingsData";
-import {PhotonSettings} from "./settingsConfig";
+import {PhotonSettings, UiTheme} from "./settingsConfig";
 
 const settingToCssClassMap: { [setting in SettingsKey]?: string } = {
 	hidePostTitle: "hidePostTitle",
@@ -46,6 +46,8 @@ function handleSettings(settings: PhotonSettings) {
 	if (settings.feedDisplayType === "grid") {
 		document.body.classList.add("feedGridView");
 	}
+	if ("theme" in settings)
+		setTheme(settings.theme);
 
 	for (const settingsKey in settings) {
 		if (settingsKey in settingToCssClassMap)
@@ -71,6 +73,21 @@ function setCssVarOnBody<T extends PhotonSettingsKey>(mapping: SettingToCssVar<T
 	if (mapping.fallbackCondition && mapping.fallbackCondition(setting))
 		varVal = mapping.fallback;
 	document.body.style.setProperty(mapping.cssVarName, varVal);
+}
+
+function setTheme(theme: UiTheme) {
+	const themeClasses = [`theme-${theme}`];
+	if (theme !== UiTheme.dark)
+		themeClasses.push("theme-override");
+	
+	for (const className of [...document.documentElement.classList]) {
+		if (!className.startsWith("theme-"))
+			continue;
+		if (!themeClasses.includes(className))
+			document.documentElement.classList.remove(className);
+	}
+	document.documentElement.classList.add(...themeClasses);
+
 }
 
 window.addEventListener("load", () => {

@@ -1,3 +1,8 @@
-<svg height='300px' width='300px' stroke="#e4e4e4" stroke-width="2px" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-	<path d="m7.5 21.9a.9.9 0 0 1-.423-.108.9 .9 0 0 1-.477-.792v-4.05a4.5 4.5 0 0 1-4.5-4.5v-5.85a4.5 4.5 0 0 1 4.5-4.5h10.8a4.5 4.5 0 0 1 4.5 4.5v5.85a4.5 4.5 0 0 1-4.5 4.5h-3.33l-6.075 4.797a.9.9 0 0 1-.495.153z"></path>
+<svg xmlns="http://www.w3.org/2000/svg" height="300px" width="300px" stroke="var(--svg-fill)" stroke-width="2px" fill="none" viewBox="0 0 24 24">
+	<style>
+		svg {
+			--svg-fill: #e4e4e4;
+		}
+	</style>
+	<path d="m7.5 21.9a.9.9 0 0 1-.423-.108.9 .9 0 0 1-.477-.792v-4.05a4.5 4.5 0 0 1-4.5-4.5v-5.85a4.5 4.5 0 0 1 4.5-4.5h10.8a4.5 4.5 0 0 1 4.5 4.5v5.85a4.5 4.5 0 0 1-4.5 4.5h-3.33l-6.075 4.797a.9.9 0 0 1-.495.153z" />
 </svg>
