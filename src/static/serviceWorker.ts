@@ -107,11 +107,20 @@ self.addEventListener("fetch", (event: FetchEvent) => {
 });
 
 self.addEventListener("message", async (e: MessageEvent) => {
+	let postMessage;
 	if (e.data["action"] === "updateAll") {
 		await skipWaiting();
+		postMessage = { action: "reload" };
+	}
+	else if (e.data["action"] === "purgeSvgsCache") {
+		await purgeSvgsCache();
+		postMessage = { action: "purgeSvgsCacheDone" };
+	}
+
+	if (postMessage) {
 		const allClients = await clients.matchAll();
 		for (const client of allClients)
-			client.postMessage({ action: "reload" });
+			client.postMessage(postMessage);
 	}
 });
 
@@ -121,6 +130,13 @@ function shouldUrlBeCached(url: URL): boolean {
 		.filter(type => url.pathname.startsWith(type.path))
 		.filter(type => !type.fileEnding || (new RegExp(`\.(${type.fileEnding})$`)).test(url.pathname));
 	return matchingTypes.length > 0;
+}
+
+async function purgeSvgsCache() {
+	const cache = await caches.open(CACHE_NAME);
+	const keys = await cache.keys();
+	const svgKeys = keys.filter(key => new URL(key.url).pathname.endsWith(".svg"));
+	await Promise.all(svgKeys.map(key => cache.delete(key)));
 }
 
 // keep this, so that tsc treats this file as a module

@@ -296,7 +296,6 @@ export const getSettingsSections = (): SettingsSection[] => [
 					class: "button",
 					onclick: async () => {
 						Promise.all([
-							Users.global.set(["colorContrastCache"], {}),
 							...Users.all.map(user => user.set(["caches"], {
 								subs: null,
 								multis: null,

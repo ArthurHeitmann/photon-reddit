@@ -3,6 +3,7 @@ import {ensurePageLoaded} from "../../../utils/utils";
 import Users from "../../../multiUser/userManagement";
 import {PhotonSettingsKey, SettingsKey} from "./photonSettingsData";
 import {PhotonSettings, UiTheme} from "./settingsConfig";
+import { setTheme } from "./themeUpdater";
 
 const settingToCssClassMap: { [setting in SettingsKey]?: string } = {
 	hidePostTitle: "hidePostTitle",
@@ -38,7 +39,7 @@ const settingsToCssVarMap: { [setting in PhotonSettingsKey]?: SettingToCssVar<se
 
 window.addEventListener(PhEvents.settingsChanged, (e: CustomEvent) => handleSettings(e.detail));
 
-function handleSettings(settings: PhotonSettings) {
+function handleSettings(settings: PhotonSettings, isPageLoad: boolean = false) {
 	if (settings.imageLimitedHeight !== undefined) {
 		document.documentElement.style.setProperty("--image-height-limited",
 			settings.imageLimitedHeight > 0 ?`${settings.imageLimitedHeight}vh` : "unset");
@@ -47,7 +48,7 @@ function handleSettings(settings: PhotonSettings) {
 		document.body.classList.add("feedGridView");
 	}
 	if ("theme" in settings)
-		setTheme(settings.theme);
+		setTheme(settings.theme, isPageLoad);
 
 	for (const settingsKey in settings) {
 		if (settingsKey in settingToCssClassMap)
@@ -75,32 +76,16 @@ function setCssVarOnBody<T extends PhotonSettingsKey>(mapping: SettingToCssVar<T
 	document.body.style.setProperty(mapping.cssVarName, varVal);
 }
 
-function setTheme(theme: UiTheme, applyClass: boolean = false) {
-	const themeClasses = [`theme-${theme}`];
-	if (theme !== UiTheme.dark) {
-		themeClasses.push("theme-override");
-		document.cookie = `themeOverride=${theme};path=/;max-age=31536000`;
-	}
-	else {
-		document.cookie = `themeOverride=;path=/;max-age=0`;
-	}
-
-	if (!applyClass)
-		return;
-	
-	for (const className of [...document.documentElement.classList]) {
-		if (!className.startsWith("theme-"))
-			continue;
-		if (!themeClasses.includes(className))
-			document.documentElement.classList.remove(className);
-	}
-	document.documentElement.classList.add(...themeClasses);
-
-}
-
 window.addEventListener("load", () => {
-	Users.ensureDataHasLoaded().then(() => handleSettings(Users.global.d.photonSettings));
-	ensurePageLoaded().then(() => handleSettings(Users.global.d.photonSettings));
+	let hasInitialSettings = false;
+	function onPageLoaded() {
+		if (hasInitialSettings)
+			return;
+		hasInitialSettings = true;
+		handleSettings(Users.global.d.photonSettings, true);
+	}
+	Users.ensureDataHasLoaded().then(onPageLoaded);
+	ensurePageLoaded().then(onPageLoaded);
 
 	const themeOverride = document.cookie.split(";").find(c => c.trim().startsWith("themeOverride="));
 	if (themeOverride) {

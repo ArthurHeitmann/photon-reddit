@@ -3,7 +3,7 @@ import {photonWebVersion} from "./version";
 import VersionNumber from "./versionNumber";
 
 let pendingNewVersionNotification = false;
-let waitingServiceWorker: ServiceWorker = null;
+export let waitingServiceWorker: ServiceWorker = null;
 export function setWaitingServiceWorker(worker) {
 	waitingServiceWorker = worker;
 	if (pendingNewVersionNotification)

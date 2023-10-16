@@ -137,8 +137,8 @@ async function registerServiceWorker() {
 
 	// listen for new installations
 
-	if (registration.waiting && registration.active)
-		setWaitingServiceWorker(registration.waiting);
+	if (registration.waiting ?? registration.active)
+		setWaitingServiceWorker(registration.waiting ?? registration.active);
 
 	registration.addEventListener("updatefound", () => {
 		registration.installing.addEventListener("statechange", (event) => {
