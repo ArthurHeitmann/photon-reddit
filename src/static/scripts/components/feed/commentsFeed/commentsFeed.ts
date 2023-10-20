@@ -27,6 +27,7 @@ export default class Ph_CommentsFeed extends Ph_PhotonBaseElement {
 		this.post = post;
 		this.pendingComments = comments.data.children;
 		const initialComments = this.preparePendingComments();
+		this.updateBottomSpacer();
 
 		this.addWindowEventListener("scroll",
 			throttle(this.tryAddPendingComments.bind(this), 200));
@@ -45,6 +46,7 @@ export default class Ph_CommentsFeed extends Ph_PhotonBaseElement {
 	private tryAddPendingComments() {
 		if (this.canAddPendingComments()) {
 			const newComments = this.preparePendingComments();
+			this.updateBottomSpacer();
 			for (const comment of newComments)
 				this.appendComment(comment);
 		}
@@ -116,6 +118,13 @@ export default class Ph_CommentsFeed extends Ph_PhotonBaseElement {
 			return true;
 		const bottomDist = this.children[this.childElementCount - 1].getBoundingClientRect().bottom - window.innerHeight;
 		return bottomDist < 1000;
+	}
+
+	private updateBottomSpacer() {
+		let totalRemainingComments = 0;
+		for (const comment of this.pendingComments)
+			totalRemainingComments += this.countAllNestedComments(comment);
+		this.style.setProperty("--remainingComments", totalRemainingComments.toString());
 	}
 }
 

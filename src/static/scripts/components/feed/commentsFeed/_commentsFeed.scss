@@ -4,7 +4,8 @@
 	flex-direction: column;
 	overflow-x: auto;
 	overflow-y: hidden;
-	padding-bottom: 8rem;
+	--remainingComments: 0;
+	padding-bottom: calc(8rem + var(--remainingComments) * 6.5rem);
 
 	.parentCommentsLink {
 		display: block;
