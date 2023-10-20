@@ -14,7 +14,7 @@ import {
 import {pushLinkToHistoryComb, PushType} from "../../historyState/historyStateManager";
 import ViewsStack from "../../historyState/viewsStack";
 import {PhEvents} from "../../types/Events";
-import {FlairApiData, RedditApiObj, RedditListingObj, RedditPostData, RedditPostObj} from "../../types/redditTypes";
+import {FlairApiData, RedditApiObj, RedditAward, RedditListingObj, RedditPostData, RedditPostObj} from "../../types/redditTypes";
 import {$css, emojiFlagsToImages, escADQ, escHTML, getLoadingIcon, nonDraggableElement} from "../../utils/htmlStatics";
 import {linksToSpa} from "../../utils/htmlStuff";
 import {
@@ -141,7 +141,8 @@ export default class Ph_Post extends Ph_FeedItem {
 					{ label: "Copy Reddit Link", value: "reddit link", onSelectCallback: this.share.bind(this) },
 					{ label: "Copy Link", value: "link", onSelectCallback: this.share.bind(this) },
 					// { label: "Crosspost", onSelectCallback: this.crossPost.bind(this) },
-			] }
+			] },
+			{ label: "Load archived", labelImgUrl: "/img/reset.svg", onSelectCallback: this.loadArchivedVersion.bind(this) },
 		];
 		this.postFlair = Ph_Flair.fromThingData(postData.data, "link");
 		if (Users.current.name === postData.data.author) {
@@ -235,8 +236,7 @@ export default class Ph_Post extends Ph_FeedItem {
 			</div>
 		`;
 		emojiFlagsToImages(mainPart);
-		if (postData.data.all_awardings && postData.data.all_awardings.length > 0)
-			mainPart.$class("flairWrapper")[0].insertAdjacentElement("beforebegin", new Ph_AwardsInfo(postData.data.all_awardings));
+		this.makeAwardInfo(mainPart.$class("header")[0] as HTMLElement, postData.data.all_awardings)
 		if (postData.data.crosspost_parent_list?.length > 0) {
 			const crosspostData = postData.data.crosspost_parent_list[0];
 			const miniPost = document.createElement("div");
@@ -340,6 +340,11 @@ export default class Ph_Post extends Ph_FeedItem {
 		}
 		else
 			this.cover = null;
+	}
+
+	makeAwardInfo(header: HTMLElement, awards: RedditAward[]) {
+		if (awards && awards.length > 0)
+			header.$class("flairWrapper")[0].insertAdjacentElement("beforebegin", new Ph_AwardsInfo(awards));
 	}
 
 	private isEmpty(): boolean {
@@ -659,30 +664,45 @@ export default class Ph_Post extends Ph_FeedItem {
 
 	private async loadArchivedVersion() {
 		const loadBtn = this.$class("loadArchivedBtn")[0] as HTMLButtonElement;
-		loadBtn.disabled = true;
-		loadBtn.classList.add("loading");
+		if (loadBtn)
+			loadBtn.disabled = true;
+		loadBtn?.classList.add("loading");
 
 		let newPostData: RedditPostData;
+		let hasError = false;
 		try {
 			newPostData = await getPostFromArchive(this.data.id);
 		} catch (e) {
 			console.error(e);
+			hasError = true;
 		}
-		loadBtn.disabled = false;
-		loadBtn.classList.remove("loading");
+		if (loadBtn)
+			loadBtn.disabled = false;
+		loadBtn?.classList.remove("loading");
 		if (!newPostData) {
-			new Ph_Toast(Level.warning, "Couldn't load post. Maybe the archive server is having problems.");
+			if (hasError)
+				new Ph_Toast(Level.warning, "Failed to load archived version");
+			else
+				new Ph_Toast(Level.warning, "No archived version found");
 			return;
 		}
-		loadBtn.remove();
+		loadBtn?.remove();
 
+		// update author
 		const userLink = this.$css("a.user")[0] as HTMLAnchorElement;
 		userLink.href = `/user/${newPostData.author}`;
 		userLink.children[0].textContent = `u/${newPostData.author}`;
 
+		// update title
 		const title = this.$css(".title")[0] as HTMLElement;
 		title.innerText = newPostData.title;
 
+		// update awards
+		if (!this.$class("awardsInfo")[0]) {
+			this.makeAwardInfo(this.$class("header")[0] as HTMLElement, newPostData.all_awardings);
+		}
+
+		// update post body
 		if (this.postBody.getPostType(newPostData, false) === PostType.text) {
 			const postText = this.postBody.$class("postText")[0] as Ph_PostText;
 			postText.setText(newPostData.selftext, newPostData.selftext_html);

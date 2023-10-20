@@ -8,7 +8,7 @@ import {
 	voteDirectionFromLikes
 } from "../../api/redditApi";
 import {PhEvents} from "../../types/Events";
-import {RedditCommentData, RedditCommentObj, RedditListingObj, RedditMessageObj, RedditMoreCommentsObj} from "../../types/redditTypes";
+import {RedditAward, RedditCommentData, RedditCommentObj, RedditListingObj, RedditMessageObj, RedditMoreCommentsObj} from "../../types/redditTypes";
 import {$css, emojiFlagsToImages} from "../../utils/htmlStatics";
 import {addRedditEmojis, elementWithClassInTree, linksToSpa} from "../../utils/htmlStuff";
 import {
@@ -201,7 +201,8 @@ export default class Ph_Comment extends Ph_Readable {
 					{ label: "Copy Comment Link", value: "comment link", onSelectCallback: this.share.bind(this) },
 					{ label: "Copy Reddit Link", value: "reddit link", onSelectCallback: this.share.bind(this) },
 				]
-			}
+			},
+			{ label: "Load archived", labelImgUrl: "/img/reset.svg", onSelectCallback: this.loadArchivedVersion.bind(this) },
 		]);
 		const moreDropDown = new Ph_DropDown(dropDownParams, "", DirectionX.left, DirectionY.bottom, true);
 		moreDropDown.toggleButton.classList.add("transparentButton");
@@ -255,10 +256,7 @@ export default class Ph_Comment extends Ph_Readable {
 		this.setVotesState(this.currentVoteDirection);
 		emojiFlagsToImages(mainPart);
 		addRedditEmojis(mainPart.$class("content")[0], commentData.data as RedditCommentData);
-		if (commentData.data["all_awardings"] && commentData.data["all_awardings"].length > 0) {
-			const nonLocked = mainPart.$css(".header > :not(.locked)");
-			nonLocked[nonLocked.length - 1].insertAdjacentElement("afterend", new Ph_AwardsInfo(commentData.data["all_awardings"]));
-		}
+		this.makeAwards(mainPart.$class("header")[0] as HTMLElement, commentData.data["all_awardings"]);
 
 		// user flair
 		mainPart.$class("user")[0]
@@ -294,12 +292,20 @@ export default class Ph_Comment extends Ph_Readable {
 
 		linksToSpa(this, true);
 	}
+	
 	connectedCallback(): void {
 		super.connectedCallback();
 		if (Users.global.d.photonSettings.highlightNewComments) {
 			const prevSibling = this.previousElementSibling;
 			if (prevSibling instanceof Ph_Comment)
 				prevSibling.updateIsNewBorderFromNextSibling(this.isNew);
+		}
+	}
+	
+	makeAwards(header: HTMLElement, awards: RedditAward[]) {
+		if (awards && awards.length > 0) {
+			const nonLocked = header.$css(".header > :not(.locked)");
+			nonLocked[nonLocked.length - 1].insertAdjacentElement("afterend", new Ph_AwardsInfo(awards));
 		}
 	}
 
@@ -492,27 +498,34 @@ export default class Ph_Comment extends Ph_Readable {
 
 	async loadArchivedVersion() {
 		const loadBtn = this.$class("loadArchivedBtn")[0] as HTMLButtonElement;
-		loadBtn.disabled = true;
-		loadBtn.classList.add("loading");
+		if (loadBtn)
+			loadBtn.disabled = true;
+		loadBtn?.classList.add("loading");
 
 		const currentReplies = this.data.replies?.data?.children ?? [];
 		let commentData: RedditCommentData;
 		let newReplies: (RedditCommentObj|RedditMoreCommentsObj)[];
+		let hasError = false;
 		try {
 			const resp = await getCommentTreeFromArchive(this.data);
 			commentData = resp;
 			newReplies = (resp.replies as RedditListingObj<RedditCommentObj|RedditMoreCommentsObj>)?.data?.children ?? [];
 		} catch (e) {
 			console.error(e);
+			hasError = true;
 		}
 
-		loadBtn.disabled = false;
-		loadBtn.classList.remove("loading");
+		if (loadBtn)
+			loadBtn.disabled = false;
+		loadBtn?.classList.remove("loading");
 		if (!commentData || !newReplies) {
-			new Ph_Toast(Level.warning, "Failed to load archived version");
+			if (hasError)
+				new Ph_Toast(Level.warning, "Failed to load archived version");
+			else
+				new Ph_Toast(Level.warning, "No archived version found");
 			return;
 		}
-		loadBtn.remove();
+		loadBtn?.remove();
 
 		// update current comment
 		const content = this.$class("content")[0] as HTMLElement;
@@ -532,6 +545,11 @@ export default class Ph_Comment extends Ph_Readable {
 			.filter(comment => !commentsIdsToKeep.includes(comment.data?.id))
 			.map(comment => new Ph_Comment(comment, true, false, this.parentPost))
 		);
+
+		// update awards
+		if (!this.$class("awardsInfo")[0]) {
+			this.makeAwards(this.$class("header")[0] as HTMLElement, commentData.all_awardings);
+		}
 
 		emojiFlagsToImages(content);
 		addRedditEmojis(content, this.data);

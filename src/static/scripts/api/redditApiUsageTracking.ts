@@ -3,8 +3,9 @@ import Users from "../multiUser/userManagement";
 import {RedditApiUsageRecord} from "../types/misc";
 import {trackApiUsage} from "./photonApi";
 
-export async function onApiUsage(endpoint: string, api: string) {
-	endpoint = generalizeEndpoint(endpoint);
+export async function onApiUsage(endpoint: string, api: string, generalize = true) {
+	if (generalize)
+		endpoint = generalizeEndpoint(endpoint);
 	const newRecord: RedditApiUsageRecord = {
 		clientId: Users.global.d.analytics.clientId,
 		timeMillisUtc: Date.now(),

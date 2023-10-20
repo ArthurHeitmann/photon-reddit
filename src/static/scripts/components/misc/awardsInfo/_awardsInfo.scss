@@ -72,8 +72,9 @@
 						position: absolute;
 						top: 0;
 						left: 0;
-						background: black;
-						box-shadow: 0 0 6px 1px black;
+						background: vars.$tooltip-bg;
+						box-shadow: 0 0 6px 1px vars.$tooltip-bg;
+						border: 1px solid vars.$border-color;
 						height: 1rem;
 						padding: 0 .125rem;
 						border-radius: .5rem;

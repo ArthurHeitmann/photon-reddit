@@ -3,6 +3,7 @@ import {parseMarkdown} from "../lib/markdownForReddit/markdown-for-reddit";
 import {isCommentDeleted} from "../utils/utils";
 import Ph_Toast, {Level} from "../components/misc/toast/toast";
 import {redditInfo} from "./redditApi";
+import { onApiUsage } from "./redditApiUsageTracking";
 
 interface ArcticShiftResponse<T> {
 	data: T;
@@ -16,6 +17,9 @@ export async function getCommentTreeFromArchive(commentData: RedditCommentData):
 
 	const response = await fetch(`https://arctic-shift.photon-reddit.com/api/comments/tree?link_id=${commentData.link_id}&parent_id=${commentData.id}&limit=20&md2html=true`);
 	const treeRes = await response.json() as ArcticShiftResponse<RedditCommentObj[]>;
+	onApiUsage("/api/comments/tree", "arctic_shift", false);
+	if (!treeRes.data || treeRes.data.length === 0)
+		return null;
 	const tree = treeRes.data;
 	const flatCommentsMap: { [id: string]: RedditCommentData } = {};
 	flattenCommentTree(tree, flatCommentsMap);
@@ -38,29 +42,19 @@ export async function getCommentTreeFromArchive(commentData: RedditCommentData):
 }
 
 export async function getPostFromArchive(id: string): Promise<RedditPostData> {
-	let response: Response;
-	try {
-		response = await fetch(`https://arctic-shift.photon-reddit.com/api/posts/ids?ids=${id}`);
-		const dataRes = await response.json() as ArcticShiftResponse<RedditPostData[]>;
-		const data = dataRes.data;
-		if (!data[0])
-			return null;
-		const postData = data[0] as RedditPostData;
-		if (["[deleted]", "[removed]"].includes(postData.selftext))
-			postData.selftext += " (not found)";
-		else
-			postData.selftext += "\n\n*^(Archived version)*";
-		postData.selftext_html = `<div class="md">${parseMarkdown(postData.selftext)}</div>`;
-		return postData;
-	} catch (e) {
-		console.error(e);
-		new Ph_Toast(
-			Level.error,
-			response?.status === 429 ? "Too many requests" : "API error",
-			{ timeout: 3000, groupId: "archiveError" }
-		);
+	const response = await fetch(`https://arctic-shift.photon-reddit.com/api/posts/ids?ids=${id}`);
+	onApiUsage("/api/posts/ids", "arctic_shift", false);
+	const dataRes = await response.json() as ArcticShiftResponse<RedditPostData[]>;
+	if (!dataRes.data || dataRes.data.length === 0)
 		return null;
-	}
+	const data = dataRes.data;
+	const postData = data[0] as RedditPostData;
+	if (["[deleted]", "[removed]"].includes(postData.selftext))
+		postData.selftext += " (not found)";
+	else
+		postData.selftext += "\n\n*^(Archived version)*";
+	postData.selftext_html = `<div class="md">${parseMarkdown(postData.selftext)}</div>`;
+	return postData;
 }
 
 function markedDeletedComments(comments: RedditCommentData[]): void {
