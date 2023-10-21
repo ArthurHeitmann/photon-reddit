@@ -16,7 +16,7 @@ export function cacheControl(req: express.Request, res: express.Response, next: 
 	// 		cacheSeconds = 60 * 60 * 4;
 	// 	}
 	// }
-	// res.setHeader("Cache-Control", `public, max-age=${cacheSeconds}`);
+	res.setHeader("Cache-Control", `public, max-age=0`);
 	next();
 }
 
