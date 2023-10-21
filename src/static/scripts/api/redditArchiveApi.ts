@@ -18,8 +18,10 @@ export async function getCommentTreeFromArchive(commentData: RedditCommentData):
 	const response = await fetch(`https://arctic-shift.photon-reddit.com/api/comments/tree?link_id=${commentData.link_id}&parent_id=${commentData.id}&limit=20&md2html=true`);
 	const treeRes = await response.json() as ArcticShiftResponse<RedditCommentObj[]>;
 	onApiUsage("/api/comments/tree", "arctic_shift", false);
-	if (!treeRes.data || treeRes.data.length === 0)
+	if (!treeRes.data || treeRes.data.length === 0) {
+		handleMeta(treeRes["meta"], false);
 		return null;
+	}
 	const tree = treeRes.data;
 	const flatCommentsMap: { [id: string]: RedditCommentData } = {};
 	flattenCommentTree(tree, flatCommentsMap);
@@ -38,6 +40,7 @@ export async function getCommentTreeFromArchive(commentData: RedditCommentData):
 
 	sortReplies(tree.map(comment => comment.data as RedditCommentData));
 
+	handleMeta(treeRes["meta"], Boolean(tree[0]?.data));
 	return tree[0]?.data as RedditCommentData;
 }
 
@@ -45,8 +48,10 @@ export async function getPostFromArchive(id: string): Promise<RedditPostData> {
 	const response = await fetch(`https://arctic-shift.photon-reddit.com/api/posts/ids?ids=${id}`);
 	onApiUsage("/api/posts/ids", "arctic_shift", false);
 	const dataRes = await response.json() as ArcticShiftResponse<RedditPostData[]>;
-	if (!dataRes.data || dataRes.data.length === 0)
+	if (!dataRes.data || dataRes.data.length === 0) {
+		handleMeta(dataRes["meta"], false);
 		return null;
+	}
 	const data = dataRes.data;
 	const postData = data[0] as RedditPostData;
 	if (["[deleted]", "[removed]"].includes(postData.selftext))
@@ -54,7 +59,17 @@ export async function getPostFromArchive(id: string): Promise<RedditPostData> {
 	else
 		postData.selftext += "\n\n*^(Archived version)*";
 	postData.selftext_html = `<div class="md">${parseMarkdown(postData.selftext)}</div>`;
+	handleMeta(dataRes["meta"], Boolean(postData));
 	return postData;
+}
+
+function handleMeta(meta: object|undefined, hasResult: boolean) {
+	if (!meta)
+		return;
+	if (meta["user_message_status"])
+		new Ph_Toast(Level.info, meta["user_message_status"], { groupId: "archive_user_message_info" });
+	if (meta["user_message_on_error"] && !hasResult)
+		new Ph_Toast(Level.error, meta["user_message_on_error"], { groupId: "archive_user_message_error" });
 }
 
 function markedDeletedComments(comments: RedditCommentData[]): void {

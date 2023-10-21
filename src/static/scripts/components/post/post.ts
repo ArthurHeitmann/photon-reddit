@@ -681,9 +681,9 @@ export default class Ph_Post extends Ph_FeedItem {
 		loadBtn?.classList.remove("loading");
 		if (!newPostData) {
 			if (hasError)
-				new Ph_Toast(Level.warning, "Failed to load archived version");
+				new Ph_Toast(Level.warning, "Failed to load archived version", { groupId: "load_archived_error", timeout: 5000 });
 			else
-				new Ph_Toast(Level.warning, "No archived version found");
+				new Ph_Toast(Level.warning, "No archived version found", { groupId: "load_archived_no_error", timeout: 5000 });
 			return;
 		}
 		loadBtn?.remove();
