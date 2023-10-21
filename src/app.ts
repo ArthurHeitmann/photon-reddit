@@ -19,7 +19,7 @@ app.use(helmet({
 app.use(safeExc(checkSslAndWww));
 app.use(safeExc(cacheControl));
 app.use("/img", safeExcAsync(imgThemeOverride));
-app.use(express.static('src/static'));
+app.use(express.static("src/static", { cacheControl: false }));
 app.use(bodyParser.json());
 
 // paths
