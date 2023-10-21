@@ -17,9 +17,9 @@ app.use(helmet({
 	crossOriginEmbedderPolicy: false,
 }));
 app.use(safeExc(checkSslAndWww));
-app.use(safeExc(cacheControl));
+// app.use(safeExc(cacheControl));
 app.use("/img", safeExcAsync(imgThemeOverride));
-app.use(express.static("src/static", { cacheControl: false }));
+app.use(express.static('src/static'));
 app.use(bodyParser.json());
 
 // paths
