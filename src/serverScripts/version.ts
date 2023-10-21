@@ -1,6 +1,16 @@
-export const photonVersion = "1.2.0";		/// <change version script>
+export const photonVersion = "1.3.0";		/// <change version script>
 
 export const photonChangelog = {
+	"1.3.0": {
+		"New": [
+			"Added light theme (Settings > UI > Theme)",
+			"Restored functionality of \"Load archived version\" button (hopefully)",
+			"From the ⫶ menu you can load the archived version of a post or comment",
+		],
+		"Fixed": [
+			"Scroll jumping when collapsing comments (maybe)",
+		]
+	},
 	"1.2.0": {
 		"New": [
 			"When revisiting a post, new comments will be highlighted (can be disabled in the settings)",
