@@ -18,7 +18,7 @@
 		transition: all .2s linear;
 
 		&.collapsed {
-			@media (orientation: portrait) {
+			@media (max-width: vars.$smaller-screen-max-width) {
 				grid-template-columns: 3rem auto 1fr;
 
 				.feedSpecific {
@@ -44,7 +44,7 @@
 			display: flex;
 			align-items: center;
 			gap: .5rem;
-			@media (orientation: portrait) {
+			@media (max-width: vars.$smaller-screen-max-width) {
 				gap: .25rem;
 			}
 		}

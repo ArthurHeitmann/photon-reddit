@@ -30,7 +30,7 @@
 		padding: 0 3.3rem 0 1rem;
 		border: 1px solid vars.$border-heavy-color;
 		min-width: 10rem;
-		@media (orientation: portrait) {
+		@media (max-width: vars.$smaller-screen-max-width) {
 			min-width: 7rem;
 		}
 		text-align: left;

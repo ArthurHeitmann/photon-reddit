@@ -2,12 +2,7 @@
 
 
 .postAndComments, .universalFeed {
-	width: vars.$widthP;
+	@extend %view-width-M;
+	margin: 0 auto;
 	animation: fadeIn .5s ease;
-}
-
-@media (orientation: landscape) {
-	.postAndComments, .universalFeed {
-		margin: 0 auto;
-	}
 }

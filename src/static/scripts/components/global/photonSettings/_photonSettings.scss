@@ -44,7 +44,7 @@
 				transition: all .25s;
 
 				&.hamburger {
-					@media (min-width: 800px) {
+					@media (min-width: 600px) {
 						display: none;
 					}
 				}
@@ -90,6 +90,10 @@
 			margin-left: $sidebar-width;
 			background-image: linear-gradient(to right, #00000054 0, transparent 1.5rem);
 			transition: all 0.1s ease;
+
+			@media (max-width: 600px) {
+				padding: 0.5rem;
+			}
 
 			.section {
 				overflow-x: hidden;
@@ -249,7 +253,7 @@
 			}
 		}
 
-		@media (max-width: 800px) {
+		@media (max-width: 600px) {
 			&:not(.toggle) {
 				.sectionsSelection {
 					width: $sidebar-min-width;

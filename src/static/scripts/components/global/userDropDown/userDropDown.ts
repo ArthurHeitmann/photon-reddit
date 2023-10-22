@@ -57,8 +57,8 @@ export default class Ph_UserDropDown extends HTMLElement {
 	-			this.minimize();
 		});
 		const createMultiPane = new Ph_MultiCreateOrEdit("Create new multireddit", "Create", this.createNewMultireddit.bind(this));
-		const newMultiBtn = makeElement("button", { class: "newMulti", onclick: () => {
-				this.toggle();
+		const newMultiBtn = makeElement("button", { class: "newMulti", onclick: (e) => {
+				this.toggle(e);
 				createMultiPane.show();
 			}
 		}, [
@@ -339,17 +339,18 @@ export default class Ph_UserDropDown extends HTMLElement {
 		this.classList.remove("expanded");
 	}
 
-	toggle() {
+	toggle(e: Event) {
 		if (this.classList.contains("expanded"))
 			this.hide();
 		else
-			this.show();
+			this.show(e);
 	}
 
-	show() {
+	show(e: Event) {
 		this.classList.add("expanded");
 		(elementWithClassInTree(this.parentElement, "header") as Ph_Header)?.minimizeAll([this]);
-		setTimeout(() => this.searchFilterInput.focus({ preventScroll: true }), 200);
+		if (e instanceof PointerEvent && e.pointerType === "mouse")
+			setTimeout(() => this.searchFilterInput.focus({ preventScroll: true }), 200);
 	}
 
 	hide() {

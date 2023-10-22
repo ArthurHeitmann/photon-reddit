@@ -153,6 +153,7 @@ $widthP: calc(100vw - 3.4rem);
 $widthM: min(var(--v-widthM), calc(100vw - 6rem));
 /** view state width+ in landscape */
 $widthL: min(var(--v-widthL), calc(100vw - 6rem));
+$widthMobile: 100vw;
 $link-color: var(--link-color);
 $border-color: var(--border-color);
 $border-heavy-color: rgb(128 128 128 / 22%);
@@ -190,3 +191,26 @@ $header-stroke: var(--header-stroke);
 $fab-root-filter: var(--fab-root-filter);
 $fab-root-filter-active: var(--fab-root-filter-active);
 $fab-root-shadow: var(--fab-root-shadow);
+
+$smaller-screen-max-width: 999px;
+$mobile-screen-max-width: 500px;
+$desktop-screen-min-width: 1000px;
+
+%view-width-M {
+	width: $widthM;
+	@media (max-width: $smaller-screen-max-width) {
+		width: $widthP;
+	}
+	@media (max-width: $mobile-screen-max-width) {
+		width: $widthMobile;
+	}
+}
+%view-width-L {
+	width: $widthL;
+	@media (max-width: $smaller-screen-max-width) {
+		width: $widthP;
+	}
+	@media (max-width: $mobile-screen-max-width) {
+		width: $widthMobile;
+	}
+}

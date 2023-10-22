@@ -1,10 +1,7 @@
 @use "../../../../style/vars";
 
 .submitPost {
-	width: vars.$widthM;
-	@media (orientation: portrait) {
-		width: vars.$widthP;
-	}
+	@extend %view-width-M;
 	background: vars.$background-el1;
 	border: 1px solid vars.$border-color;
 	border-radius: 1rem;

@@ -7,7 +7,7 @@
 
 	&.singleColumn {
 		padding: 0 calc(50vw - #{vars.$widthM} / 2);
-		@media (orientation: portrait) {
+		@media (max-width: vars.$smaller-screen-max-width) {
 			padding: 0 0.4rem 0 2.2rem;
 		}
 	}
@@ -35,5 +35,4 @@
 		}
 
 	}
-
 }

@@ -2,14 +2,15 @@
 @use "../../../style/shadow";
 
 .wiki:not(.md) {
+	@extend %view-width-M;
 	background: vars.$background-el1;
 	border-radius: vars.$border-radius;
 	border: 1px solid vars.$border-color;
-	width: vars.$widthP;
-	@media (orientation: landscape) {
-		width: vars.$widthM;
-	}
 	height: max-content;
 	padding: 2rem;
 	@extend %shadow-diffuse;
+
+	img {
+		max-width: 100%;
+	}
 }

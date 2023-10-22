@@ -10,11 +10,8 @@ html, body {
 }
 
 #mainContent {
-	width: vars.$widthP;
-	@media (orientation: landscape) {
-		width: vars.$widthM;
-		margin: 0 auto;
-	}
+	@extend %view-width-M;
+	margin: 0 auto;
 	padding: .5rem;
 
 	> h1 {

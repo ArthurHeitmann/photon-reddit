@@ -2,6 +2,7 @@
 @use '../../../style/shadow';
 
 .postAndComments {
+	@extend %view-width-L;
 	display: flex;
 	flex-direction: column;
 	height: max-content;
@@ -12,7 +13,7 @@
 
 	> .markdownForm {
 		margin: 1.5rem vars.$post-padding 0 4rem;
-		@media (orientation: portrait) and (min-width: 320px) and (max-width: 480px) {
+		@media (max-width: vars.$mobile-screen-max-width) {
 			margin: 1.5rem 1rem;
 		}
 	}
@@ -20,11 +21,5 @@
 	> .loadingIcon {
 		margin: 0 auto;
 		width: 10rem;
-	}
-}
-
-@media (orientation: landscape) {
-	.postAndComments, {
-		width: vars.$widthL;
 	}
 }

@@ -10,7 +10,7 @@ ph-search {
 	border: 1px solid vars.$border-heavy-color;
 	border-radius: 1.3rem;
 	width: 20rem;
-	@media (orientation: portrait) {
+	@media (max-width: vars.$smaller-screen-max-width) {
 		width: 12.5rem;
 	}
 	height: 2.6rem;
@@ -183,10 +183,6 @@ ph-search {
 	}
 
 	.searchCollapser {
-		@media (orientation: landscape) {
-			display: none;
-		}
-
 		img {
 			transform: rotate(180deg);
 		}
@@ -212,6 +208,14 @@ ph-search {
 
 		.searchCollapser img {
 			transform: rotate(0);
+		}
+	}
+
+	&:not(.collapsed) {
+		.searchCollapser {
+			@media (min-width: vars.$smaller-screen-max-width) {
+				display: none;
+			}
 		}
 	}
 }

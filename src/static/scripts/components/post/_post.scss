@@ -8,7 +8,7 @@
 			transform: translateX(calc(-100% - .2rem)) translateY(-0.6rem);
 		}
 
-		@media (orientation: portrait) {
+		@media (max-width: vars.$smaller-screen-max-width) {
 			.actions {
 				transform: translateX(-100%);
 			}
