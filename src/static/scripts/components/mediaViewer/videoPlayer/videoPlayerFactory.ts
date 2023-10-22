@@ -67,7 +67,11 @@ export function videoPlayerFromPostData({ postData, url }: { postData?: RedditPo
 			break;
 		case "v.redd.it":
 		case "reddit.com":
-			if (/\.mp4([?#].*)?$/i.test(url)) {
+			if (url.startsWith("https://www.reddit.com/media?url=")) {
+				const urlObj = new URL(url);
+				url = decodeURIComponent(urlObj.searchParams.get("url"));
+			}
+			if (/\.(mp4|gif)([?#].*)?$/i.test(url)) {
 				defaultCase(url, videoOut);
 			}
 			else {
@@ -193,12 +197,13 @@ export function videoPlayerFromPostData({ postData, url }: { postData?: RedditPo
 
 
 function defaultCase(url: string, videoOut: Ph_VideoPlayer) {
-	if (/\.gif(\?.*)?$/i.test(url)) {
-		videoOut.init(new Ph_GifVideo(url));
+	const isRedditPreviewMp4 = url.startsWith("https://preview.redd.it") && url.includes("format=mp4");
+	if (/\.mp4(\?.*)?$/i.test(url) || isRedditPreviewMp4) {
+		videoOut.init(new Ph_SimpleVideo([{src: url, type: "video/mp4"}]));
 		return;
 	}
-	else if (/\.mp4(\?.*)?$/i.test(url)) {
-		videoOut.init(new Ph_SimpleVideo([{src: url, type: "video/mp4"}]));
+	else if (/\.gif(\?.*)?$/i.test(url)) {
+		videoOut.init(new Ph_GifVideo(url));
 		return;
 	}
 	console.error(`Unknown video provider for ${url}`);

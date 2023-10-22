@@ -119,7 +119,7 @@ const tutorialDescription: TutorialDescription = {
 				"Quick access to some pages and actions (like your profile, inbox, ...)",
 				"Your followed subreddits und multireddits"
 			],
-			beginAction: () => ($css("ph-header ph-user-dropdown")[0] as Ph_UserDropDown).show(),
+			beginAction: () => ($css("ph-header ph-user-dropdown")[0] as Ph_UserDropDown).show(null),
 			endAction: () => ($css("ph-header ph-user-dropdown")[0] as Ph_UserDropDown).hide(),
 		},
 		{
@@ -129,7 +129,7 @@ const tutorialDescription: TutorialDescription = {
 				"Log in with multiple accounts",
 			],
 			beginAction: () => {
-				($css("ph-header ph-user-dropdown")[0] as Ph_UserDropDown).show();
+				($css("ph-header ph-user-dropdown")[0] as Ph_UserDropDown).show(null);
 				$css("ph-header ph-user-dropdown .allUsersList")[0].classList.add("expand");
 			},
 			endAction: () => {

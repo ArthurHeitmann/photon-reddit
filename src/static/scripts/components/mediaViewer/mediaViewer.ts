@@ -199,6 +199,7 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 			"^(https?://(i|m)?\.?imgur\\.com\/[\\w-]+.(gifv|mp4))|" +		// imgur
 			"(https?://v.redd.it\\/[\\w-]+)|" +										// v.redd.it
 			"(https?://(www\\.)?reddit\\.com/link/\\w+/video/\\w+)|" +				// other v.redd.it?
+			"(https?://www\\.reddit\\.com/media\\?url=https%3A%2F%2Fpreview.redd.it%2F\\w+\\.(gif|mp4))|" +	// preview reddit (proxied)
 			// "(https?://w?w?w?\\.?redgifs.com/\\w+/\\w+)" +						// redgifs
 			// ")|" +
 			"(https?://gfycat.com/[\\w-]+)|" +										// gfycat

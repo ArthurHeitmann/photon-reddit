@@ -27,6 +27,10 @@ export function imageViewerFromUrl(url: string): Ph_ImageViewer {
 			});
 	}
 	else {
+		if (url.startsWith("https://www.reddit.com/media?url=")) {
+			const urlObj = new URL(url);
+			url = decodeURIComponent(urlObj.searchParams.get("url"));
+		}
 		imageViewer.init({ originalUrl: url })
 	}
 
