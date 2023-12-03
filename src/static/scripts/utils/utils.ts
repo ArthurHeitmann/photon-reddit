@@ -634,7 +634,7 @@ export function commentsToTree(comments: RedditCommentObj[]): RedditCommentObj[]
 export function isCommentDeleted(commentData: RedditCommentData) {
 	return (
 		commentData.author === "[deleted]" && ["[deleted]", "[removed]"].includes(commentData.body))
-		|| /^\[ Removed by Reddit .*]/.test(commentData.body)
+		|| /^\[ ?Removed by Reddit ?.*]/i.test(commentData.body)
 	;
 }
 

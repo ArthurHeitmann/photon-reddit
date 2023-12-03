@@ -46,11 +46,20 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	static fromPostData_Image(postData: RedditPostData): Ph_MediaViewer {
 		if (postData.preview && postData.preview.images[0].resolutions.length) {
 			const previews = postData.preview.images[0].resolutions;
-			return new Ph_MediaViewer([new Ph_ImageViewer({
-				originalUrl: postData.url,
-				previewUrl: previews[previews.length - 1].url,
-				heightHint: previews[previews.length - 1].height
-			})], postData.url);
+			if (/https:\/\/i\.redgifs.com\/i\/\w+\.(jpg|png)/.test(postData.url)) {		// The .jpg extension is just bait, redirects to website instead
+				return new Ph_MediaViewer([new Ph_ImageViewer({
+					originalUrl: postData.preview.images[0].source.url,
+					previewUrl: previews[previews.length - 1].url,
+					heightHint: previews[previews.length - 1].height
+				})], postData.url);
+			}
+			else {
+				return new Ph_MediaViewer([new Ph_ImageViewer({
+					originalUrl: postData.url,
+					previewUrl: previews[previews.length - 1].url,
+					heightHint: previews[previews.length - 1].height
+				})], postData.url);
+			}
 		}
 		else {
 			return Ph_MediaViewer.fromUrl_Image(postData.url);

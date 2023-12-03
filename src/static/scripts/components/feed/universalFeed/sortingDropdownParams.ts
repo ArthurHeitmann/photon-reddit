@@ -23,7 +23,7 @@ export function makeGeneralSortSectionEntries(onSelect: DropDownCallback, isFron
 		{ label: SortPostsOrderNamed[SortPostsOrder.rising],		labelImgUrl: "/img/trendUp.svg", 	value: SortPostsOrder.rising, 			onSelectCallback: onSelect },
 		{ label: SortPostsOrderNamed[SortPostsOrder.new], 			labelImgUrl: "/img/new.svg", 		value: SortPostsOrder.new, 				onSelectCallback: onSelect },
 		{ label: SortPostsOrderNamed[SortPostsOrder.controversial],	labelImgUrl: "/img/lightning.svg", 	value: SortPostsOrder.controversial, 	nestedEntries: makeTimeframeSectionEntries(onSelect) },
-		{ label: SortPostsOrderNamed[SortPostsOrder.gilded], 		labelImgUrl: "/img/award.svg", 		value: SortPostsOrder.gilded, 			onSelectCallback: onSelect },
+		// { label: SortPostsOrderNamed[SortPostsOrder.gilded], 		labelImgUrl: "/img/award.svg", 		value: SortPostsOrder.gilded, 			onSelectCallback: onSelect },
 	];
 }
 
@@ -74,7 +74,7 @@ export function makeUserSectionEntries(onSelect: DropDownCallback, isLoggedInUse
 		{ label: UserSectionsNamed[UserSection.overview], 	value: UserSection.overview, 	onSelectCallback: onSelect },
 		{ label: UserSectionsNamed[UserSection.posts], 		value: UserSection.posts, 		onSelectCallback: onSelect },
 		{ label: UserSectionsNamed[UserSection.comments], 	value: UserSection.comments, 	onSelectCallback: onSelect },
-		{ label: UserSectionsNamed[UserSection.gilded],		value: UserSection.gilded, 		onSelectCallback: onSelect },
+		// { label: UserSectionsNamed[UserSection.gilded],		value: UserSection.gilded, 		onSelectCallback: onSelect },
 		...(isLoggedInUserFeed ? [
 		{ label: UserSectionsNamed[UserSection.upvoted], 	value: UserSection.upvoted, 	onSelectCallback: onSelect },
 		{ label: UserSectionsNamed[UserSection.downvoted], 	value: UserSection.downvoted, 	onSelectCallback: onSelect },
