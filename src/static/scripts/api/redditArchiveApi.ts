@@ -58,7 +58,7 @@ export async function getPostFromArchive(id: string): Promise<RedditPostData> {
 		postData.selftext += " (not found)";
 	else
 		postData.selftext += "\n\n*^(Archived version)*";
-	postData.selftext_html = `<div class="md">${parseMarkdown(postData.selftext)}</div>`;
+	postData.selftext_html = `<div class="md">${parseMarkdown(postData.selftext, postData)}</div>`;
 	handleMeta(dataRes["meta"], Boolean(postData));
 	return postData;
 }

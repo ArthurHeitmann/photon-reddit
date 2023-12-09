@@ -4,4 +4,28 @@
  * @param markdown The markdown string
  * @return Rendered HTML string
  */
-export declare function parseMarkdown(markdown: string): string;
+export declare function parseMarkdown(markdown: string, additionalRedditData?: AdditionalRedditData): string;
+
+export interface AdditionalRedditData {
+	media_metadata?: RedditMediaData;
+}
+
+export interface RedditMediaData {
+	[key: string]: {
+		e: string,
+		id: string,
+		m: string,
+		p?: RedditMediaDataEntry[],
+		s: RedditMediaDataEntry,
+		status: string,
+		t?: string,
+	}
+}
+
+export interface RedditMediaDataEntry {
+	x: number,
+	y: number,
+	u?: string,
+	gif?: string,
+	mp4?: string,
+}

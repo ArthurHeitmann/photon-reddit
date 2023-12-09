@@ -1,4 +1,4 @@
-// https://github.com/ArthurHeitmann/markdownForReddit
+// src/parsers/P_Parser.js
 var AfterParseResult;
 (function(AfterParseResult2) {
   AfterParseResult2[AfterParseResult2["ended"] = 0] = "ended";
@@ -13,23 +13,40 @@ var ParsingState;
   ParsingState2[ParsingState2["end"] = 3] = "end";
   ParsingState2[ParsingState2["completed"] = 4] = "completed";
 })(ParsingState || (ParsingState = {}));
-var ParserType = class {
+var ParserType = class _ParserType {
+  /** Class to be instanciated */
+  constr;
+  /** Optional arguments passed to the constructor */
+  otherParams;
+  /** Instantiates the P_Parser sub class */
   make(cursor) {
     return new this.constr(cursor, ...this.otherParams);
   }
+  /**
+   * Makes a new P_Parser wrapper.
+   *
+   * @param constr Sub class of P_Parser
+   * @param otherParams Optional parameters passed to the constructor
+   */
   static from(constr, ...otherParams) {
-    const type = new ParserType();
+    const type = new _ParserType();
     type.constr = constr;
     type.otherParams = otherParams;
     return type;
   }
 };
 var P_Parser = class {
+  /** Child nodes HTML will be joined with these chars (can be overridden) */
+  joinChars = "";
+  /** Holds information about global current parsing state */
+  cursor;
+  /** Child nodes */
+  children = [];
+  /** Shorthand for last of this.children */
+  parsingChild = null;
+  /** If try try if following text can be styled/linked */
+  tryTextAlternative = false;
   constructor(cursor) {
-    this.joinChars = "";
-    this.children = [];
-    this.parsingChild = null;
-    this.tryTextAlternative = false;
     this.cursor = cursor;
   }
   canStart() {
@@ -92,23 +109,23 @@ function escapeHtml(string) {
   let lastIndex = 0;
   for (index = match.index; index < str.length; index++) {
     switch (str.charCodeAt(index)) {
-    case 34:
-      escape = "&quot;";
-      break;
-    case 38:
-      escape = "&amp;";
-      break;
-    case 39:
-      escape = "&#39;";
-      break;
-    case 60:
-      escape = "&lt;";
-      break;
-    case 62:
-      escape = "&gt;";
-      break;
-    default:
-      continue;
+      case 34:
+        escape = "&quot;";
+        break;
+      case 38:
+        escape = "&amp;";
+        break;
+      case 39:
+        escape = "&#39;";
+        break;
+      case 60:
+        escape = "&lt;";
+        break;
+      case 62:
+        escape = "&gt;";
+        break;
+      default:
+        continue;
     }
     if (lastIndex !== index) {
       html += str.substring(lastIndex, index);
@@ -118,27 +135,47 @@ function escapeHtml(string) {
   }
   return lastIndex !== index ? html + str.substring(lastIndex, index) : html;
 }
+function escapeAttr(string) {
+  return string.replace(/"/g, "&quot;").replace(/'/g, "&#39;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
 function escapeRegex(strToEscape) {
   return strToEscape.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
+var MediaDisplayPolicy;
+(function(MediaDisplayPolicy2) {
+  MediaDisplayPolicy2[MediaDisplayPolicy2["link"] = 0] = "link";
+  MediaDisplayPolicy2[MediaDisplayPolicy2["emoteOnly"] = 1] = "emoteOnly";
+  MediaDisplayPolicy2[MediaDisplayPolicy2["imageOrGif"] = 2] = "imageOrGif";
+})(MediaDisplayPolicy || (MediaDisplayPolicy = {}));
 
 // src/parsers/P_StyledText.js
-var P_StyledText = class extends P_Parser {
+var P_StyledText = class _P_StyledText extends P_Parser {
+  id = "styledText";
+  canChildrenRepeat = true;
+  possibleChildren = [];
+  static styleTypes = [
+    { charSequence: "**", tagName: "strong" },
+    { charSequence: "__", tagName: "strong" },
+    { charSequence: "*", tagName: "em" },
+    { charSequence: "_", tagName: "em", noMidWordEnd: true },
+    { charSequence: "~~", tagName: "del" },
+    { charSequence: ">!", charSequenceEnd: "!<", tagName: "span", tagOther: ` class="md-spoiler-text"` }
+  ];
+  excludedCharSeq;
+  allowLinks;
+  parsingState = ParsingState.notStarted;
+  styleType = null;
+  parsedStartChars = "";
+  parsedEndChars = "";
   constructor(cursor, options = {}) {
     super(cursor);
-    this.id = "styledText";
-    this.canChildrenRepeat = true;
-    this.possibleChildren = [];
-    this.parsingState = ParsingState.notStarted;
-    this.styleType = null;
-    this.parsedStartChars = "";
-    this.parsedEndChars = "";
     this.excludedCharSeq = options.excludedCharSeq || [];
-    this.allowLinks = options.allowLinks;
+    this.allowLinks = Boolean(options.allowLinks);
   }
   canStart() {
-    for (const styleType of P_StyledText.styleTypes) {
-      if (!this.excludedCharSeq.includes(styleType.charSequence) && new RegExp("^" + escapeRegex(styleType.charSequence) + ".*" + escapeRegex(styleType.charSequenceEnd || styleType.charSequence), "s").test(this.cursor.remainingText) && /^(?!\s)/.test(this.cursor.remainingText.slice(styleType.charSequence.length)) && this.cursor.previousChar !== "\\") {
+    for (const styleType of _P_StyledText.styleTypes) {
+      if (!this.excludedCharSeq.includes(styleType.charSequence) && // starts & ends with right chars
+      new RegExp("^" + escapeRegex(styleType.charSequence) + ".*" + escapeRegex(styleType.charSequenceEnd || styleType.charSequence), "s").test(this.cursor.remainingText) && /^(?!\s)/.test(this.cursor.remainingText.slice(styleType.charSequence.length)) && this.cursor.previousChar !== "\\") {
         return true;
       }
     }
@@ -146,7 +183,7 @@ var P_StyledText = class extends P_Parser {
   }
   parseChar() {
     if (this.parsingState === ParsingState.notStarted) {
-      for (const styleType of P_StyledText.styleTypes) {
+      for (const styleType of _P_StyledText.styleTypes) {
         if (!this.excludedCharSeq.includes(styleType.charSequence) && new RegExp("^" + escapeRegex(styleType.charSequence) + ".*" + escapeRegex(styleType.charSequenceEnd || styleType.charSequence), "s").test(this.cursor.remainingText)) {
           this.styleType = styleType;
           break;
@@ -181,6 +218,7 @@ var P_StyledText = class extends P_Parser {
       }
       return AfterParseResult.consumed;
     }
+    return AfterParseResult.consumed;
   }
   canConsumeChar() {
     const remainingEndChars = this.getCharSequenceEnd().slice(this.parsedEndChars.length);
@@ -188,34 +226,29 @@ var P_StyledText = class extends P_Parser {
   }
   toHtmlString() {
     if (this.parsingState === ParsingState.completed)
-      return `<${this.styleType.tagName}${this.styleType.tagOther ?? ""}>${super.toHtmlString()}</${this.styleType.tagName}>`;
+      return `<${this.styleType.tagName}${this.styleType?.tagOther ?? ""}>${super.toHtmlString()}</${this.styleType.tagName}>`;
     else
       return `${escapeHtml(this.parsedStartChars)}${super.toHtmlString()}${escapeHtml(this.parsedEndChars)}`;
   }
   getCharSequenceEnd() {
-    return this.styleType.charSequenceEnd ?? this.styleType.charSequence;
+    return this.styleType?.charSequenceEnd ?? this.styleType.charSequence;
   }
 };
-P_StyledText.styleTypes = [
-  { charSequence: "**", tagName: "strong" },
-  { charSequence: "__", tagName: "strong" },
-  { charSequence: "*", tagName: "em" },
-  { charSequence: "_", tagName: "em", noMidWordEnd: true },
-  { charSequence: "~~", tagName: "del" },
-  { charSequence: ">!", charSequenceEnd: "!<", tagName: "span", tagOther: ` class="md-spoiler-text"` }
-];
 
 // src/parsers/P_Text.js
-var P_Text = class extends P_Parser {
+var P_Text = class _P_Text extends P_Parser {
+  id = "text";
+  canChildrenRepeat = false;
+  possibleChildren = [];
+  static escapableCharsRegex = /\\([`~*_\-\\><\]\[^\/#|)])/g;
+  modifyLineBreaks;
+  preserveTabs;
   constructor(cursor, modifyLineBreaks = true, preserveTabs = false) {
     super(cursor);
-    this.id = "text";
-    this.canChildrenRepeat = false;
-    this.possibleChildren = [];
-    this.parsedText = "";
     this.modifyLineBreaks = modifyLineBreaks;
     this.preserveTabs = preserveTabs;
   }
+  parsedText = "";
   canStart() {
     return true;
   }
@@ -231,7 +264,7 @@ var P_Text = class extends P_Parser {
       text = text.replace(/\t/g, " ");
     }
     if (this.modifyLineBreaks) {
-      text = text.replace(P_Text.escapableCharsRegex, "$1");
+      text = text.replace(_P_Text.escapableCharsRegex, "$1");
       text = escapeHtml(text);
       text = text.replace(/ {2,}\n/g, "<br/>\n");
       text = text.replace(/((?!<br\/>)(?:.{5}|^.{0,4}))\s*\n(?=.+)/g, "$1 ");
@@ -240,7 +273,6 @@ var P_Text = class extends P_Parser {
     return text;
   }
 };
-P_Text.escapableCharsRegex = /\\([`~*_\-\\><\]\[^\/#|)])/g;
 
 // src/parsers/P_InlineCode.js
 var InlineCodeParsingState;
@@ -254,17 +286,14 @@ var InlineCodeParsingState;
   InlineCodeParsingState2[InlineCodeParsingState2["error"] = 6] = "error";
 })(InlineCodeParsingState || (InlineCodeParsingState = {}));
 var P_InlineCode = class extends P_Parser {
-  constructor() {
-    super(...arguments);
-    this.id = "InlineCode";
-    this.canChildrenRepeat = false;
-    this.possibleChildren = [ParserType.from(P_Text, false)];
-    this.parsedStartChars = "";
-    this.parsedEndChars = "";
-    this.backtickCount = 0;
-    this.backtickCountEnd = 0;
-    this.parsingState = InlineCodeParsingState.tickStart;
-  }
+  id = "InlineCode";
+  canChildrenRepeat = false;
+  possibleChildren = [ParserType.from(P_Text, false)];
+  parsedStartChars = "";
+  parsedEndChars = "";
+  backtickCount = 0;
+  backtickCountEnd = 0;
+  parsingState = InlineCodeParsingState.tickStart;
   canStart() {
     return /^(`+).*\1/.test(this.cursor.remainingText) && this.cursor.previousChar !== "\\";
   }
@@ -339,13 +368,14 @@ var P_InlineCode = class extends P_Parser {
 
 // src/parsers/P_Superscript.js
 var P_Superscript = class extends P_Parser {
+  id = "superscript";
+  canChildrenRepeat = true;
+  possibleChildren = [ParserType.from(P_BasicText)];
+  parsedStartChars = "";
+  usesParentheses;
+  parseState = ParsingState.notStarted;
   constructor(cursor, options = {}) {
     super(cursor);
-    this.id = "superscript";
-    this.canChildrenRepeat = true;
-    this.possibleChildren = [ParserType.from(P_BasicText)];
-    this.parsedStartChars = "";
-    this.parseState = ParsingState.notStarted;
     if (options.allowLinks)
       this.possibleChildren[0].allowLinks = true;
   }
@@ -379,6 +409,7 @@ var P_Superscript = class extends P_Parser {
       }
       return super.parseChar();
     }
+    return AfterParseResult.consumed;
   }
   toHtmlString() {
     if (this.parseState === ParsingState.completed || !this.usesParentheses)
@@ -397,32 +428,29 @@ var LinkParsingState;
   LinkParsingState2[LinkParsingState2["manual"] = 3] = "manual";
 })(LinkParsingState || (LinkParsingState = {}));
 var ManualLinkParsingState;
-(function(ManualLinkParsingState2) {
-  ManualLinkParsingState2[ManualLinkParsingState2["start"] = 0] = "start";
-  ManualLinkParsingState2[ManualLinkParsingState2["content"] = 1] = "content";
-  ManualLinkParsingState2[ManualLinkParsingState2["separation"] = 2] = "separation";
-  ManualLinkParsingState2[ManualLinkParsingState2["link"] = 3] = "link";
-  ManualLinkParsingState2[ManualLinkParsingState2["title"] = 4] = "title";
-  ManualLinkParsingState2[ManualLinkParsingState2["end"] = 5] = "end";
+(function(ManualLinkParsingState3) {
+  ManualLinkParsingState3[ManualLinkParsingState3["start"] = 0] = "start";
+  ManualLinkParsingState3[ManualLinkParsingState3["content"] = 1] = "content";
+  ManualLinkParsingState3[ManualLinkParsingState3["separation"] = 2] = "separation";
+  ManualLinkParsingState3[ManualLinkParsingState3["link"] = 3] = "link";
+  ManualLinkParsingState3[ManualLinkParsingState3["title"] = 4] = "title";
+  ManualLinkParsingState3[ManualLinkParsingState3["end"] = 5] = "end";
 })(ManualLinkParsingState || (ManualLinkParsingState = {}));
 var redditRegex = /^\/?(r|u|user)\/[^\/]+/;
 var schemaRegex = /^(http:\/\/|https:\/\/|ftp:\/\/|mailto:|git:\/\/|steam:\/\/|irc:\/\/|news:\/\/|mumble:\/\/|ssh:\/\/|ircs:\/\/|ts3server:\/\/).+/;
 var manualRegex = /^\[.+]\((http:\/\/|https:\/\/|ftp:\/\/|mailto:|git:\/\/|steam:\/\/|irc:\/\/|news:\/\/|mumble:\/\/|ssh:\/\/|ircs:\/\/|ts3server:\/\/|\/|#)([^)]|\\\)|\\\()+\)/s;
 var P_Link = class extends P_Parser {
-  constructor() {
-    super(...arguments);
-    this.id = "link";
-    this.canChildrenRepeat = false;
-    this.possibleChildren = [ParserType.from(P_BasicText)];
-    this.parsingState = LinkParsingState.notStarted;
-    this.manualLinkParsingState = ManualLinkParsingState.start;
-    this.titleSurrounding = "";
-    this.url = "";
-    this.altLinkText = "";
-    this.title = "";
-  }
+  id = "link";
+  canChildrenRepeat = false;
+  possibleChildren = [ParserType.from(P_BasicText)];
+  parsingState = LinkParsingState.notStarted;
+  manualLinkParsingState = ManualLinkParsingState.start;
+  titleSurrounding = "";
+  url = "";
+  altLinkText = "";
+  title = "";
   canStart() {
-    return (redditRegex.test(this.cursor.remainingText) && this.cursor.previousChar !== "\\" || schemaRegex.test(this.cursor.remainingText) || manualRegex.test(this.cursor.remainingText)) && (/^(|\W)$/.test(this.cursor.previousChar) || this.cursor.isNewNode);
+    return (redditRegex.test(this.cursor.remainingText) || schemaRegex.test(this.cursor.remainingText) || manualRegex.test(this.cursor.remainingText) && this.cursor.previousChar !== "\\") && (/^(|\W)$/.test(this.cursor.previousChar) || this.cursor.isNewNode);
   }
   parseChar() {
     if (this.parsingState === LinkParsingState.notStarted) {
@@ -472,7 +500,7 @@ var P_Link = class extends P_Parser {
         } else
           this.url += this.cursor.currentChar;
       } else if (this.manualLinkParsingState === ManualLinkParsingState.title) {
-        if (this.title === "" && /["']/.test(this.cursor.currentChar)) {
+        if (this.title === "" && this.titleSurrounding === "" && /["']/.test(this.cursor.currentChar)) {
           this.titleSurrounding = this.cursor.currentChar;
           return AfterParseResult.consumed;
         } else if (this.titleSurrounding && this.cursor.currentChar === this.titleSurrounding) {
@@ -486,45 +514,187 @@ var P_Link = class extends P_Parser {
       }
       return AfterParseResult.consumed;
     }
+    return AfterParseResult.consumed;
   }
   toHtmlString() {
-    return `<a href="${escapeHtml(encodeURI(this.url))}"${this.title ? ` title="${this.title}"` : ""}>${super.toHtmlString() || escapeHtml(this.altLinkText)}</a>`;
+    return `<a href="${escapeAttr(encodeURI(this.url))}"${this.title ? ` title="${escapeAttr(this.title)}"` : ""}>${super.toHtmlString() || escapeHtml(this.altLinkText)}</a>`;
+  }
+};
+
+// src/parsers/P_Image.js
+var ManualLinkParsingState2;
+(function(ManualLinkParsingState3) {
+  ManualLinkParsingState3[ManualLinkParsingState3["start"] = 0] = "start";
+  ManualLinkParsingState3[ManualLinkParsingState3["content"] = 1] = "content";
+  ManualLinkParsingState3[ManualLinkParsingState3["separation"] = 2] = "separation";
+  ManualLinkParsingState3[ManualLinkParsingState3["link"] = 3] = "link";
+  ManualLinkParsingState3[ManualLinkParsingState3["title"] = 4] = "title";
+  ManualLinkParsingState3[ManualLinkParsingState3["end"] = 5] = "end";
+})(ManualLinkParsingState2 || (ManualLinkParsingState2 = {}));
+var imgUrlRegex = /^!\[.*]\(((?:https:\/\/|\/)(?:[^)]|\\\)|\\\()+)\)/s;
+var imgIdRegex = /^!\[.*]\(([\w\|]+)(?: "[^"]*"| '[^']*')?\)/s;
+var allowedDomains = [
+  "redd.it",
+  "reddit.com",
+  "redditmedia.com"
+];
+var P_Image = class extends P_Parser {
+  id = "img";
+  canChildrenRepeat = false;
+  possibleChildren = [ParserType.from(P_BasicText)];
+  manualLinkParsingState = ManualLinkParsingState2.start;
+  titleSurrounding = "";
+  url = "";
+  alt = "";
+  title = "";
+  canStart() {
+    if (!this.cursor.remainingText.startsWith("!["))
+      return false;
+    if (!(/^(|\W)$/.test(this.cursor.previousChar) || this.cursor.isNewNode))
+      return false;
+    if (this.cursor.previousChar === "\\")
+      return false;
+    if (imgUrlRegex.test(this.cursor.remainingText))
+      return true;
+    if (this.cursor.redditData.media_metadata && Object.keys(this.cursor.redditData.media_metadata).length > 0) {
+      if (imgIdRegex.test(this.cursor.remainingText)) {
+        const match = imgIdRegex.exec(this.cursor.remainingText);
+        if (match[1] in this.cursor.redditData.media_metadata)
+          return true;
+      }
+    }
+    return false;
+  }
+  parseChar() {
+    if (this.manualLinkParsingState === ManualLinkParsingState2.start) {
+      if (this.cursor.currentChar === "[")
+        this.manualLinkParsingState = ManualLinkParsingState2.content;
+    } else if (this.manualLinkParsingState === ManualLinkParsingState2.content) {
+      if (this.cursor.currentChar === "]" && this.cursor.previousChar !== "\\")
+        this.manualLinkParsingState = ManualLinkParsingState2.separation;
+      else
+        this.alt += this.cursor.currentChar;
+    } else if (this.manualLinkParsingState === ManualLinkParsingState2.separation) {
+      this.manualLinkParsingState = ManualLinkParsingState2.link;
+    } else if (this.manualLinkParsingState === ManualLinkParsingState2.link) {
+      if (this.cursor.currentChar === ")" && this.cursor.previousChar !== "\\")
+        return AfterParseResult.ended;
+      else if (this.cursor.currentChar === " ") {
+        this.manualLinkParsingState = ManualLinkParsingState2.title;
+      } else
+        this.url += this.cursor.currentChar;
+    } else if (this.manualLinkParsingState === ManualLinkParsingState2.title) {
+      if (this.title === "" && this.titleSurrounding === "" && /["']/.test(this.cursor.currentChar)) {
+        this.titleSurrounding = this.cursor.currentChar;
+        return AfterParseResult.consumed;
+      } else if (this.titleSurrounding && this.cursor.currentChar === this.titleSurrounding) {
+        this.manualLinkParsingState = ManualLinkParsingState2.end;
+      } else if (/[)\n]/.test(this.cursor.currentChar))
+        return AfterParseResult.ended;
+      else
+        this.title += this.cursor.currentChar;
+    } else if (this.manualLinkParsingState === ManualLinkParsingState2.end) {
+      return AfterParseResult.ended;
+    }
+    return AfterParseResult.consumed;
+  }
+  toHtmlString() {
+    let url = "";
+    let dimensions;
+    let useLink = false;
+    let mediaID;
+    const imageDisplayPolicy = this.cursor.redditData.mediaDisplayPolicy ?? MediaDisplayPolicy.imageOrGif;
+    if (this.cursor.redditData.media_metadata && this.url in this.cursor.redditData.media_metadata) {
+      const media = this.cursor.redditData.media_metadata[this.url];
+      url = media.s.u ?? media.s.gif ?? "";
+      mediaID = this.url;
+      if (media.s.x && media.s.y) {
+        dimensions = {
+          width: media.s.x,
+          height: media.s.y
+        };
+      }
+      if (imageDisplayPolicy === MediaDisplayPolicy.emoteOnly && !this.url.includes("emote|"))
+        useLink = true;
+    } else {
+      if (this.url.startsWith("https://")) {
+        const urlObj = new URL(this.url);
+        const domain = urlObj.hostname.split(".").slice(-2).join(".");
+        if (!allowedDomains.includes(domain))
+          useLink = true;
+      }
+    }
+    if (imageDisplayPolicy === MediaDisplayPolicy.link)
+      useLink = true;
+    if (!url)
+      url = this.url;
+    let tag;
+    const attributes = [];
+    let useClosingTag;
+    let innerHtml = "";
+    if (useLink) {
+      tag = "a";
+      useClosingTag = true;
+      attributes.push(["href", encodeURI(url)]);
+      if (this.title)
+        attributes.push(["title", this.title]);
+      if (this.alt)
+        innerHtml = escapeAttr(this.alt);
+    } else {
+      tag = "img";
+      useClosingTag = false;
+      attributes.push(["src", encodeURI(url)]);
+      if (this.title)
+        attributes.push(["title", this.title]);
+      if (this.alt)
+        attributes.push(["alt", this.alt]);
+      if (dimensions) {
+        attributes.push(["width", dimensions.width.toString()]);
+        attributes.push(["height", dimensions.height.toString()]);
+      }
+      if (mediaID)
+        attributes.push(["data-media-id", mediaID]);
+    }
+    let html = `<${tag}`;
+    for (const [key, value] of attributes) {
+      html += ` ${key}="${escapeAttr(value)}"`;
+    }
+    html += useClosingTag ? `>${innerHtml}</${tag}>` : ">";
+    return html;
   }
 };
 
 // src/parsers/P_BasicText.js
 var P_BasicText = class extends P_Parser {
+  id = "basicText";
+  canChildrenRepeat = true;
+  possibleChildren = [
+    ParserType.from(P_StyledText),
+    ParserType.from(P_Superscript),
+    ParserType.from(P_InlineCode),
+    ParserType.from(P_Text)
+  ];
   constructor(cursor, options = {}) {
     super(cursor);
-    this.id = "basicText";
-    this.canChildrenRepeat = true;
-    this.possibleChildren = [
-      ParserType.from(P_StyledText),
-      ParserType.from(P_Superscript),
-      ParserType.from(P_InlineCode),
-      ParserType.from(P_Text)
-    ];
     this.possibleChildren[0] = ParserType.from(P_StyledText, { excludedCharSeq: options.excludedStyleTypes || [] });
     if (options.allowLinks) {
       this.possibleChildren.splice(0, 0, ParserType.from(P_Link));
-      if (!this.possibleChildren[1].otherParams[0])
-        this.possibleChildren[1].otherParams[0] = {};
+      this.possibleChildren.splice(1, 0, ParserType.from(P_Image));
       if (!this.possibleChildren[2].otherParams[0])
         this.possibleChildren[2].otherParams[0] = {};
-      this.possibleChildren[1].otherParams[0].allowLinks = true;
+      if (!this.possibleChildren[3].otherParams[0])
+        this.possibleChildren[3].otherParams[0] = {};
       this.possibleChildren[2].otherParams[0].allowLinks = true;
+      this.possibleChildren[3].otherParams[0].allowLinks = true;
     }
   }
 };
 
 // src/parsers/P_Paragraph.js
 var P_Paragraph = class extends P_Parser {
-  constructor() {
-    super(...arguments);
-    this.id = "paragraph";
-    this.canChildrenRepeat = false;
-    this.possibleChildren = [ParserType.from(P_BasicText, { allowLinks: true })];
-  }
+  id = "paragraph";
+  canChildrenRepeat = false;
+  possibleChildren = [ParserType.from(P_BasicText, { allowLinks: true })];
   parseChar() {
     if (this.cursor.column + 1 === this.cursor.currentLine.length && (this.cursor.nextLine === null || /^\s*\n$/.test(this.cursor.nextLine))) {
       return AfterParseResult.ended;
@@ -539,14 +709,11 @@ var P_Paragraph = class extends P_Parser {
 
 // src/parsers/P_CodeMultilineSpaces.js
 var P_CodeMultilineSpaces = class extends P_Parser {
-  constructor() {
-    super(...arguments);
-    this.id = "CodeMultilineSpaces";
-    this.canChildrenRepeat = false;
-    this.possibleChildren = [ParserType.from(P_Text, false, true)];
-    this.parsingState = ParsingState.start;
-    this.parsedStartSpaces = 0;
-  }
+  id = "CodeMultilineSpaces";
+  canChildrenRepeat = false;
+  possibleChildren = [ParserType.from(P_Text, false, true)];
+  parsingState = ParsingState.start;
+  parsedStartSpaces = 0;
   canStart() {
     return this.cursor.column === 0 && /^( {4}|\t)/.test(this.cursor.currentLine);
   }
@@ -574,6 +741,7 @@ var P_CodeMultilineSpaces = class extends P_Parser {
         this.parsingState = ParsingState.content;
       return AfterParseResult.consumed;
     }
+    return AfterParseResult.consumed;
   }
   toHtmlString() {
     return `<pre><code>${super.toHtmlString()}
@@ -583,14 +751,11 @@ var P_CodeMultilineSpaces = class extends P_Parser {
 
 // src/parsers/P_CodeMultilineFenced.js
 var P_CodeMultilineFenced = class extends P_Parser {
-  constructor() {
-    super(...arguments);
-    this.id = "CodeMultilineSpaces";
-    this.canChildrenRepeat = false;
-    this.possibleChildren = [ParserType.from(P_Text, false, true)];
-    this.parsingState = ParsingState.start;
-    this.parsedStartTicks = 0;
-  }
+  id = "CodeMultilineSpaces";
+  canChildrenRepeat = false;
+  possibleChildren = [ParserType.from(P_Text, false, true)];
+  parsingState = ParsingState.start;
+  parsedStartTicks = 0;
   canStart() {
     return this.cursor.column === 0 && /^(`{3,})\n(.*\n)*\1($|\n)/.test(this.cursor.remainingText);
   }
@@ -620,6 +785,7 @@ var P_CodeMultilineFenced = class extends P_Parser {
       }
       return AfterParseResult.consumed;
     }
+    return AfterParseResult.consumed;
   }
   toHtmlString() {
     if (this.parsingState === ParsingState.completed)
@@ -632,12 +798,9 @@ var P_CodeMultilineFenced = class extends P_Parser {
 
 // src/parsers/P_HorizontalLine.js
 var P_HorizontalLine = class extends P_Parser {
-  constructor() {
-    super(...arguments);
-    this.id = "HorizontalLine";
-    this.canChildrenRepeat = false;
-    this.possibleChildren = [];
-  }
+  id = "HorizontalLine";
+  canChildrenRepeat = false;
+  possibleChildren = [];
   canStart() {
     return /^(-{3,}|\*{3,}|_{3,})(\n|$)/.test(this.cursor.currentLine);
   }
@@ -651,14 +814,11 @@ var P_HorizontalLine = class extends P_Parser {
 
 // src/parsers/P_Quote.js
 var P_Quote = class extends P_Parser {
-  constructor() {
-    super(...arguments);
-    this.id = "Quote";
-    this.canChildrenRepeat = true;
-    this.possibleChildren = [ParserType.from(P_Block)];
-    this.joinChars = "\n\n";
-    this.parsingState = ParsingState.start;
-  }
+  id = "Quote";
+  canChildrenRepeat = true;
+  possibleChildren = [ParserType.from(P_Block)];
+  joinChars = "\n\n";
+  parsingState = ParsingState.start;
   canStart() {
     return this.cursor.currentLine.startsWith("> ");
   }
@@ -688,6 +848,7 @@ var P_Quote = class extends P_Parser {
       super.parseChar();
       return AfterParseResult.consumed;
     }
+    return AfterParseResult.consumed;
   }
   toHtmlString() {
     return `<blockquote>
@@ -698,14 +859,11 @@ ${super.toHtmlString()}
 
 // src/parsers/P_Heading.js
 var P_Heading = class extends P_Parser {
-  constructor() {
-    super(...arguments);
-    this.id = "Heading";
-    this.canChildrenRepeat = false;
-    this.possibleChildren = [ParserType.from(P_BasicText, { allowLinks: true })];
-    this.headingLevel = 0;
-    this.parsingState = ParsingState.start;
-  }
+  id = "Heading";
+  canChildrenRepeat = false;
+  possibleChildren = [ParserType.from(P_BasicText, { allowLinks: true })];
+  headingLevel = 0;
+  parsingState = ParsingState.start;
   canStart() {
     return /^#{1,6}.*(\n|$)/.test(this.cursor.currentLine);
   }
@@ -733,6 +891,7 @@ var P_Heading = class extends P_Parser {
       super.parseChar();
       return AfterParseResult.consumed;
     }
+    return AfterParseResult.consumed;
   }
   toHtmlString() {
     return `<h${this.headingLevel}>${super.toHtmlString()}</h${this.headingLevel}>`;
@@ -762,25 +921,22 @@ var DividerParsingState;
   DividerParsingState2[DividerParsingState2["lastChar"] = 3] = "lastChar";
   DividerParsingState2[DividerParsingState2["completed"] = 4] = "completed";
 })(DividerParsingState || (DividerParsingState = {}));
-var P_Table = class extends P_Parser {
-  constructor() {
-    super(...arguments);
-    this.id = "table";
-    this.canChildrenRepeat = false;
-    this.possibleChildren = [ParserType.from(P_BasicText, { allowLinks: true })];
-    this.parsingState = TableParsingState.header;
-    this.dataRowParsingState = DataRowParsingState.pipe;
-    this.dividerParsingState = DividerParsingState.pipe;
-    this.columns = 0;
-    this.currentColumn = 0;
-    this.currentRow = 0;
-    this.columnAlignment = [];
-    this.headerValues = [];
-    this.cellValues = [];
-  }
+var P_Table = class _P_Table extends P_Parser {
+  id = "table";
+  canChildrenRepeat = false;
+  possibleChildren = [ParserType.from(P_BasicText, { allowLinks: true })];
+  parsingState = TableParsingState.header;
+  dataRowParsingState = DataRowParsingState.pipe;
+  dividerParsingState = DividerParsingState.pipe;
+  columns = 0;
+  currentColumn = 0;
+  currentRow = 0;
+  columnAlignment = [];
+  headerValues = [];
+  cellValues = [];
   canStart() {
-    const headerPipes = P_Table.countRowPipes(this.cursor.currentLine);
-    const dividerPipes = P_Table.countRowPipes(this.cursor.nextLine);
+    const headerPipes = _P_Table.countRowPipes(this.cursor.currentLine);
+    const dividerPipes = _P_Table.countRowPipes(this.cursor.nextLine);
     return headerPipes >= 2 && dividerPipes >= 2 && (/^\|((.*[^\\]|)\|+) *\n/.test(this.cursor.currentLine) && /^\|([:\- ]*\|+)+ *(\n|$)/.test(this.cursor.nextLine));
   }
   parseChar() {
@@ -825,7 +981,7 @@ var P_Table = class extends P_Parser {
         this.currentColumn++;
       } else if (this.dividerParsingState === DividerParsingState.completed) {
         if (this.cursor.currentChar === "\n") {
-          if (P_Table.countRowPipes(this.cursor.nextLine) >= 2) {
+          if (_P_Table.countRowPipes(this.cursor.nextLine) >= 2) {
             this.dataRowParsingState = DataRowParsingState.pipe;
             this.parsingState = TableParsingState.rows;
             this.currentColumn = 0;
@@ -837,7 +993,7 @@ var P_Table = class extends P_Parser {
       return AfterParseResult.consumed;
     } else if (this.parsingState === TableParsingState.rows) {
       return this.parseDataRow(() => this.cellValues[this.currentRow].push(new P_BasicText(this.cursor, { allowLinks: true })), () => this.cellValues[this.currentRow][this.currentColumn].parseChar(), () => this.currentColumn++, () => {
-        if (P_Table.countRowPipes(this.cursor.nextLine) < 2)
+        if (_P_Table.countRowPipes(this.cursor.nextLine) < 2)
           return AfterParseResult.ended;
         else {
           this.currentRow++;
@@ -940,28 +1096,40 @@ var ContentParsingState;
   ContentParsingState2[ContentParsingState2["blocks"] = 1] = "blocks";
   ContentParsingState2[ContentParsingState2["sublist"] = 2] = "sublist";
 })(ContentParsingState || (ContentParsingState = {}));
-var P_List = class extends P_Parser {
-  constructor() {
-    super(...arguments);
-    this.id = "list";
-    this.canChildrenRepeat = true;
-    this.possibleChildren = [ParserType.from(P_Block, ["list"])];
-    this.listType = null;
-    this.parsingState = ListParsingState.start;
-    this.contentParsingState = ContentParsingState.text;
-    this.trimNextLine = false;
-    this.entries = [];
-    this.currentEntry = null;
-    this.parsedIndents = 0;
-    this.makeNewBlock = false;
-    this.isNewLine = true;
-    this.currentLineBackup = "";
-    this.nextLineBackup = "";
-  }
+var P_List = class _P_List extends P_Parser {
+  id = "list";
+  canChildrenRepeat = true;
+  possibleChildren = [ParserType.from(P_Block, ["list"])];
+  static listTypes = [
+    {
+      initialStartRegex: /^[*-] /,
+      startRegex: /^[*-] /,
+      indentation: 2,
+      tagName: "ul"
+    },
+    {
+      initialStartRegex: /^1\. /,
+      startRegex: /^\d+\. /,
+      indentation: 3,
+      tagName: "ol"
+    }
+  ];
+  listType = null;
+  parsingState = ListParsingState.start;
+  contentParsingState = ContentParsingState.text;
+  trimNextLine = false;
+  entries = [];
+  currentEntry = null;
+  parsedIndents = 0;
+  makeNewBlock = false;
+  // following vars are for sublist state
+  isNewLine = true;
+  currentLineBackup = "";
+  nextLineBackup = "";
   canStart() {
     if (this.cursor.column !== 0)
       return false;
-    for (const listType of P_List.listTypes) {
+    for (const listType of _P_List.listTypes) {
       if (listType.initialStartRegex.test(this.cursor.currentLine))
         return true;
     }
@@ -969,7 +1137,7 @@ var P_List = class extends P_Parser {
   }
   parseChar() {
     if (this.listType === null) {
-      for (const listType of P_List.listTypes) {
+      for (const listType of _P_List.listTypes) {
         if (listType.initialStartRegex.test(this.cursor.currentLine)) {
           this.listType = listType;
           break;
@@ -1061,7 +1229,7 @@ var P_List = class extends P_Parser {
         this.makeNewBlock = parseResult === AfterParseResult.ended;
       } else if (this.contentParsingState === ContentParsingState.sublist) {
         if (!this.currentEntry.sublist)
-          this.currentEntry.sublist = new P_List(this.cursor);
+          this.currentEntry.sublist = new _P_List(this.cursor);
         if (this.isNewLine) {
           if (this.isNextLineStillIndented())
             this.cursor.nextLine = this.nextLineBackup.slice(this.listType.indentation);
@@ -1120,11 +1288,11 @@ var P_List = class extends P_Parser {
     if (!line || !line.startsWith(" ".repeat(this.listType.indentation)))
       return false;
     line = line.slice(this.listType.indentation);
-    for (const listType of P_List.listTypes) {
+    for (const listType of _P_List.listTypes) {
       if (listType.initialStartRegex.test(line))
         return true;
     }
-    return this.currentEntry.sublist?.isNextLineList();
+    return Boolean(this.currentEntry.sublist?.isNextLineList());
   }
   isNextLineStillIndented() {
     return this.nextLineBackup ? this.nextLineBackup.startsWith(" ".repeat(this.listType.indentation)) : false;
@@ -1136,37 +1304,24 @@ var P_List = class extends P_Parser {
     return /^\s*\n/.test(this.cursor.nextLine);
   }
 };
-P_List.listTypes = [
-  {
-    initialStartRegex: /^[*-] /,
-    startRegex: /^[*-] /,
-    indentation: 2,
-    tagName: "ul"
-  },
-  {
-    initialStartRegex: /^1\. /,
-    startRegex: /^\d+\. /,
-    indentation: 3,
-    tagName: "ol"
-  }
-];
 
 // src/parsers/P_Block.js
 var P_Block = class extends P_Parser {
+  id = "block";
+  possibleChildren = [
+    ParserType.from(P_Quote),
+    ParserType.from(P_Table),
+    ParserType.from(P_List),
+    ParserType.from(P_CodeMultilineSpaces),
+    ParserType.from(P_CodeMultilineFenced),
+    ParserType.from(P_Heading),
+    ParserType.from(P_HorizontalLine),
+    ParserType.from(P_Paragraph)
+  ];
+  canChildrenRepeat;
+  hasBlockStarted = false;
   constructor(cursor, excludedTypeIds = []) {
     super(cursor);
-    this.id = "block";
-    this.possibleChildren = [
-      ParserType.from(P_Quote),
-      ParserType.from(P_Table),
-      ParserType.from(P_List),
-      ParserType.from(P_CodeMultilineSpaces),
-      ParserType.from(P_CodeMultilineFenced),
-      ParserType.from(P_Heading),
-      ParserType.from(P_HorizontalLine),
-      ParserType.from(P_Paragraph)
-    ];
-    this.hasBlockStarted = false;
     for (const excludedId of excludedTypeIds) {
       const possibleChildrenIndex = this.possibleChildren.findIndex((parser) => {
         const newParser = parser.make(null);
@@ -1187,24 +1342,43 @@ var P_Block = class extends P_Parser {
 
 // src/parsers/P_Root.js
 var P_Root = class extends P_Parser {
-  constructor() {
-    super(...arguments);
-    this.id = "root";
-    this.possibleChildren = [ParserType.from(P_Block)];
-    this.canChildrenRepeat = true;
-    this.joinChars = "\n\n";
-  }
+  id = "root";
+  possibleChildren = [ParserType.from(P_Block)];
+  canChildrenRepeat = true;
+  joinChars = "\n\n";
 };
 
 // src/parsingCursor.js
 var ParsingCursor = class {
-  constructor(markdown) {
-    this.row = 0;
-    this.column = 0;
-    this.charIndex = 0;
-    this.previousChar = "";
-    this.previousText = "";
-    this.isNewNode = false;
+  /** All markdown text (doesn't change) */
+  allText;
+  /** Current row */
+  row = 0;
+  /** Current column (can be modified by parsing nodes) */
+  column = 0;
+  /** Current char index (of allText) */
+  charIndex = 0;
+  /** Array of All lines (doesn't change) */
+  allLines;
+  /** Current line (can be modified by parsing nodes) */
+  currentLine;
+  /** Next line (null if no next line) (can be modified by parsing nodes) */
+  nextLine;
+  /** Slice of all text, starting from current char index. */
+  remainingText;
+  /** Currently parsing char */
+  currentChar;
+  /** Previously parsed char */
+  previousChar = "";
+  /** Previously parsed text */
+  previousText = "";
+  /** if there is no remaining text */
+  isLastChar;
+  /** if true P_Link can ignore the previous char */
+  isNewNode = false;
+  /** Additional data passed from reddit API */
+  redditData;
+  constructor(markdown, redditData) {
     this.allText = markdown;
     this.allLines = markdown.split("\n").map((line) => `${line}
 `);
@@ -1213,6 +1387,7 @@ var ParsingCursor = class {
     this.remainingText = markdown;
     this.currentChar = markdown[0];
     this.isLastChar = markdown.length < 2;
+    this.redditData = redditData ?? { media_metadata: {} };
   }
   incrementCursor() {
     this.charIndex++;
@@ -1233,9 +1408,9 @@ var ParsingCursor = class {
 };
 
 // src/main.ts
-function parseMarkdown(markdown) {
+function parseMarkdown(markdown, additionalRedditData) {
   markdown = markdown.replace(/^(\s*\n)*|(\s*\n)*$/g, "").replace(/\n\s*$/g, "\n");
-  const cursor = new ParsingCursor(markdown);
+  const cursor = new ParsingCursor(markdown, additionalRedditData);
   const rootParser = new P_Root(cursor);
   let parseResult;
   while (cursor.charIndex !== cursor.allText.length) {

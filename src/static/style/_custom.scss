@@ -221,7 +221,7 @@ input.radio {
 	}
 }
 
-.redditSticker {
+.redditSticker, [data-media-id^="emote|"] {
 	vertical-align: middle;
 	margin: 0 2px;
 }

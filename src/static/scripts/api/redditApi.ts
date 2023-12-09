@@ -123,7 +123,7 @@ function isPostsFeed(path: string): boolean {
 function rateLimitCheck(headers: Headers) {
 	const rlReqRemaining = parseInt(headers.get("x-ratelimit-remaining"));
 	const rlTimeRemaining = parseInt(headers.get("x-ratelimit-reset"));
-	if (rlReqRemaining < 50)
+	if (rlReqRemaining < 25)
 		rateLimitWarning(rlReqRemaining, rlTimeRemaining);
 }
 
