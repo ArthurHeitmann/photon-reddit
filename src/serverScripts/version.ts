@@ -1,6 +1,12 @@
-export const photonVersion = "1.3.0";		/// <change version script>
+export const photonVersion = "1.3.1";		/// <change version script>
 
 export const photonChangelog = {
+	"1.3.1": {
+		"Fixed": [
+			"Fixed display of several image and video links",
+			"Removed gilded sort option (since awards have been removed)",
+		]
+	},
 	"1.3.0": {
 		"New": [
 			"Added light theme (Settings > UI > Theme)",
