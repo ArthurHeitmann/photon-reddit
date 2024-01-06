@@ -172,4 +172,6 @@ export interface RedditApiUsageRecord {
 	timeMillisUtc: number;
 	endpoint: string;
 	api: string;
+	used?: number;
+	remaining?: number;
 }

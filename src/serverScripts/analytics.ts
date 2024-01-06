@@ -249,7 +249,7 @@ async function trackGenericProperty(key: string, value: string, data2: string): 
 	}
 }
 
-type RedditApiUsageRecord = { clientId: string, timeMillisUtc: number, endpoint: string, api?: string };
+type RedditApiUsageRecord = { clientId: string, timeMillisUtc: number, endpoint: string, api?: string, used?: number, remaining?: number };
 async function trackRedditApiUsage(records: RedditApiUsageRecord[]): Promise<void> {
 	const connection = await getConnection();
 	if (connection === null)
@@ -258,9 +258,9 @@ async function trackRedditApiUsage(records: RedditApiUsageRecord[]): Promise<voi
 	try {
 		await connection.query(`
 			INSERT INTO redditApiUsage
-				(clientId, timeMillisUtc, endpoint, api)
+				(clientId, timeMillisUtc, endpoint, api, used, remaining)
 				VALUES ${records
-					.map(record => `(${connection.escape(record.clientId)}, ${connection.escape(record.timeMillisUtc)}, ${connection.escape(record.endpoint)}, ${connection.escape(record.api)})`)
+					.map(record => `(${connection.escape(record.clientId)}, ${connection.escape(record.timeMillisUtc)}, ${connection.escape(record.endpoint)}, ${connection.escape(record.api)}, ${connection.escape(record.used)}, ${connection.escape(record.remaining)})`)
 					.join(",")
 				}
 		`);
@@ -431,7 +431,9 @@ analyticsRouter.post("/redditApiUsage", safeExcAsync(async (req, res) => {
 			typeof record.clientId === "string" &&
 			typeof record.timeMillisUtc === "number" &&
 			record.timeMillisUtc >= 0 &&
-			typeof record.endpoint === "string"
+			typeof record.endpoint === "string" &&
+			(!("used" in record) || typeof record.used === "number") &&
+			(!("remaining" in record) || typeof record.remaining === "number")
 		)
 	}
 	if (!(records instanceof Array) || !records.every(isRecordValid)) {
@@ -441,6 +443,8 @@ analyticsRouter.post("/redditApiUsage", safeExcAsync(async (req, res) => {
 	for (const record of records) {
 		record.endpoint = record.endpoint.slice(0, 64);
 		record.api ??= null;
+		record.used ??= null;
+		record.remaining ??= null;
 	}
 	try {
 		await trackRedditApiUsage(records);

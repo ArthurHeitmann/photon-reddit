@@ -17,7 +17,7 @@ import {
 	RedditSubredditObj,
 	RedditUserObj
 } from "../types/redditTypes";
-import {isObjectEmpty, randomString, splitPathQuery, throttle} from "../utils/utils";
+import {isObjectEmpty, randomString, splitPathQuery, strToNumNonNan, throttle} from "../utils/utils";
 import {SortPostsOrder, UserSection} from "../types/misc";
 import {onApiUsage} from "./redditApiUsageTracking";
 
@@ -42,7 +42,6 @@ export async function redditApiRequest(pathAndQuery, params: string[][] | any, r
 async function oauth2Request(pathAndQuery, params: string[][] | any, options: RequestInit, attempt = 0) {
 	pathAndQuery = fixUrl(pathAndQuery);
 	const [path, query] = splitPathQuery(pathAndQuery);
-	onApiUsage(path, "reddit");
 
 	let fetchOptions: RequestInit = {
 		...options,
@@ -70,6 +69,7 @@ async function oauth2Request(pathAndQuery, params: string[][] | any, options: Re
 	try {
 		const response = await fetch(`https://oauth.reddit.com${ path }?${ useUrlParams ? parameters.toString() : "" }`, fetchOptions);
 		const responseText = await response.text();
+		onApiUsage(path, "reddit", true, strToNumNonNan(response.headers.get("x-ratelimit-used")), strToNumNonNan(response.headers.get("x-ratelimit-remaining")));
 		rateLimitCheck(response.headers);
 		return responseText ? JSON.parse(responseText) : {};
 	} catch (e) {

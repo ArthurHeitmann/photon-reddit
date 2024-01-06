@@ -3,7 +3,7 @@ import Users from "../multiUser/userManagement";
 import {RedditApiUsageRecord} from "../types/misc";
 import {trackApiUsage} from "./photonApi";
 
-export async function onApiUsage(endpoint: string, api: string, generalize = true) {
+export async function onApiUsage(endpoint: string, api: string, generalize = true, used: number|undefined = undefined, remaining: number|undefined = undefined) {
 	if (generalize)
 		endpoint = generalizeEndpoint(endpoint);
 	const newRecord: RedditApiUsageRecord = {
@@ -11,6 +11,8 @@ export async function onApiUsage(endpoint: string, api: string, generalize = tru
 		timeMillisUtc: Date.now(),
 		endpoint,
 		api,
+		used,
+		remaining
 	};
 	let pendingUsages = Users.global.d.pendingRedditApiUsages;
 	pendingUsages = [...pendingUsages, newRecord];

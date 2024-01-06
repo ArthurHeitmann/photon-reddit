@@ -673,3 +673,8 @@ export function fromBase36(numB36: string): number {
 	}
 	return num;
 }
+
+export function strToNumNonNan<T>(numStr: string, fallback: T = undefined): number|T {
+	const num = Number(numStr);
+	return isNaN(num) ? fallback : num;
+}
