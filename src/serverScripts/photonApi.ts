@@ -10,6 +10,7 @@ import {
 } from "./consts";
 import {safeExc, safeExcAsync} from "./utils";
 import {photonChangelog, photonVersion} from "./version";
+import { RedditAuth } from "./redditApi";
 
 export const photonApiRouter = express.Router();
 
@@ -166,97 +167,24 @@ photonApiRouter.get("/requestRedgifsToken", RateLimit(tokenRequestRateLimitConfi
 	});
 }));
 
+const redditAuth = new RedditAuth();
 photonApiRouter.get("/resolveRedditUrl", RateLimit(tokenRequestRateLimitConfig), safeExcAsync(async (req, res) => {
 	let url = req.query["url"].toString();
 	if (!url) {
-		res.status(400).json({ error: "¯\\_(ツ)_/¯" });
+		res.status(400).json({ error: "Missing url parameter" });
 		return;
 	}
 	if (url.startsWith("https://reddit.com/"))
-	url = url.replace("https://reddit.com/", "https://www.reddit.com/");
-	if (url.startsWith("/"))
-		url = "https://www.reddit.com" + url;
-	
-	let response: Response;
-	let isRedirect = false;
-	const supportedRedditUrl = /^https:\/\/(\w+\.)?reddit.com\/(r|u|user)\/[^/#?]+\//;
-	do {
-		response = await fetch(url, {
-			redirect: "manual",
-			headers: {
-				"User-Agent": `web_backend:photon-reddit.com:v${photonVersion} (by /u/RaiderBDev)`
-			}
-		});
-		let newUrl = response.headers.get("location");
-		if (!newUrl)
-			break;
-		if (!newUrl.startsWith("http"))
-			newUrl = new URL(newUrl, response.url).href;
-		url = newUrl;
-		isRedirect = response.status >= 300 && response.status < 400;
+		url = url.replace("https://reddit.com/", "/");
+	if (!url.startsWith("/")) {
+		res.status(400).json({ error: "Invalid url" });
+		return;
 	}
-	while (isRedirect && !supportedRedditUrl.test(url));
 	
-	if (!supportedRedditUrl.test(url)) {
+	try {
+		res.json(await redditAuth.resolvePath(url));
+	}
+	catch {
 		res.status(400).json({ error: "Failed to resolve url" });
-		return;
 	}
-	const urlObj = new URL(url);
-	urlObj.search = "";
-	urlObj.hash = "";
-	url = urlObj.toString();
-	
-	res.json({ url, path: urlObj.pathname });
-}));
-
-
-photonApiRouter.get("/resolveRedditUrlDebug", RateLimit(tokenRequestRateLimitConfig), safeExcAsync(async (req, res) => {
-	let url = req.query["url"].toString();
-	if (!url) {
-		res.status(400).json({ error: "¯\\_(ツ)_/¯" });
-		return;
-	}
-	if (url.startsWith("https://reddit.com/"))
-	url = url.replace("https://reddit.com/", "https://www.reddit.com/");
-	if (url.startsWith("/"))
-		url = "https://www.reddit.com" + url;
-	
-	let response: Response;
-	let isRedirect = false;
-	const supportedRedditUrl = /^https:\/\/(\w+\.)?reddit.com\/(r|u|user)\/[^/#?]+\//;
-	do {
-		response = await fetch(url, {
-			redirect: "manual",
-			headers: {
-				"User-Agent": `web_backend:photon-reddit.com:v${photonVersion} (by /u/RaiderBDev)`
-			}
-		});
-		let newUrl = response.headers.get("location");
-		if (!newUrl)
-			break;
-		if (!newUrl.startsWith("http"))
-			newUrl = new URL(newUrl, response.url).href;
-		url = newUrl;
-		isRedirect = response.status >= 300 && response.status < 400;
-	}
-	while (isRedirect && !supportedRedditUrl.test(url));
-	
-	if (!supportedRedditUrl.test(url)) {
-		res.status(400).json({ error: "Failed to resolve url" });
-		return;
-	}
-	const urlObj = new URL(url);
-	urlObj.search = "";
-	urlObj.hash = "";
-	url = urlObj.toString();
-	
-	res.json({
-		url,
-		path: urlObj.pathname,
-		response: {
-			status: response.status,
-			headers: response.headers.raw(),
-			text: await response.text()
-		}
-	});
 }));
