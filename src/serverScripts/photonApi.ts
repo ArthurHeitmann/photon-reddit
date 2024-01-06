@@ -183,6 +183,9 @@ photonApiRouter.get("/resolveRedditUrl", RateLimit(tokenRequestRateLimitConfig),
 	do {
 		response = await fetch(url, {
 			redirect: "manual",
+			headers: {
+				"User-Agent": `web_backend:photon-reddit.com:v${photonVersion} (by /u/RaiderBDev)`
+			}
 		});
 		let newUrl = response.headers.get("location");
 		if (!newUrl)
