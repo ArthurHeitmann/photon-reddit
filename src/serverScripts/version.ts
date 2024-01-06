@@ -1,6 +1,11 @@
-export const photonVersion = "1.3.1";		/// <change version script>
+export const photonVersion = "1.3.2";		/// <change version script>
 
 export const photonChangelog = {
+	"1.3.2": {
+		"New": [
+			"Added tracking of remaining reddit API requests",
+		]
+	},
 	"1.3.1": {
 		"Fixed": [
 			"Fixed display of several image and video links",
