@@ -218,11 +218,9 @@ export default class Ph_Post extends Ph_FeedItem {
 						${ postData.data.author_cakeday ? `<img src="/img/cake.svg" class="cakeDay" alt="cake day">` : "" }
 					</a>
 					<span class="time" data-tooltip="${new Date(postData.data.created_utc * 1000).toString()}">${timePassedSince(postData.data.created_utc)}</span>
-					<span>ago</span>
 					${ postData.data.edited
 					? `	<span>|</span><span>edited</span> 
-						<span class="time" data-tooltip="${new Date(postData.data.edited * 1000).toString()}">${timePassedSince(postData.data.edited)}</span>
-						<span>ago</span>`
+						<span class="time" data-tooltip="${new Date(postData.data.edited * 1000).toString()}">${timePassedSince(postData.data.edited)}</span>`
 					: ""
 					}
 					<div class="flairWrapper">					
@@ -269,11 +267,9 @@ export default class Ph_Post extends Ph_FeedItem {
 								${ crosspostData.author_cakeday ? `<img src="/img/cake.svg" class="cakeDay" alt="cake day">` : "" }
 							</a>
 							<span class="time" data-tooltip="${new Date(crosspostData.created_utc * 1000).toString()}">${timePassedSince(crosspostData.created_utc)}</span>
-							<span>ago</span>
 							${ crosspostData.edited
 								? `	<span>|</span><span>edited</span> 
-									<span class="time" data-tooltip="${new Date(crosspostData.edited * 1000).toString()}">${timePassedSince(crosspostData.edited)}</span>
-									<span>ago</span>`
+									<span class="time" data-tooltip="${new Date(crosspostData.edited * 1000).toString()}">${timePassedSince(crosspostData.edited)}</span>`
 								: ""
 							}
 						</div>

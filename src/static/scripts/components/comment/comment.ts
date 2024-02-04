@@ -235,12 +235,10 @@ export default class Ph_Comment extends Ph_Readable {
 					{ class: "time", "data-tooltip": `${new Date(commentData.data.created_utc * 1000).toString()}` },
 					timePassedSince(commentData.data.created_utc)
 				),
-				makeElement("span", null, "ago"),
-					...(commentData.data["edited"] ? [
+				...(commentData.data["edited"] ? [
 					makeElement("span", null, "|"),
 					makeElement("span", null, "edited"),
 					makeElement("span", { class: "time", "data-tooltip": `${new Date(commentData.data["edited"] * 1000).toString()}` }, timePassedSinceStr(commentData.data["edited"])),
-					makeElement("span", null, "ago"),
 				] : []),
 				isLocked && makeElement(
 					"span",

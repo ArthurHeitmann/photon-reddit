@@ -61,7 +61,7 @@ export function numberToShortStr(num: string): string {
 }
 
 
-function _timePassedSince(time: number): { n: number, s: string } {
+function _timePassedSinceParts(time: number): { n: number, s: string } {
 	const s = Math.round(Date.now() / 1000 - time);
 	if (s < 60)
 		return { n: s, s: "seconds" };
@@ -77,6 +77,11 @@ function _timePassedSince(time: number): { n: number, s: string } {
 		return { n: Math.floor(s / 31557600), s: "years" };
 }
 
+function _timePassedSince(time: number): string {
+	const { n, s } = _timePassedSinceParts(time);
+	return `${n.toString()} ${n !== 1 ? s : s.replace(/s$/, "")}`;		// 1 seconds --> 1 second
+}
+
 /**
  * 	1 - 59		 	 1s
  *	60 - 3599	 	 1 - 59m
@@ -86,19 +91,31 @@ function _timePassedSince(time: number): { n: number, s: string } {
  *	1 - ..y
  * @param time in seconds
  */
-export function timePassedSince(time: number): string {
-	const { n, s } = _timePassedSince(time);
-	return `${n.toString()} ${n !== 1 ? s : s.replace(/s$/, "")}`;		// 1 seconds --> 1 second
+export function timePassedSince(time: number, includeAdverb = true, adverb = "ago", absAdverb = "at"): string {
+	if (Users.global.d.photonSettings.absoluteTimestamps) {
+		const timeStr = new Date(time * 1000).toLocaleString();
+		return includeAdverb ? `${absAdverb} ${timeStr}` : timeStr;
+	}
+	else {
+		const timeStr = _timePassedSince(time);
+		return includeAdverb ? `${timeStr} ${adverb}` : timeStr;
+	}
 }
 
 /** @param time in seconds */
-export function timePassedSinceStr(time: string): string {
-	return timePassedSince(parseInt(time));
+export function timePassedSinceStr(time: string, includeAdverb = true, adverb = "ago", absAdverb = "at"): string {
+	return timePassedSince(parseInt(time), includeAdverb, adverb, absAdverb);
 }
 
 /** @param time in seconds */
-export function timePeriodReadable(time: number) {
-	return timePassedSince(Date.now() / 1000 - time);
+export function timeRemainingReadable(time: number, includeAdverb = true, adverb = "in") {
+	if (Users.global.d.photonSettings.absoluteTimestamps) {
+		return timePassedSince(Date.now() / 1000 - time, includeAdverb, adverb);
+	}
+	else {
+		const timeStr = timePassedSince(Date.now() / 1000 - time, false);
+		return includeAdverb ? `${adverb} ${timeStr}` : timeStr;
+	}
 }
 
 /** splits "/r/all/top?t=day" to ["/r/all/top", "?t=day"] */

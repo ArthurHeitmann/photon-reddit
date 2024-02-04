@@ -92,6 +92,7 @@ export interface PhotonSettings {
 	highlightNewComments?: boolean,
 	theme?: UiTheme,
 	highlightSeenPosts?: boolean,
+	absoluteTimestamps?: boolean,
 }
 
 // default config
@@ -138,6 +139,7 @@ export const defaultSettings: PhotonSettings = {
 	highlightNewComments: true,
 	theme: UiTheme.dark,
 	highlightSeenPosts: false,
+	absoluteTimestamps: false,
 };
 
 export const getSettingsSections = (): SettingsSection[] => [
@@ -226,6 +228,7 @@ export const getSettingsSections = (): SettingsSection[] => [
 			new BooleanSetting("displayRedditEmojis", "Display Reddit Emojis", "", SettingsApi.Photon),
 			new BooleanSetting("firstShowControlBar", "Initially show bottom bar", "Initially show or hide controls bar on the bottom of images and videos.", SettingsApi.Photon),
 			new BooleanSetting("enableFab", "Enable FAB", "Enable Floating Action Button (bottom left corner).", SettingsApi.Photon),
+			new BooleanSetting("absoluteTimestamps", "Absolute Timestamps", "Display absolute timestamps instead of relative ones (Requires reload).", SettingsApi.Photon),
 			new BooleanSetting("tooltipsVisible", "Show tooltips", "Toggle tooltips when hovering some UI elements.", SettingsApi.Photon),
 			new BooleanSetting("animateFullscreenTransition", "Animate fullscreen transition", "", SettingsApi.Photon),
 			new BooleanSetting("hidePostTitle", "Hide post titles", "", SettingsApi.Photon),

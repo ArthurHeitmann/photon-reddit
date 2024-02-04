@@ -1,6 +1,6 @@
 import { RedditPostData } from "../../../../types/redditTypes";
 import { escHTML } from "../../../../utils/htmlStatics";
-import { hasParams, numberToShort, timePassedSince, timePeriodReadable } from "../../../../utils/utils";
+import { hasParams, numberToShort, timePassedSince, timeRemainingReadable } from "../../../../utils/utils";
 
 interface PollData {
 	user_selection: string,
@@ -27,8 +27,8 @@ export default class Ph_RedditPoll extends HTMLElement {
 		 const timeDiff = postData.poll_data.voting_end_timestamp - Date.now();
 		 infoBar.insertAdjacentHTML("beforeend", `<div data-tooltip="${(new Date(postData.poll_data.voting_end_timestamp)).toString()}">${
 			 timeDiff > 0
-				 ? `Voting ends in ${timePeriodReadable(timeDiff / 1000)}`
-				 : `Voting ended ${timePassedSince(postData.poll_data.voting_end_timestamp / 1000)} ago`
+				 ? `Voting ends ${timeRemainingReadable(timeDiff / 1000)}`
+				 : `Voting ended ${timePassedSince(postData.poll_data.voting_end_timestamp / 1000)}`
 		 }</div>`);
 		 this.append(infoBar);
 

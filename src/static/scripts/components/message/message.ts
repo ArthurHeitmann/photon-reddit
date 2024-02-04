@@ -70,7 +70,6 @@ export default class Ph_Message extends Ph_Readable {
 				<span class="time" data-tooltip="${new Date(messageData.data.created_utc * 1000).toString()}">
 					${timePassedSince(messageData.data.created_utc)}
 				</span>
-				<span>ago</span>
 				${
 				messageData.data.replies && isInFeed
 				? `<a class="replies" href="${escADQ(this.link)}">${messageData.data.replies.data.children.length} replies</a>`
