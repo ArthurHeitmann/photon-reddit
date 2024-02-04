@@ -4,7 +4,6 @@ import { isElementIn } from "../../../utils/htmlStuff";
 import { throttle } from "../../../utils/utils";
 import Ph_FeedLink from "../../link/feedLink/feedLink";
 import Ph_Toast, { Level } from "../toast/toast";
-import BlurEvent = JQuery.BlurEvent;
 
 export type OnSubSelectCallbackSignature = (subName: string, subData: RedditSubredditObj) => Promise<void> | void;
 
@@ -106,7 +105,7 @@ export default class Ph_SubredditSelector extends HTMLElement {
 		this.classList.remove("remove");
 	}
 
-	private onTextBlur(e: BlurEvent) {
+	private onTextBlur(e: FocusEvent) {
 		if (!this.isEnabled)
 			return;
 		if (e.relatedTarget && isElementIn(this, e.relatedTarget as HTMLElement))

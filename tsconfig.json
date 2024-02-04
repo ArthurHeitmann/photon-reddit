@@ -6,15 +6,15 @@
     "moduleResolution": "node",
     "sourceMap": true,
     "noImplicitThis": true,
+    "skipLibCheck": true,
     "lib": [
       "DOM",
       "DOM.Iterable",
       "ESNext"
     ],
     "types": [
-      "cypress",
       "resize-observer-browser"
     ]
   },
-  "include": ["./src", "./cypress"],
+  "include": ["./src"],
 }

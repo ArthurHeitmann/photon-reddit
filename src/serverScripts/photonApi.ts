@@ -163,7 +163,7 @@ photonApiRouter.get("/requestRedgifsToken", RateLimit(tokenRequestRateLimitConfi
 
 	res.json({
 		token: json["access_token"],
-		expiration: Date.now() + (json["expires_in"] as number) ?? 60*60*24 * 1000 - 60*1000
+		expiration: Date.now() + (json["expires_in"] as number ?? 60*60*24 * 1000 - 60*1000)
 	});
 }));
 
