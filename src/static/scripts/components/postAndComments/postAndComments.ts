@@ -74,6 +74,7 @@ export default class Ph_PostAndComments extends HTMLElement {
 
 		// viewing comments --> mark post as seen
 		Users.global.onPostViewed(data[0].data.children[0].data.name);
+		this.post.classList.add("seen");
 
 		// write comment form
 		if (!(this.post.data.archived || this.post.data.locked)) {

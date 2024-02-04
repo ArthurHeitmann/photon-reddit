@@ -1,6 +1,11 @@
 export const photonVersion = "1.3.2";		/// <change version script>
 
 export const photonChangelog = {
+	"1.3.3": {
+		"New": [
+			"Added setting to highlight seen posts (Settings > Post > Highlight seen posts)",
+		]
+	},
 	"1.3.2": {
 		"New": [
 			"Added tracking of remaining reddit API requests",

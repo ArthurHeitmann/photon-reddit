@@ -12,6 +12,7 @@ const settingToCssClassMap: { [setting in SettingsKey]?: string } = {
 	hidePostLeftBar: "hidePostLeftBar",
 	hideCrosspostInfo: "hideCrosspostInfo",
 	hideSubredditMiniIcon: "hideSubredditMiniIcon",
+	highlightSeenPosts: "highlightSeenPosts",
 }
 
 interface SettingToCssVar<T extends PhotonSettingsKey> {

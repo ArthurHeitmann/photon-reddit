@@ -91,6 +91,7 @@ export interface PhotonSettings {
 	defaultFrontpageSort?: SortPostsOrder,
 	highlightNewComments?: boolean,
 	theme?: UiTheme,
+	highlightSeenPosts?: boolean,
 }
 
 // default config
@@ -136,6 +137,7 @@ export const defaultSettings: PhotonSettings = {
 	defaultFrontpageSort: SortPostsOrder.default,
 	highlightNewComments: true,
 	theme: UiTheme.dark,
+	highlightSeenPosts: false,
 };
 
 export const getSettingsSections = (): SettingsSection[] => [
@@ -146,6 +148,7 @@ export const getSettingsSections = (): SettingsSection[] => [
 			new BooleanSetting("markSeenPosts", "Mark seen posts", "Mark posts you have scrolled past. Seen posts are only stored in your browser.", SettingsApi.Photon),
 			new BooleanSetting("hideSeenPosts", "Hide seen posts", "Hide posts marked as seen (above option). When viewing a user all posts are always visible.", SettingsApi.Photon),
 			new TimeSetting({ allowRange: [1, Number.MAX_SAFE_INTEGER] }, "clearSeenPostAfterMs", "Store seen posts for", "Seen posts are stored for this time duration (format examples: 1y 13d, 6months 3 days, 1hour).", SettingsApi.Photon),
+			new BooleanSetting("highlightSeenPosts", "Highlight seen posts", "Seen posts will appear darker.", SettingsApi.Photon),
 			new MultiOptionSetting([
 				{ text: "Cards", value: FeedDisplayType.cards },
 				{ text: "Compact", value: FeedDisplayType.compact },

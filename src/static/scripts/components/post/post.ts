@@ -90,6 +90,8 @@ export default class Ph_Post extends Ph_FeedItem {
 		this.wasInitiallySeen = Users.global.hasPostsBeenSeen(this.data.name);
 		this.preferSmallerPost = preferSmallerPost;
 		this.classList.add("post");
+		if (postData.data.name in Users.global.d.seenPosts)
+			this.classList.add("seen");
 
 		if (isInFeed)
 			this.isCleanupProtected = true;

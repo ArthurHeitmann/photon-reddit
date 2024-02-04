@@ -413,3 +413,9 @@
 body.hideSubredditMiniIcon .post .header .srIcon {
 	display: none;
 }
+
+.highlightSeenPosts {
+	.post.isInFeed.seen {
+		filter: brightness(vars.$seen-post-brightness);
+	}
+}
