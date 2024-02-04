@@ -5,6 +5,9 @@ export const photonChangelog = {
 		"New": [
 			"Added setting to highlight seen posts (Settings > Post > Highlight seen posts)",
 			"Added setting to display timestamps as absolute time (Settings > UI > Absolute Timestamps)",
+		],
+		"Fixed": [
+			"Fixed markdown preview for some tables and nested lists",
 		]
 	},
 	"1.3.2": {

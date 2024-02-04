@@ -819,22 +819,28 @@ var P_Quote = class extends P_Parser {
   possibleChildren = [ParserType.from(P_Block)];
   joinChars = "\n\n";
   parsingState = ParsingState.start;
+  nextLineBackup;
+  spaceAfterStart = true;
   canStart() {
-    return this.cursor.currentLine.startsWith("> ");
+    return this.cursor.currentLine.startsWith(">") && this.cursor.currentLine[1] !== "!";
   }
   parseChar() {
     if (this.parsingState === ParsingState.start) {
-      if (this.cursor.currentChar === " ") {
+      if (this.cursor.currentChar === ">" && (this.cursor.remainingText[1] !== " " || !this.spaceAfterStart)) {
         this.parsingState = ParsingState.content;
-        this.cursor.currentLine = this.cursor.currentLine.slice(2);
-        this.cursor.column -= 2;
+        this.spaceAfterStart = false;
+        this.prepareCurrentLine(1);
+      } else if (this.cursor.currentChar === " ") {
+        this.parsingState = ParsingState.content;
+        this.prepareCurrentLine(2);
       }
+      if (this.cursor.currentChar === ">")
+        this.prepareNextLine();
       return AfterParseResult.consumed;
     }
     if (this.parsingState === ParsingState.content) {
       if (this.cursor.currentChar === "\n") {
-        if (this.cursor.nextLine.startsWith("> ")) {
-          this.cursor.nextLine = this.cursor.nextLine.slice(2);
+        if (this.nextLineBackup.startsWith(">") && this.nextLineBackup[1] !== "!") {
           super.parseChar();
           this.parsingState = ParsingState.start;
           return AfterParseResult.consumed;
@@ -854,6 +860,19 @@ var P_Quote = class extends P_Parser {
     return `<blockquote>
 ${super.toHtmlString()}
 </blockquote>`;
+  }
+  prepareCurrentLine(start) {
+    this.cursor.currentLine = this.cursor.currentLine.slice(start);
+    this.cursor.column -= start;
+  }
+  prepareNextLine() {
+    this.nextLineBackup = this.cursor.nextLine;
+    if (this.cursor?.nextLine?.[0] !== ">")
+      return;
+    if (this.cursor.nextLine.startsWith("> ") && this.spaceAfterStart)
+      this.cursor.nextLine = this.cursor.nextLine.slice(2);
+    else
+      this.cursor.nextLine = this.cursor.nextLine.slice(1);
   }
 };
 
@@ -931,13 +950,13 @@ var P_Table = class _P_Table extends P_Parser {
   columns = 0;
   currentColumn = 0;
   currentRow = 0;
-  columnAlignment = [];
+  columnAlignment = {};
   headerValues = [];
   cellValues = [];
   canStart() {
     const headerPipes = _P_Table.countRowPipes(this.cursor.currentLine);
     const dividerPipes = _P_Table.countRowPipes(this.cursor.nextLine);
-    return headerPipes >= 2 && dividerPipes >= 2 && (/^\|((.*[^\\]|)\|+) *\n/.test(this.cursor.currentLine) && /^\|([:\- ]*\|+)+ *(\n|$)/.test(this.cursor.nextLine));
+    return headerPipes >= 1 && dividerPipes >= 1 && (/^\|?(([^|\n]+|\|)\|)+/.test(this.cursor.currentLine) && /^ *\|?((:?-*:?)\|)*(:?-*:?)\|? *(\n|$)/.test(this.cursor.nextLine));
   }
   parseChar() {
     if (this.parsingState === TableParsingState.header) {
@@ -946,29 +965,40 @@ var P_Table = class _P_Table extends P_Parser {
         return AfterParseResult.consumed;
       });
     } else if (this.parsingState === TableParsingState.divider) {
+      if (this.cursor.column === 0 && this.cursor.currentChar !== "|")
+        this.dividerParsingState = DividerParsingState.firstChar;
       if (this.dividerParsingState === DividerParsingState.pipe) {
-        if (/^\| *\n/.test(this.cursor.remainingText)) {
+        if (this.cursor.currentChar === "\n") {
+          if (_P_Table.countRowPipes(this.cursor.nextLine) >= 1) {
+            this.dataRowParsingState = DataRowParsingState.pipe;
+            this.parsingState = TableParsingState.rows;
+            this.currentColumn = 0;
+            this.cellValues.push([]);
+          } else
+            return AfterParseResult.ended;
+        } else if (this.cursor.remainingText[1] === "|") {
+          this.dividerParsingState = DividerParsingState.pipe;
+          this.currentColumn++;
+        } else if (/^\|? *(\n|\n)/.test(this.cursor.remainingText))
           this.dividerParsingState = DividerParsingState.completed;
-        } else
+        else
           this.dividerParsingState = DividerParsingState.firstChar;
       } else if (this.dividerParsingState === DividerParsingState.firstChar) {
-        if (this.cursor.currentChar === ":") {
+        if (this.cursor.currentChar === ":")
           this.columnAlignment[this.currentColumn] = "left";
-          if (this.cursor.remainingText[2] === "|")
-            this.dividerParsingState = DividerParsingState.lastChar;
-          else
-            this.dividerParsingState = DividerParsingState.spacer;
-        } else {
-          if (this.cursor.remainingText[1] === "|") {
-            this.dividerParsingState = DividerParsingState.pipe;
-            this.currentColumn++;
-          } else if (this.cursor.remainingText[2] === "|")
-            this.dividerParsingState = DividerParsingState.lastChar;
-          else
-            this.dividerParsingState = DividerParsingState.spacer;
-        }
+        if (this.cursor.currentChar != " " && this.cursor.remainingText[1] === ":")
+          this.dividerParsingState = DividerParsingState.lastChar;
+        else if (this.cursor.remainingText[1] === "\n" || this.cursor.remainingText.length === 1)
+          this.dividerParsingState = DividerParsingState.completed;
+        else if (this.cursor.remainingText[1] === "|") {
+          this.dividerParsingState = DividerParsingState.pipe;
+          this.currentColumn++;
+        } else if (this.cursor.remainingText[2] === "|" || this.cursor.remainingText[2] === "\n" || this.cursor.remainingText.length === 2)
+          this.dividerParsingState = DividerParsingState.lastChar;
+        else if (this.cursor.currentChar != " ")
+          this.dividerParsingState = DividerParsingState.spacer;
       } else if (this.dividerParsingState === DividerParsingState.spacer) {
-        if (this.cursor.remainingText[2] === "|")
+        if (this.cursor.remainingText[2] === "|" || this.cursor.remainingText[2] === "\n" || this.cursor.remainingText.length === 2)
           this.dividerParsingState = DividerParsingState.lastChar;
       } else if (this.dividerParsingState === DividerParsingState.lastChar) {
         if (this.cursor.currentChar === ":") {
@@ -977,11 +1007,15 @@ var P_Table = class _P_Table extends P_Parser {
           else
             this.columnAlignment[this.currentColumn] = "right";
         }
-        this.dividerParsingState = DividerParsingState.pipe;
-        this.currentColumn++;
+        if (this.cursor.remainingText[1] === "\n")
+          this.dividerParsingState = DividerParsingState.completed;
+        else {
+          this.dividerParsingState = DividerParsingState.pipe;
+          this.currentColumn++;
+        }
       } else if (this.dividerParsingState === DividerParsingState.completed) {
         if (this.cursor.currentChar === "\n") {
-          if (_P_Table.countRowPipes(this.cursor.nextLine) >= 2) {
+          if (_P_Table.countRowPipes(this.cursor.nextLine) >= 1) {
             this.dataRowParsingState = DataRowParsingState.pipe;
             this.parsingState = TableParsingState.rows;
             this.currentColumn = 0;
@@ -992,8 +1026,11 @@ var P_Table = class _P_Table extends P_Parser {
       }
       return AfterParseResult.consumed;
     } else if (this.parsingState === TableParsingState.rows) {
-      return this.parseDataRow(() => this.cellValues[this.currentRow].push(new P_BasicText(this.cursor, { allowLinks: true })), () => this.cellValues[this.currentRow][this.currentColumn].parseChar(), () => this.currentColumn++, () => {
-        if (_P_Table.countRowPipes(this.cursor.nextLine) < 2)
+      return this.parseDataRow(() => this.cellValues[this.currentRow].push(new P_BasicText(this.cursor, { allowLinks: true })), () => this.cellValues[this.currentRow][this.currentColumn].parseChar(), () => {
+        if (this.currentColumn + 1 < this.columns)
+          this.currentColumn++;
+      }, () => {
+        if (_P_Table.countRowPipes(this.cursor.nextLine) === 0)
           return AfterParseResult.ended;
         else {
           this.currentRow++;
@@ -1034,18 +1071,27 @@ var P_Table = class _P_Table extends P_Parser {
     return out;
   }
   parseDataRow(onInitContent, onParseChar, onColumnCompleted, onRowCompleted) {
+    if (this.cursor.column === 0 && this.cursor.currentChar !== "|") {
+      onInitContent();
+      if (this.cursor.currentChar === " ")
+        this.dataRowParsingState = DataRowParsingState.leadingWs;
+      else
+        this.dataRowParsingState = DataRowParsingState.content;
+    }
     if (this.dataRowParsingState === DataRowParsingState.pipe) {
-      if (/^\|\s*(\n|$)/.test(this.cursor.remainingText)) {
+      if (/^\|?\s*(\n|$)/.test(this.cursor.remainingText)) {
         this.dataRowParsingState = DataRowParsingState.completed;
+        if (this.cursor.currentChar === "\n" || this.cursor.remainingText.length === 1)
+          return onRowCompleted();
       } else {
         onInitContent();
-        if (this.cursor.remainingText[1] === " ")
-          this.dataRowParsingState = DataRowParsingState.leadingWs;
-        else if (this.cursor.remainingText[1] === "|") {
+        if (this.cursor.remainingText[1] === "|") {
           onColumnCompleted();
           this.dataRowParsingState = DataRowParsingState.pipe;
-        } else if (/^\| *\n/.test(this.cursor.remainingText))
+        } else if (/^\|? *\n/.test(this.cursor.remainingText))
           this.dataRowParsingState = DataRowParsingState.completed;
+        else if (this.cursor.remainingText[1] === " ")
+          this.dataRowParsingState = DataRowParsingState.leadingWs;
         else
           this.dataRowParsingState = DataRowParsingState.content;
       }
@@ -1053,7 +1099,9 @@ var P_Table = class _P_Table extends P_Parser {
       if (this.cursor.remainingText[1] === "|") {
         this.dataRowParsingState = DataRowParsingState.pipe;
         onColumnCompleted();
-      } else if (this.cursor.remainingText[1] !== " ")
+      } else if (this.cursor.remainingText[1] === "\n" || this.cursor.remainingText.length === 1)
+        this.dataRowParsingState = DataRowParsingState.completed;
+      else if (this.cursor.remainingText[1] !== " ")
         this.dataRowParsingState = DataRowParsingState.content;
     } else if (this.dataRowParsingState === DataRowParsingState.content) {
       this.cursor.isNewNode = true;
@@ -1063,6 +1111,12 @@ var P_Table = class _P_Table extends P_Parser {
         onColumnCompleted();
       } else if (/^(. +|[^\\])\|/.test(this.cursor.remainingText))
         this.dataRowParsingState = DataRowParsingState.end;
+      else if (/^. *(\n|$)/.test(this.cursor.remainingText)) {
+        this.dataRowParsingState = DataRowParsingState.completed;
+        onColumnCompleted();
+        if (this.cursor.currentChar === "\n" || this.cursor.remainingText.length === 1)
+          onRowCompleted();
+      }
     } else if (this.dataRowParsingState === DataRowParsingState.end) {
       if (this.cursor.remainingText[1] === "|") {
         onColumnCompleted();
@@ -1072,7 +1126,7 @@ var P_Table = class _P_Table extends P_Parser {
           this.dataRowParsingState = DataRowParsingState.pipe;
       }
     } else if (this.dataRowParsingState === DataRowParsingState.completed) {
-      if (this.cursor.currentChar === "\n")
+      if (this.cursor.currentChar === "\n" || this.cursor.remainingText.length === 1)
         return onRowCompleted();
     }
     return AfterParseResult.consumed;
@@ -1409,7 +1463,7 @@ var ParsingCursor = class {
 
 // src/main.ts
 function parseMarkdown(markdown, additionalRedditData) {
-  markdown = markdown.replace(/^(\s*\n)*|(\s*\n)*$/g, "").replace(/\n\s*$/g, "\n");
+  markdown = markdown.replace(/\r/g, "").replace(/^(\s*\n)*|(\s*\n)*$/g, "").replace(/\n\s*$/g, "\n");
   const cursor = new ParsingCursor(markdown, additionalRedditData);
   const rootParser = new P_Root(cursor);
   let parseResult;
