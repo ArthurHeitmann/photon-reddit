@@ -1,4 +1,4 @@
-export const photonVersion = "1.3.2";		/// <change version script>
+export const photonVersion = "1.3.3";		/// <change version script>
 
 export const photonChangelog = {
 	"1.3.3": {
