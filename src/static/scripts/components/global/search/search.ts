@@ -135,6 +135,9 @@ export default class Ph_Search extends HTMLElement {
 		// 	url: "",
 		// 	iconUrl: "/img/search.svg",
 		// });
+		this.searchForPostsGlobalLink.classList.add("customLink");
+		this.searchForPostsSubLink.classList.add("customLink");
+		// this.searchForCommentsLink.classList.add("customLink");
 		this.searchForPostsSubLink.classList.toggle("hide", !url.startsWith("/r/"));
 		// this.searchForCommentsLink.classList.toggle("hide", !url.includes("/comments/"));
 		this.resultsWrapper = makeElement("div", { class: "resultsWrapper" }, [

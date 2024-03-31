@@ -135,6 +135,12 @@ ph-search {
 					background: vars.$divider-color;
 				}
 			}
+
+			.feedLink.customLink + .feedLink:not(.customLink) {
+				border-top: 1px solid vars.$divider-color;
+				padding-top: .5rem;
+				margin-top: .5rem;
+			}
 		}
 
 		> .expandedOptions {
