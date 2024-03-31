@@ -1,6 +1,12 @@
-export const photonVersion = "1.3.3";		/// <change version script>
+export const photonVersion = "1.3.4";		/// <change version script>
 
 export const photonChangelog = {
+	"1.3.4": {
+		"New": [
+			"Slightly reworked search panel. Clearer separation between search everything and search subreddit.",
+			"Now avoiding low resolution preview images, when source image is also low resolution.",
+		],
+	},
 	"1.3.3": {
 		"New": [
 			"Added setting to highlight seen posts (Settings > Post > Highlight seen posts)",
