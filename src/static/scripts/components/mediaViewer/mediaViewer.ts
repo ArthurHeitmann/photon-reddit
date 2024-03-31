@@ -30,6 +30,7 @@ import Ph_AnimatedFullscreen from "../misc/animatedFullscreen/animatedFullscreen
 import {videoPlayerFromPostData} from "./videoPlayer/videoPlayerFactory";
 import {imageViewerFromUrl} from "./imageViewer/imageViewerFactory";
 
+const previewResThreshold = Math.max(750, window.innerHeight * window.devicePixelRatio * 0.8) ** 2;
 export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	controls: Ph_ControlsBar;
 	draggableWrapper: Ph_DraggableWrapper;
@@ -46,18 +47,20 @@ export default class Ph_MediaViewer extends Ph_PhotonBaseElement {
 	static fromPostData_Image(postData: RedditPostData): Ph_MediaViewer {
 		if (postData.preview && postData.preview.images[0].resolutions.length) {
 			const previews = postData.preview.images[0].resolutions;
+			const preview = previews[previews.length - 1];
+			const usePreview = preview.width * preview.height > previewResThreshold;
 			if (/https:\/\/i\.redgifs.com\/i\/\w+\.(jpg|png)/.test(postData.url)) {		// The .jpg extension is just bait, redirects to website instead
 				return new Ph_MediaViewer([new Ph_ImageViewer({
 					originalUrl: postData.preview.images[0].source.url,
-					previewUrl: previews[previews.length - 1].url,
-					heightHint: previews[previews.length - 1].height
+					previewUrl: usePreview && preview.url,
+					heightHint: preview.height
 				})], postData.url);
 			}
 			else {
 				return new Ph_MediaViewer([new Ph_ImageViewer({
 					originalUrl: postData.url,
-					previewUrl: previews[previews.length - 1].url,
-					heightHint: previews[previews.length - 1].height
+					previewUrl: usePreview && preview.url,
+					heightHint: preview.height
 				})], postData.url);
 			}
 		}
