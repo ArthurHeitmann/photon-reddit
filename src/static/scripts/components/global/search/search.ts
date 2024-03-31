@@ -4,9 +4,9 @@ import {ViewChangeData} from "../../../historyState/viewsStack";
 import {PhEvents} from "../../../types/Events";
 import {SortPostsTimeFrame, SortSearchOrder} from "../../../types/misc";
 import {RedditApiObj, RedditListingObj, RedditSubredditObj} from "../../../types/redditTypes";
-import {escADQ, getLoadingIcon} from "../../../utils/htmlStatics";
+import {getLoadingIcon} from "../../../utils/htmlStatics";
 import {elementWithClassInTree, isElementIn} from "../../../utils/htmlStuff";
-import {extractPath, extractQuery, hasHTML, isParamRedditTruthy, throttle} from "../../../utils/utils";
+import {debounce, extractPath, extractQuery, getSubredditIconUrlCached, hasHTML, isParamRedditTruthy, makeElement} from "../../../utils/utils";
 import Ph_FeedLink from "../../link/feedLink/feedLink";
 import Ph_DropDown, {DirectionX, DirectionY} from "../../misc/dropDown/dropDown";
 import {DropDownActionData, DropDownEntryParam} from "../../misc/dropDown/dropDownEntry/dropDownEntry";
@@ -15,6 +15,7 @@ import Ph_Toast, {Level} from "../../misc/toast/toast";
 import Users from "../../../multiUser/userManagement";
 import Ph_Header from "../header/header";
 import {makeSearchSortSectionEntries} from "../../feed/universalFeed/sortingDropdownParams";
+import { fakeSubreddits } from "../../../utils/consts";
 
 /**
  * A search field to search reddit for subreddits, user, and posts; child of Ph_Header
@@ -26,14 +27,18 @@ export default class Ph_Search extends HTMLElement {
 	areFlairsLoaded: boolean = false;
 	searchOrder = SortSearchOrder.relevance;
 	searchTimeFrame = SortPostsTimeFrame.all;
-	limitToSubreddit: HTMLInputElement;
 	searchDropdown: HTMLDivElement;
-	resultsWrapper: HTMLDivElement;
-	quickSearchThrottled: () => void;
+	resultsWrapper: HTMLElement;
+	searchForPostsGlobalLink: Ph_FeedLink;
+	searchForPostsSubLink: Ph_FeedLink;
+	// searchForCommentsLink: Ph_FeedLink;
+	quickSearchDebounced: () => void;
 	searchPrefix: string;	// r/ or user
 	subModeBtn: HTMLLabelElement;
 	userModeBtn: HTMLLabelElement;
 	currentSubreddit: string = null;
+	lastQuickSearchFor: string = "";
+	searchInSubredditOnEnter: boolean = false;
 
 	constructor() {
 		super();
@@ -44,7 +49,8 @@ export default class Ph_Search extends HTMLElement {
 
 		this.classList.add("search");
 
-		this.quickSearchThrottled = throttle(this.quickSearch.bind(this), 750, { leading: false, trailing: true });
+		this.quickSearchDebounced = debounce(this.quickSearch.bind(this), 750);
+		const url: string = history.state && history.state.url || location.pathname + location.search;
 
 		this.subModeBtn = document.createElement("label");
 		this.subModeBtn.className = "modeButton transparentButtonAlt";
@@ -62,14 +68,14 @@ export default class Ph_Search extends HTMLElement {
 			this.searchPrefix = this.searchPrefix === "/r/" ? "" : "/r/";
 			this.quickSearch();
 			this.searchBar.focus();
-		})
+		});
 		this.userModeBtn.addEventListener("click", () => {
 			this.userModeBtn.classList.toggle("checked");
 			this.subModeBtn.classList.remove("checked");
 			this.searchPrefix = this.searchPrefix === "/user/" ? "" : "/user/";
 			this.quickSearch();
 			this.searchBar.focus();
-		})
+		});
 
 		this.searchBar = document.createElement("input");
 		this.searchBar.type = "text";
@@ -104,9 +110,38 @@ export default class Ph_Search extends HTMLElement {
 		const accessibilitySpacer = document.createElement("div");
 		accessibilitySpacer.className = "accessibilitySpacer";
 		this.searchDropdown.append(accessibilitySpacer);
-
-		this.resultsWrapper = document.createElement("div");
-		this.resultsWrapper.className = "resultsWrapper";
+		
+		
+		this.searchForPostsGlobalLink = new Ph_FeedLink({
+			kind: "custom",
+			label: "Search for posts",
+			subtext: "everywhere",
+			url: "",
+			iconUrl: "/img/search.svg",
+			onclick: this.onGlobalSearchClick.bind(this),
+		});
+		this.searchForPostsSubLink = new Ph_FeedLink({
+			kind: "custom",
+			label: "Search for posts",
+			subtext: "in this subreddit",
+			url: "",
+			iconUrl: "/img/search.svg",
+			onclick: this.onSubSearchClick.bind(this),
+		});
+		// this.searchForCommentsLink = new Ph_FeedLink({
+		// 	kind: "custom",
+		// 	label: "Search for comments",
+		// 	subtext: "under this post",
+		// 	url: "",
+		// 	iconUrl: "/img/search.svg",
+		// });
+		this.searchForPostsSubLink.classList.toggle("hide", !url.startsWith("/r/"));
+		// this.searchForCommentsLink.classList.toggle("hide", !url.includes("/comments/"));
+		this.resultsWrapper = makeElement("div", { class: "resultsWrapper" }, [
+			this.searchForPostsGlobalLink,
+			this.searchForPostsSubLink,
+			// this.searchForCommentsLink,
+		]);
 		this.searchDropdown.append(this.resultsWrapper);
 
 		const expandedOptions = document.createElement("div");
@@ -114,32 +149,17 @@ export default class Ph_Search extends HTMLElement {
 		toggleDropdownBtn.addEventListener("click", this.toggleSearchDropdown.bind(this));
 		this.searchDropdown.append(expandedOptions);
 
-		const curSort = new URLSearchParams(extractQuery(history.state?.url || ""));
+		const curSort = new URLSearchParams(extractQuery(url || ""));
 		let curSortStr: string;
-		if (history.state && /search$/i.test(extractPath(history.state.url)))
+		if (history.state && /search$/i.test(extractPath(url)))
 			curSortStr = `Sort - ${curSort.get("sort") || "relevance"}${curSort.get("t") ? `/${curSort.get("t")}` : ""}`;
 		else
 			curSortStr = `Sort - relevance/all`;
 		this.sortBy = new Ph_DropDown(
 			makeSearchSortSectionEntries(this.setSortOrder.bind(this)),
-			curSortStr, DirectionX.right, DirectionY.bottom, false);
+			curSortStr, DirectionX.right, DirectionY.bottom, false
+		);
 		expandedOptions.append(this.sortBy);
-
-		function makeLabelCheckboxPair(labelText: string, checkboxId: string, defaultChecked: boolean, appendTo: HTMLElement): { checkbox: HTMLInputElement, label: HTMLLabelElement } {
-			const wrapper = document.createElement("div");
-			wrapper.innerHTML = `<label for="${escADQ(checkboxId)}">${labelText}</label>`;
-			const checkbox = document.createElement("input");
-			checkbox.type = "checkbox";
-			checkbox.id = checkboxId;
-			checkbox.className = "checkbox";
-			checkbox.checked = defaultChecked;
-			const checkboxVis = document.createElement("label");
-			checkboxVis.setAttribute("for", checkboxId);
-			wrapper.append(checkbox);
-			wrapper.append(checkboxVis);
-			appendTo.append(wrapper);
-			return { checkbox: checkbox, label: wrapper.children[0] as HTMLLabelElement };
-		}
 
 		this.flairSearch = new Ph_DropDown([], "Search by flair", DirectionX.right, DirectionY.bottom, false);
 		expandedOptions.append(this.flairSearch);
@@ -160,15 +180,12 @@ export default class Ph_Search extends HTMLElement {
 			this.areFlairsLoaded = true;
 		});
 
-		const { checkbox: limitToCheckbox, label: limitToLabel } = makeLabelCheckboxPair("Limit to", "limitToSubreddit", true, expandedOptions);
-		this.limitToSubreddit = limitToCheckbox;
-
-		if (/\/search\/?$/i.test(extractPath(history.state && history.state.url || location.pathname))) {
-			const currParams = new URLSearchParams(location.search || extractQuery(history.state.url));
+		if (/\/search\/?$/i.test(extractPath(url))) {
+			const currParams = new URLSearchParams(extractQuery(url));
 			this.searchBar.value = currParams.get("q");
 			this.searchOrder = SortSearchOrder[currParams.get("sort")];
 			this.searchTimeFrame = SortPostsTimeFrame[currParams.get("t")];
-			this.limitToSubreddit.checked = isParamRedditTruthy(currParams.get("restrict_sr"), true);
+			this.searchInSubredditOnEnter = isParamRedditTruthy(currParams.get("restrict_sr"), false);
 		}
 
 		window.addEventListener("click", e => {
@@ -176,19 +193,22 @@ export default class Ph_Search extends HTMLElement {
 				this.minimize();
 		});
 		window.addEventListener(PhEvents.viewChange, (e: CustomEvent) => {
-			const subMatches = (e.detail as ViewChangeData).viewState.state.url.match(/^\/r\/[^/?#]+/i);		// /r/all/top --> /r/all
+			const url = (e.detail as ViewChangeData).viewState.state.url;
+			const subMatches = url.match(/^\/r\/[^/?#]+/i);		// /r/all/top --> /r/all
 			this.currentSubreddit = subMatches && subMatches[0] || null;
+			const subName = this.currentSubreddit ? this.currentSubreddit.replace(/^\/r\//i, "").toLowerCase() : "";
 			this.areFlairsLoaded = false;
-			if (this.currentSubreddit) {
-				limitToLabel.innerText = `Limit to ${this.currentSubreddit}`;
-				this.limitToSubreddit.nextElementSibling.classList.remove("hide");
+			this.updateQuickLinks();
+			if (this.currentSubreddit && !fakeSubreddits.includes(subName)) {
 				this.flairSearch.setEntries([Users.current.d.auth.isLoggedIn ? {label: getLoadingIcon()} : {label: "Log in to list flairs"}]);
 				this.flairSearch.classList.remove("hide");
+				this.searchForPostsSubLink.classList.remove("hide");
+				this.searchForPostsSubLink.setSubtext(`in ${this.currentSubreddit.slice((1))}`);
+				this.searchForPostsSubLink.setImgUrl(getSubredditIconUrlCached(subName));
 			}
 			else {
-				limitToLabel.innerText = "Search everywhere";
-				this.limitToSubreddit.nextElementSibling.classList.add("hide");
 				this.flairSearch.classList.add("hide");
+				this.searchForPostsSubLink.classList.add("hide");
 			}
 		});
 	}
@@ -205,8 +225,9 @@ export default class Ph_Search extends HTMLElement {
 				if (!this.userModeBtn.classList.contains("checked"))
 					this.userModeBtn.click();
 			}
-			this.quickSearchThrottled();
+			this.quickSearchDebounced();
 		}
+		this.updateQuickLinks();
 	}
 
 	onFocus() {
@@ -231,6 +252,7 @@ export default class Ph_Search extends HTMLElement {
 		this.searchTimeFrame = data.valueChain.length === 2 ? data.valueChain[1] : null;
 		const sortStr = `Sort - ${this.searchOrder}${this.searchTimeFrame ? `/${this.searchTimeFrame}` : ""}`;
 		data.setButtonLabel(sortStr);
+		this.updateQuickLinks();
 	}
 
 	async quickSearch() {
@@ -242,30 +264,35 @@ export default class Ph_Search extends HTMLElement {
 		// TODO take NSFW preferences into consideration
 		let result: RedditListingObj<RedditApiObj>;
 		try {
-			if (this.searchPrefix === "/r/") {
-				result = await searchSubreddits(this.searchBar.value, 10);
-			}
-			else if (this.searchPrefix === "/user/") {
+			let query: string;
+			if (this.searchPrefix === "/user/") {
+				query = `u/${this.searchBar.value}`;
+				if (this.lastQuickSearchFor === query)
+					return;
 				result = await searchUser(this.searchBar.value, 10);
 			}
 			else {
-				result = await searchSubreddits(this.searchBar.value, 6);
-				if (result["error"])
-					throw result;
-				const users = await searchUser(this.searchBar.value, 4);
-				result.data.children.push(...users.data.children);
+				query = `r/${this.searchBar.value}`;
+				if (this.lastQuickSearchFor === query)
+					return;
+				result = await searchSubreddits(this.searchBar.value, 10);
 			}
 			if (result["error"])
-				throw result;
+			throw result;
+			this.lastQuickSearchFor = query;
 		} catch (e) {
 			console.error("Error loading quick search");
 			console.error(e);
 			new Ph_Toast(Level.error, "Error loading quick search");
 			throw e;
 		}
-		this.resultsWrapper.classList.remove("loading");
+		finally {
+			this.resultsWrapper.classList.remove("loading");
+		}
 
-		this.resultsWrapper.innerText = "";
+		for (const child of [...this.resultsWrapper.children].slice(2)) {
+			child.remove();
+		}
 		for (const entry of result.data.children) {
 			try {
 				this.resultsWrapper.append(new Ph_FeedLink(entry as RedditSubredditObj, { blurNsfw: true, showSubscribers: true }));
@@ -294,18 +321,7 @@ export default class Ph_Search extends HTMLElement {
 			return;
 		}
 
-		let url = "/search";
-		const currentSubMatches = history.state.url.match(/\/r\/([^/?#]+)/i);		// /r/pics/top --> /r/pics
-		if (currentSubMatches && currentSubMatches[0] && this.limitToSubreddit.checked)
-			url = currentSubMatches[0].replace(/\/?$/, "/search");		// /r/pics --> /r/pics/search
-
-		const paramsString = new URLSearchParams([
-			["q", this.searchBar.value],
-			["type", "link"],
-			["restrict_sr", this.limitToSubreddit.checked ? "true" : "false"],
-			["sort", this.searchOrder],
-			["t", this.searchTimeFrame || ""],
-		]).toString();
+		const [url, paramsString] = this.getSearchUrl(this.searchInSubredditOnEnter);
 		if (inNewTab)
 			window.open(`${url}?${paramsString}`).focus();
 		else {
@@ -315,13 +331,43 @@ export default class Ph_Search extends HTMLElement {
 		}
 	}
 
+	updateQuickLinks() {
+		this.searchForPostsGlobalLink.setUrl(this.getSearchUrl(false).join("?"));
+		this.searchForPostsSubLink.setUrl(this.getSearchUrl(true).join("?"));
+	}
+
+	private getSearchUrl(searchInSubreddit: boolean): [string, string] {
+		let url = "/search";
+		const currentSubMatches = history.state.url.match(/\/r\/([^/?#]+)/i);		// /r/pics/top --> /r/pics
+		if (searchInSubreddit && currentSubMatches && currentSubMatches[0] && searchInSubreddit)
+			url = currentSubMatches[0].replace(/\/?$/, "/search");		// /r/pics --> /r/pics/search
+
+		const paramsString = new URLSearchParams([
+			["q", this.searchBar.value],
+			["type", "link"],
+			["restrict_sr", searchInSubreddit ? "true" : "false"],
+			["sort", this.searchOrder],
+			["t", this.searchTimeFrame || ""],
+		]).toString();
+		return [url, paramsString];
+	}
+
 	searchByFlair(data: DropDownActionData) {
 		const flairText = data.valueChain[0] as string;
-		this.limitToSubreddit.checked = true;
+		this.searchInSubredditOnEnter = true;
 		this.searchBar.value = `flair:${flairText}`;
 		this.searchPrefix = "";
 		this.search(null);
 	}
+
+	private onGlobalSearchClick() {
+		this.searchInSubredditOnEnter = false;
+	}
+
+	private onSubSearchClick() {
+		this.searchInSubredditOnEnter = true;
+	}
+
 }
 
 customElements.define("ph-search", Ph_Search);

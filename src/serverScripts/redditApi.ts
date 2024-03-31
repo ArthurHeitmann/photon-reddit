@@ -84,12 +84,6 @@ export class RedditAuth {
 		};
 	}
 
-	async verifyIsWorking(): Promise<void> {
-		const response = await this.oauthRequest<any>("/api/v1/me", {});
-		if (!response || response.error)
-			throw new Error("Invalid response");
-	}
-
 	async getAccessToken(): Promise<string> {
 		const response = await fetch("https://www.reddit.com/api/v1/access_token", {
 			method: "POST",

@@ -21,9 +21,13 @@ import {
 export default class Ph_FeedLink extends HTMLElement {
 	private name: string;
 	private url: string;
+	private linkWrapper: HTMLAnchorElement | HTMLButtonElement;
+	private mainText: HTMLElement;
+	private subtext: HTMLElement;
+	private img: HTMLImageElement|undefined;
 
 	constructor(
-		feedData: RedditSubredditObj | RedditUserObj | RedditMultiObj | string,
+		feedData: RedditSubredditObj | RedditUserObj | RedditMultiObj | FeedLinkCustomOptions | string,
 		options: { blurNsfw?: boolean, isClickable?: boolean, showSubscribers?: boolean } = {}
 	) {
 		super();
@@ -36,14 +40,18 @@ export default class Ph_FeedLink extends HTMLElement {
 			showSubscribers = false
 		} = options;
 
-		const linkWrapper = document.createElement(isClickable ? "a" : "button");
-		linkWrapper.classList.add("linkWrapper");
-		this.append(linkWrapper);
+		this.linkWrapper = document.createElement(isClickable ? "a" : "button");
+		this.linkWrapper.classList.add("linkWrapper");
+		this.append(this.linkWrapper);
 		const imageWrapper = document.createElement("div");
 		imageWrapper.className = "imageWrapper";
-		const linkText = document.createElement("div");
-		linkText.className = "linkText";
-		linkWrapper.append(imageWrapper, linkText);
+		this.mainText = makeElement("div", { class: "mainText" });
+		this.subtext = makeElement("div", { class: "subtext" });
+		const linkText = makeElement("div", { class: "linkText" }, [
+			this.mainText,
+			this.subtext,
+		]);
+		this.linkWrapper.append(imageWrapper, linkText);
 
 		if (typeof feedData !== "string") {
 			switch (feedData.kind) {
@@ -51,17 +59,14 @@ export default class Ph_FeedLink extends HTMLElement {
 				this.name = feedData.data.display_name;
 				this.url = feedData.data.url;
 				if (showSubscribers && feedData.data.subscribers !== null) {
-					linkText.append(
-						makeElement("div", { class: "subName" }, `r/${feedData.data.display_name}`),
-						makeElement("div", { class: "subCount" },
-							`${numberToShort(feedData.data.subscribers)} Subscribers`)
-					);
+					this.mainText.innerText = `r/${feedData.data.display_name}`;
+					this.subtext.innerText = `${numberToShort(feedData.data.subscribers)} Subscribers`;
 				}
 				else {
-					linkText.innerText = `r/${feedData.data.display_name}`;
+					this.mainText.innerText = `r/${feedData.data.display_name}`;
 				}
-				if (linkWrapper instanceof HTMLAnchorElement)
-					linkWrapper.href = `/r/${feedData.data.display_name}`;
+				if (this.linkWrapper instanceof HTMLAnchorElement)
+					this.linkWrapper.href = `/r/${feedData.data.display_name}`;
 				const subIconImg = getSubredditIconUrl(feedData.data as SubredditInfoBase);
 				if (subIconImg)
 					imageWrapper.innerHTML = `<img src="${subIconImg}" alt="sub">`
@@ -72,16 +77,16 @@ export default class Ph_FeedLink extends HTMLElement {
 				break;
 			case "t2":	// user
 				this.name = feedData.data.name;
-				linkText.innerText = `u/${feedData.data.name}`;
+				this.mainText.innerText = `u/${feedData.data.name}`;
 				if (feedData.data.is_suspended === true)
-					linkText.innerText += " (suspended)";
+					this.mainText.innerText += " (suspended)";
 				else
 					this.url = feedData.data.subreddit.url;
-				if (linkWrapper instanceof HTMLAnchorElement)
-					linkWrapper.href = `/user/${feedData.data.name}`;
+				if (this.linkWrapper instanceof HTMLAnchorElement)
+					this.linkWrapper.href = `/user/${feedData.data.name}`;
 				const userIconImg = getUserIconUrl(feedData.data as RedditUserInfo);
 				if (userIconImg)
-					imageWrapper.innerHTML = `<img src="${userIconImg}" alt="sub">`
+					imageWrapper.innerHTML = `<img src="${userIconImg}" alt="user">`
 				else
 					imageWrapper.classList.add("default");
 				imageWrapper.classList.toggle("nsfw", blurNsfw && feedData.data.subreddit?.over_18);
@@ -90,9 +95,9 @@ export default class Ph_FeedLink extends HTMLElement {
 			case "LabeledMulti":	// multireddit
 				this.name = feedData.data.display_name;
 				this.url = feedData.data.path;
-				linkText.innerText = feedData.data.display_name;
-				if (linkWrapper instanceof HTMLAnchorElement)
-					linkWrapper.href = feedData.data.path;
+				this.mainText.innerText = feedData.data.display_name;
+				if (this.linkWrapper instanceof HTMLAnchorElement)
+					this.linkWrapper.href = feedData.data.path;
 				const multiIconImg = getMultiIconUrl(feedData.data as RedditMultiInfo);
 				if (multiIconImg)
 					imageWrapper.innerHTML = `<img src="${multiIconImg}" alt="sub">`
@@ -101,6 +106,18 @@ export default class Ph_FeedLink extends HTMLElement {
 				imageWrapper.classList.toggle("nsfw", blurNsfw && feedData.data.over_18);
 				this.classList.add("multireddit");
 				break;
+			case "custom":
+				this.name = feedData.label;
+				this.url = feedData.url;
+				this.mainText.innerText = feedData.label;
+				if (feedData.subtext)
+					this.subtext.innerText = feedData.subtext;
+				if (this.linkWrapper instanceof HTMLAnchorElement)
+					this.linkWrapper.href = feedData.url;
+				if (feedData.onclick)
+					this.linkWrapper.addEventListener("click", feedData.onclick);
+				imageWrapper.innerHTML = `<img src="${feedData.iconUrl}" alt="sub">`;
+				break;
 			default:
 				this.name = "ERROR";
 				throw "Invalid feed type!";
@@ -108,8 +125,8 @@ export default class Ph_FeedLink extends HTMLElement {
 		}
 		else {
 			linkText.innerText = feedData;
-			if (linkWrapper instanceof HTMLAnchorElement)
-				linkWrapper.href = `/${feedData}`;
+			if (this.linkWrapper instanceof HTMLAnchorElement)
+				this.linkWrapper.href = `/${feedData}`;
 			if (feedData in specialFeedImages) {
 				imageWrapper.innerHTML = `<img src="${specialFeedImages[feedData]}" alt="sub">`;
 				imageWrapper.classList.add("noBorderRadius");
@@ -117,6 +134,7 @@ export default class Ph_FeedLink extends HTMLElement {
 			else
 				imageWrapper.classList.add("default");
 		}
+		this.img = imageWrapper.querySelector("img");
 
 		linksToSpa(this);
 	}
@@ -128,6 +146,36 @@ export default class Ph_FeedLink extends HTMLElement {
 	getUrl(): string {
 		return this.url;
 	}
+
+	setUrl(url: string) {
+		if (!(this.linkWrapper instanceof HTMLAnchorElement))
+			return;
+		this.url = url;
+			this.linkWrapper.href = url;
+	}
+
+	setLabel(label: string) {
+		this.mainText.innerText = label;
+	}
+
+	setSubtext(subtext: string) {
+		this.subtext.innerText = subtext;
+	}
+
+	setImgUrl(url: string) {
+		if (!this.img)
+			return;
+		this.img.src = url;
+	}
+}
+
+export interface FeedLinkCustomOptions {
+	kind: "custom";
+	label: string;
+	subtext?: string;
+	iconUrl: string;
+	url: string;
+	onclick?: () => void;
 }
 
 const specialFeedImages = {

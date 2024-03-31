@@ -26,6 +26,7 @@ import {
 	isObjectEmpty,
 	makeElement,
 	numberToShort as numberToShort,
+	setSubredditIconUrlCached,
 	timePassedSince
 } from "../../utils/utils";
 import Ph_FeedItem from "../feed/feedItem/feedItem";
@@ -202,6 +203,8 @@ export default class Ph_Post extends Ph_FeedItem {
 			userAdditionClasses += " admin";
 		}
 		const subredditIconUrl = postData.data.sr_detail && getSubredditIconUrl(postData.data.sr_detail, false);
+		if (subredditIconUrl)
+			setSubredditIconUrlCached(postData.data.subreddit, subredditIconUrl);
 		const mainPart = document.createElement("div");
 		mainPart.className = "w100";
 		mainPart.innerHTML = `

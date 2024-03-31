@@ -695,3 +695,13 @@ export function strToNumNonNan<T>(numStr: string, fallback: T = undefined): numb
 	const num = Number(numStr);
 	return isNaN(num) ? fallback : num;
 }
+
+const subredditIconCache = new Map<string, string>();
+export function getSubredditIconUrlCached(subreddit: string, useFallback = true): string | null {
+	subreddit = subreddit.toLowerCase();
+	return subredditIconCache.get(subreddit) ?? "/img/rSlash.svg";
+}
+export function setSubredditIconUrlCached(subreddit: string, url: string) {
+	subreddit = subreddit.toLowerCase();
+	subredditIconCache.set(subreddit, url);
+}
