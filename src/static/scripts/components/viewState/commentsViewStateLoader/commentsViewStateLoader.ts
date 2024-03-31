@@ -45,7 +45,7 @@ export default class Ph_CommentsViewStateLoader extends Ph_ViewState {
 				makeElement("div", {}, "What could have happened?"),
 				makeElement("ul", {}, [
 					makeElement("li", {}, "The page you tried to visit was deleted or isn't publicly visible."),
-					makeElement("li", {}, `Reddit is having problems. Check <a href="https://www.redditstatus.com" target="_blank">redditstatus.com</a>`, true),
+					makeElement("li", {}, `Reddit is having problems. Check <a href="https://downdetector.com/status/reddit" target="_blank">downdetector.com/status/reddit</a>`, true),
 					makeElement("li", {}, "Some internal error occurred. Check the browser console logs.")
 				]),
 				makeElement("button", { class: "button retryButton", onclick: this.retryLoadingUrl.bind(this) }, "Reload comments"),

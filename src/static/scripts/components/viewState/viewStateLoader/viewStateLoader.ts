@@ -35,7 +35,7 @@ export default class Ph_ViewStateLoader extends Ph_ViewState {
 			makeElement("ul", {}, [
 				makeElement("li", {}, "The page you tried to visit was deleted or isn't publicly visible."),
 				makeElement("li", {}, "You entered an invalid Url."),
-				makeElement("li", {}, `Reddit is having problems. Check <a href="https://www.redditstatus.com" target="_blank">redditstatus.com</a>`, true),
+				makeElement("li", {}, `Reddit is having problems. Check <a href="https://downdetector.com/status/reddit" target="_blank">downdetector.com/status/reddit</a>`, true),
 				makeElement("li", {}, `If you are using Firefox in Private Mode, you have to disable "Enhanced Tracking Protection" for this site <br>(a Firefox bug).`, true),
 				makeElement("li", {}, "Some internal error occurred. Check the browser console logs."),
 			]),
