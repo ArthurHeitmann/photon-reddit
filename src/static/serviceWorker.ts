@@ -23,6 +23,7 @@ const forceCacheFiles = [
 	"/img/appIcons/favicon-16x16.png",
 	"/favicon.ico"
 ];
+const ttl = 1000 * 60 * 60 * 24 * 7;		// 7 days
 enum Environment {
 	production, development
 }
@@ -67,7 +68,8 @@ self.addEventListener("fetch", (event: FetchEvent) => {
 	event.respondWith(
 		(async () => {
 			const cacheMatch = await caches.match(event.request)
-			if (cacheMatch && useCaches)
+			const isExpired = cacheMatch && isResponseExpired(cacheMatch.headers);
+			if (cacheMatch && useCaches && !isExpired)
 				return cacheMatch;
 
 			let response: Response;
@@ -130,6 +132,18 @@ function shouldUrlBeCached(url: URL): boolean {
 		.filter(type => url.pathname.startsWith(type.path))
 		.filter(type => !type.fileEnding || (new RegExp(`\.(${type.fileEnding})$`)).test(url.pathname));
 	return matchingTypes.length > 0;
+}
+
+function isResponseExpired(headers: Headers): boolean {
+	const date = headers.get("date");
+	if (!date)
+		return false;
+
+	const now = Date.now();
+	const dateValue = new Date(date).getTime();
+	if (isNaN(dateValue))
+		return false;
+	return now - dateValue > ttl;
 }
 
 async function purgeSvgsCache() {
