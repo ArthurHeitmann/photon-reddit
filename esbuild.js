@@ -1,9 +1,17 @@
+import dotenv from "dotenv";
 import esbuild from "esbuild";
+import envFilePlugin from "esbuild-envfile-plugin";
 import { sassPlugin } from "esbuild-sass-plugin";
 import { typecheckPlugin } from "@jgoz/esbuild-plugin-typecheck";
 
 const isWatchMode = process.argv.includes("watch") || process.argv.includes("-w") || process.argv.includes("--watch");
 
+dotenv.config();
+const requiredEnvVars = ["APP_ID", "REDIRECT_URI"];
+const missingEnvVars = requiredEnvVars.filter((envVar) => !process.env[envVar]);
+if (missingEnvVars.length > 0) {
+	throw new Error(`Missing environment variables: ${missingEnvVars.join(", ")}`);
+}
 
 /**
  * @returns {import("esbuild").BuildOptions}
@@ -26,6 +34,7 @@ const buildContexts = await Promise.all([
 		],
 		packages: "external",
 		plugins: [
+			envFilePlugin,
 			typecheckPlugin({
 				watch: isWatchMode,
 				omitStartLog: true,
@@ -43,6 +52,7 @@ const buildContexts = await Promise.all([
 		],
 		packages: "external",
 		plugins: [
+			envFilePlugin,
 			typecheckPlugin({
 				watch: isWatchMode,
 				omitStartLog: true,

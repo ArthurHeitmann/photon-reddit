@@ -55,9 +55,7 @@ npm run start-dev
 npm run watch
 ```
 
-## Getting Login to work
-
-These steps are optional but helpful for development (needed if you want to log in).
+## Create reddit app
 
 Go [here](https://www.reddit.com/prefs/apps) and create your own reddit app.
 
@@ -74,15 +72,22 @@ Examples:
 - http://localhost:8080/redirect
 - https://some-photon-reddit-fork.com/redirect
 
-5. Under `/src/static/scripts/utils/consts.ts` change `AppId` and `redirectURI` to
-```Javascript
-export const appId = "[generated app id]";
-export const rediretURI = "[what you entered in step 4.]";
-```
+5. Set the environment variables `APP_ID` and `REDIRECT_URI` (see below)
 
 ## Environment Variables
 
-Environment variables so far are only for the analytics system. If you use a .env file here is a template:
+### Required
+
+If you use a .env file, you need the following environment variables:
+
+```
+APP_ID=
+REDIRECT_URI=
+```
+
+### Optional
+
+Optional environment variables are only for the analytics system.
 
 ```
 DB_HOST=
