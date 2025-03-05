@@ -1,6 +1,11 @@
-export const photonVersion = "1.4.0";		/// <change version script>
+export const photonVersion = "1.4.1";		/// <change version script>
 
 export const photonChangelog = {
+	"1.4.1": {
+		"Fixed": [
+			"Fixed 1.4.0"
+		]
+	},
 	"1.4.0": {
 		"New": [
 			"Added setting to change reddit app id. This should avoid rate limit problems as the website grows.",

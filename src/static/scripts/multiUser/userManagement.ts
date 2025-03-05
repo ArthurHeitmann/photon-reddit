@@ -98,7 +98,10 @@ export default class Users {
 		for (const user of Users.all) {
 			if (user.d.auth.isLoggedIn) {
 				Users._current = user;
-				await logOutCurrentUser();
+				try {
+					await logOutCurrentUser();
+				} finally {
+				}
 			}
 			await deleteKey(user.key);
 		}
