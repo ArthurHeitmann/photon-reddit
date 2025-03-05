@@ -100,7 +100,8 @@ export default class Users {
 				Users._current = user;
 				try {
 					await logOutCurrentUser();
-				} finally {
+				} catch (e) {
+					console.error(e);
 				}
 			}
 			await deleteKey(user.key);
