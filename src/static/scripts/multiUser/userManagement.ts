@@ -80,11 +80,33 @@ export default class Users {
 	}
 
 	static async remove(user: UserData) {
-		if (user.d.auth.isLoggedIn)
-			await logOutCurrentUser();
+		const current = Users.current;
+		if (user.d.auth.isLoggedIn) {
+			Users._current = user;
+			try {
+				await logOutCurrentUser();
+			} finally {
+				Users._current = current;
+			}
+		}
 		if (user === Users.current)
 			await Users.switchUser(Users.all[0]);
 		await deleteKey(user.key);
+	}
+
+	static async resetAll() {
+		for (const user of Users.all) {
+			if (user.d.auth.isLoggedIn) {
+				Users._current = user;
+				await logOutCurrentUser();
+			}
+			await deleteKey(user.key);
+		}
+		const guest = new UserData(guestUserName);
+		await guest.init();
+		Users.all = [guest];
+		Users._current = guest;
+		await Users.global.set(["lastActiveUser"], guestUserName);
 	}
 
 	private static hasDbLoaded = false;

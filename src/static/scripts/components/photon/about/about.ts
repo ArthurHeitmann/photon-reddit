@@ -57,7 +57,7 @@ const template = `
 <h2 id="contact">Contact</h2>
 
 <p>
-	You can contact the developer on <a href="/user/RaiderBDev">Reddit u/RaiderBDev</a> or via E-Mail art[dot]tec[dot]15[at]gmail[dot]com (replace [dot] with . and [at] with @)
+	You can contact the developer on <a href="https://github.com/ArthurHeitmann">GitHub</a> or via E-Mail art[dot]tec[dot]15[at]gmail[dot]com (replace [dot] with . and [at] with @)
 </p>
 
 <h2 id="credits">Credits</h2>

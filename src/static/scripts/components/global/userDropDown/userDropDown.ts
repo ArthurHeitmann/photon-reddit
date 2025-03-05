@@ -54,7 +54,7 @@ export default class Ph_UserDropDown extends HTMLElement {
 
 		window.addEventListener("click", e => {
 			if (!isElementIn(this, e.target as HTMLElement))
-	-			this.minimize();
+				this.minimize();
 		});
 		const createMultiPane = new Ph_MultiCreateOrEdit("Create new multireddit", "Create", this.createNewMultireddit.bind(this));
 		const newMultiBtn = makeElement("button", { class: "newMulti", onclick: (e) => {

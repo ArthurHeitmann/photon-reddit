@@ -2,8 +2,9 @@ import {getInitialAccessToken, revokeToken} from "../api/redditAuthApi";
 import Ph_BeforeLoginInfo from "../components/misc/beforeLoginInfo/beforeLoginInfo";
 import Ph_Toast, {Level} from "../components/misc/toast/toast";
 import Users from "../multiUser/userManagement";
-import {appId, redirectURI, scope, tokenDuration} from "../utils/consts";
+import {redirectURI, scope, tokenDuration} from "../utils/consts";
 import {extractQuery, randomString} from "../utils/utils";
+import { getAppId } from "./auth";
 
 export function initiateLogin(_skipOriginCheck = false) {
 	if (!redirectURI.startsWith(location.origin) && !_skipOriginCheck) {
@@ -21,7 +22,7 @@ export function initiateLogin(_skipOriginCheck = false) {
 export async function redirectToLoginPage() {
 	const loginCode = randomString(128);
 	const loginUrl = "https://www.reddit.com/api/v1/authorize?" +
-		`client_id=${ encodeURIComponent(appId) }&` +
+		`client_id=${ encodeURIComponent(getAppId()) }&` +
 		`response_type=code&` +
 		`state=${loginCode}&` +
 		`redirect_uri=${ encodeURIComponent(redirectURI) }&` +
@@ -50,6 +51,7 @@ export async function finishLogin(): Promise<boolean> {
 			if ("error" in data)
 				throw data;
 			await Users.add({
+				appId: getAppId(),
 				accessToken: data.access_token,
 				refreshToken: data.refresh_token,
 				scopes: data.scope,

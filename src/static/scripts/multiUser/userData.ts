@@ -18,6 +18,7 @@ export default class UserData extends DataAccessor<_UserData> {
 	key: string;
 	protected default: _UserData = {
 		auth: {
+			appId: undefined,
 			accessToken: null,
 			refreshToken: null,
 			expiration: null,
@@ -146,6 +147,7 @@ interface _UserData {
 }
 
 export interface AuthData {
+	appId?: string,
 	accessToken: string,
 	refreshToken?: string,
 	expiration: number,

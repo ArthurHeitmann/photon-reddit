@@ -200,6 +200,48 @@ export class TimeSetting extends SettingConfig {
 	}
 }
 
+export class TextSetting extends SettingConfig {
+	private placeholder: string;
+	private input: HTMLInputElement;
+
+	constructor(settingKey: SettingsKey, name: string, description: string, settingsType: SettingsApi, placeholder: string = "") {
+		super(settingKey, name, description, settingsType);
+		this.placeholder = placeholder;
+	}
+
+	validateValue(newValue): ValidatorReturn {
+		return { isValid: true };
+	}
+
+	makeElement(onValueChange: (source: SettingConfig, newVal: any) => void): HTMLElement {
+		return makeElement("div", { class: "inputWrapper text" }, [
+			makeElement("div", { class: "mainRow" }, [
+				makeElement("label", { class: "name", for: `${this.settingKey}Setting`, onmousedown: e => e.preventDefault() }, this.name),
+				this.input = makeElement("input", {
+					type: "text",
+					placeholder: this.placeholder,
+					id: `${this.settingKey}Setting`,
+					class: "text",
+					value: this.getProperty(),
+					onchange: (e: InputEvent) => onValueChange(this, (e.currentTarget as HTMLInputElement).value),
+				}) as HTMLInputElement,
+			]),
+			makeElement("div", { class: "bottomRow" }, [
+				this.description && makeElement("div", { class: "description" }, this.description),
+				this.settingsType === SettingsApi.Photon && makeElement("button", {
+					class: "resetButton transparentButtonAlt",
+					"data-tooltip": "Default",
+					onclick: () => onValueChange(this, defaultSettings[this.settingKey])
+				}, [makeElement("img", { src: "/img/reset.svg" })])
+			])
+		]);
+	}
+
+	updateState(newVal: string) {
+		this.input.value = newVal;
+	}
+}
+
 export interface MultiOption {
 	text: string,
 	value: any

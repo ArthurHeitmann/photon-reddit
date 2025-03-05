@@ -1,0 +1,16 @@
+
+.forcedLogoutInfo {
+	--height: max-content;
+	--width: min(30rem, calc(100vw - 2rem));
+
+	h2 {
+		margin-bottom: 1rem;
+	}
+
+	.row {
+		display: flex;
+		justify-content: center;
+		gap: 1.5rem;
+		margin-top: 1rem;
+	}
+}

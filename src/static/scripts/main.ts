@@ -26,6 +26,7 @@ import {setWaitingServiceWorker} from "./utils/versionManagement";
 import VersionNumber from "./utils/versionNumber";
 import Ph_MobileInfoPopup from "./components/photon/mobileInfoPopup/mobileInfoPopup";
 import {doVersionMigration} from "./utils/versionMigration";
+import { initiateLogin } from "./auth/loginHandler";
 
 async function startPhotonReddit() {
 	try {
@@ -52,19 +53,24 @@ async function init(): Promise<void> {
 	if (await checkAuthOnPageLoad() === AuthState.loggedIn) {
 		thisUserFetch = Users.current.fetchUserData()
 			.then(() => {
-				if (!Users.current.d.loginSubPromptDisplayed && !Users.current.subreddits.isSubscribedTo(loginSubredditName)) {
-					new Ph_Toast(Level.info, `Do you want to subscribe to r/${loginSubredditName}?`, {
-						onConfirm: () => Users.current.subreddits.setIsSubscribed(loginSubredditFullName, true)
-					});
-				}
-				Users.current.set(["loginSubPromptDisplayed"], true);
+				// if (!Users.current.d.loginSubPromptDisplayed && !Users.current.subreddits.isSubscribedTo(loginSubredditName)) {
+				// 	new Ph_Toast(Level.info, `Do you want to subscribe to r/${loginSubredditName}?`, {
+				// 		onConfirm: () => Users.current.subreddits.setIsSubscribed(loginSubredditFullName, true)
+				// 	});
+				// }
+				// Users.current.set(["loginSubPromptDisplayed"], true);
 			})
 			.catch(() => {
 				showInitErrorPage();
 			});
 	}
-	else
+	else {
 		$css(".loginButton")[0].hidden = false;
+		if (location.hash === "#showLogin") {
+			location.hash = "";
+			initiateLogin();
+		}
+	}
 	setInterval(checkTokenRefresh, 1000 * 30);
 	removeLoadingIcon();
 	loadPosts();

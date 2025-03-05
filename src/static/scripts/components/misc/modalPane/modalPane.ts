@@ -4,22 +4,25 @@ import { hasHTML } from "../../../utils/utils";
 export default class Ph_ModalPane extends HTMLElement {
 	content: HTMLDivElement;
 
-	constructor() {
+	constructor(canBeDismissed = true) {
 		super();
 		if (hasHTML(this)) return;
 
 		this.classList.add("modalPane");
 
-		this.addEventListener("click", e => e.target === e.currentTarget && this.hide());
+		if (canBeDismissed)
+			this.addEventListener("click", e => e.target === e.currentTarget && this.hide());
 
 		const contentWrapper = document.createElement("div");
 		this.append(contentWrapper);
 
-		const closeButton = document.createElement("button");
-		closeButton.className = "closeButton transparentButton";
-		closeButton.innerHTML = `<img src="/img/close.svg" alt="close" draggable="false">`;
-		closeButton.addEventListener("click", this.hide.bind(this));
-		contentWrapper.append(closeButton);
+		if (canBeDismissed) {
+			const closeButton = document.createElement("button");
+			closeButton.className = "closeButton transparentButton";
+			closeButton.innerHTML = `<img src="/img/close.svg" alt="close" draggable="false">`;
+			closeButton.addEventListener("click", this.hide.bind(this));
+			contentWrapper.append(closeButton);
+		}
 
 		this.content = document.createElement("div");
 		this.content.classList.add("modalContent")
@@ -34,5 +37,9 @@ export default class Ph_ModalPane extends HTMLElement {
 	hide() {
 		this.classList.add("remove");
 		enableMainScroll();
+	}
+
+	isVisible() {
+		return !this.classList.contains("remove");
 	}
 }

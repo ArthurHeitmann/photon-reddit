@@ -1,7 +1,8 @@
 /** Get access and refresh Tokens and implicit grants */
 
+import { getAppId } from "../auth/auth";
 import Users from "../multiUser/userManagement";
-import {appId, redirectURI} from "../utils/consts";
+import {redirectURI} from "../utils/consts";
 import {onApiUsage} from "./redditApiUsageTracking";
 
 interface AccessTokenReturn {
@@ -19,7 +20,7 @@ async function getAccessToken(params: URLSearchParams, additionHeaders: HeadersI
 		const response = await fetch("https://www.reddit.com/api/v1/access_token", {
 			method: "POST",
 			headers: {
-				Authorization: `Basic ${btoa(appId + ":")}`,
+				Authorization: `Basic ${btoa(getAppId() + ":")}`,
 				...additionHeaders
 			},
 			body: params
@@ -74,7 +75,7 @@ export async function revokeToken(): Promise<boolean> {
 						["token", token],
 					]),
 					headers: new Headers({
-						Authorization: `Basic ${btoa(appId + ":")}`,
+						Authorization: `Basic ${btoa(getAppId() + ":")}`,
 					})
 				}))
 		);

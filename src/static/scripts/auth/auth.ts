@@ -1,6 +1,8 @@
 import {getImplicitGrant, getRefreshAccessToken} from "../api/redditAuthApi";
 import Ph_Toast, {Level} from "../components/misc/toast/toast";
+import Ph_ForcedLogoutInfo from "../components/photon/forcedLogoutInfo/forcedLogoutInfo";
 import Users from "../multiUser/userManagement";
+import { appId } from "../utils/consts";
 
 export enum AuthState {
 	loggedIn, implicitGrant
@@ -24,10 +26,14 @@ export async function checkTokenRefresh(): Promise<boolean> {
 
 export async function checkAuthOnPageLoad(): Promise<AuthState> {
 	// An over engineered way to check the auth state. Has some fallback in case of data corruption.
-	// Has storage potentially usable auth data?
 	await Users.current.lockAuthData();
 	try {
+		// Has storage potentially usable auth data?
 		if (!Users.current.d.auth.isLoggedIn || Users.current.d.auth.refreshToken) {
+			if (hasDeprecatedUsers()) {
+				await resetAuthData(false);
+				Ph_ForcedLogoutInfo.show();
+			}
 			if (Users.current.d.auth.isLoggedIn) {
 				// before returning AuthState.loggedIn verifyTokenWorks() must somewhere be called
 				if (hasTokenExpired() && !await refreshAccessToken()) {
@@ -78,6 +84,7 @@ async function implicitGrant(): Promise<boolean> {
 	await Users.current.set(["auth", "isLoggedIn"], false);
 	await Users.current.set(["auth", "accessToken"], newToken.access_token);
 	await Users.current.set(["auth", "expiration"], Date.now() + (59 * 60 * 1000));
+	await Users.current.set(["auth", "appId"],  getAppId());
 	return true;
 }
 
@@ -98,8 +105,37 @@ function verifyTokenWorks(): Promise<boolean> {
 	return Users.current.fetchName();
 }
 
+function hasDeprecatedUsers(): boolean {
+	return Users.all.some(user => user.d.auth.isLoggedIn && !user.d.auth.appId);
+}
+
+function isAppIdSet(): boolean {
+	return Boolean(Users.current.d.auth.appId);
+}
+
 function hasTokenExpired(): boolean {
+	if (!isAppIdSet())
+		return true;
 	const expiration = Users.current.d.auth.expiration;
 	// invalidate 1 minutes ahead of expiration
 	return !expiration || expiration - Date.now() < 1000 * 60;
+}
+
+export function getAppId(): string {
+	return Users.global.d.photonSettings.customAppId || appId;
+}
+
+export async function resetAuthData(reloadAndShowLogin: boolean): Promise<void> {
+	await Users.resetAll();
+	if (!await implicitGrant() || !await verifyTokenWorks()) {
+		new Ph_Toast(Level.error, "Failed to authenticate with reddit");
+		return;
+	}
+	if (reloadAndShowLogin) {
+		location.hash = "#showLogin";
+		location.reload();
+	}
+	else {
+		new Ph_Toast(Level.success, "", { timeout: 2000 });
+	}
 }

@@ -1,6 +1,14 @@
-export const photonVersion = "1.3.4";		/// <change version script>
+export const photonVersion = "1.4.0";		/// <change version script>
 
 export const photonChangelog = {
+	"1.4.0": {
+		"New": [
+			"Added setting to change reddit app id. This should avoid rate limit problems as the website grows.",
+		],
+		"Fixed": [
+			"Fixed broken default app id"
+		]
+	},
 	"1.3.4": {
 		"New": [
 			"Slightly reworked search panel. Clearer separation between search everything and search subreddit.",

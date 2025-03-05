@@ -16,6 +16,8 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 	/** unsaved settings are stored here */
 	temporarySettings: PhotonSettings = {};
 	sectionsConfig: SettingsSection[];
+	private sectionButtons: { [name: string]: HTMLElement } = {};
+	private sections: { [name: string]: HTMLElement } = {};
 
 	constructor() {
 		super();
@@ -30,10 +32,9 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 	private async init() {
 		this.sectionsConfig = getSettingsSections();
 
-		const sections: { [name: string]: HTMLElement } = {};
 		const redditPrefsElements: HTMLElement[] = [];
 		for (const section of this.sectionsConfig) {
-			sections[section.name] = makeElement("div", { class: "section" }, [
+			this.sections[section.name] = makeElement("div", { class: "section" }, [
 				makeElement("div", { class: "sectionName" }, section.name),
 				...section.settings.map(
 					setting => {
@@ -45,7 +46,7 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 				)
 			]);
 		}
-		sections[this.sectionsConfig[0].name].classList.add("selected");
+		this.sections[this.sectionsConfig[0].name].classList.add("selected");
 		const updateRedditPrefsVisibility = () => redditPrefsElements.forEach(e => e.classList.toggle("hide", Users.current.isGuest));
 		updateRedditPrefsVisibility();
 		window.addEventListener(PhEvents.userChanged, updateRedditPrefsVisibility);
@@ -69,17 +70,11 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 					})
 				]),
 				...this.sectionsConfig.map(
-					(section, index) => makeElement("button", {
+					(section, index) => this.sectionButtons[section.name] = makeElement("button", {
 						class: `sectionEntry${index === 0 ? " selected" : ""}`,
 						onclick: e => {
 							const btn = e.currentTarget as HTMLElement;
-							this.content.classList.remove("toggle");
-							if (btn.classList.contains("selected"))
-								return;
-							this.$css(".sectionEntry.selected")[0]?.classList.remove("selected");
-							btn.classList.add("selected");
-							this.$css(".section.selected")[0]?.classList.remove("selected");
-							sections[section.name].classList.add("selected");
+							this.switchToSection(section.name);
 						}
 					}, [
 						makeElement("img", { class: "icon", src: section.iconUrl }),
@@ -88,12 +83,25 @@ export default class Ph_PhotonSettings extends Ph_ModalPane {
 				)
 			]),
 			makeElement("div", { class: "sections" }, this.sectionsConfig.map(
-				section => sections[section.name]
+				section => this.sections[section.name]
 			))
 		);
 
 		onMessageBroadcast(this.onSettingsExternalChange.bind(this), PhEvents.settingsChanged);
 		window.addEventListener(PhEvents.userChanged, this.onUserChange.bind(this));
+	}
+
+	switchToSection(sectionName: string) {
+		const btn = this.sectionButtons[sectionName];
+		this.content.classList.remove("toggle");
+		if (btn.classList.contains("selected"))
+			return;
+		this.$css(".sectionEntry.selected")[0]?.classList.remove("selected");
+		btn.classList.add("selected");
+		this.$css(".section.selected")[0]?.classList.remove("selected");
+		this.sections[sectionName].classList.add("selected");
+		if (!this.isVisible())
+			this.show();
 	}
 
 	private async onSettingChange(source: SettingConfig, newVal: any) {

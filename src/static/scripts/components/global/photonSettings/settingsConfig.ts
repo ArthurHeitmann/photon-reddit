@@ -13,10 +13,12 @@ import {
 	NumberSetting,
 	SettingsApi,
 	SettingsSection,
+	TextSetting,
 	TimeSetting
 } from "./photonSettingsData";
 import Ph_Toast, {Level} from "../../misc/toast/toast";
 import {SortPostsOrder, SortPostsOrderNamed} from "../../../types/misc";
+import { resetAuthData } from "../../../auth/auth";
 
 export enum ImageLoadingPolicy {
 	alwaysPreview = "alwaysPreview",
@@ -93,6 +95,8 @@ export interface PhotonSettings {
 	theme?: UiTheme,
 	highlightSeenPosts?: boolean,
 	absoluteTimestamps?: boolean,
+	// useAltSubredditSearchApi?: boolean,
+	customAppId?: string,
 }
 
 // default config
@@ -140,6 +144,8 @@ export const defaultSettings: PhotonSettings = {
 	theme: UiTheme.dark,
 	highlightSeenPosts: false,
 	absoluteTimestamps: false,
+	// useAltSubredditSearchApi: false,
+	customAppId: "",
 };
 
 export const getSettingsSections = (): SettingsSection[] => [
@@ -272,6 +278,49 @@ export const getSettingsSections = (): SettingsSection[] => [
 		]
 	},
 	{
+		name: "Reddit Auth",
+		iconUrl: "/img/key.svg",
+		settings: [
+			new TextSetting("customAppId", "Custom App ID", "To apply changes, click \"Reset Authentication Data\" below", SettingsApi.Photon, "paste your app id here"),
+			new HTMLElementSetting(makeElement("p", {}, [
+				makeElement("strong", {}, "You should create your own reddit app, to avoid problems with too many people using the official website or in case the official site stops working for some reason. It only only takes a few minutes. Here's is a short guide:")
+			])),
+			new HTMLElementSetting(makeElement("ol", {}, [
+				makeElement("li", null, ["Go to ", makeElement("a", { href: "https://www.reddit.com/prefs/apps", target: "_blank" }, "https://www.reddit.com/prefs/apps")]),
+				makeElement("li", null, "Click on \"Create App\""),
+				makeElement("li", null, [
+					"Fill out the form. Use the following values:",
+					makeElement("ul", {}, [
+						makeElement("li", null, "Name: My Own Reddit App"),
+						makeElement("li", null, "App type: installed app (important)"),
+						makeElement("li", null, "Description:"),
+						makeElement("li", null, "About url:"),
+						makeElement("li", null, "Redirect uri: https://photon-reddit.com/redirect"),
+					]),
+				]),
+				makeElement("li", null, "Click on \"Create app\""),
+				makeElement("li", null, "Copy the line with random characters underneath \"installed app\" (example: bZSh7oMYEQl7XP3c45OEdk)"),
+				makeElement("li", null, "Paste the text into the field above"),
+				makeElement("li", null, [
+					"To apply the changes, click on the \"Reset Authentication Data\" button. This will log you out of any accounts you are currently logged in with and reload the page.",
+					makeElement("button", {
+						class: "button",
+						onclick: async () => {
+							if (Users.all.length > 1) {
+								new Ph_Toast(Level.warning, `Log out ${Users.all.length - 1} account?`, {
+									onConfirm: () => resetAuthData(true)
+								});
+							}
+							else {
+								resetAuthData(true);
+							}
+						}
+					}, "Reset Authentication Data")
+				]),
+			])),
+		]
+	},
+	{
 		name: "Other",
 		iconUrl: "/img/circle.svg",
 		settings: [
@@ -283,6 +332,7 @@ export const getSettingsSections = (): SettingsSection[] => [
 				{ text: "Allow", value: AllowIframesDecision.allow },
 				{ text: "Block", value: AllowIframesDecision.block },
 			], "allowIframes", "Allow embedded iframes", "Allow loading external websites (like YouTube or Twitter). These websites can potentially place cookies or track you.", SettingsApi.Photon),
+			// new BooleanSetting("useAltSubredditSearchApi", "Use alternative subreddit search", "Use a different API for searching subreddits. (May be slower)", SettingsApi.Photon),
 			new TimeSetting({ allowRange: [1, Number.MAX_SAFE_INTEGER] }, "clearFeedCacheAfterMs", "Subreddit info cache duration", "", SettingsApi.Photon),
 			new TimeSetting({ allowRange: [1, Number.MAX_SAFE_INTEGER] }, "userShortCacheTTLMs", "Short Cache Duration", "For your subscriptions", SettingsApi.Photon),
 			new TimeSetting({
