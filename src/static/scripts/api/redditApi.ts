@@ -221,6 +221,9 @@ export async function deleteThing(fullname: string) {
 }
 
 export async function searchSubreddits(query: string, limit = 5): Promise<RedditListingObj<RedditSubredditObj>> {
+	// if (Users.global.d.photonSettings.useAltSubredditSearchApi) {
+	// 	return searchSubredditsArcticShift(query, limit);
+	// }
 	return await redditApiRequest("/api/subreddit_autocomplete_v2", [
 		["query", query],
 		["limit", limit.toString()],

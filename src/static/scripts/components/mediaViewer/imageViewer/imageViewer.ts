@@ -1,6 +1,6 @@
 import {PhEvents} from "../../../types/Events";
 import {getLoadingIcon, nonDraggableElement} from "../../../utils/htmlStatics";
-import {hasParams, makeElement} from "../../../utils/utils";
+import {hasParams, makeElement, sleep} from "../../../utils/utils";
 import {ControlsLayoutSlots} from "../../misc/controlsBar/controlsBar";
 import Users from "../../../multiUser/userManagement";
 import Ph_PhotonBaseElement from "../../photon/photonBaseElement/photonBaseElement";
@@ -129,11 +129,12 @@ export default class Ph_ImageViewer extends Ph_PhotonBaseElement implements Medi
 		this.refreshButton.classList.add("hide");
 	}
 
-	tryRefreshImage(img: HTMLImageElement) {
+	async tryRefreshImage(img: HTMLImageElement) {
 		if (img.complete && img.naturalWidth)
 			return;
 		const currentSrc = img.src;
 		img.src = "";
+		await sleep(100);
 		img.src = currentSrc;
 	}
 

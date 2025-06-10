@@ -1,12 +1,14 @@
-import {RedditCommentData, RedditCommentObj, RedditListingObj, RedditPostData} from "../types/redditTypes";
+import {RedditCommentData, RedditCommentObj, RedditListingObj, RedditPostData, RedditSubredditObj, SubredditDetails} from "../types/redditTypes";
 import {parseMarkdown} from "../lib/markdownForReddit/markdown-for-reddit";
 import {isCommentDeleted} from "../utils/utils";
 import Ph_Toast, {Level} from "../components/misc/toast/toast";
 import {redditInfo} from "./redditApi";
 import { onApiUsage } from "./redditApiUsageTracking";
+import Users from "../multiUser/userManagement";
 
 interface ArcticShiftResponse<T> {
 	data: T;
+	error?: any;
 }
 
 export async function getCommentTreeFromArchive(commentData: RedditCommentData): Promise<RedditCommentData> {
@@ -106,4 +108,42 @@ function sortReplies(comments: RedditCommentData[]): RedditCommentData[] {
 			return a.created - b.created;
 		return b.score - a.score;
 	});
+}
+
+export async function searchSubredditsArcticShift(prefix: string, limit = 5): Promise<RedditListingObj<RedditSubredditObj>> {
+	const params = new URLSearchParams();
+	params.set("subreddit_prefix", prefix);
+	params.set("sort_type", "subscribers");
+	params.set("sort", "desc");
+	params.set("limit", String(limit));
+	if (!Users.current.d.redditPreferences.search_include_over_18)
+		params.set("over18", "false");
+	const response = await fetch(`https://arctic-shift.photon-reddit.com/api/subreddits/search?${params}`);
+	const data = await response.json() as ArcticShiftResponse<SubredditDetails[]>;
+	if (!data.data || data.error) {
+		console.error(data.error);
+		throw new Error("Error fetching subreddits");
+	}
+	return {
+		kind: "Listing",
+		data: {
+			dist: data.data.length,
+			children: data.data.map(sub => ({
+				kind: "t5",
+				data: sub
+			})),
+			before: null,
+			after: null
+		}
+	};
+}
+
+export async function resolveShortLinkArcticShift(shortLink: string): Promise<string> {
+	const response = await fetch(`https://arctic-shift.photon-reddit.com/api/short_links?paths=${shortLink}`);
+	const data = await response.json() as ArcticShiftResponse<{ resolved_path: string }[]>;
+	if (!data.data || data.error) {
+		console.error(data.error);
+		throw new Error("Error resolving short link");
+	}
+	return data.data[0]?.resolved_path ?? "";
 }

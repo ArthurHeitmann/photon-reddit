@@ -1,7 +1,7 @@
 /**
  * This service worker is responsible for updating & caching files, if there are more recent versions
  */
-const version = "1.4.2";			/// <change version script>
+const version = "1.4.3";			/// <change version script>
 const CACHE_NAME = `photon-cache-${version}`;
 interface CacheDescription {
 	hostname: "/" | string,

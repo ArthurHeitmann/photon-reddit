@@ -47,6 +47,8 @@ export default class Ph_RandomHub extends HTMLElement {
 	}
 
 	onButtonClick() {
+		new Ph_Toast(Level.error, "Reddit has discontinued the random feature", { timeout: 5000, groupId: "random_hub" });
+		return;
 		switch (this.randomTarget) {
 			case RandomTarget.Random:
 				this.goToRandomSubreddit();

@@ -7,6 +7,7 @@ import {Changelog, RedditApiUsageRecord} from "../types/misc";
 import {getAuthHeader} from "./redditApi";
 import {RedgifsAuthData} from "../multiUser/globalData";
 import { onApiUsage } from "./redditApiUsageTracking";
+import { resolveShortLinkArcticShift } from "./redditArchiveApi";
 
 /** */
 export async function youtubeDlUrl(url): Promise<{ url?: string, error?: string }> {
@@ -170,6 +171,18 @@ export async function trackApiUsage(records: RedditApiUsageRecord[]): Promise<bo
 }
 
 export async function resolveRedditUrl(url: string): Promise<string> {
+	try {
+		const resolvedUrl = await resolveShortLinkArcticShift(url);
+		if (resolvedUrl) {
+			return resolvedUrl;
+		}
+	} catch (e) {
+		console.error("Error resolving short link with Arctic Shift:", e);
+	}
+	return await resolveRedditUrlPhotonApi(url);
+}
+
+async function resolveRedditUrlPhotonApi(url: string): Promise<string> {
 	onApiUsage("/api/resolveRedditUrl", "photon");
 	const r = await fetch(`/api/resolveRedditUrl?url=${encodeURIComponent(url)}`);
 	const data = await r.json();

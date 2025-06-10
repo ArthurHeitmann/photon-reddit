@@ -8,7 +8,7 @@ import {
 	tokenRequestRateLimitConfig,
 	youtube_dlRateLimitConfig
 } from "./consts";
-import {safeExc, safeExcAsync} from "./utils";
+import {getUserAgent, safeExc, safeExcAsync} from "./utils";
 import {photonChangelog, photonVersion} from "./version";
 import { RedditAuth } from "./redditApi";
 
@@ -42,13 +42,13 @@ photonApiRouter.get("/changelog", safeExc((req, res) => {
 	res.json(photonChangelog);
 }))
 
-async function getRedirectUrl(url: string, auth: string): Promise<string> {
+async function getRedirectUrl(url: string, auth: string, userAgent: string): Promise<string> {
 	const r = await fetch(url, {
 		method: "HEAD",
 		redirect: "manual",
 		headers: {
 			"Authorization": auth,
-			"User-Agent": `web_backend:photon-reddit.com:v${photonVersion} (by /u/RaiderBDev)`
+			"User-Agent": userAgent
 		}
 	});
 	await r.text();
@@ -61,8 +61,9 @@ photonApiRouter.get("/randomSubreddit", safeExcAsync(async (req, res) => {
 		res.status(400).json({ error: "¯\\_(ツ)_/¯" });
 		return;
 	}
+	const userAgent = getUserAgent(req, res);
 	const isNsfw = req.query["isNsfw"] === "true";
-	const redirectedUrl = await getRedirectUrl(`https://oauth.reddit.com/r/${isNsfw ? "randnsfw" : "random"}`, auth);
+	const redirectedUrl = await getRedirectUrl(`https://oauth.reddit.com/r/${isNsfw ? "randnsfw" : "random"}`, auth, userAgent);
 	if (!redirectedUrl) {
 		res.status(400).json({ error: "¯\\_(ツ)_/¯" });
 		return;
@@ -82,7 +83,8 @@ photonApiRouter.get("/randomSubredditPostUrl", safeExcAsync(async (req, res) => 
 		res.status(400).json({ error: "¯\\_(ツ)_/¯" });
 		return;
 	}
-	const redirectedUrl = await getRedirectUrl(`https://oauth.reddit.com/r/${subreddit}/random`, auth);
+	const userAgent = getUserAgent(req, res);
+	const redirectedUrl = await getRedirectUrl(`https://oauth.reddit.com/r/${subreddit}/random`, auth, userAgent);
 	if (!redirectedUrl) {
 		res.status(400).json({ error: "¯\\_(ツ)_/¯" });
 		return;
@@ -100,10 +102,11 @@ photonApiRouter.get("/isRedditApiAvailable", safeExcAsync(async (req, res) => {
 		return;
 	}
 	lastApiCheck = Date.now();
+	const userAgent = getUserAgent(req, res);
 	try {
 		const r = await fetch("https://www.reddit.com/r/all.json?limit=1", {
 			headers: {
-				"User-Agent": `web_backend:photon-reddit.com:v${photonVersion} (by /u/RaiderBDev)`
+				"User-Agent": userAgent
 			}
 		});
 		await r.json();
@@ -169,6 +172,7 @@ photonApiRouter.get("/requestRedgifsToken", RateLimit(tokenRequestRateLimitConfi
 
 const redditAuth = new RedditAuth();
 photonApiRouter.get("/resolveRedditUrl", RateLimit(tokenRequestRateLimitConfig), safeExcAsync(async (req, res) => {
+	const userAgent = getUserAgent(req, res);
 	let url = req.query["url"].toString();
 	if (!url) {
 		res.status(400).json({ error: "Missing url parameter" });
@@ -182,9 +186,11 @@ photonApiRouter.get("/resolveRedditUrl", RateLimit(tokenRequestRateLimitConfig),
 	}
 	
 	try {
-		res.json(await redditAuth.resolvePath(url));
+		res.json(await redditAuth.resolvePath(url, userAgent));
 	}
-	catch {
+	catch (e) {
+		console.error("Failed to resolve Reddit URL");
+		console.error(e);
 		res.status(400).json({ error: "Failed to resolve url" });
 	}
 }));

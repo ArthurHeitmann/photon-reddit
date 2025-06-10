@@ -10,20 +10,20 @@ export class RedditAuth {
 	rateLimitRemaining: number = 100;
 	rateLimitResetAt: number = Date.now()/1000 + 100;
 
-	async getAccessTokenWithRefresh(): Promise<string> {
+	async getAccessTokenWithRefresh(userAgent: string): Promise<string> {
 		const now = Date.now();
 		if (this.accessToken && this.accessTokenExpires > now)
 			return this.accessToken;
-		this.accessToken = await this.getAccessToken();
+		this.accessToken = await this.getAccessToken(userAgent);
 		this.accessTokenExpires = now + 1000 * 60 * 60;
 		return this.accessToken;
 	}
 
-	async oauthRequest<T>(endpoint: string, params: { [q: string]: string }, method: string = "GET"): Promise<T> {
+	async oauthRequest<T>(endpoint: string, params: { [q: string]: string }, userAgent: string, method: string = "GET"): Promise<T> {
 		const fetchOptions: RequestInit = {
 			method: method,
 			headers: {
-				"Authorization": "Bearer " + await this.getAccessTokenWithRefresh(),
+				"Authorization": "Bearer " + await this.getAccessTokenWithRefresh(userAgent),
 			},
 		};
 		params["raw_json"] = "1";
@@ -40,7 +40,7 @@ export class RedditAuth {
 		return JSON.parse(text);
 	}
 
-	async resolvePath(path: string): Promise<{ url: string, path: string, redirects: number }> {
+	async resolvePath(path: string, userAgent: string): Promise<{ url: string, path: string, redirects: number }> {
 		let response: Response;
 		let url: string;
 		let previousUrl: string|undefined;
@@ -52,8 +52,8 @@ export class RedditAuth {
 				method: "HEAD",
 				redirect: "manual",
 				headers: {
-					"Authorization": "Bearer " + await this.getAccessTokenWithRefresh(),
-					"User-Agent": `web_backend:photon-reddit.com:v${photonVersion} (by /u/RaiderBDev)`
+					"Authorization": "Bearer " + await this.getAccessTokenWithRefresh(userAgent),
+					"User-Agent": userAgent
 				}
 			});
 			let newUrl = response.headers.get("location");
@@ -84,13 +84,13 @@ export class RedditAuth {
 		};
 	}
 
-	async getAccessToken(): Promise<string> {
+	async getAccessToken(userAgent: string): Promise<string> {
 		const response = await fetch("https://www.reddit.com/api/v1/access_token", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/x-www-form-urlencoded",
 				"Authorization": "Basic " + Buffer.from(appId + ":").toString("base64"),
-				"User-Agent": `web_backend:photon-reddit.com:v${photonVersion} (by /u/RaiderBDev)`
+				"User-Agent": userAgent
 			},
 			body: new URLSearchParams({
 				grant_type: "https://oauth.reddit.com/grants/installed_client",

@@ -1,6 +1,11 @@
-export const photonVersion = "1.4.2";		/// <change version script>
+export const photonVersion = "1.4.3";		/// <change version script>
 
 export const photonChangelog = {
+	"1.4.3": {
+		"Fixed": [
+			"Fixed short links redirects (/r/.../s/...) not working",
+		]
+	},
 	"1.4.2": {
 		"Fixed": [
 			"Actually fixed 1.4.0"
