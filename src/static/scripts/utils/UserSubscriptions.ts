@@ -48,6 +48,7 @@ export abstract class UserSubscriptions<ContentType, EventData> {
 			this.userContent = storedData.data;
 			if (Date.now() - storedData.lastUpdatedMsUTC > Users.global.d.photonSettings.userShortCacheTTLMs)
 				return null;
+			return this.userContent;
 		} catch (e) {
 			return null;
 		}

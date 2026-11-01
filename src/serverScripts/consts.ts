@@ -17,7 +17,7 @@ export const commonRateLimitConfig: Partial<rlOptions> = {
 export const basicRateLimitConfig: Partial<rlOptions> = {
 	...commonRateLimitConfig,
 	windowMs: 30 * 1000,		// in a timeframe of 30s
-	max: 30,					// 30 requests are allowed
+	max: 120,					// 120 requests are allowed
 };
 export const analyticsRateLimitConfig: Partial<rlOptions> = {
 	...commonRateLimitConfig,

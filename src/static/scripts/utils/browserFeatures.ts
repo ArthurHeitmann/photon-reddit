@@ -44,6 +44,8 @@ export function supportsServiceWorkers(): boolean {
 export async function isFirefoxEtpBlocking(): Promise<boolean> {
 	if (Users.global.d.firefoxPrivateCheckCompleted)
 		return false;
+	if (Users.current.isGuest && !Users.global.d.photonSettings.customAppId)
+		return false;
 	await Users.global.set(["firefoxPrivateCheckCompleted"], true);
 	const redditBlockedLocally = await isRedditBlockedOnlyLocally();
 	if (!redditBlockedLocally)

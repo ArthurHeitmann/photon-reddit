@@ -48,7 +48,7 @@ export default class Ph_UserDropDown extends HTMLElement {
 				) as HTMLInputElement,
 			this.makeActionBar(),
 			this.makeUserSelector(),
-			this.makeSubredditGroup([ "r/popular" ], "Reddit Feeds")
+			this.makeSubredditGroup([ "r/popular", "r/all" ], "Reddit Feeds")
 		]);
 		this.append(dropDownArea);
 

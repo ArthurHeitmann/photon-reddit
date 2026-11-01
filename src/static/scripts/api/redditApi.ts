@@ -10,6 +10,7 @@ import Users from "../multiUser/userManagement";
 import {
 	FlairApiData,
 	RedditApiObj,
+	RedditCommentObj,
 	RedditJsonApiResponse,
 	RedditListingObj,
 	RedditMultiObj,
@@ -21,6 +22,7 @@ import {isObjectEmpty, randomString, splitPathQuery, strToNumNonNan, throttle} f
 import {SortPostsOrder, UserSection} from "../types/misc";
 import {onApiUsage} from "./redditApiUsageTracking";
 import { proxyURI } from "../utils/consts";
+import { parseMarkdown } from "../lib/markdownForReddit/markdown-for-reddit";
 
 /**
  * Use this to make requests to reddit
@@ -161,13 +163,13 @@ function fixUrl(url: string) {
 		url = url.replace(/^\/user\/[^/]+\/m\//, "/me/m/")									// /user/thisUser/m/... --> /me/m/...
 	if (Users.current.d.auth.isLoggedIn && (url === "" || url === "/") && Users.global.d.photonSettings.defaultFrontpageSort)
 		url = `/${Users.global.d.photonSettings.defaultFrontpageSort}`
-	if (!Users.current.d.auth.isLoggedIn && /^\/?((best|hot|new|top|rising|controversial|gilded)?\/?)([?#].*)?$/.test(url)) {
-		const subs = Users.current.subreddits.rawData;
-		if (subs.length > 0) {
-			const sort = url.match(/\/(\w+)/)?.[1] ?? Users.global.d.photonSettings.defaultFrontpageSort ?? "hot";
-			url = `/r/${subs.slice(0, 100).map(s => s.data.display_name).join("+")}/${sort}`;
-		}
-	}
+	// if (!Users.current.d.auth.isLoggedIn && /^\/?((best|hot|new|top|rising|controversial|gilded)?\/?)([?#].*)?$/.test(url)) {
+	// 	const subs = Users.current.subreddits.rawData;
+	// 	if (subs.length > 0) {
+	// 		const sort = url.match(/\/(\w+)/)?.[1] ?? Users.global.d.photonSettings.defaultFrontpageSort ?? "hot";
+	// 		url = `/r/${subs.slice(0, 100).map(s => s.data.display_name).join("+")}/${sort}`;
+	// 	}
+	// }
 	return url;
 }
 
@@ -332,6 +334,16 @@ export async function loadMoreComments(children: string[], postFullName: string,
 		["limit_children", "false"],
 		["id", id]
 	], false, {method: "POST"});
+}
+
+export async function loadMoreCommentsWithCursor(postFullName: string, sort: string|null, cursor: string): Promise<RedditListingObj<RedditCommentObj>> {
+	const params = [
+		["link_id", postFullName],
+		["cursor", cursor]
+	];
+	if (sort)
+		params.push(["sort", sort]);
+	return await redditApiRequest("/api/morechildren", params, false);
 }
 
 export async function getMultiInfo(multiPath: string): Promise<RedditMultiObj> {

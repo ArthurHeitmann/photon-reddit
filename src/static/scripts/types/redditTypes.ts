@@ -347,9 +347,11 @@ export interface RedditMoreCommentsData extends RedditApiData {
 	children: string[],
 	count: number,
 	depth: number,
-	id: string,
-	name: string,
+	id?: string,
+	name?: string,
 	parent_id: string,
+	cursor?: string,
+	is_too_deep_for_count?: boolean,
 }
 
 export interface RedditMessageData extends RedditApiData {

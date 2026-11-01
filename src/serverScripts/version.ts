@@ -1,6 +1,11 @@
 export const photonVersion = "1.5.2";		/// <change version script>
 
 export const photonChangelog = {
+	"1.5.3": {
+		"Fixed": [
+			"Subreddits, search, more comments, r/all, and loading of archived comments now work again",
+		]
+	},
 	"1.5.2": {
 		"New": [
 			"Subscribing to subreddits now works even without logging in. Subscriptions are stored locally in your browser",

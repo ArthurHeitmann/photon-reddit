@@ -2,13 +2,14 @@ import {
 	deleteThing,
 	edit,
 	loadMoreComments,
+	loadMoreCommentsWithCursor,
 	save,
 	vote,
 	VoteDirection,
 	voteDirectionFromLikes
 } from "../../api/redditApi";
 import {PhEvents} from "../../types/Events";
-import {RedditAward, RedditCommentData, RedditCommentObj, RedditListingObj, RedditMessageObj, RedditMoreCommentsObj} from "../../types/redditTypes";
+import {RedditAward, RedditCommentData, RedditCommentObj, RedditJsonApiResponse, RedditListingObj, RedditMessageObj, RedditMoreCommentsObj} from "../../types/redditTypes";
 import {$css, emojiFlagsToImages} from "../../utils/htmlStatics";
 import {addRedditEmojis, elementWithClassInTree, linksToSpa} from "../../utils/htmlStuff";
 import {
@@ -95,13 +96,12 @@ export default class Ph_Comment extends Ph_Readable {
 			this.append(loadMoreButton);
 
 			// continue thread button/link
-			if (commentData.data.children.length === 0) {
+			if (commentData.data.children.length === 0 && commentData.data.count === 0) {
 				loadMoreButton.append(makeElement("a", { href: `${post.data.permalink}${commentData.data.parent_id.slice(3)}` }, "Continue thread"));
 				linksToSpa(loadMoreButton);
 			}
 			// load n more comments button
 			else {
-				const moreId = commentData.data.name;
 				const loadMoreBtnText: string = `Load more (${commentData.data.count})`;
 				loadMoreButton.innerText = loadMoreBtnText;
 				let nextChildren = commentData.data.children;
@@ -109,7 +109,9 @@ export default class Ph_Comment extends Ph_Readable {
 					loadMoreButton.disabled = true;
 					loadMoreButton.innerHTML = `<img src="/img/loading3.svg" alt="loading">`;
 					try {
-						const loadedComments = await this.loadMoreComments(nextChildren, moreId);
+						const moreId = commentData.data.name;
+						const cursor = commentData.data.cursor;
+						const loadedComments = await this.loadMoreComments(nextChildren, moreId, cursor);
 
 						if (this.parentElement instanceof Ph_CommentsFeed) {
 							this.parentElement.addPendingComments(loadedComments);
@@ -319,17 +321,33 @@ export default class Ph_Comment extends Ph_Readable {
 		this.classList.add("isReplying");
 	}
 
-	async loadMoreComments(children: string[], id: string): Promise<RedditCommentObj[]> {
-		const childData = await loadMoreComments(
-			children,
-			this.postFullName,
-			(elementWithClassInTree(this.parentElement, "commentsFeed") as Ph_CommentsFeed).sort
-			, id
-		);
+	async loadMoreComments(children: string[], id: string|undefined, cursor: string|undefined): Promise<RedditCommentObj[]> {
+		const sort = (elementWithClassInTree(this.parentElement, "commentsFeed") as Ph_CommentsFeed).sort;
+		let comments: RedditCommentObj[];
+		if (id && children.length > 0) {
+			const childData = await loadMoreComments(
+				children,
+				this.postFullName,
+				sort,
+				id
+			);
+			comments = childData.json.data.things as RedditCommentObj[];
+		}
+		else if (cursor) {
+			const commentData = await loadMoreCommentsWithCursor(
+				this.postFullName,
+				sort,
+				cursor
+			);
+			comments = commentData.data.children;
+		}
+		else {
+			throw "Invalid load more comments data";
+		}
 
 		// reddit returns here just an array of all comments, regardless whether they are parents/children of each other
 		// therefore we have to assemble the comment tree with all the relations ourselves -_-
-		return commentsToTree(childData.json.data.things as RedditCommentObj[]);
+		return commentsToTree(comments);
 	}
 
 	async vote(dir: VoteDirection): Promise<void> {

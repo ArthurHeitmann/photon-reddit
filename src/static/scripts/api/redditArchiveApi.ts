@@ -29,17 +29,17 @@ export async function getCommentTreeFromArchive(commentData: RedditCommentData):
 	flattenCommentTree(tree, flatCommentsMap);
 	const flatComments = Object.values(flatCommentsMap);
 	markedDeletedComments(flatComments);
-	const commentFullNames = flatComments.map(comment => comment.name)
-		.slice(0, 10);
-	while (commentFullNames.length > 0) {
-		const fullNames = commentFullNames.splice(0, 100);
-		const response = await redditInfo({ fullNames }) as RedditListingObj<RedditCommentObj>;
-		for (const newComment of response.data.children) {
-			const archivedComment = flatCommentsMap[newComment.data.name];
-			archivedComment.score = newComment.data.score;
-			archivedComment.ups = newComment.data.score;
-		}
-	}
+	// const commentFullNames = flatComments.map(comment => comment.name)
+	// 	.slice(0, 10);
+	// while (commentFullNames.length > 0) {
+	// 	const fullNames = commentFullNames.splice(0, 100);
+	// 	const response = await redditInfo({ fullNames }) as RedditListingObj<RedditCommentObj>;
+	// 	for (const newComment of response.data.children) {
+	// 		const archivedComment = flatCommentsMap[newComment.data.name];
+	// 		archivedComment.score = newComment.data.score;
+	// 		archivedComment.ups = newComment.data.score;
+	// 	}
+	// }
 
 	sortReplies(tree.map(comment => comment.data as RedditCommentData));
 
